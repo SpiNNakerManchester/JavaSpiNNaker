@@ -25,7 +25,7 @@ import static org.apache.commons.io.IOUtils.buffer;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
+import static uk.ac.manchester.spinnaker.utils.ThreadUtils.waitfor;
 import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER;
 
 import java.io.BufferedReader;

@@ -25,6 +25,10 @@ import java.lang.management.ThreadInfo;
  * Utilities for working with threads.
  */
 public abstract class ThreadUtils {
+	/** Avoid creation. */
+	private ThreadUtils() {
+	}
+
 	/**
 	 * Produce a dump of what all threads are doing. Useful for debugging as it
 	 * means you can get a dump of threads programmatically at the time when the
@@ -35,5 +39,56 @@ public abstract class ThreadUtils {
 	public static String threadDump() {
 		return stream(getThreadMXBean().dumpAllThreads(true, true))
 				.map(ThreadInfo::toString).collect(joining());
+	}
+
+	/**
+	 * Recommended way of doing "quiet" sleeps.
+	 *
+	 * @param delay
+	 *            How long to sleep for, in milliseconds.
+	 * @see <a href="https://stackoverflow.com/q/1087475/301832">Stack Overflow
+	 *      Question: When does Java's Thread.sleep throw
+	 *      InterruptedException?</a>
+	 */
+	public static void sleep(final long delay) {
+		try {
+			Thread.sleep(delay);
+		} catch (final InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	/**
+	 * Wait for the given object.
+	 *
+	 * @param obj
+	 *            The object to wait for
+	 * @return True if the wait was interrupted, false otherwise
+	 */
+	public static boolean waitfor(final Object obj) {
+		try {
+			obj.wait();
+			return false;
+		} catch (final InterruptedException e) {
+			return true;
+		}
+	}
+
+	/**
+	 * Wait for the given object.
+	 *
+	 * @param obj
+	 *            The object to wait for
+	 * @param timeout
+	 *            The maximum time to wait, in milliseconds
+	 * @return True if the wait was interrupted, false otherwise
+	 */
+	public static boolean waitfor(final Object obj, final long timeout) {
+		try {
+			obj.wait(timeout);
+			return false;
+		} catch (final InterruptedException e) {
+			return true;
+		}
 	}
 }

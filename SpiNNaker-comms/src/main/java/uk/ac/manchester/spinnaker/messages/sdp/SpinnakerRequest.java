@@ -70,7 +70,7 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 		// Set ready for sending
 		sdpHeader.setTag(SDP_TAG);
 		sdpHeader.setSourcePort(SDP_SOURCE_PORT);
-		sdpHeader.setSource(new SDPSource(originatingChip));
+		sdpHeader.setSource(new SDPLocation(new SDPSource(originatingChip)));
 
 		// Serialize
 		var buffer = newMessageBuffer();

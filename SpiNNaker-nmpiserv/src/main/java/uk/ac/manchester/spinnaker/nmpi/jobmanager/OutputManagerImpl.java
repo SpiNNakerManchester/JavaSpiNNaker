@@ -29,7 +29,7 @@ import static jakarta.ws.rs.core.Response.status;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
+import static uk.ac.manchester.spinnaker.utils.ThreadUtils.waitfor;
 
 import java.io.File;
 import java.io.FileInputStream;

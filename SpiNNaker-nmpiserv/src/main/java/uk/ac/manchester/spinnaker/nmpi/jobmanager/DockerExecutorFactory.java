@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.jobmanager;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
+import static uk.ac.manchester.spinnaker.utils.ThreadUtils.waitfor;
 import static uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface.JOB_PROCESS_MANAGER;
 
 import java.io.IOException;
