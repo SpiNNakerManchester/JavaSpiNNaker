@@ -34,6 +34,8 @@ public class TCPProxy {
 	final private Remote remote;
 
 	TCPProxy(Socket client, String remoteHost, int remotePort) {
+		System.err.println("New connection from "
+				+ client.getRemoteSocketAddress());
 		this.client = client;
 		this.remote = new Remote(remoteHost, remotePort);
 
@@ -94,6 +96,8 @@ public class TCPProxy {
 	 * Close the client and ignore any errors.
 	 */
 	private synchronized void forceCloseClient() {
+		System.err.println(
+				"Client " + client.getRemoteSocketAddress() + " left");
 		if (client == null) {
 			return;
 		}
@@ -156,11 +160,14 @@ final class Remote {
 	synchronized void connect() throws InterruptedException {
 		// Make sure these are closed
 		close();
+		System.err.println("Connecting to " + remoteHost + ":" + remotePort);
 		while (true) {
 			try {
 				remote = new Socket(remoteHost, remotePort);
 				remoteInput = remote.getInputStream();
 				remoteOutput = remote.getOutputStream();
+				System.err.println("Connected to "
+						+ remote.getRemoteSocketAddress());
 				return;
 			} catch (IOException e) {
 				Thread.sleep(RETRY_MS);
