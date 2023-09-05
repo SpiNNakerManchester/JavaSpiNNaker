@@ -134,6 +134,9 @@ final class Remote {
 	/** How long to wait between retries of the connection. */
 	private static final int RETRY_MS = 5000;
 
+	/** How long to wait between writes on a connection. */
+	private static final int WRITE_RETRY_MS = 1000;
+
 	private final String remoteHost;
 
 	private final int remotePort;
@@ -187,7 +190,7 @@ final class Remote {
 			throws InterruptedException {
 		while (true) {
 			while (remote == null) {
-				Thread.sleep(1000);
+				Thread.sleep(WRITE_RETRY_MS);
 			}
 			try {
 				var remoteOutput = remote.getOutputStream();
