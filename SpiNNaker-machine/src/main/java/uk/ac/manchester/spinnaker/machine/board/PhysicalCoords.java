@@ -139,8 +139,9 @@ public record PhysicalCoords(//
 
 		@Override
 		PhysicalCoords deserializeObject() throws IOException {
-			ValueHolder<Integer> c = new ValueHolder<>(),
-					f = new ValueHolder<>(), b = new ValueHolder<>();
+			var c = new ValueHolder<Integer>();
+			var f = new ValueHolder<Integer>();
+			var b = new ValueHolder<Integer>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {

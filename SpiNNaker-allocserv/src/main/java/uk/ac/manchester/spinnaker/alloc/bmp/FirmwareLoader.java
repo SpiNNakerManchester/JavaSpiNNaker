@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Instant.ofEpochSecond;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.buffer;
@@ -45,7 +46,6 @@ import java.io.InputStream;
 import java.io.Serial;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -401,8 +401,7 @@ public class FirmwareLoader {
 		log.info("BMP INFO:       {}",
 				format("%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]",
 						info.name, info.versionNumber, info.hardware,
-						info.physicalCPUID,
-						Instant.ofEpochSecond(info.buildDate),
+						info.physicalCPUID, ofEpochSecond(info.buildDate),
 						info.location.getCabinet(), info.location.getFrame(),
 						info.location.getBoard()));
 	}
@@ -477,10 +476,8 @@ public class FirmwareLoader {
 				length, crc));
 		log.info("FPGA BOOT:           File      {}",
 				new String(filenameBytes, 0, size, UTF_8).strip());
-		log.info("FPGA BOOT:           Written   {}",
-				Instant.ofEpochSecond(time));
-		log.info("FPGA BOOT:           ModTime   {}",
-				Instant.ofEpochSecond(mtime));
+		log.info("FPGA BOOT:           Written   {}", ofEpochSecond(time));
+		log.info("FPGA BOOT:           ModTime   {}", ofEpochSecond(mtime));
 	}
 
 	/**

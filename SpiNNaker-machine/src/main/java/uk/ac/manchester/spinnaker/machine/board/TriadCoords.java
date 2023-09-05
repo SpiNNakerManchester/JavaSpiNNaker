@@ -162,8 +162,9 @@ public record TriadCoords(//
 
 		@Override
 		TriadCoords deserializeObject() throws IOException {
-			ValueHolder<Integer> x = new ValueHolder<>(),
-					y = new ValueHolder<>(), z = new ValueHolder<>();
+			var x = new ValueHolder<Integer>();
+			var y = new ValueHolder<Integer>();
+			var z = new ValueHolder<Integer>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {

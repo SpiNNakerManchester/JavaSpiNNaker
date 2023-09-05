@@ -177,7 +177,7 @@ public abstract sealed class BMPRequest<T extends BMPRequest.BMPResponse>
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append(getClass().getSimpleName());
 		builder.append('(');
 		builder.append("command=");

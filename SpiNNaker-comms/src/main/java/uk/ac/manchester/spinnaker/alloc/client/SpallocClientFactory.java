@@ -35,11 +35,9 @@ import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
@@ -52,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -167,16 +166,7 @@ public class SpallocClientFactory {
 	 *             made into an instance of the given class.
 	 */
 	static <T> T readJson(InputStream is, Class<T> cls) throws IOException {
-		BufferedReader streamReader = new BufferedReader(
-				new InputStreamReader(is, "UTF-8"));
-		StringBuilder responseStrBuilder = new StringBuilder();
-
-		String inputStr;
-		while ((inputStr = streamReader.readLine()) != null) {
-			responseStrBuilder.append(inputStr);
-		}
-		String json = responseStrBuilder.toString();
-
+		var json = IOUtils.toString(is, UTF_8);
 		try {
 			return JSON_MAPPER.readValue(json, cls);
 		} catch (IOException e) {
@@ -328,7 +318,7 @@ public class SpallocClientFactory {
 		}
 
 		final Machine getMachine(String name) throws IOException {
-			Machine m = MACHINE_MAP.get(name);
+			var m = MACHINE_MAP.get(name);
 			if (m == null) {
 				client.listMachines();
 				m = MACHINE_MAP.get(name);

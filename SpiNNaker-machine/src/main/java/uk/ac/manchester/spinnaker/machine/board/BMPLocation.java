@@ -15,29 +15,27 @@
  */
 package uk.ac.manchester.spinnaker.machine.board;
 
-import static uk.ac.manchester.spinnaker.machine.board.Limits.MAX_FRAME;
-import static uk.ac.manchester.spinnaker.machine.board.Limits.MAX_CABINET;
+import com.google.errorprone.annotations.Immutable;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * Like a {@linkplain CoreLocation core location}, but for BMPs. Note that board
- * numbers are <em>not</em> restricted in range like core numbers.
+ * Like a {@linkplain CoreLocation core location}, but for BMPs.
  *
+ * @param cabinet
+ *            The cabinet number.
+ * @param frame
+ *            The frame number.
+ * @param board
+ *            The board number.
  * @author Donal Fellows
  */
+@Immutable
 @UsedInJavadocOnly(CoreLocation.class)
-public final class BMPLocation implements HasBMPLocation {
-	@ValidCabinetNumber
-	private final int cabinet;
-
-	@ValidFrameNumber
-	private final int frame;
-
-	@ValidBoardNumber
-	private final int board;
-
+public record BMPLocation(@ValidCabinetNumber int cabinet,
+		@ValidFrameNumber int frame, @ValidBoardNumber int board)
+		implements HasBMPLocation {
 	/**
 	 * Create an instance with cabinet and frame both zero.
 	 *
@@ -46,22 +44,6 @@ public final class BMPLocation implements HasBMPLocation {
 	 */
 	public BMPLocation(int board) {
 		this(0, 0, board);
-	}
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param cabinet
-	 *            The cabinet number.
-	 * @param frame
-	 *            The frame number.
-	 * @param board
-	 *            The board number.
-	 */
-	public BMPLocation(int cabinet, int frame, int board) {
-		this.cabinet = cabinet;
-		this.frame = frame;
-		this.board = board;
 	}
 
 	@Override
@@ -80,17 +62,7 @@ public final class BMPLocation implements HasBMPLocation {
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (other instanceof BMPLocation) {
-			var bmp = (BMPLocation) other;
-			return bmp.cabinet == cabinet && bmp.frame == frame
-					&& bmp.board == board;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return (((board * MAX_FRAME) + frame) * MAX_CABINET) + cabinet;
+	public BMPLocation asBMPLocation() {
+		return this;
 	}
 }

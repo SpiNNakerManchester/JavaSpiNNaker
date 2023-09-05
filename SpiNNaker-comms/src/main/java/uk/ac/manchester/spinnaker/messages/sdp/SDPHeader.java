@@ -80,8 +80,7 @@ public final class SDPHeader implements SerializableMessage {
 	 * @throws IllegalArgumentException
 	 *             if a bad SDP port is given
 	 */
-	public SDPHeader(Flag flags, SDPLocation destination,
-			int destinationPort) {
+	public SDPHeader(Flag flags, SDPLocation destination, int destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
 		if (destinationPort < 0 || destinationPort > MAX_PORT) {

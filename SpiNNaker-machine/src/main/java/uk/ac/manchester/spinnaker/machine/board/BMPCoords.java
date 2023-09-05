@@ -104,6 +104,17 @@ public record BMPCoords(@ValidCabinetNumber int cabinet,
 		return compare(frame, other.frame);
 	}
 
+	/**
+	 * Convert to a full C, F, B tuple.
+	 *
+	 * @param board
+	 *            The coordinate of the board.
+	 * @return The C, F, B tuple.
+	 */
+	public BMPLocation locate(BMPBoard board) {
+		return new BMPLocation(cabinet, frame, board.board());
+	}
+
 	/** JSON deserializer for {@link BMPCoords}. */
 	static final class Deserializer extends DeserializerHelper<BMPCoords> {
 		private static final long serialVersionUID = 1L;
@@ -122,8 +133,8 @@ public record BMPCoords(@ValidCabinetNumber int cabinet,
 
 		@Override
 		BMPCoords deserializeObject() throws IOException {
-			ValueHolder<Integer> c = new ValueHolder<>(),
-					f = new ValueHolder<>();
+			var c = new ValueHolder<Integer>();
+			var f = new ValueHolder<Integer>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {

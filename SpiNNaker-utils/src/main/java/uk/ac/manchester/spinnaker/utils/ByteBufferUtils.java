@@ -51,7 +51,7 @@ public abstract class ByteBufferUtils {
 	 *         array.
 	 */
 	public static ByteBuffer wordAsBuffer(int value) {
-		ByteBuffer b = alloc(WORD_SIZE);
+		var b = alloc(WORD_SIZE);
 		b.putInt(value).flip();
 		return b;
 	}

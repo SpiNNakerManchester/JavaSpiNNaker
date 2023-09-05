@@ -28,6 +28,17 @@ public record BMPBoard(@ValidBoardNumber int board) {
 	 */
 	public static final int MAX_BOARD_NUMBER = 23;
 
+	/**
+	 * Convert to a full C, F, B tuple.
+	 *
+	 * @param coords
+	 *            The coordinates of the frame.
+	 * @return The C, F, B tuple.
+	 */
+	public BMPLocation locate(BMPCoords coords) {
+		return new BMPLocation(coords.cabinet(), coords.frame(), board);
+	}
+
 	@Override
 	public String toString() {
 		return "board=" + board;

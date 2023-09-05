@@ -20,14 +20,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.function.BiConsumer;
 
 import javax.annotation.PostConstruct;
 
@@ -37,8 +35,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
-
-import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages waiting for values.
@@ -288,10 +284,8 @@ class EpochMap {
 	void changed(int id) {
 		var items = getSet(id);
 		if (nonNull(items)) {
-			synchronized (items) {
-				for (var item : items) {
-					item.updateChanged(id);
-				}
+			for (var item : items) {
+				item.updateChanged(id);
 			}
 		}
 	}
@@ -303,9 +297,6 @@ class EpochMap {
 	 *            The key into the map.
 	 * @return The removed set of epochs. Empty if the key is absent.
 	 */
-	@UsedInJavadocOnly({
-		BiConsumer.class, ConcurrentModificationException.class
-	})
 	private synchronized Set<Epochs.Epoch> getSet(Integer id) {
 		var weakmap = map.get(id);
 		if (weakmap == null) {
@@ -318,7 +309,7 @@ class EpochMap {
 
 	synchronized void addAll(Epochs.Epoch epoch, List<Integer> ids) {
 		for (var id : ids) {
-			map.computeIfAbsent(id, key -> new WeakHashMap<>()).put(epoch, OBJ);
+			map.computeIfAbsent(id, __ -> new WeakHashMap<>()).put(epoch, OBJ);
 		}
 	}
 
