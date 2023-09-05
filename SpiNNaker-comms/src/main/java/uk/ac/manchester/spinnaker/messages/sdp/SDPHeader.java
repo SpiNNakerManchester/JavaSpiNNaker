@@ -16,20 +16,15 @@
 package uk.ac.manchester.spinnaker.messages.sdp;
 
 import static java.lang.Byte.toUnsignedInt;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
 
 import javax.validation.Valid;
-import javax.validation.constraints.PositiveOrZero;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPLocation;
 
 /**
  * Represents the header of an SDP message.
@@ -48,12 +43,12 @@ public final class SDPHeader implements SerializableMessage {
 	private static final int PORT_MASK = (1 << PORT_BITS) - 1;
 
 	@Valid
-	private HasCoreLocation destination;
+	private SDPLocation destination;
 
 	private int destinationPort;
 
 	@Valid
-	private HasCoreLocation source;
+	private SDPLocation source;
 
 	private int sourcePort;
 
@@ -85,7 +80,7 @@ public final class SDPHeader implements SerializableMessage {
 	 * @throws IllegalArgumentException
 	 *             if a bad SDP port is given
 	 */
-	public SDPHeader(Flag flags, HasCoreLocation destination,
+	public SDPHeader(Flag flags, SDPLocation destination,
 			int destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
@@ -109,7 +104,7 @@ public final class SDPHeader implements SerializableMessage {
 	 *            this is <b>not</b> a UDP port! Those are associated with a
 	 *            connection, not a message.
 	 */
-	public SDPHeader(Flag flags, HasCoreLocation destination,
+	public SDPHeader(Flag flags, SDPLocation destination,
 			SDPPort destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
@@ -121,10 +116,8 @@ public final class SDPHeader implements SerializableMessage {
 	 *
 	 * @param buffer
 	 *            The buffer to read from.
-	 * @param isBMP
-	 *            Whether we're really talking to a BMP.
 	 */
-	public SDPHeader(ByteBuffer buffer, boolean isBMP) {
+	public SDPHeader(ByteBuffer buffer) {
 		// Caller MUST have stripped the leading padding
 		assert buffer.position() == 2 : "leading padding must be skipped";
 		flags = Flag.get(buffer.get());
@@ -137,49 +130,8 @@ public final class SDPHeader implements SerializableMessage {
 		int scx = toUnsignedInt(buffer.get());
 		destinationPort = (dpc >> CPU_ADDR_BITS) & PORT_MASK;
 		sourcePort = (spc >> CPU_ADDR_BITS) & PORT_MASK;
-		if (isBMP) {
-			destination = new BMPLocation(dcx, dcy, dpc & CPU_MASK);
-			source = new BMPLocation(scx, scy, spc & CPU_MASK);
-		} else {
-			destination = allocCoreLocation(dcx, dcy, dpc & CPU_MASK);
-			source = allocCoreLocation(scx, scy, spc & CPU_MASK);
-		}
-	}
-
-	private HasCoreLocation allocCoreLocation(int x, int y, int p) {
-		if (p >= 0 && p < MAX_NUM_CORES) {
-			return new CoreLocation(x, y, p);
-		}
-		validateChipLocation(x, y);
-		return new HasCoreLocation() {
-			@Override
-			public int getX() {
-				return x;
-			}
-
-			@Override
-			public int getY() {
-				return y;
-			}
-
-			@Override
-			@PositiveOrZero
-			public int getP() {
-				return p;
-			}
-
-			@Override
-			public int hashCode() {
-				throw new UnsupportedOperationException(
-						"this object may not be used as a key");
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				return (other instanceof HasCoreLocation c) && (x == c.getX())
-						&& (y == c.getY()) && (p == c.getP());
-			}
-		};
+		destination = new SDPLocation(dcx, dcy, dpc & CPU_MASK);
+		source = new SDPLocation(scx, scy, spc & CPU_MASK);
 	}
 
 	@Override
@@ -193,10 +145,10 @@ public final class SDPHeader implements SerializableMessage {
 		buffer.put((byte) tag);
 		buffer.put((byte) dpc);
 		buffer.put((byte) spc);
-		buffer.put((byte) destination.getY());
-		buffer.put((byte) destination.getX());
-		buffer.put((byte) source.getY());
-		buffer.put((byte) source.getX());
+		buffer.put((byte) destination.minor);
+		buffer.put((byte) destination.major);
+		buffer.put((byte) source.minor);
+		buffer.put((byte) source.major);
 	}
 
 	/**
@@ -204,7 +156,7 @@ public final class SDPHeader implements SerializableMessage {
 	 *         address for addresses off the machine; that address is not
 	 *         normally representable in a {@link CoreLocation}.
 	 */
-	public HasCoreLocation getDestination() {
+	public SDPLocation getDestination() {
 		return destination;
 	}
 
@@ -214,7 +166,7 @@ public final class SDPHeader implements SerializableMessage {
 	 *            special address for addresses off the machine; that address
 	 *            is not normally representable in a {@link CoreLocation}.
 	 */
-	public void setDestination(HasCoreLocation destination) {
+	public void setDestination(SDPLocation destination) {
 		this.destination = destination;
 	}
 
@@ -249,7 +201,7 @@ public final class SDPHeader implements SerializableMessage {
 	}
 
 	/** @return What "chip" originated the message. */
-	public HasCoreLocation getSource() {
+	public SDPLocation getSource() {
 		return source;
 	}
 
@@ -259,7 +211,7 @@ public final class SDPHeader implements SerializableMessage {
 	 *            special address for origination off the machine; that address
 	 *            is not normally representable in a {@link CoreLocation}.
 	 */
-	public void setSource(HasCoreLocation source) {
+	public void setSource(SDPLocation source) {
 		this.source = source;
 	}
 

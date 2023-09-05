@@ -38,7 +38,7 @@ limitations under the License.
 		<javadoc.version>3.5.0</javadoc.version>
 		<testing.version>3.1.2</testing.version>
 
-		<slf4j.version>2.0.7</slf4j.version>
+		<slf4j.version>2.0.9</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
 
 		<spring.version>5.3.29</spring.version>
@@ -410,7 +410,7 @@ limitations under the License.
             <dependency>
                 <groupId>org.eclipse.jgit</groupId>
                 <artifactId>org.eclipse.jgit</artifactId>
-                <version>6.6.0.202305301015-r</version>
+                <version>6.6.1.202309021850-r</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.httpcomponents</groupId>

@@ -20,16 +20,11 @@ import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.Instant.ofEpochSecond;
-import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.ofInstant;
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPLocation;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 /**
  * Decodes SC&amp;MP/SARK version information as returned by the SVER command.
@@ -58,7 +53,7 @@ public final class VersionInfo {
 	public final String versionString;
 
 	/** The location of the core where the information was obtained. */
-	public final HasCoreLocation core;
+	public final SDPLocation location;
 
 	private static final Pattern VERSION_RE = Pattern
 			.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<revision>\\d+)");
@@ -101,11 +96,7 @@ public final class VersionInfo {
 		physicalCPUID = toUnsignedInt(buffer.get());
 		int y = toUnsignedInt(buffer.get());
 		int x = toUnsignedInt(buffer.get());
-		if (isBMP) {
-			core = new BMPLocation(x, y, p);
-		} else {
-			core = new CoreLocation(x, y, p);
-		}
+		location = new SDPLocation(x, y, p);
 		buffer.getShort(); // Ignore 2 bytes
 		int vn = toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
@@ -145,9 +136,8 @@ public final class VersionInfo {
 
 	@Override
 	public String toString() {
-		return format("VersionInfo(%s (phys:%d), version: %s, %s/%s, %s)", //
-				core, physicalCPUID, versionNumber, name, hardware,
-				ofInstant(ofEpochSecond(buildDate, 0), UTC)
-						.format(ISO_INSTANT));
+		return format("VersionInfo(%s (phys:%d), version: %s, %s/%s, %s)",
+				location, physicalCPUID, versionNumber, name, hardware,
+				ofEpochSecond(buildDate));
 	}
 }

@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 class TestVersionInfo {
 	private ByteBuffer packVersionData(int arg1, int arg2, int arg3,
@@ -53,7 +53,7 @@ class TestVersionInfo {
 		assertEquals("my", vi.name);
 		assertEquals(new Version(2, 55, 0), vi.versionNumber);
 		assertEquals("spinnaker", vi.hardware);
-		assertEquals(new CoreLocation(0xf0, 0xa1, 0x0b), vi.core);
+		assertEquals(new SDPLocation(0xf0, 0xa1, 0x0b), vi.location);
 		assertEquals(buildDate, vi.buildDate);
 		assertEquals("my/spinnaker", vi.versionString);
 	}

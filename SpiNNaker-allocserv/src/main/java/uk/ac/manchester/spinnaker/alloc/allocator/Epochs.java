@@ -15,18 +15,19 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static java.util.Collections.newSetFromMap;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.BiConsumer;
 
 import javax.annotation.PostConstruct;
 
@@ -34,6 +35,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages waiting for values.
@@ -80,9 +85,17 @@ public class Epochs {
 	 * reference map unless removed. This tasklet handles that cleanup.
 	 */
 	private void checkEmpties() {
-		jobs.checkEmptyValues();
-		machines.checkEmptyValues();
-		blacklists.checkEmptyValues();
+		if (jobs.checkEmptyValues()) {
+			log.debug("Job map now contains jobs {}", jobs.getIds());
+		}
+		if (machines.checkEmptyValues()) {
+			log.debug("Machine map now contains machines {}",
+					machines.getIds());
+		}
+		if (blacklists.checkEmptyValues()) {
+			log.debug("Blacklist map now contains boards {}",
+					blacklists.getIds());
+		}
 	}
 
 	/**
@@ -205,6 +218,7 @@ public class Epochs {
 		}
 
 		synchronized void updateChanged(int id) {
+			log.debug("Change to {}, id {}", this, id);
 			changed.add(id);
 			notifyAll();
 		}
@@ -235,7 +249,9 @@ public class Epochs {
 		public Collection<Integer> getChanged(Duration timeout)
 				throws InterruptedException {
 			synchronized (this) {
+				log.debug("Waiting for change to {}", this);
 				wait(timeout.toMillis());
+				log.debug("After wait, changed: {}", changed);
 				return Set.copyOf(changed);
 			}
 		}
@@ -258,37 +274,60 @@ public class Epochs {
  * @author Donal Fellows
  */
 class EpochMap {
-	/*
-	 * This is a wrapper around the map to provide exactly the ops we want
-	 * (including correct synchronization), and just them.
-	 */
-	private final Map<Integer, Set<Epochs.Epoch>> map = new HashMap<>();
+	/** The value in {@link #map} leaves. Shared. Unimportant. */
+	private static final Object OBJ = new Object();
 
-	synchronized void checkEmptyValues() {
-		map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+	/** A map from integers to weak sets of epochs. */
+	@GuardedBy("this")
+	private final Map<Integer, Map<Epochs.Epoch, Object>> map = new HashMap<>();
+
+	synchronized boolean checkEmptyValues() {
+		return map.entrySet().removeIf(entry -> entry.getValue().isEmpty());
 	}
 
 	void changed(int id) {
-		var items = removeSet(id);
+		var items = getSet(id);
 		if (nonNull(items)) {
-			for (var item : items) {
-				item.updateChanged(id);
+			synchronized (items) {
+				for (var item : items) {
+					item.updateChanged(id);
+				}
 			}
 		}
 	}
 
-	private synchronized Set<Epochs.Epoch> removeSet(int id) {
-		return map.remove(id);
+	/**
+	 * Take the set of epochs for a particular ID.
+	 *
+	 * @param id
+	 *            The key into the map.
+	 * @return The removed set of epochs. Empty if the key is absent.
+	 */
+	@UsedInJavadocOnly({
+		BiConsumer.class, ConcurrentModificationException.class
+	})
+	private synchronized Set<Epochs.Epoch> getSet(Integer id) {
+		var weakmap = map.get(id);
+		if (weakmap == null) {
+			return null;
+		}
+		// Copy the set here while still synchronized to avoid
+		// ConcurrentModificationException when updated elsewhere.
+		return Set.copyOf(weakmap.keySet());
 	}
 
 	synchronized void addAll(Epochs.Epoch epoch, List<Integer> ids) {
 		for (var id : ids) {
-			map.computeIfAbsent(id, key -> newSetFromMap(new WeakHashMap<>()))
-					.add(epoch);
+			map.computeIfAbsent(id, key -> new WeakHashMap<>()).put(epoch, OBJ);
 		}
 	}
 
+	@SuppressWarnings("GuardedBy")
 	synchronized boolean containsAnyKey(Collection<Integer> ids) {
 		return ids.stream().allMatch(map::containsKey);
+	}
+
+	synchronized Collection<Integer> getIds() {
+		return map.keySet();
 	}
 }

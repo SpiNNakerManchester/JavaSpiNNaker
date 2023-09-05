@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.Serial;
 
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 /**
  * Encapsulates exceptions from processes which communicate with some core/chip.
@@ -38,7 +38,7 @@ public class ProcessException extends SpinnmanException {
 					+ "with message: %s";
 
 	/** Where does the code believe this exception originated? */
-	public final HasCoreLocation core;
+	public final SDPLocation source;
 
 	/**
 	 * The response that cause this exception to be thrown, if known. Never
@@ -47,23 +47,23 @@ public class ProcessException extends SpinnmanException {
 	 */
 	public final SCPResult responseCode;
 
-	private ProcessException(HasCoreLocation core, Throwable cause,
+	private ProcessException(SDPLocation source, Throwable cause,
 			SCPResult responseCode) {
-		super(format(MSG_TEMPLATE, core.getX(), core.getY(), core.getP(),
+		super(format(MSG_TEMPLATE, source.getX(), source.getY(), source.getP(),
 				cause.getClass().getName(), cause.getMessage()), cause);
-		this.core = core.asCoreLocation();
+		this.source = source;
 		this.responseCode = responseCode;
 	}
 
-	private ProcessException(HasCoreLocation core,
+	private ProcessException(SDPLocation source,
 			UnexpectedResponseCodeException cause) {
-		this(core, cause, cause.response);
+		this(source, cause, cause.response);
 	}
 
 	/**
 	 * Create an exception.
 	 *
-	 * @param core
+	 * @param source
 	 *            What core were we talking to.
 	 * @param cause
 	 *            What exception caused problems.
@@ -71,43 +71,43 @@ public class ProcessException extends SpinnmanException {
 	 * @throws InterruptedException
 	 *             If the cause was an interrupt, it is immediately rethrown.
 	 */
-	static ProcessException makeInstance(HasCoreLocation core,
+	static ProcessException makeInstance(SDPLocation source,
 			Throwable cause) throws InterruptedException {
 		if (cause instanceof UnexpectedResponseCodeException urc) {
 			if (urc.response == null) {
-				return new ProcessException(core, cause, null);
+				return new ProcessException(source, cause, null);
 			}
 			switch (urc.response) {
 			case RC_LEN:
-				return new BadPacketLength(core, urc);
+				return new BadPacketLength(source, urc);
 			case RC_SUM:
-				return new BadChecksum(core, urc);
+				return new BadChecksum(source, urc);
 			case RC_CMD:
-				return new BadCommand(core, urc);
+				return new BadCommand(source, urc);
 			case RC_ARG:
-				return new InvalidArguments(core, urc);
+				return new InvalidArguments(source, urc);
 			case RC_PORT:
-				return new BadSCPPort(core, urc);
+				return new BadSCPPort(source, urc);
 			case RC_TIMEOUT:
-				return new TimedOut(core, urc);
+				return new TimedOut(source, urc);
 			case RC_ROUTE:
-				return new NoP2PRoute(core, urc);
+				return new NoP2PRoute(source, urc);
 			case RC_CPU:
-				return new BadCPUNumber(core, urc);
+				return new BadCPUNumber(source, urc);
 			case RC_DEAD:
-				return new DeadDestination(core, urc);
+				return new DeadDestination(source, urc);
 			case RC_BUF:
-				return new NoBufferAvailable(core, urc);
+				return new NoBufferAvailable(source, urc);
 			case RC_P2P_NOREPLY:
-				return new P2PNoReply(core, urc);
+				return new P2PNoReply(source, urc);
 			case RC_P2P_REJECT:
-				return new P2PReject(core, urc);
+				return new P2PReject(source, urc);
 			case RC_P2P_BUSY:
-				return new P2PBusy(core, urc);
+				return new P2PBusy(source, urc);
 			case RC_P2P_TIMEOUT:
-				return new P2PTimedOut(core, urc);
+				return new P2PTimedOut(source, urc);
 			case RC_PKT_TX:
-				return new PacketTransmissionFailed(core, urc);
+				return new PacketTransmissionFailed(source, urc);
 			default:
 				// Fall through
 			}
@@ -115,7 +115,7 @@ public class ProcessException extends SpinnmanException {
 		if (cause instanceof InterruptedException interrupt) {
 			throw interrupt;
 		}
-		return new ProcessException(core, requireNonNull(cause), null);
+		return new ProcessException(source, requireNonNull(cause), null);
 	}
 
 	/**
@@ -126,9 +126,9 @@ public class ProcessException extends SpinnmanException {
 			extends ProcessException {
 		private static final long serialVersionUID = 1L;
 
-		private CallerProcessException(HasCoreLocation core,
+		private CallerProcessException(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -140,9 +140,9 @@ public class ProcessException extends SpinnmanException {
 			extends ProcessException {
 		private static final long serialVersionUID = 1L;
 
-		private TransientProcessException(HasCoreLocation core,
+		private TransientProcessException(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -156,9 +156,9 @@ public class ProcessException extends SpinnmanException {
 			extends ProcessException {
 		private static final long serialVersionUID = 1L;
 
-		private PermanentProcessException(HasCoreLocation core,
+		private PermanentProcessException(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -170,9 +170,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 4329836896716525422L;
 
-		private BadPacketLength(HasCoreLocation core,
+		private BadPacketLength(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -184,9 +184,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = -5660270018252119601L;
 
-		private BadChecksum(HasCoreLocation core,
+		private BadChecksum(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -199,9 +199,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 2446636059917726286L;
 
-		private BadCommand(HasCoreLocation core,
+		private BadCommand(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -213,9 +213,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 3907517289211998444L;
 
-		private InvalidArguments(HasCoreLocation core,
+		private InvalidArguments(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -227,9 +227,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = -5171910962257032626L;
 
-		private BadSCPPort(HasCoreLocation core,
+		private BadSCPPort(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -242,9 +242,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = -298985937364034661L;
 
-		private TimedOut(HasCoreLocation core,
+		private TimedOut(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -257,9 +257,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = -6132417061161625508L;
 
-		private NoP2PRoute(HasCoreLocation core,
+		private NoP2PRoute(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -271,9 +271,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 6532417803149087690L;
 
-		private BadCPUNumber(HasCoreLocation core,
+		private BadCPUNumber(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -287,9 +287,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = -3842030808096451015L;
 
-		private DeadDestination(HasCoreLocation core,
+		private DeadDestination(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -302,9 +302,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 3647501054775981197L;
 
-		private NoBufferAvailable(HasCoreLocation core,
+		private NoBufferAvailable(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -317,9 +317,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 2196366740196153289L;
 
-		private P2PNoReply(HasCoreLocation core,
+		private P2PNoReply(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -332,9 +332,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = -2903670314989693747L;
 
-		private P2PReject(HasCoreLocation core,
+		private P2PReject(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -347,9 +347,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 4445680981367158468L;
 
-		private P2PBusy(HasCoreLocation core,
+		private P2PBusy(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -362,9 +362,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = -7686611958418374003L;
 
-		private P2PTimedOut(HasCoreLocation core,
+		private P2PTimedOut(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 
@@ -377,9 +377,9 @@ public class ProcessException extends SpinnmanException {
 		@Serial
 		private static final long serialVersionUID = 5119831821960433468L;
 
-		private PacketTransmissionFailed(HasCoreLocation core,
+		private PacketTransmissionFailed(SDPLocation source,
 				UnexpectedResponseCodeException cause) {
-			super(core, cause);
+			super(source, cause);
 		}
 	}
 }

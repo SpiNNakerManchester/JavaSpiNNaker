@@ -35,7 +35,7 @@ import static org.apache.commons.io.FileUtils.forceMkdir;
 import static org.apache.commons.io.FileUtils.forceMkdirParent;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
+import static uk.ac.manchester.spinnaker.utils.ThreadUtils.waitfor;
 
 import java.io.File;
 import java.io.IOException;

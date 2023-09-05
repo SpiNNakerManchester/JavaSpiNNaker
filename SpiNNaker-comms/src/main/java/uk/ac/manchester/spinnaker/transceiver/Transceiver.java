@@ -886,7 +886,7 @@ public class Transceiver extends UDPTransceiver
 		// Get the details of all the chips
 		machine = new GetMachineProcess(scpSelector, ignoreChips, ignoreCores,
 				ignoreLinks, maxSDRAMSize, this)
-						.getMachineDetails(versionInfo.core, dimensions);
+						.getMachineDetails(versionInfo.location, dimensions);
 
 		/*
 		 * Ask the machine to check itself and if required to rebuild itself
@@ -1277,7 +1277,7 @@ public class Transceiver extends UDPTransceiver
 		while (versionInfo == null && triesLeft > 0) {
 			try {
 				versionInfo = getScampVersion();
-				if (versionInfo.core.asChipLocation().equals(BOOT_CHIP)) {
+				if (versionInfo.location.asChipLocation().equals(BOOT_CHIP)) {
 					versionInfo = null;
 					sleep(CONNECTION_CHECK_DELAY);
 				}
@@ -1305,7 +1305,7 @@ public class Transceiver extends UDPTransceiver
 		// The last thing we tried was booting, so try again to get the version
 		if (versionInfo == null) {
 			versionInfo = getScampVersion();
-			if (versionInfo.core.asChipLocation().equals(BOOT_CHIP)) {
+			if (versionInfo.location.asChipLocation().equals(BOOT_CHIP)) {
 				versionInfo = null;
 			}
 		}

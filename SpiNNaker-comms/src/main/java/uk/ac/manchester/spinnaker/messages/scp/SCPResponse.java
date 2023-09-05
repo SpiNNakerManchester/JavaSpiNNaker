@@ -46,7 +46,7 @@ public abstract class SCPResponse {
 		assert buffer.order() == LITTLE_ENDIAN : "buffer.order="
 				+ buffer.order();
 		buffer.getShort(); // SKIP TWO PADDING BYTES
-		sdpHeader = new SDPHeader(buffer, false);
+		sdpHeader = new SDPHeader(buffer);
 		result = SCPResult.get(buffer.getShort());
 		sequence = Short.toUnsignedInt(buffer.getShort());
 	}

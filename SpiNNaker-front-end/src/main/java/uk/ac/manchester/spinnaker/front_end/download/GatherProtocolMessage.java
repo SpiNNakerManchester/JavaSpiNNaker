@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 
@@ -45,8 +46,8 @@ public abstract sealed class GatherProtocolMessage extends SDPMessage
 	 */
 	protected GatherProtocolMessage(HasCoreLocation destination,
 			SDPPort destPort, ByteBuffer payload) {
-		super(new SDPHeader(REPLY_NOT_EXPECTED, destination, destPort),
-				payload);
+		super(new SDPHeader(REPLY_NOT_EXPECTED, new SDPLocation(destination),
+				destPort), payload);
 	}
 
 	/** The various IDs of messages used in the fast download protocol. */

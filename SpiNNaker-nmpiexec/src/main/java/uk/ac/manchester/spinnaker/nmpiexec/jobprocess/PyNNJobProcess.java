@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.ac.manchester.spinnaker.nmpi.model.job.Status;
 import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
 import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
-import uk.ac.manchester.spinnaker.nmpiexec.utils.ThreadUtils;
+import uk.ac.manchester.spinnaker.utils.ThreadUtils;
 
 /**
  * A process for running PyNN jobs.

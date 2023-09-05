@@ -25,8 +25,8 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.sleep;
-import static uk.ac.manchester.spinnaker.nmpi.ThreadUtils.waitfor;
+import static uk.ac.manchester.spinnaker.utils.ThreadUtils.sleep;
+import static uk.ac.manchester.spinnaker.utils.ThreadUtils.waitfor;
 import static uk.ac.manchester.spinnaker.nmpi.machinemanager.responses.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.nmpi.machinemanager.responses.JobState.READY;
 

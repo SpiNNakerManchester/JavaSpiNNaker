@@ -105,7 +105,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	@Override
 	public SDPMessage receiveMessage(int timeout)
 			throws IOException, InterruptedException {
-		return new SDPMessage(receive(timeout), true);
+		return new SDPMessage(receive(timeout));
 	}
 
 	/**

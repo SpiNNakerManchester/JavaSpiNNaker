@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResponse;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -48,7 +49,7 @@ public abstract sealed class BMPRequest<T extends BMPRequest.BMPResponse>
 		SetBoardLEDs, SetPower, UpdateFlash, WriteBMPMemory, WriteFlashBuffer,
 		WriteFPGAData, WriteFPGARegister, WriteSerialFlash {
 	private static SDPHeader header(int board) {
-		return new SDPHeader(REPLY_EXPECTED, new BMPLocation(board),
+		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(0, 0, board),
 				DEFAULT_PORT);
 	}
 

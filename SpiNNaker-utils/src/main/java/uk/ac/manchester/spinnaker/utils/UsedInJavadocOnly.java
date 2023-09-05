@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.utils;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PACKAGE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
@@ -32,7 +33,7 @@ import java.lang.annotation.Target;
  * @author Donal Fellows
  */
 @Retention(SOURCE)
-@Target({ TYPE, METHOD, CONSTRUCTOR, FIELD })
+@Target({ TYPE, METHOD, CONSTRUCTOR, FIELD, PACKAGE })
 public @interface UsedInJavadocOnly {
 	/**
 	 * Class or classes just used by the annotated thing in Javadoc generation.
