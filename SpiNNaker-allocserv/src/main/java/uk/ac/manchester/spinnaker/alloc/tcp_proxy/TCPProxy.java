@@ -29,7 +29,7 @@ public class TCPProxy {
 
 	private Socket client;
 
-	final private Remote remote;
+	private final Remote remote;
 
 	TCPProxy(Socket client, String remoteHost, int remotePort) {
 		System.err.println("New connection from "
@@ -134,9 +134,9 @@ final class Remote {
 	/** How long to wait between retries of the connection. */
 	private static final int RETRY_MS = 5000;
 
-	final private String remoteHost;
+	private final String remoteHost;
 
-	final private int remotePort;
+	private final int remotePort;
 
 	private Socket remote = null;
 
