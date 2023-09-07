@@ -467,7 +467,7 @@ public interface AdminController {
 	 */
 	@Async
 	@GetMapping(value = TEMPERATURE_PATH)
-	CompletableFuture<ModelAndView> getTemperatures(
+	ModelAndView getTemperatures(
 			@Valid @ModelAttribute("board_id") int boardId, ModelMap model);
 
 	/**

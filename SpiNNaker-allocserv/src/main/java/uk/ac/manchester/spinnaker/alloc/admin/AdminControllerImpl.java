@@ -93,6 +93,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import javax.ws.rs.WebApplicationException;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -760,15 +762,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Async
 	@Action("getting board temperature data from the machine")
-	public CompletableFuture<ModelAndView> getTemperatures(
+	public ModelAndView getTemperatures(
 			int boardId, ModelMap model) {
 		try {
 			var temps = machineController.readTemperatureFromMachine(boardId)
 					.orElse(null);
 			addTemperatureData(model, temps);
-			return completedFuture(addStandardContext(TEMP_VIEW.view(model)));
+			return addStandardContext(TEMP_VIEW.view(model));
 		} catch (InterruptedException e) {
-			return failedFuture(e);
+			throw new WebApplicationException(e);
 		}
 	}
 
