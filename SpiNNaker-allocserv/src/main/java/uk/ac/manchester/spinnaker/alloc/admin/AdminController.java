@@ -468,7 +468,7 @@ public interface AdminController {
 	@Async
 	@GetMapping(value = TEMPERATURE_PATH)
 	ModelAndView getTemperatures(
-			@Valid @ModelAttribute("board_id") int boardId, ModelMap model);
+			@Valid @ModelAttribute("board_id") String boardId, ModelMap model);
 
 	/**
 	 * Provide the form for uploading a machine definition.

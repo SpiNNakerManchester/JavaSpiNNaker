@@ -710,7 +710,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
 		addUrl(model, TEMP_URI,
-				uri(admin().getTemperatures(board.getId(), model)));
+				uri(admin().getTemperatures(String.valueOf(board.getId()), model)));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -763,9 +763,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Async
 	@Action("getting board temperature data from the machine")
 	public ModelAndView getTemperatures(
-			int boardId, ModelMap model) {
+			String boardId, ModelMap model) {
 		try {
-			var temps = machineController.readTemperatureFromMachine(boardId)
+			int boardIdInt = Integer.valueOf(boardId);
+			var temps = machineController.readTemperatureFromMachine(boardIdInt)
 					.orElse(null);
 			addTemperatureData(model, temps);
 			return addStandardContext(TEMP_VIEW.view(model));

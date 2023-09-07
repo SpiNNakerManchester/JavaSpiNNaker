@@ -64,7 +64,7 @@ public class BoardRecord {
 	@ValidBoardNumber
 	private Integer board;
 
-	@IPAddress(nullOK = true)
+	@IPAddress(nullOK = true, emptyOK = true)
 	private String ipAddress;
 
 	private Boolean enabled;
