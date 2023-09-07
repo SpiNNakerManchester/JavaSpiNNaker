@@ -466,7 +466,6 @@ public interface AdminController {
 	 *            Overall model
 	 * @return the model and view in a future
 	 */
-	@Async
 	@GetMapping(value = TEMPERATURE_PATH)
 	ModelAndView getTemperatures(
 			@Valid @RequestAttribute("board_id") int boardId,
