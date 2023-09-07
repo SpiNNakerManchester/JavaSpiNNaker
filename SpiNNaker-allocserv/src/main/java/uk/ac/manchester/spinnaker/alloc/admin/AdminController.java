@@ -462,9 +462,7 @@ public interface AdminController {
 	 * Get the temperature data for a board.
 	 *
 	 * @param boardId
-	 *            What board to get the data for.
-	 * @param model
-	 *            Overall model
+	 *            Which board to get the data for.
 	 * @return the model and view in a future
 	 */
 	@GetMapping(value = TEMPERATURE_PATH)
