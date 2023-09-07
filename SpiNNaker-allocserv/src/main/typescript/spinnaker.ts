@@ -904,8 +904,8 @@ function loadTemperature(sourceUri: string, boardId: number, elementId: string) 
 	r.open("GET", sourceUri + "?board_id=" + boardId);
 	r.onload = () => {
 		const result = JSON.parse(r.response) as object;
-		if (result?.hasOwnProperty("result.board_temperature")) {
-			const t = result["board_temperature"] as number;
+		if (result?.hasOwnProperty("result.boardTemperature")) {
+			const t = result["boardTemperature"] as number;
 			element.innerHTML = t + "&deg;C";
 		}
 	};
