@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -50,6 +51,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
@@ -467,9 +469,9 @@ public interface AdminController {
 	 * @return the model and view in a future
 	 */
 	@GetMapping(value = TEMPERATURE_PATH)
-	ModelAndView getTemperatures(
-			@Valid @RequestAttribute("board_id") int boardId,
-			ModelMap model);
+	@ResponseBody
+	ADCInfo getTemperatures(
+			@Valid @RequestAttribute("board_id") int boardId);
 
 	/**
 	 * Provide the form for uploading a machine definition.

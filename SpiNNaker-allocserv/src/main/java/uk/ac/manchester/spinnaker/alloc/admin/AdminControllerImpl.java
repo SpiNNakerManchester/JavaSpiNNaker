@@ -125,6 +125,7 @@ import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
@@ -708,8 +709,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		inflateBoardRecord(board, bs);
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
-		addUrl(model, TEMP_URI,
-				uri(admin().getTemperatures(board.getId(), model)));
+		addUrl(model, TEMP_URI,	uri(admin().getTemperatures(board.getId())));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -759,15 +759,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	@Async
 	@Action("getting board temperature data from the machine")
-	public ModelAndView getTemperatures(
-			int boardId, ModelMap model) {
+	public ADCInfo getTemperatures(int boardId) {
 		try {
-			var temps = machineController.readTemperatureFromMachine(boardId)
+			return machineController.readTemperatureFromMachine(boardId)
 					.orElse(null);
-			addTemperatureData(model, temps);
-			return addStandardContext(TEMP_VIEW.view(model));
 		} catch (InterruptedException e) {
 			throw new WebApplicationException(e);
 		}
