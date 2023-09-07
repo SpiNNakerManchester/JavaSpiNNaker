@@ -47,11 +47,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.BoardTemperatures;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
-import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
@@ -470,7 +470,7 @@ public interface AdminController {
 	 */
 	@GetMapping(value = TEMPERATURE_PATH)
 	@ResponseBody
-	ADCInfo getTemperatures(
+	BoardTemperatures getTemperatures(
 			@Valid @RequestAttribute("board_id") int boardId);
 
 	/**

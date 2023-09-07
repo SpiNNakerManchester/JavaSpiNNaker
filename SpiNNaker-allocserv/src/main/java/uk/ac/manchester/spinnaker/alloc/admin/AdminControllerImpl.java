@@ -43,7 +43,6 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACH
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACHINE_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MAIN_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TEMP_URI;
-import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TEMP_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TRUST_LEVELS;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USERS_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USER_DETAILS_VIEW;
@@ -61,7 +60,6 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addM
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addNotice;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addOrganisationList;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addRemoteUserList;
-import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addTemperatureData;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUrl;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUser;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUserList;
@@ -93,6 +91,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +116,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.BoardTemperatures;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
@@ -125,7 +125,6 @@ import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
-import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
@@ -760,10 +759,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("getting board temperature data from the machine")
-	public ADCInfo getTemperatures(int boardId) {
+	public BoardTemperatures getTemperatures(int boardId) {
 		try {
-			return machineController.readTemperatureFromMachine(boardId)
-					.orElse(null);
+			return new BoardTemperatures(
+					machineController.readTemperatureFromMachine(boardId)
+						.orElseThrow(() -> new WebApplicationException(
+								Status.NOT_FOUND)));
 		} catch (InterruptedException e) {
 			throw new WebApplicationException(e);
 		}
