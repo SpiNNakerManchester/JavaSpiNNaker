@@ -2050,6 +2050,7 @@ public abstract class SQLQueries {
 	 * @see BMPController
 	 */
 	@Parameter("machine_id")
+	@ResultColumn("machine_id")
 	@ResultColumn("op_id")
 	@ResultColumn("board_id")
 	@ResultColumn("bmp_serial_id")
@@ -2057,8 +2058,8 @@ public abstract class SQLQueries {
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
 	protected static final String GET_TEMP_INFO_REQS =
-			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
-					+ "cabinet, frame FROM blacklist_ops "
+			"SELECT machine_id, op_id, board_id, board_serial.bmp_serial_id, "
+					+ "board_num, cabinet, frame FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 3 AND NOT completed "
