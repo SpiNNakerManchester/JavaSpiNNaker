@@ -2058,7 +2058,7 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("machine_id")
 	protected static final String GET_TEMP_INFO_REQS =
-			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num "
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
 					+ "cabinet, frame, boards.machine_id FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "LEFT JOIN board_serial USING (board_id) "
