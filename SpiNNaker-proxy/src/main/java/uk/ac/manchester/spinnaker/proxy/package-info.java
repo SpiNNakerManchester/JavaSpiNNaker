@@ -17,4 +17,4 @@
  * A simple persistent proxy server, that allows the service to be restarted
  * without losing client connections.
  */
-package uk.ac.manchester.spinnaker.alloc.tcp_proxy;
+package uk.ac.manchester.spinnaker.proxy;

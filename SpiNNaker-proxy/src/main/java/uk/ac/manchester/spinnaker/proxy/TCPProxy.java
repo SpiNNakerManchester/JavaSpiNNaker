@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.alloc.tcp_proxy;
+package uk.ac.manchester.spinnaker.proxy;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -112,6 +112,13 @@ public class TCPProxy {
 		client = null;
 	}
 
+	/**
+	 * The main method.
+	 * @param args args[0]: The local port to listen on
+	 *             args[1]: The remote host to proxy
+	 *             args[2]: The remote port to proxy
+	 * @throws IOException If we can't start the server.
+	 */
 	public static void main(String[] args) throws IOException {
 		int localPort = Integer.parseInt(args[0]);
 		String remoteHost = args[1];
