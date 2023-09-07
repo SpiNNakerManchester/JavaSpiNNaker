@@ -276,28 +276,28 @@ function drawLayout(
 function inside(
 		x: number, y: number,
 		tloc: Map<string,[BoardTriad,HexCoords]>) : BoardTriad | undefined {
-    // ray-casting algorithm based on
-    // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+	// ray-casting algorithm based on
+	// https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
 
 	for (const item of tloc) {
 		const [triad, poly] = item[1];
-	    var inside = false;
-	    for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-	        const [xi, yi] = poly[i];
-	        const [xj, yj] = poly[j];
+		var inside = false;
+		for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+			const [xi, yi] = poly[i];
+			const [xj, yj] = poly[j];
 
-	        const intersect = ((yi > y) != (yj > y))
-	            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-	        if (intersect) {
+			const intersect = ((yi > y) != (yj > y))
+				&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+			if (intersect) {
 				inside = !inside;
 			}
-	    }
+		}
 		if (inside) {
 			return triad;
 		}
 	}
 
-    return undefined;
+	return undefined;
 }
 
 /**
@@ -401,13 +401,13 @@ function setTooltipCore(
 	}
 	const [x, y] = hc[0];
 	tooltip.style.top = (rect.top + y + scale + 10) + "px";
-    tooltip.style.left = (rect.left + x - scale + 10) + "px";
-    tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
-    tooltipCtx.textAlign = "center";
+	tooltip.style.left = (rect.left + x - scale + 10) + "px";
+	tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
+	tooltipCtx.textAlign = "center";
 	const tx = tooltip.getBoundingClientRect().width / 2;
 	var ty = 15;
 	for (const line of message.split("\n")) {
-        tooltipCtx.fillText(line, tx, ty,
+		tooltipCtx.fillText(line, tx, ty,
 			tooltip.getBoundingClientRect().width - 5);
 		const tm = tooltipCtx.measureText(line);
 		ty += tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
@@ -895,14 +895,13 @@ function prettyDuration(elementId: string) {
  * @param elementId
  * 		Which element to replace the contents of with with the rendered result.
  */
-// TODO Do we need an explicit boardId? Is the value in the URI already?
 function loadTemperature(sourceUri: string, boardId: number, elementId: string) {
 	const element = document.getElementById(elementId);
 	if (element == null) {
 		return;
 	}
 	const r = new XMLHttpRequest();
-	r.open("GET", sourceUri);
+	r.open("GET", sourceUri + "?board_id=" + boardId);
 	r.onload = () => {
 		const result = JSON.parse(r.response) as object;
 		if (result?.hasOwnProperty("result.board_temperature")) {
