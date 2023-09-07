@@ -19,7 +19,6 @@ import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static java.util.concurrent.CompletableFuture.failedFuture;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -710,7 +709,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
 		addUrl(model, TEMP_URI,
-				uri(admin().getTemperatures(String.valueOf(board.getId()), model)));
+				uri(admin().getTemperatures(board.getId(), model)));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -763,10 +762,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Async
 	@Action("getting board temperature data from the machine")
 	public ModelAndView getTemperatures(
-			String boardId, ModelMap model) {
+			int boardId, ModelMap model) {
 		try {
-			int boardIdInt = Integer.valueOf(boardId);
-			var temps = machineController.readTemperatureFromMachine(boardIdInt)
+			var temps = machineController.readTemperatureFromMachine(boardId)
 					.orElse(null);
 			addTemperatureData(model, temps);
 			return addStandardContext(TEMP_VIEW.view(model));
