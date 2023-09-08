@@ -965,8 +965,8 @@ function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	r.send();
 }
 
-**
- * Load blacklist data from a URL.
+/**
+ * Save blacklist data to a URL.
  *
  * @param sourceUri
  * 		The URL to load the data from.
