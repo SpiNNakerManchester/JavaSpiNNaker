@@ -154,7 +154,7 @@ limitations under the License.
 			out in future allocations.
 		</form:form>
 		<h2>Blacklisted Hardware</h2>
-		<form:textarea path="blacklist" id="blacklistDisplay" />
+		<textarea id="blacklistDisplay" />
 		<button id="saveBl" onclick="saveBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpid }, 'blacklistDisplay', 'saveBl', 'loadBl')" class="warningbutton" enabled="false">Write New Blacklist</button>
 		<button id="loadBl" onclick="readBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpid }, 'blacklistDisplay', 'saveBl', 'loadBl')">Read Blacklist</button>
 	</c:when>
