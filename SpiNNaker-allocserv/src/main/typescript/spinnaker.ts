@@ -929,9 +929,9 @@ function loadTemperature(sourceUri: string, boardId: number, elementId: string) 
  *      The load button to disable and enable.
  */
 function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elementId: string, saveButtonId: string, loadButtonId: string) {
-	const element = document.getElementById(elementId);
-	const saveButton = document.getElementById(saveButtonId);
-	const loadButton = docuemtn.getElementById(loadButtonId);
+	const element = document.getElementById(elementId) as HTMLTextAreaElement;
+	const saveButton = document.getElementById(saveButtonId) as HTMLButtonElement;
+	const loadButton = document.getElementById(loadButtonId) as HTMLButtonElement;
 	if (element == null || saveButton == null || loadButton == null) {
 		console.log("Missing one of " + element + ", " + saveButton + ", " + loadButton);
 		return;
@@ -941,18 +941,18 @@ function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	r.onload = () => {
 		const result = JSON.parse(r.response) as object;
 		if (result?.hasOwnProperty("blacklist")) {
-			const blacklist = result["blacklist"] as number;
+			const blacklist = result["blacklist"] as string;
 			element.value = blacklist;
 		}
-		element.enabled = true;
-		saveButton.enabled = true;
-		loadButton.enabled = true;
+		element.disabled = false;
+		saveButton.disabled = false;
+		loadButton.disabled = false;
 	};
 	r.onerror = () => {
 		element.value = "Error reading blacklist!";
-		element.enabled = false;
-		saveButton.enabled = false;
-		loadButton.enabled = true;
+		element.disabled = true;
+		saveButton.disabled = true;
+		loadButton.disabled = false;
 	};
 
 	element.disabled = true;
