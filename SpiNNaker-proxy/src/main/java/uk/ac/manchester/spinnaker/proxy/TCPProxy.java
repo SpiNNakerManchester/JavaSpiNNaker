@@ -118,6 +118,8 @@ public class TCPProxy {
 		client = null;
 	}
 
+	private static final int NUM_ARGS = 3;
+
 	/**
 	 * The main method.
 	 *
@@ -127,9 +129,11 @@ public class TCPProxy {
 	 *            {@code args[2]}: The remote port to proxy
 	 * @throws IOException
 	 *             If we can't start the server.
+	 * @throws IllegalArgumentException
+	 *             If the wrong number of arguments are given.
 	 */
 	public static void main(String[] args) throws IOException {
-		if (args.length != 3) {
+		if (args.length != NUM_ARGS) {
 			throw new IllegalArgumentException("three arguments required");
 		}
 		int localPort = Integer.parseInt(args[0]);
