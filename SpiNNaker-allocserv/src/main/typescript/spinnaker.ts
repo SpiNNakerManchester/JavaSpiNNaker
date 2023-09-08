@@ -928,10 +928,11 @@ function loadTemperature(sourceUri: string, boardId: number, elementId: string) 
  * @param loadButtonId
  *      The load button to disable and enable.
  */
-function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elementId: string, saveButtonId: string, loadButtonId: string) {
+function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elementId: string, saveButtonId: string, loadButtonId: string, statusId: string) {
 	const element = document.getElementById(elementId) as HTMLTextAreaElement;
 	const saveButton = document.getElementById(saveButtonId) as HTMLButtonElement;
 	const loadButton = document.getElementById(loadButtonId) as HTMLButtonElement;
+	const status = document.getElementById(statusId);
 	if (element == null || saveButton == null || loadButton == null) {
 		console.log("Missing one of " + element + ", " + saveButton + ", " + loadButton);
 		return;
@@ -944,17 +945,19 @@ function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 			const blacklist = result["blacklist"] as string;
 			element.value = blacklist;
 		}
+		status.innerHTML = "Blacklist loaded";
 		element.disabled = false;
 		saveButton.disabled = false;
 		loadButton.disabled = false;
 	};
 	r.onerror = () => {
-		element.value = "Error reading blacklist!";
+		status.innerHTML = "Error reading blacklist!";
 		element.disabled = true;
 		saveButton.disabled = true;
 		loadButton.disabled = false;
 	};
 
+	status.innerHTML = "Loading blacklist...";
 	element.disabled = true;
 	saveButton.disabled = true;
 	loadButton.disabled = true;
@@ -962,3 +965,52 @@ function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	r.send();
 }
 
+**
+ * Load blacklist data from a URL.
+ *
+ * @param sourceUri
+ * 		The URL to load the data from.
+ * @param boardId
+ * 		Which board this is about.
+ * @param bmpId
+ *      Which BMP the board is on.
+ * @param elementId
+ * 		Which element to replace the contents of with with the rendered result.
+ * @param saveButtonId
+ *      The save button to disable and enable.
+ * @param loadButtonId
+ *      The load button to disable and enable.
+ */
+function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elementId: string, saveButtonId: string, loadButtonId: string, statusId: string) {
+	const element = document.getElementById(elementId) as HTMLTextAreaElement;
+	const saveButton = document.getElementById(saveButtonId) as HTMLButtonElement;
+	const loadButton = document.getElementById(loadButtonId) as HTMLButtonElement;
+	const status = document.getElementById(statusId);
+	if (element == null || saveButton == null || loadButton == null) {
+		console.log("Missing one of " + element + ", " + saveButton + ", " + loadButton);
+		return;
+	}
+	const r = new XMLHttpRequest();
+	r.open("POST", sourceUri);
+	r.setRequestHeader("Content-Type", "application/json");
+	r.send(JSON.stringify({ "boardId": boardId, "bmpId": bmpId, "present": true, "synched": true, "blacklist": element.value}));
+	r.onload = () => {
+		status.innerHTML = "Blacklist saved";
+		element.disabled = false;
+		saveButton.disabled = false;
+		loadButton.disabled = false;
+	};
+	r.onerror = () => {
+		element.value = "Error saving blacklist!";
+		element.disabled = false;
+		saveButton.disabled = false;
+		loadButton.disabled = false;
+	};
+
+	status.innerHTML = "Saving blacklist...";
+	element.disabled = true;
+	saveButton.disabled = true;
+	loadButton.disabled = true;
+
+	r.send();
+}
