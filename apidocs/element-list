@@ -51,6 +51,7 @@ uk.ac.manchester.spinnaker.nmpiexec.jobprocess
 uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager
 uk.ac.manchester.spinnaker.nmpiexec.utils
 uk.ac.manchester.spinnaker.pacman
+uk.ac.manchester.spinnaker.proxy
 uk.ac.manchester.spinnaker.py2json
 uk.ac.manchester.spinnaker.spalloc
 uk.ac.manchester.spinnaker.spalloc.exceptions
