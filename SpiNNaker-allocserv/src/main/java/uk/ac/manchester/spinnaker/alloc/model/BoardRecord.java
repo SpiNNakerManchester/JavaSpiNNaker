@@ -101,7 +101,7 @@ public class BoardRecord {
 	}
 
 	/** @return The BMP ID. */
-	public Integer bmpId() {
+	public Integer getBmpId() {
 		return this.bmpId;
 	}
 
