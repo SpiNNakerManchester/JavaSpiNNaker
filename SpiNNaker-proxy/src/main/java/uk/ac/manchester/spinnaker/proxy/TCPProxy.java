@@ -129,6 +129,9 @@ public class TCPProxy {
 	 *             If we can't start the server.
 	 */
 	public static void main(String[] args) throws IOException {
+		if (args.length != 3) {
+			throw new IllegalArgumentException("three arguments required");
+		}
 		int localPort = Integer.parseInt(args[0]);
 		var remoteHost = args[1];
 		int remotePort = Integer.parseInt(args[2]);
