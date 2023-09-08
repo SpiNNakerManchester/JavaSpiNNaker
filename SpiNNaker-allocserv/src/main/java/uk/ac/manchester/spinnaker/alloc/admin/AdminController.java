@@ -19,7 +19,6 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.security.Principal;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -29,7 +28,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -415,48 +413,25 @@ public interface AdminController {
 			ModelMap model);
 
 	/**
-	 * Manipulate a blacklist.
+	 * Save a new blacklist.
 	 *
-	 * @param bldata
-	 *            The blacklist data.
-	 * @param model
-	 *            Overall model
+	 * @param bldata The blacklist data.
 	 * @return the model and view
 	 */
 	@PostMapping(BLACKLIST_PATH)
-	ModelAndView blacklistSave(
-			@Valid @ModelAttribute("bldata") BlacklistData bldata,
-			ModelMap model);
+	void blacklistSave(@Valid BlacklistData bldata);
 
 	/**
 	 * Fetch the blacklist for a board from the machine.
 	 *
-	 * @param bldata
-	 *            The blacklist data.
-	 * @param model
-	 *            Overall model
-	 * @return the model and view in a future
+	 * @param boardId The board to get the data for.
+	 * @param bmpId The BMP of the board.
+	 * @return the blacklist data.
 	 */
-	@Async
-	@PostMapping(value = BLACKLIST_PATH, params = "fetch")
-	CompletableFuture<ModelAndView> blacklistFetch(
-			@Valid @ModelAttribute("bldata") BlacklistData bldata,
-			ModelMap model);
-
-	/**
-	 * Push the blacklist for a board to the machine.
-	 *
-	 * @param bldata
-	 *            The blacklist data.
-	 * @param model
-	 *            Overall model
-	 * @return the model and view in a future
-	 */
-	@Async
-	@PostMapping(value = BLACKLIST_PATH, params = "push")
-	CompletableFuture<ModelAndView> blacklistPush(
-			@Valid @ModelAttribute("bldata") BlacklistData bldata,
-			ModelMap model);
+	@GetMapping(value = BLACKLIST_PATH)
+	BlacklistData blacklistFetch(
+			@Valid @RequestParam("board_id") int boardId,
+			@Valid @RequestParam("bmp_id") int bmpId);
 
 	/**
 	 * Get the temperature data for a board.
@@ -533,7 +508,9 @@ public interface AdminController {
 	 * The model of a blacklist used by the administration web interface.
 	 */
 	class BlacklistData {
-		private int id;
+		private int boardId;
+
+		private int bmpId;
 
 		private String blacklist;
 
@@ -543,16 +520,29 @@ public interface AdminController {
 
 		/** @return The board ID. */
 		@Positive
-		public int getId() {
-			return id;
+		public int getBoardId() {
+			return boardId;
 		}
 
 		/**
 		 * @param id
 		 *            The board ID.
 		 */
-		public void setId(int id) {
-			this.id = id;
+		public void setBoardId(int boardId) {
+			this.boardId = boardId;
+		}
+
+		/** @return The BMP ID. */
+		@Positive
+		public int getBmpId() {
+			return bmpId;
+		}
+
+		/**
+		 * @param bmpId The BMP ID.
+		 */
+		public void setBmpId(int bmpId) {
+			this.bmpId = bmpId;
 		}
 
 		/** @return The text of the blacklist, if present. */

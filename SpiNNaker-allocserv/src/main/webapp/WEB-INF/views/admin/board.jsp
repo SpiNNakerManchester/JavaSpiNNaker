@@ -154,16 +154,9 @@ limitations under the License.
 			out in future allocations.
 		</form:form>
 		<h2>Blacklisted Hardware</h2>
-		<form:form method="POST" modelAttribute="bldata" action="${ blacklistControlUri }">
-			<form:hidden path="id" />
-			<c:if test="${ bldata.present }">
-				<form:textarea path="blacklist" />
-				<input type="submit" name="save" value="Save blacklist" />
-			</c:if>
-			<input type="submit" name="fetch" value="Refresh blacklist from board" />
-			<input type="submit" name="push" value="Push saved blacklist to board"
-				class="warningbutton" ${ bldata.synched ? 'disabled="disabled"' : '' } />
-		</form:form>
+		<form:textarea path="blacklist" id="blacklistDisplay" />
+		<button id="saveBl" onclick="saveBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpid }, 'blacklistDisplay', 'saveBl', 'loadBl')" class="warningbutton" enabled="false">Write New Blacklist</button>
+		<button id="loadBl" onclick="readBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpid }, 'blacklistDisplay', 'saveBl', 'loadBl')">Read Blacklist</button>
 	</c:when>
 	<c:otherwise>
 		<form:form method="POST" modelAttribute="board">

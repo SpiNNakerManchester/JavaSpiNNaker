@@ -911,3 +911,54 @@ function loadTemperature(sourceUri: string, boardId: number, elementId: string) 
 	};
 	r.send();
 }
+
+/**
+ * Load blacklist data from a URL.
+ *
+ * @param sourceUri
+ * 		The URL to load the data from.
+ * @param boardId
+ * 		Which board this is about.
+ * @param bmpId
+ *      Which BMP the board is on.
+ * @param elementId
+ * 		Which element to replace the contents of with with the rendered result.
+ * @param saveButtonId
+ *      The save button to disable and enable.
+ * @param loadButtonId
+ *      The load button to disable and enable.
+ */
+function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elementId: string, saveButtonId: string, loadButtonId: string) {
+	const element = document.getElementById(elementId);
+	const saveButton = document.getElementById(saveButtonId);
+	const loadButton = docuemtn.getElementById(loadButtonId);
+	if (element == null || saveButton == null || loadButton == null) {
+		console.log("Missing one of " + element + ", " + saveButton + ", " + loadButton);
+		return;
+	}
+	const r = new XMLHttpRequest();
+	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmpId=" + bmpId);
+	r.onload = () => {
+		const result = JSON.parse(r.response) as object;
+		if (result?.hasOwnProperty("blacklist")) {
+			const blacklist = result["blacklist"] as number;
+			element.value = blacklist;
+		}
+		element.enabled = true;
+		saveButton.enabled = true;
+		loadButton.enabled = true;
+	};
+	r.onerror = () => {
+		element.value = "Error reading blacklist!";
+		element.enabled = false;
+		saveButton.enabled = false;
+		loadButton.enabled = true;
+	};
+
+	element.disabled = true;
+	saveButton.disabled = true;
+	loadButton.disabled = true;
+
+	r.send();
+}
+
