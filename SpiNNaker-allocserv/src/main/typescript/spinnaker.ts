@@ -937,7 +937,7 @@ function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 		return;
 	}
 	const r = new XMLHttpRequest();
-	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmpId=" + bmpId);
+	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmp_id=" + bmpId);
 	r.onload = () => {
 		const result = JSON.parse(r.response) as object;
 		if (result?.hasOwnProperty("blacklist")) {

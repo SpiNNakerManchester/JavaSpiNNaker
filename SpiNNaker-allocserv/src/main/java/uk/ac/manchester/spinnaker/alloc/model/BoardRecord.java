@@ -109,7 +109,7 @@ public class BoardRecord {
 	 * @param bmpId
 	 *            The BMP ID.
 	 */
-	public void setBMPId(Integer bmpId) {
+	public void setBmpId(Integer bmpId) {
 		this.bmpId = bmpId;
 	}
 
