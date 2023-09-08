@@ -527,7 +527,7 @@ public interface AdminController {
 		}
 
 		/**
-		 * @param id
+		 * @param boardId
 		 *            The board ID.
 		 */
 		public void setBoardId(int boardId) {

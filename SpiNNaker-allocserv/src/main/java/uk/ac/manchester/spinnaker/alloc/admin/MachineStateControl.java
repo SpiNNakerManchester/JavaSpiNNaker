@@ -728,8 +728,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Write a blacklist to a board on the machine.
 	 *
-	 * @param board
+	 * @param boardId
 	 *            Which board to write the blacklist of.
+	 * @param bmpId
+	 *            Which BMP the board belongs to.
 	 * @param blacklist
 	 *            The blacklist to write.
 	 * @throws DataAccessException
