@@ -990,9 +990,12 @@ function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 		console.log("Missing one of " + element + ", " + saveButton + ", " + loadButton);
 		return;
 	}
+	var token = document.querySelector("meta[name='_csrf']") as HTMLMetaElement;
+	var header = document.querySelector("meta[name='_csrf_header']") as HTMLMetaElement;
 	const r = new XMLHttpRequest();
 	r.open("POST", sourceUri);
 	r.setRequestHeader("Content-Type", "application/json");
+	r.setRequestHeader(header.content, token.content);
 	r.send(JSON.stringify({ "boardId": boardId, "bmpId": bmpId, "present": true, "synched": true, "blacklist": element.value}));
 	r.onload = () => {
 		status.innerHTML = "Blacklist saved";
