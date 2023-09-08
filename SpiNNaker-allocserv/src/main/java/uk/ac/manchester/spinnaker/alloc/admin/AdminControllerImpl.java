@@ -791,6 +791,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private void inflateBoardRecord(BoardRecord br, BoardState bs) {
 		// Inflate the coordinates
 		br.setId(bs.id);
+		br.setBmpId(bs.bmpId);
 		br.setX(bs.x);
 		br.setY(bs.y);
 		br.setZ(bs.z);
