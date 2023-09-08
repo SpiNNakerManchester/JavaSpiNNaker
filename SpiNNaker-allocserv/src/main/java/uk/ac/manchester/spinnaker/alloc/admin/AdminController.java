@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -416,10 +417,10 @@ public interface AdminController {
 	 * Save a new blacklist.
 	 *
 	 * @param bldata The blacklist data.
-	 * @return the model and view
 	 */
 	@PostMapping(BLACKLIST_PATH)
-	void blacklistSave(@Valid BlacklistData bldata);
+	@ResponseBody
+	void blacklistSave(@Valid @RequestBody BlacklistData bldata);
 
 	/**
 	 * Fetch the blacklist for a board from the machine.
@@ -429,6 +430,7 @@ public interface AdminController {
 	 * @return the blacklist data.
 	 */
 	@GetMapping(value = BLACKLIST_PATH)
+	@ResponseBody
 	BlacklistData blacklistFetch(
 			@Valid @RequestParam("board_id") int boardId,
 			@Valid @RequestParam("bmp_id") int bmpId);
