@@ -43,6 +43,8 @@ public class BoardRecord {
 	// TODO convert to structured form
 	private Integer id;
 
+	private Integer bmpId;
+
 	@NotBlank
 	private String machineName;
 
@@ -96,6 +98,19 @@ public class BoardRecord {
 	 */
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	/** @return The BMP ID. */
+	public Integer bmpId() {
+		return this.bmpId;
+	}
+
+	/**
+	 * @param bmpId
+	 *            The BMP ID.
+	 */
+	public void setBMPId(Integer bmpId) {
+		this.bmpId = bmpId;
 	}
 
 	/** @return Whether we have an ID. */

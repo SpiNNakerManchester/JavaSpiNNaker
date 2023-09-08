@@ -277,6 +277,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public BoardRecord toBoardRecord() {
 			var br = new BoardRecord();
 			br.setId(id);
+			br.setBMPId(bmpId);
 			br.setMachineName(machineName);
 			br.setX(x);
 			br.setY(y);
