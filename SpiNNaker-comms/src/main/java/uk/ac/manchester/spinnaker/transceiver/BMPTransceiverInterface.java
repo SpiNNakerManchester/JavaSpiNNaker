@@ -1551,7 +1551,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 
 		// Do the actual writes here; any failure before here is unimportant
 		writeFlash(bmp, board, BMP_BOOT_SECTOR_ADDR, data, true);
-		writeSerialFlash(bmp, board, NULL, ByteBuffer.wrap(sfData));
+		// writeSerialFlash(bmp, board, NULL, ByteBuffer.wrap(sfData));
 	}
 
 	/**
