@@ -153,10 +153,11 @@ limitations under the License.
 			Note that disabling a board only means that it will not be handed
 			out in future allocations.
 		</form:form>
-		<h2>Blacklisted Hardware</h2>
-		<textarea id="blacklistDisplay"></textarea>
+		<h2>Blacklisted Hardware</h2><br/>
+		<textarea id="blacklistDisplay"></textarea><br/>
 		<button id="saveBl" onclick="saveBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpId }, 'blacklistDisplay', 'saveBl', 'loadBl')" class="warningbutton" enabled="false">Write New Blacklist</button>
 		<button id="loadBl" onclick="loadBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpId }, 'blacklistDisplay', 'saveBl', 'loadBl')">Read Blacklist</button>
+		<br/>
 	</c:when>
 	<c:otherwise>
 		<form:form method="POST" modelAttribute="board">
