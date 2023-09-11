@@ -873,6 +873,7 @@ limitations under the License.
 		<module>SpiNNaker-nmpiserv</module>
 		<module>SpiNNaker-nmpimodel</module>
 		<module>SpiNNaker-nmpiexec</module>
+		<module>SpiNNaker-proxy</module>
 		<module>keycloak-management-client</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
