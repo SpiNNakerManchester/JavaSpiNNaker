@@ -15,9 +15,13 @@
  */
 package uk.ac.manchester.spinnaker.proxy;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import org.slf4j.Logger;
 
 /**
  * A TCP Proxy server that can re-connect if the target goes down.
@@ -26,21 +30,21 @@ import java.net.Socket;
  *
  * <pre>java -jar spinnaker-proxy.jar LOCAL_PORT REMOTE_HOST REMOTE_PORT</pre>
  *
- * Writes messages to standard error describing connects and disconnects.
- *
  * @author Andrew Rowley
  */
 public class TCPProxy {
 	/** The maximum size of a read from a TCP socket. */
 	private static final int BUFFER_SIZE = 4096;
 
+	/** The logger. */
+	static final Logger log = getLogger(TCPProxy.class);
+
 	private Socket client;
 
 	private final Remote remote;
 
 	TCPProxy(Socket client, String remoteHost, int remotePort) {
-		System.err.format("New connection from %s%n",
-				client.getRemoteSocketAddress());
+		log.info("New connection from {}", client.getRemoteSocketAddress());
 		this.client = client;
 		this.remote = new Remote(remoteHost, remotePort);
 
@@ -109,7 +113,7 @@ public class TCPProxy {
 		if (client == null) {
 			return;
 		}
-		System.err.format("Client %s left%n", client.getRemoteSocketAddress());
+		log.info("Client {} left", client.getRemoteSocketAddress());
 		try {
 			client.close();
 		} catch (IOException e) {
@@ -141,6 +145,7 @@ public class TCPProxy {
 		int remotePort = Integer.parseInt(args[2]);
 
 		try (var server = new ServerSocket(localPort)) {
+			log.info("listening on {}", server.getLocalSocketAddress());
 			while (true) {
 				var client = server.accept();
 				new TCPProxy(client, remoteHost, remotePort);

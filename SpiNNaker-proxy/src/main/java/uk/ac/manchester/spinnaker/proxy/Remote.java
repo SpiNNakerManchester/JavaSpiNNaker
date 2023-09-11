@@ -15,6 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.proxy;
 
+import static uk.ac.manchester.spinnaker.proxy.TCPProxy.log;
+
 import java.io.IOException;
 import java.net.Socket;
 
@@ -61,12 +63,11 @@ final class Remote implements AutoCloseable {
 		if (remote != null || closed) {
 			return;
 		}
-		System.err.format("Connecting to %s:%d%n", remoteHost, remotePort);
+		log.info("Connecting to {}:{}", remoteHost, remotePort);
 		while (true) {
 			try {
 				remote = new Socket(remoteHost, remotePort);
-				System.err.format("Connected to %s%n",
-						remote.getRemoteSocketAddress());
+				log.info("Connected to {}", remote.getRemoteSocketAddress());
 				return;
 			} catch (IOException e) {
 				Thread.sleep(RETRY_MS);
