@@ -15,13 +15,25 @@
  */
 package uk.ac.manchester.spinnaker.proxy;
 
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNullElse;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.IVersionProvider;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 /**
  * A TCP Proxy server that can re-connect if the target goes down.
@@ -122,7 +134,68 @@ public class TCPProxy {
 		client = null;
 	}
 
-	private static final int NUM_ARGS = 3;
+	static int mainLoop(int localPort, String remoteHost, int remotePort) {
+		try (var server = new ServerSocket(localPort)) {
+			log.info("listening on {}", server.getLocalSocketAddress());
+			while (true) {
+				var client = server.accept();
+				new TCPProxy(client, remoteHost, remotePort);
+			}
+		} catch (InterruptedIOException e) {
+			return CommandLine.ExitCode.OK;
+		} catch (IOException e) {
+			log.error("failure in listener", e);
+			return CommandLine.ExitCode.SOFTWARE;
+		}
+	}
+
+	/**
+	 * Implementation of the command line handler.
+	 */
+	@Command(name = "spinnaker-proxy", mixinStandardHelpOptions = true, //
+			versionProvider = Version.class)
+	static class CLI implements Callable<Integer> {
+		@Parameters(index = "0", paramLabel = "localPort",
+				description = "The local port to listen on.")
+		private int localPort;
+
+		@Parameters(index = "1", paramLabel = "remoteHost",
+				description = "The remote host to proxy.")
+		private String remoteHost;
+
+		@Parameters(index = "2", paramLabel = "remotePort",
+				description = "The remote port to proxy.")
+		private int remotePort;
+
+		@Spec
+		private CommandSpec spec;
+
+		private void validate(int port, String name) {
+			// TCP port numbers are really unsigned shorts
+			if (port != Short.toUnsignedInt((short) port)) {
+				throw new ParameterException(spec.commandLine(),
+						format("value '%s' for parameter '%s' is out of "
+								+ "range (0..65535)", port, name));
+			}
+		}
+
+		@Override
+		public Integer call() {
+			validate(localPort, "localPort");
+			validate(remotePort, "remotePort");
+			return mainLoop(localPort, remoteHost, remotePort);
+		}
+	}
+
+	/** How to get the version number baked in by Maven. */
+	static class Version implements IVersionProvider {
+		@Override
+		public String[] getVersion() throws Exception {
+			return new String[] { requireNonNullElse(
+					getClass().getPackage().getImplementationVersion(),
+					"0.1 (unpackaged)") };
+		}
+	}
 
 	/**
 	 * The main method.
@@ -137,19 +210,6 @@ public class TCPProxy {
 	 *             If the wrong number of arguments are given.
 	 */
 	public static void main(String[] args) throws IOException {
-		if (args.length != NUM_ARGS) {
-			throw new IllegalArgumentException("three arguments required");
-		}
-		int localPort = Integer.parseInt(args[0]);
-		var remoteHost = args[1];
-		int remotePort = Integer.parseInt(args[2]);
-
-		try (var server = new ServerSocket(localPort)) {
-			log.info("listening on {}", server.getLocalSocketAddress());
-			while (true) {
-				var client = server.accept();
-				new TCPProxy(client, remoteHost, remotePort);
-			}
-		}
+		System.exit(new CommandLine(new CLI()).execute(args));
 	}
 }
