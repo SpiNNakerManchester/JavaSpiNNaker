@@ -1527,8 +1527,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 		fill(data, BMP_BOOT_BLACKLIST_OFFSET, SF_BL_LEN, BLACKLIST_BLANK);
 		data.position(BMP_BOOT_BLACKLIST_OFFSET);
 		data.put(blacklist.getRawData());
-		data.putInt(BMP_BOOT_CRC_OFFSET,
-				crc(data, 0, BMP_BOOT_BLACKLIST_OFFSET));
+		data.putInt(BMP_BOOT_CRC_OFFSET, crc(data, 0, BMP_BOOT_CRC_OFFSET));
 
 		if (interrupted()) {
 			throw new InterruptedException(
