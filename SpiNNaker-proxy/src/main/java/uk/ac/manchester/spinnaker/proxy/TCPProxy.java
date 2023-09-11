@@ -189,11 +189,15 @@ public class TCPProxy {
 
 	/** How to get the version number baked in by Maven. */
 	static class Version implements IVersionProvider {
+		private static final String DEFAULT = "0.1 (unpackaged)";
+
 		@Override
 		public String[] getVersion() throws Exception {
-			return new String[] { requireNonNullElse(
-					getClass().getPackage().getImplementationVersion(),
-					"0.1 (unpackaged)") };
+			return new String[] {
+				requireNonNullElse(
+						getClass().getPackage().getImplementationVersion(),
+						DEFAULT)
+			};
 		}
 	}
 
