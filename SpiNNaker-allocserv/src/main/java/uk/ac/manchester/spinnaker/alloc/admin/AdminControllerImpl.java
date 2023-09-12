@@ -89,11 +89,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -167,7 +167,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private URLPathMaker urlMaker;
 
 	@Autowired
-	private ExecutorService executor;
+	private AsyncTaskExecutor executor;
 
 	private class MachineName {
 		String name;
