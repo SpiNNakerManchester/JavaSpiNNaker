@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static java.util.concurrent.CompletableFuture.failedFuture;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -91,7 +89,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,6 +166,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Autowired
 	private URLPathMaker urlMaker;
 
+	@Autowired
+	private ExecutorService executor;
+
 	private class MachineName {
 		String name;
 
@@ -202,6 +204,18 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	/**
+	 * Whether the current user (as determined by the current security context)
+	 * may change their password. Only local users may change their password.
+	 *
+	 * @return Whether the current user is of a type that can change their
+	 *         password.
+	 */
+	private boolean mayChangePassword() {
+		var auth = getContext().getAuthentication();
+		return auth instanceof UsernamePasswordAuthenticationToken;
+	}
+
+	/**
 	 * All models should contain a common set of attributes that describe where
 	 * the view is rendering and where other parts of the admin interface are.
 	 * Only call from
@@ -210,12 +224,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 * @param model
 	 *            The base model to add to. This may be the real model or the
 	 *            flash attributes.
+	 * @param mayChangePassword
+	 *            Whether the current user may change their password. If
+	 *            {@code null}, will guess from current security context.
 	 */
-	private void addStandardContextAttrs(Map<String, Object> model) {
-		var auth = getContext().getAuthentication();
-		boolean mayChangePassword =
-				auth instanceof UsernamePasswordAuthenticationToken;
-
+	private void addStandardContextAttrs(Map<String, Object> model,
+			Boolean mayChangePassword) {
+		if (mayChangePassword == null) {
+			mayChangePassword = mayChangePassword();
+		}
 		model.put(BASE_URI, fromCurrentRequestUri().toUriString());
 		model.put(TRUST_LEVELS, TrustLevel.values());
 		model.put(USERS_URI, uri(admin().listUsers(NULL_MAP)));
@@ -226,8 +243,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		model.put(BOARDS_URI, uri(admin().boards(NULL_MAP)));
 		model.put(MACHINE_URI, uri(admin().machineManagement(NULL_MAP)));
 		model.put(MAIN_URI, uri(system().index()));
-		model.put(CHANGE_PASSWORD_URI, urlMaker.systemUrl(
-				CHANGE_PASSWORD_PATH));
+		model.put(CHANGE_PASSWORD_URI,
+				urlMaker.systemUrl(CHANGE_PASSWORD_PATH));
 		model.put(LOGOUT_URI, urlMaker.systemUrl(LOGOUT_PATH));
 		model.put(SPALLOC_CSS_URI, urlMaker.systemUrl(SPALLOC_CSS_PATH));
 		model.put(SPALLOC_JS_URI, urlMaker.systemUrl(SPALLOC_JS_PATH));
@@ -243,14 +260,16 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 * @param attrs
 	 *            The redirect attributes, or {@code null} if this is not a
 	 *            redirect.
+	 * @param mayChangePassword
+	 *            Whether the current user may change their password.
 	 * @return The enhanced model-and-view.
 	 */
 	private ModelAndView addStandardContext(ModelAndView mav,
-			RedirectAttributes attrs) {
+			RedirectAttributes attrs, Boolean mayChangePassword) {
 		addStandardContextAttrs(nonNull(attrs)
 				// Real implementation of flash attrs is always a ModelMap
 				? (ModelMap) attrs.getFlashAttributes()
-				: mav.getModel());
+				: mav.getModel(), mayChangePassword);
 		return mav;
 	}
 
@@ -263,7 +282,22 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 * @return The enhanced model-and-view.
 	 */
 	private ModelAndView addStandardContext(ModelAndView mav) {
-		return addStandardContext(mav, null);
+		return addStandardContext(mav, null, null);
+	}
+
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param mav
+	 *            The model-and-view.
+	 * @param mayChangePassword
+	 *            Whether the current user may change their password.
+	 * @return The enhanced model-and-view.
+	 */
+	private ModelAndView addStandardContext(ModelAndView mav,
+			boolean mayChangePassword) {
+		return addStandardContext(mav, null, mayChangePassword);
 	}
 
 	/**
@@ -280,16 +314,16 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private ModelAndView redirectTo(URI uri, RedirectAttributes attrs) {
 		return addStandardContext(new ModelAndView("redirect:" + uri.getPath()),
-				attrs);
+				attrs, null);
 	}
 
 	private ModelAndView errors(String message) {
-		return addStandardContext(error(message), null);
+		return addStandardContext(error(message), null, null);
 	}
 
 	private ModelAndView errors(DataAccessException exception) {
 		return addStandardContext(error("database access failed: "
-				+ exception.getMostSpecificCause().getMessage()), null);
+				+ exception.getMostSpecificCause().getMessage()), null, null);
 	}
 
 	@ExceptionHandler(BindException.class)
@@ -730,46 +764,49 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Async
 	@Action("fetching a live board blacklist from the machine")
-	public CompletableFuture<ModelAndView> blacklistFetch(BlacklistData bldata,
+	public Future<ModelAndView> blacklistFetch(BlacklistData bldata,
 			ModelMap model) {
 		var bs = readAndRememberBoardState(model);
+		boolean mayChangePass = mayChangePassword();
 
-		log.info("pulling blacklist from board {}", bs);
-		machineController.pullBlacklist(bs);
-		addBlacklistData(bs, model);
-
-		addMachineList(model, getMachineNames(true));
-		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
+		return executor.submit(() -> {
+			log.info("pulling blacklist from board {}", bs);
+			machineController.pullBlacklist(bs);
+			addBlacklistData(bs, model);
+			addMachineList(model, getMachineNames(true));
+			return addStandardContext(BOARD_VIEW.view(model), mayChangePass);
+		});
 	}
 
 	@Override
 	@Async
 	@Action("pushing a board blacklist to the machine")
-	public CompletableFuture<ModelAndView> blacklistPush(BlacklistData bldata,
+	public Future<ModelAndView> blacklistPush(BlacklistData bldata,
 			ModelMap model) {
 		var bs = readAndRememberBoardState(model);
+		boolean mayChangePass = mayChangePassword();
 
-		log.info("pushing blacklist to board {}", bs);
-		machineController.pushBlacklist(bs);
-		addBlacklistData(bs, model);
+		return executor.submit(() -> {
+			log.info("pushing blacklist to board {}", bs);
+			machineController.pushBlacklist(bs);
+			addBlacklistData(bs, model);
 
-		addMachineList(model, getMachineNames(true));
-		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
+			addMachineList(model, getMachineNames(true));
+			return addStandardContext(BOARD_VIEW.view(model), mayChangePass);
+		});
 	}
 
 	@Override
 	@Async
 	@Action("getting board temperature data from the machine")
-	public CompletableFuture<ModelAndView> getTemperatures(
-			int boardId, ModelMap model) {
-		try {
+	public Future<ModelAndView> getTemperatures(int boardId, ModelMap model) {
+		boolean mayChangePass = mayChangePassword();
+		return executor.submit(() -> {
 			var temps = machineController.readTemperatureFromMachine(boardId)
 					.orElse(null);
 			addTemperatureData(model, temps);
-			return completedFuture(addStandardContext(TEMP_VIEW.view(model)));
-		} catch (InterruptedException e) {
-			return failedFuture(e);
-		}
+			return addStandardContext(TEMP_VIEW.view(model), mayChangePass);
+		});
 	}
 
 	/**

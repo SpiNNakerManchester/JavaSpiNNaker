@@ -19,7 +19,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.security.Principal;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -437,7 +437,7 @@ public interface AdminController {
 	 */
 	@Async
 	@PostMapping(value = BLACKLIST_PATH, params = "fetch")
-	CompletableFuture<ModelAndView> blacklistFetch(
+	Future<ModelAndView> blacklistFetch(
 			@Valid @ModelAttribute("bldata") BlacklistData bldata,
 			ModelMap model);
 
@@ -452,7 +452,7 @@ public interface AdminController {
 	 */
 	@Async
 	@PostMapping(value = BLACKLIST_PATH, params = "push")
-	CompletableFuture<ModelAndView> blacklistPush(
+	Future<ModelAndView> blacklistPush(
 			@Valid @ModelAttribute("bldata") BlacklistData bldata,
 			ModelMap model);
 
@@ -467,7 +467,7 @@ public interface AdminController {
 	 */
 	@Async
 	@GetMapping(value = TEMPERATURE_PATH)
-	CompletableFuture<ModelAndView> getTemperatures(
+	Future<ModelAndView> getTemperatures(
 			@Valid @ModelAttribute("board_id") int boardId, ModelMap model);
 
 	/**
