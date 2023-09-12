@@ -1758,7 +1758,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *            Which board's BMP are we writing to?
 	 * @param baseAddress
 	 *            Where in flash will we write?
-	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1783,7 +1783,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *            Which board's BMP are we writing to?
 	 * @param baseAddress
 	 *            Where in flash will we write?
-	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
