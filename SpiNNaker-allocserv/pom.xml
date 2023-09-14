@@ -180,10 +180,11 @@ limitations under the License.
 							<truststorePassword>${truststore.pass}</truststorePassword>
 							<servers>
 								<server>${ebrains.wellknown.server}:443</server>
+								<!-- Skip things that are down -->
+								<!--
 								<server>${ebrains.wellknown.server.dev}:443</server>
+								-->
 							</servers>
-							<!-- Skip things that are down -->
-							<retryDownloadOnFailure>false</retryDownloadOnFailure>
 						</configuration>
 					</execution>
 				</executions>
