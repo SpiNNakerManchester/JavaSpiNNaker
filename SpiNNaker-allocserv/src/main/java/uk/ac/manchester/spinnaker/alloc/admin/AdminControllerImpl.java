@@ -93,6 +93,8 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
@@ -710,7 +712,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("saving changes to a board blacklist")
-	public void blacklistSave(BlacklistData bldata) {
+	public ResponseEntity<Void> blacklistSave(BlacklistData bldata) {
 
 		if (bldata.isPresent()) {
 			try {
@@ -723,6 +725,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				throw new WebApplicationException(e);
 			}
 		}
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@Override

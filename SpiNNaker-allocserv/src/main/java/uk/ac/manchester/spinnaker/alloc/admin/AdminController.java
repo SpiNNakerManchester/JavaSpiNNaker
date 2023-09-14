@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -419,8 +420,7 @@ public interface AdminController {
 	 * @param bldata The blacklist data.
 	 */
 	@PostMapping(BLACKLIST_PATH)
-	@ResponseBody
-	void blacklistSave(@Valid @RequestBody BlacklistData bldata);
+	ResponseEntity<Void> blacklistSave(@Valid @RequestBody BlacklistData bldata);
 
 	/**
 	 * Fetch the blacklist for a board from the machine.
