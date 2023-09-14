@@ -182,6 +182,8 @@ limitations under the License.
 								<server>${ebrains.wellknown.server}:443</server>
 								<server>${ebrains.wellknown.server.dev}:443</server>
 							</servers>
+							<!-- Skip things that are down -->
+							<retryDownloadOnFailure>false</retryDownloadOnFailure>
 						</configuration>
 					</execution>
 				</executions>
