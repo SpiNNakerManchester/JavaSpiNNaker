@@ -93,7 +93,15 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">TCPProxy</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">A TCP Proxy server that can re-connect if the target goes down.</div>
+<div class="block">A TCP Proxy server that can re-connect if the target goes down.
+ <p>
+ Typically called via:
+
+ <pre>java -jar spinnaker-proxy.jar LOCAL_PORT REMOTE_HOST REMOTE_PORT</pre></div>
+<dl>
+<dt><span class="simpleTagLabel">Author:</span></dt>
+<dd>Andrew Rowley</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -152,11 +160,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">The main method.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>args</code> - args[0]: The local port to listen on
-             args[1]: The remote host to proxy
-             args[2]: The remote port to proxy</dd>
+<dd><code>args</code> - <code>args[0]</code>: The local port to listen on <br>
+            <code>args[1]</code>: The remote host to proxy <br>
+            <code>args[2]</code>: The remote port to proxy</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If we can't start the server.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If the wrong number of arguments are given.</dd>
 </dl>
 </section>
 </li>
