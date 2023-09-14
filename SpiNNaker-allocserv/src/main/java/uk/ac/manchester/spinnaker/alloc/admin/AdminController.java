@@ -418,9 +418,11 @@ public interface AdminController {
 	 * Save a new blacklist.
 	 *
 	 * @param bldata The blacklist data.
+	 * @return The empty response with the appropriate code.
 	 */
 	@PostMapping(BLACKLIST_PATH)
-	ResponseEntity<Void> blacklistSave(@Valid @RequestBody BlacklistData bldata);
+	ResponseEntity<Void> blacklistSave(
+			@Valid @RequestBody BlacklistData bldata);
 
 	/**
 	 * Fetch the blacklist for a board from the machine.
