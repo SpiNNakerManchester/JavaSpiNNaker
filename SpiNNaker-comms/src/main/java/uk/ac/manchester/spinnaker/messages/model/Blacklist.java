@@ -169,7 +169,7 @@ public final class Blacklist implements Serializable {
 				int loc = (x << COORD_BITS) | y;
 				int value = 0;
 				if (chips.contains(chip)) {
-					value = CORE_MASK;
+					value = CORE_MASK | (LINK_MASK << MAX_NUM_CORES);
 				} else {
 					if (cores.containsKey(chip)) {
 						value |= cores.get(chip).stream()

@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static java.util.concurrent.CompletableFuture.failedFuture;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,7 +27,6 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BASE_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BLACKLIST_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BOARDS_URI;
-import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BOARD_OBJ;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BOARD_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_GROUP_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_GROUP_VIEW;
@@ -44,7 +41,6 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACH
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACHINE_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MAIN_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TEMP_URI;
-import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TEMP_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TRUST_LEVELS;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USERS_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USER_DETAILS_VIEW;
@@ -62,7 +58,6 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addM
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addNotice;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addOrganisationList;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addRemoteUserList;
-import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addTemperatureData;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUrl;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUser;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUserList;
@@ -91,12 +86,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
@@ -116,6 +114,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.BoardTemperatures;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
@@ -707,88 +706,59 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		inflateBoardRecord(board, bs);
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
-		addUrl(model, TEMP_URI,
-				uri(admin().getTemperatures(board.getId(), model)));
+		addUrl(model, TEMP_URI,	uri(admin().getTemperatures(board.getId())));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
 	@Override
 	@Action("saving changes to a board blacklist")
-	public ModelAndView blacklistSave(BlacklistData bldata, ModelMap model) {
-		var bs = readAndRememberBoardState(model);
+	public ResponseEntity<Void> blacklistSave(BlacklistData bldata) {
 
 		if (bldata.isPresent()) {
-			machineController.writeBlacklistToDB(bs,
-					bldata.getParsedBlacklist());
+			try {
+				var blacklist = bldata.getParsedBlacklist();
+				machineController.writeBlacklistToDB(bldata.getBoardId(),
+						blacklist);
+				machineController.writeBlacklistToMachine(bldata.getBoardId(),
+						bldata.getBmpId(), blacklist);
+			} catch (InterruptedException e) {
+				throw new WebApplicationException(e);
+			}
 		}
-		addBlacklistData(bs, model);
-
-		addMachineList(model, getMachineNames(true));
-		return addStandardContext(BOARD_VIEW.view(model));
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@Override
-	@Async
 	@Action("fetching a live board blacklist from the machine")
-	public CompletableFuture<ModelAndView> blacklistFetch(BlacklistData bldata,
-			ModelMap model) {
-		var bs = readAndRememberBoardState(model);
+	public BlacklistData blacklistFetch(int boardId, int bmpId) {
 
-		log.info("pulling blacklist from board {}", bs);
-		machineController.pullBlacklist(bs);
-		addBlacklistData(bs, model);
+		log.info("pulling blacklist from board {}", boardId);
+		BlacklistData data = new BlacklistData();
+		data.setBoardId(boardId);
+		data.setBmpId(bmpId);
+		machineController.pullBlacklist(boardId, bmpId).ifPresentOrElse(bl -> {
+			data.setPresent(true);
+			data.setSynched(true);
+			data.setBlacklist(bl.render());
+		}, () -> {
+			data.setPresent(false);
+			data.setSynched(false);
+		});
 
-		addMachineList(model, getMachineNames(true));
-		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
+		return data;
 	}
 
 	@Override
-	@Async
-	@Action("pushing a board blacklist to the machine")
-	public CompletableFuture<ModelAndView> blacklistPush(BlacklistData bldata,
-			ModelMap model) {
-		var bs = readAndRememberBoardState(model);
-
-		log.info("pushing blacklist to board {}", bs);
-		machineController.pushBlacklist(bs);
-		addBlacklistData(bs, model);
-
-		addMachineList(model, getMachineNames(true));
-		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
-	}
-
-	@Override
-	@Async
 	@Action("getting board temperature data from the machine")
-	public CompletableFuture<ModelAndView> getTemperatures(
-			int boardId, ModelMap model) {
+	public BoardTemperatures getTemperatures(int boardId) {
 		try {
-			var temps = machineController.readTemperatureFromMachine(boardId)
-					.orElse(null);
-			addTemperatureData(model, temps);
-			return completedFuture(addStandardContext(TEMP_VIEW.view(model)));
+			return new BoardTemperatures(
+					machineController.readTemperatureFromMachine(boardId)
+						.orElseThrow(() -> new WebApplicationException(
+								Status.NOT_FOUND)));
 		} catch (InterruptedException e) {
-			return failedFuture(e);
+			throw new WebApplicationException(e);
 		}
-	}
-
-	/**
-	 * Get the board record from the model and inflate a board state control
-	 * object.
-	 *
-	 * @param model
-	 *            The model.
-	 * @return The board state control object. <em>This object should not be put
-	 *         in the model as it is DB-aware!</em>
-	 */
-	private BoardState readAndRememberBoardState(ModelMap model) {
-		var br = (BoardRecord) model.get(BOARD_OBJ);
-		var bs = getBoardState(br).orElseThrow(NoBoard::new);
-		inflateBoardRecord(br, bs);
-		br.setEnabled(bs.getState());
-		// Replace the state in the model with the current values
-		addBoard(model, br);
-		return bs;
 	}
 
 	/**
@@ -801,14 +771,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private void addBlacklistData(BoardState board, ModelMap model) {
 		var bldata = new BlacklistData();
-		bldata.setId(board.id);
+		bldata.setBoardId(board.id);
 		var bl = machineController.readBlacklistFromDB(board);
 		bldata.setPresent(bl.isPresent());
 		bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
 		bldata.setSynched(machineController.isBlacklistSynched(board));
 
 		addBlacklist(model, bldata);
-		addUrl(model, BLACKLIST_URI, uri(admin().blacklistSave(null, model)));
+		addUrl(model, BLACKLIST_URI,
+				uri(admin().blacklistFetch(board.id, board.bmpId)));
 	}
 
 	/**
@@ -823,6 +794,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private void inflateBoardRecord(BoardRecord br, BoardState bs) {
 		// Inflate the coordinates
 		br.setId(bs.id);
+		br.setBmpId(bs.bmpId);
 		br.setX(bs.x);
 		br.setY(bs.y);
 		br.setZ(bs.z);
