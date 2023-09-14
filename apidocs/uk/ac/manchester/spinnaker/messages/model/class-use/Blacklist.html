@@ -134,7 +134,8 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#pullBlacklist(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">pullBlacklist</a></span>&#8203;(<a href="../../../alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#pullBlacklist(int,int)">pullBlacklist</a></span>&#8203;(int&nbsp;boardId,
+int&nbsp;bmpId)</code></th>
 <td class="colLast">
 <div class="block">Retrieve the blacklist for the given board from the board and store it in
  the database.</div>
@@ -157,7 +158,8 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#readBlacklistFromMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">readBlacklistFromMachine</a></span>&#8203;(<a href="../../../alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#readBlacklistFromMachine(int,int)">readBlacklistFromMachine</a></span>&#8203;(int&nbsp;boardId,
+int&nbsp;bmpId)</code></th>
 <td class="colLast">
 <div class="block">Given a board, read its blacklist off the machine.</div>
 </td>
@@ -178,7 +180,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#writeBlacklistToDB(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB</a></span>&#8203;(<a href="../../../alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#writeBlacklistToDB(int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB</a></span>&#8203;(int&nbsp;boardId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
 <div class="block">Given a board, write a blacklist for it to the database.</div>
@@ -186,7 +188,8 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#writeBlacklistToMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine</a></span>&#8203;(<a href="../../../alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
+<th class="colSecond" scope="row"><span class="typeNameLabel">MachineStateControl.</span><code><span class="memberNameLink"><a href="../../../alloc/admin/MachineStateControl.html#writeBlacklistToMachine(int,int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine</a></span>&#8203;(int&nbsp;boardId,
+int&nbsp;bmpId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
 <div class="block">Write a blacklist to a board on the machine.</div>

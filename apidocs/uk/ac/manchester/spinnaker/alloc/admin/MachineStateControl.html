@@ -263,7 +263,8 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pullBlacklist(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">pullBlacklist</a></span>&#8203;(<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pullBlacklist(int,int)">pullBlacklist</a></span>&#8203;(int&nbsp;boardId,
+int&nbsp;bmpId)</code></th>
 <td class="colLast">
 <div class="block">Retrieve the blacklist for the given board from the board and store it in
  the database.</div>
@@ -294,7 +295,8 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 </tr>
 <tr class="altColor" id="i12">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBlacklistFromMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">readBlacklistFromMachine</a></span>&#8203;(<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBlacklistFromMachine(int,int)">readBlacklistFromMachine</a></span>&#8203;(int&nbsp;boardId,
+int&nbsp;bmpId)</code></th>
 <td class="colLast">
 <div class="block">Given a board, read its blacklist off the machine.</div>
 </td>
@@ -331,7 +333,7 @@ boolean&nbsp;inService)</code></th>
 </tr>
 <tr class="rowColor" id="i17">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBlacklistToDB(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB</a></span>&#8203;(<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBlacklistToDB(int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB</a></span>&#8203;(int&nbsp;boardId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
 <div class="block">Given a board, write a blacklist for it to the database.</div>
@@ -339,7 +341,8 @@ boolean&nbsp;inService)</code></th>
 </tr>
 <tr class="altColor" id="i18">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBlacklistToMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine</a></span>&#8203;(<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBlacklistToMachine(int,int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine</a></span>&#8203;(int&nbsp;boardId,
+int&nbsp;bmpId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
 <div class="block">Write a blacklist to a board on the machine.</div>
@@ -506,13 +509,15 @@ boolean&nbsp;inService)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="pullBlacklist(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">pullBlacklist</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</span>&nbsp;<span class="memberName">pullBlacklist</span>&#8203;(<span class="arguments"><a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board)</span></div>
+<h3><a id="pullBlacklist(int,int)">pullBlacklist</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</span>&nbsp;<span class="memberName">pullBlacklist</span>&#8203;(<span class="arguments">int&nbsp;boardId,
+int&nbsp;bmpId)</span></div>
 <div class="block">Retrieve the blacklist for the given board from the board and store it in
  the database.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>board</code> - The board to get the blacklist of.</dd>
+<dd><code>boardId</code> - The board to get the blacklist of.</dd>
+<dd><code>bmpId</code> - The BMP of the board.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The blacklist that was transferred, if any.</dd>
 </dl>
@@ -574,15 +579,15 @@ boolean&nbsp;inService)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeBlacklistToDB(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeBlacklistToDB</span>&#8203;(<span class="arguments"><a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
+<h3><a id="writeBlacklistToDB(int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeBlacklistToDB</span>&#8203;(<span class="arguments">int&nbsp;boardId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</span></div>
 <div class="block">Given a board, write a blacklist for it to the database. Does
  <em>not</em> push the blacklist to the board.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>board</code> - Which board to write the blacklist of.</dd>
+<dd><code>boardId</code> - The ID of the board to write.</dd>
 <dd><code>blacklist</code> - The blacklist to write.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/dao/DataAccessException.html?is-external=true" title="class or interface in org.springframework.dao" class="externalLink">DataAccessException</a></code> - If access to the DB fails.</dd>
@@ -591,13 +596,15 @@ boolean&nbsp;inService)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readBlacklistFromMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">readBlacklistFromMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</span>&nbsp;<span class="memberName">readBlacklistFromMachine</span>&#8203;(<span class="arguments"><a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board)</span>
+<h3><a id="readBlacklistFromMachine(int,int)">readBlacklistFromMachine</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&gt;</span>&nbsp;<span class="memberName">readBlacklistFromMachine</span>&#8203;(<span class="arguments">int&nbsp;boardId,
+int&nbsp;bmpId)</span>
                                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Given a board, read its blacklist off the machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>board</code> - Which board to read the blacklist of.</dd>
+<dd><code>boardId</code> - Which board to read the blacklist of.</dd>
+<dd><code>bmpId</code> - The BMP of the board.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The board's blacklist.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -609,15 +616,17 @@ boolean&nbsp;inService)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="writeBlacklistToMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeBlacklistToMachine</span>&#8203;(<span class="arguments"><a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board,
+<h3><a id="writeBlacklistToMachine(int,int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeBlacklistToMachine</span>&#8203;(<span class="arguments">int&nbsp;boardId,
+int&nbsp;bmpId,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</span>
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Write a blacklist to a board on the machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>board</code> - Which board to write the blacklist of.</dd>
+<dd><code>boardId</code> - Which board to write the blacklist of.</dd>
+<dd><code>bmpId</code> - Which BMP the board belongs to.</dd>
 <dd><code>blacklist</code> - The blacklist to write.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/dao/DataAccessException.html?is-external=true" title="class or interface in org.springframework.dao" class="externalLink">DataAccessException</a></code> - If access to the DB fails.</dd>

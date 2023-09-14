@@ -338,23 +338,17 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#%3Cinit%3E()">BlacklistData()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch(AdminController.BlacklistData, ModelMap)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#blacklistFetch(@javax.validation.Validint,@javax.validation.Validint)">blacklistFetch(@javax.validation.Valid int, @javax.validation.Valid int)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
 <dd>
 <div class="block">Fetch the blacklist for a board from the machine.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch(AdminController.BlacklistData, ModelMap)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#blacklistFetch(int,int)">blacklistFetch(int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistPush(AdminController.BlacklistData, ModelMap)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData)">blacklistSave(AdminController.BlacklistData)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
 <dd>
-<div class="block">Push the blacklist for a board to the machine.</div>
+<div class="block">Save a new blacklist.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistPush(AdminController.BlacklistData, ModelMap)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistSave(AdminController.BlacklistData, ModelMap)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
-<dd>
-<div class="block">Manipulate a blacklist.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistSave(AdminController.BlacklistData, ModelMap)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData)">blacklistSave(AdminController.BlacklistData)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/bmp/BlacklistStore.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp"><span class="typeNameLink">BlacklistStore</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></dt>
 <dd>
@@ -393,6 +387,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BoardState.html#bmpSerial">bmpSerial</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a></dt>
 <dd>
 <div class="block">The BMP serial number, if known.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardTemperatures.html#bmpTemperature">bmpTemperature</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardTemperatures.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardTemperatures</a></dt>
+<dd>
+<div class="block">The BMP temperature.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BoardState.html#board">board</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a></dt>
 <dd>
@@ -498,6 +496,18 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#BOARDS_PATH">BOARDS_PATH</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
 <dd>
 <div class="block">Path to boards operations.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardTemperatures.html#boardTemperature">boardTemperature</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardTemperatures.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardTemperatures</a></dt>
+<dd>
+<div class="block">The board temperature.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/alloc/model/BoardTemperatures.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><span class="typeNameLink">BoardTemperatures</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/model/package-summary.html">uk.ac.manchester.spinnaker.alloc.model</a></dt>
+<dd>
+<div class="block">A board temperature.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardTemperatures.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.ADCInfo)">BoardTemperatures(ADCInfo)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardTemperatures.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardTemperatures</a></dt>
+<dd>
+<div class="block">Make a new BoardTemperatures object.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/Row.html#bool(java.lang.String)">bool(String)</a></span> - Static method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a></dt>
 <dd>
@@ -1816,6 +1826,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the address of a particular BMP of a machine.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#getBmpId()">getBmpId()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#getBmpId()">getBmpId()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineDefinitionLoader.Machine.html#getBmpIPs()">getBmpIPs()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineDefinitionLoader.Machine.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineDefinitionLoader.Machine</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#getBmpSerial()">getBmpSerial()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
@@ -1858,6 +1872,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the location of the characteristic chip of a board.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#getBoardId()">getBoardId()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardIssueReport.html#getBoardId()">getBoardId()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardIssueReport.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardIssueReport</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineDefinitionLoader.Machine.html#getBoardLocations()">getBoardLocations()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineDefinitionLoader.Machine.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineDefinitionLoader.Machine</a></dt>
@@ -2144,8 +2160,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html#getHost()">getHost()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.CompatibilityProperties</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/ConnectionInfo.html#getHostname()">getHostname()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/ConnectionInfo.html" title="class in uk.ac.manchester.spinnaker.alloc.model">ConnectionInfo</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#getId()">getId()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.Job.html#getId()">getId()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a></dt>
 <dd>&nbsp;</dd>
@@ -2743,11 +2757,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/MachineTagging.html#getTags()">getTags()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/MachineTagging.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineTagging</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#getTemperatures(@javax.validation.Validint,org.springframework.ui.ModelMap)">getTemperatures(@javax.validation.Valid int, ModelMap)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html#getTemperatures(@javax.validation.Validint)">getTemperatures(@javax.validation.Valid int)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></dt>
 <dd>
 <div class="block">Get the temperature data for a board.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#getTemperatures(int,org.springframework.ui.ModelMap)">getTemperatures(int, ModelMap)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html#getTemperatures(int)">getTemperatures(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminControllerImpl</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html#getThreadPoolSize()">getThreadPoolSize()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.CompatibilityProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.CompatibilityProperties</a></dt>
 <dd>&nbsp;</dd>
@@ -4303,7 +4317,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The low-level handler for proxy connections.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#pullBlacklist(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">pullBlacklist(MachineStateControl.BoardState)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#pullBlacklist(int,int)">pullBlacklist(int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Retrieve the blacklist for the given board from the board and store it in
  the database.</div>
@@ -4403,7 +4417,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Given a board, read its blacklist from the database.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#readBlacklistFromMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">readBlacklistFromMachine(MachineStateControl.BoardState)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#readBlacklistFromMachine(int,int)">readBlacklistFromMachine(int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Given a board, read its blacklist off the machine.</div>
 </dd>
@@ -4784,6 +4798,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html#setBMPController(uk.ac.manchester.spinnaker.alloc.bmp.BMPController)">setBMPController(BMPController)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">AllocatorTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#setBmpId(int)">setBmpId(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#setBmpId(java.lang.Integer)">setBmpId(Integer)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#setBmpSerial(java.lang.String)">setBmpSerial(String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#setBoard(java.lang.Integer)">setBoard(Integer)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
@@ -4792,6 +4810,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Board control.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#setBoardId(int)">setBoardId(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html#setBoards(java.util.List)">setBoards(List&lt;BoardCoords&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobDescription</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html#setBoards(java.util.List)">setBoards(List&lt;BoardCoords&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobListEntryRecord</a></dt>
@@ -4869,8 +4889,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/MachineDescription.html#setHeight(int)">setHeight(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineDescription</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html#setHost(java.lang.String)">setHost(String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobListEntryRecord</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html#setId(int)">setId(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html#setId(int)">setId(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobDescription</a></dt>
 <dd>&nbsp;</dd>
@@ -5942,11 +5960,11 @@ the order they are declared.</div>
 <dd>
 <div class="block">Write a blacklist to the given board.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#writeBlacklistToDB(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB(MachineStateControl.BoardState, Blacklist)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#writeBlacklistToDB(int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB(int, Blacklist)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Given a board, write a blacklist for it to the database.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#writeBlacklistToMachine(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine(MachineStateControl.BoardState, Blacklist)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#writeBlacklistToMachine(int,int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToMachine(int, int, Blacklist)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Write a blacklist to a board on the machine.</div>
 </dd>

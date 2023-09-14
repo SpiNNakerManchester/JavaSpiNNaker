@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -152,40 +152,50 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getId()">getId</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBmpId()">getBmpId</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
+<td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoardId()">getBoardId</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">Blacklist</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParsedBlacklist()">getParsedBlacklist</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isPresent()">isPresent</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isSynched()">isSynched</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBlacklist(java.lang.String)">setBlacklist</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;blacklist)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setId(int)">setId</a></span>&#8203;(int&nbsp;id)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBmpId(int)">setBmpId</a></span>&#8203;(int&nbsp;bmpId)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i8">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBoardId(int)">setBoardId</a></span>&#8203;(int&nbsp;boardId)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPresent(boolean)">setPresent</a></span>&#8203;(boolean&nbsp;present)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSynched(boolean)">setSynched</a></span>&#8203;(boolean&nbsp;synched)</code></th>
 <td class="colLast">&nbsp;</td>
@@ -230,9 +240,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="getId()">getId</a></h3>
+<h3><a id="getBoardId()">getBoardId</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getId</span>()</div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getBoardId</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The board ID.</dd>
@@ -241,11 +251,32 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setId(int)">setId</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setId</span>&#8203;(<span class="arguments">int&nbsp;id)</span></div>
+<h3><a id="setBoardId(int)">setBoardId</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBoardId</span>&#8203;(<span class="arguments">int&nbsp;boardId)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>id</code> - The board ID.</dd>
+<dd><code>boardId</code> - The board ID.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getBmpId()">getBmpId</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getBmpId</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The BMP ID.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="setBmpId(int)">setBmpId</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBmpId</span>&#8203;(<span class="arguments">int&nbsp;bmpId)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>bmpId</code> - The BMP ID.</dd>
 </dl>
 </section>
 </li>
