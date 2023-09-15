@@ -1526,8 +1526,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 		fill(data, BMP_BOOT_BLACKLIST_OFFSET, SF_BL_LEN, BLACKLIST_BLANK);
 		data.position(BMP_BOOT_BLACKLIST_OFFSET);
 		data.put(blacklist.getRawData());
-		data.putInt(BMP_BOOT_CRC_OFFSET,
-				crc(data, 0, BMP_BOOT_BLACKLIST_OFFSET));
+		data.putInt(BMP_BOOT_CRC_OFFSET, ~crc(data, 0, BMP_BOOT_CRC_OFFSET));
 
 		if (interrupted()) {
 			throw new InterruptedException(
@@ -1549,7 +1548,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 		}
 
 		// Do the actual writes here; any failure before here is unimportant
-		writeFlash(bmp, board, BMP_BOOT_SECTOR_ADDR, data, true);
+		writeFlash(bmp, board, BMP_BOOT_SECTOR_ADDR, data);
 		writeSerialFlash(bmp, board, NULL, ByteBuffer.wrap(sfData));
 	}
 
@@ -1758,7 +1757,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *            Which board's BMP are we writing to?
 	 * @param baseAddress
 	 *            Where in flash will we write?
-	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1783,7 +1782,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *            Which board's BMP are we writing to?
 	 * @param baseAddress
 	 *            Where in flash will we write?
-	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1804,8 +1803,6 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *            Where in flash will we write?
 	 * @param data
 	 *            What data will we write?
-	 * @param update
-	 *            Whether to trigger an immediate update of flash.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1814,10 +1811,9 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If the communications were interrupted.
 	 */
 	default void writeFlash(@Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update)
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
 			throws ProcessException, IOException, InterruptedException {
-		writeFlash(getBoundBMP(), board, baseAddress, data, update);
+		writeFlash(getBoundBMP(), board, baseAddress, data);
 	}
 
 	/**
@@ -1831,8 +1827,6 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *            Where in flash will we write?
 	 * @param data
 	 *            What data will we write?
-	 * @param update
-	 *            Whether to trigger an immediate update of flash.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -1841,8 +1835,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	 *             If the communications were interrupted.
 	 */
 	void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update)
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
 			throws ProcessException, IOException, InterruptedException;
 
 	@Override

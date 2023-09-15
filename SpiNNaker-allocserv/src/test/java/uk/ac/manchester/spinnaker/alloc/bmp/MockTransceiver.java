@@ -232,8 +232,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	@Override
 	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update) {
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data) {
 		log.info("writeFlash({},{},{},{})", bmp, board, baseAddress,
 				data.remaining());
 		var blData = data.duplicate().position(BMP_FLASH_BLACKLIST_OFFSET);

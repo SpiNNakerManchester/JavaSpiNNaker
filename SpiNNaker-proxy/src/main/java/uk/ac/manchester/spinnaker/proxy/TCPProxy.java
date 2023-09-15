@@ -15,42 +15,65 @@
  */
 package uk.ac.manchester.spinnaker.proxy;
 
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNullElse;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Callable;
+
+import org.slf4j.Logger;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.IVersionProvider;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 /**
  * A TCP Proxy server that can re-connect if the target goes down.
+ * <p>
+ * Typically called via:
+ *
+ * <pre>java -jar spinnaker-proxy.jar LOCAL_PORT REMOTE_HOST REMOTE_PORT</pre>
+ *
+ * @author Andrew Rowley
  */
 public class TCPProxy {
-
 	/** The maximum size of a read from a TCP socket. */
 	private static final int BUFFER_SIZE = 4096;
+
+	/** The logger. */
+	static final Logger log = getLogger(TCPProxy.class);
 
 	private Socket client;
 
 	private final Remote remote;
 
 	TCPProxy(Socket client, String remoteHost, int remotePort) {
-		System.err.println("New connection from "
-				+ client.getRemoteSocketAddress());
+		log.info("New connection from {}", client.getRemoteSocketAddress());
 		this.client = client;
 		this.remote = new Remote(remoteHost, remotePort);
 
-		Thread clientToRemote = new Thread(this::clientToRemote);
-		Thread remoteToClient = new Thread(this::remoteToClient);
+		var clientToRemote = new Thread(this::clientToRemote);
+		var remoteToClient = new Thread(this::remoteToClient);
 		clientToRemote.start();
 		remoteToClient.start();
 	}
 
 	/**
-	 * Read the client and send to the remote.  If remote write fails,
-	 * reconnect to remote and resend.  If client read fails, stop.
+	 * Read the client and send to the remote. If remote write fails, reconnect
+	 * to remote and resend. If client read fails, stop.
 	 */
 	private void clientToRemote() {
 		try {
 			remote.connect();
-			byte[] buffer = new byte[BUFFER_SIZE];
+			var buffer = new byte[BUFFER_SIZE];
 			try (var input = client.getInputStream()) {
 				while (client.isConnected()) {
 					int bytesRead = input.read(buffer);
@@ -70,13 +93,13 @@ public class TCPProxy {
 	}
 
 	/**
-	 * Read from the remote and send to the client.  If the remote read fails,
-	 * retry until working.  If the client write fails, stop.
+	 * Read from the remote and send to the client. If the remote read fails,
+	 * retry until working. If the client write fails, stop.
 	 */
 	private void remoteToClient() {
 		try {
 			remote.connect();
-			byte[] buffer = new byte[BUFFER_SIZE];
+			var buffer = new byte[BUFFER_SIZE];
 			try (var output = client.getOutputStream()) {
 				while (client.isConnected()) {
 					int bytesRead = remote.read(buffer);
@@ -102,8 +125,7 @@ public class TCPProxy {
 		if (client == null) {
 			return;
 		}
-		System.err.println(
-				"Client " + client.getRemoteSocketAddress() + " left");
+		log.info("Client {} left", client.getRemoteSocketAddress());
 		try {
 			client.close();
 		} catch (IOException e) {
@@ -112,165 +134,86 @@ public class TCPProxy {
 		client = null;
 	}
 
-	/**
-	 * The main method.
-	 * @param args args[0]: The local port to listen on
-	 *             args[1]: The remote host to proxy
-	 *             args[2]: The remote port to proxy
-	 * @throws IOException If we can't start the server.
-	 */
-	public static void main(String[] args) throws IOException {
-		int localPort = Integer.parseInt(args[0]);
-		String remoteHost = args[1];
-		int remotePort = Integer.parseInt(args[2]);
-
+	static int mainLoop(int localPort, String remoteHost, int remotePort) {
 		try (var server = new ServerSocket(localPort)) {
+			log.info("listening on {}", server.getLocalSocketAddress());
 			while (true) {
 				var client = server.accept();
 				new TCPProxy(client, remoteHost, remotePort);
 			}
+		} catch (InterruptedIOException e) {
+			return CommandLine.ExitCode.OK;
+		} catch (IOException e) {
+			log.error("failure in listener", e);
+			return CommandLine.ExitCode.SOFTWARE;
 		}
 	}
-}
-
-/**
- * A persistent remote connection.
- */
-final class Remote {
-
-	/** How long to wait between retries of the connection. */
-	private static final int RETRY_MS = 5000;
-
-	/** How long to wait between writes on a connection. */
-	private static final int WRITE_RETRY_MS = 1000;
-
-	private final String remoteHost;
-
-	private final int remotePort;
-
-	private Socket remote = null;
-
-	private boolean closed = false;
 
 	/**
-	 * Create a remote.
+	 * Implementation of the command line handler.
+	 */
+	@Command(name = "spinnaker-proxy", mixinStandardHelpOptions = true, //
+			versionProvider = Version.class)
+	static class CLI implements Callable<Integer> {
+		@Parameters(index = "0", paramLabel = "localPort",
+				description = "The local port to listen on.")
+		private int localPort;
+
+		@Parameters(index = "1", paramLabel = "remoteHost",
+				description = "The remote host to proxy.")
+		private String remoteHost;
+
+		@Parameters(index = "2", paramLabel = "remotePort",
+				description = "The remote port to proxy.")
+		private int remotePort;
+
+		@Spec
+		private CommandSpec spec;
+
+		private void validate(int port, String name) {
+			// TCP port numbers are really unsigned shorts
+			if (port != Short.toUnsignedInt((short) port)) {
+				throw new ParameterException(spec.commandLine(),
+						format("value '%s' for parameter '%s' is out of "
+								+ "range (0..65535)", port, name));
+			}
+		}
+
+		@Override
+		public Integer call() {
+			validate(localPort, "localPort");
+			validate(remotePort, "remotePort");
+			return mainLoop(localPort, remoteHost, remotePort);
+		}
+	}
+
+	/** How to get the version number baked in by Maven. */
+	static class Version implements IVersionProvider {
+		private static final String DEFAULT = "0.1 (unpackaged)";
+
+		@Override
+		public String[] getVersion() throws Exception {
+			return new String[] {
+				requireNonNullElse(
+						getClass().getPackage().getImplementationVersion(),
+						DEFAULT)
+			};
+		}
+	}
+
+	/**
+	 * The main method.
 	 *
-	 * @param remoteHost The host to connect to.
-	 * @param remotePort The port to connect to.
+	 * @param args
+	 *            {@code args[0]}: The local port to listen on <br>
+	 *            {@code args[1]}: The remote host to proxy <br>
+	 *            {@code args[2]}: The remote port to proxy
+	 * @throws IOException
+	 *             If we can't start the server.
+	 * @throws IllegalArgumentException
+	 *             If the wrong number of arguments are given.
 	 */
-	Remote(String remoteHost, int remotePort) {
-		this.remoteHost = remoteHost;
-		this.remotePort = remotePort;
-	}
-
-	/**
-	 * Connect to the remote site and don't stop until connected.
-	 *
-	 * @throws InterruptedException If interrupted.
-	 */
-	synchronized void connect() throws InterruptedException {
-		if (remote != null || closed) {
-			return;
-		}
-		System.err.println("Connecting to " + remoteHost + ":" + remotePort);
-		while (true) {
-			try {
-				remote = new Socket(remoteHost, remotePort);
-				System.err.println("Connected to "
-						+ remote.getRemoteSocketAddress());
-				return;
-			} catch (IOException e) {
-				Thread.sleep(RETRY_MS);
-			}
-		}
-	}
-
-	/**
-	 * Write to the remote.  Retry until successful, or interrupted.
-	 *
-	 * @param buffer The buffer to write.
-	 * @param offset The offset of the buffer to start from.
-	 * @param length The length of the buffer to write, starting at the offset.
-	 * @throws InterruptedException If interrupted.
-	 */
-	void write(byte[] buffer, int offset, int length)
-			throws InterruptedException {
-		while (true) {
-			while (remote == null) {
-				Thread.sleep(WRITE_RETRY_MS);
-			}
-			try {
-				var remoteOutput = remote.getOutputStream();
-				remoteOutput.write(buffer, 0, length);
-				return;
-			} catch (IOException e) {
-				if (!closed) {
-					closeConnections();
-					connect();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Read from the remote.  Retry until successful, or interrupted.
-	 *
-	 * @param buffer The buffer to read into.
-	 * @return The bytes written.
-	 * @throws InterruptedException If interrupted.
-	 */
-	int read(byte[] buffer) throws InterruptedException {
-		while (true) {
-			if (remote == null) {
-				return -1;
-			}
-			try {
-				var remoteInput = remote.getInputStream();
-				int bytesRead = remoteInput.read(buffer);
-				if (bytesRead == -1) {
-					throw new IOException();
-				}
-				return bytesRead;
-			} catch (IOException e) {
-				if (!closed) {
-					closeConnections();
-					connect();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Close the connection never to be reopened.
-	 */
-	void close() {
-		closed = true;
-		closeConnections();
-	}
-
-	/**
-	 * Close the connections.
-	 */
-	synchronized void closeConnections() {
-		if (remote == null) {
-			return;
-		}
-		forceClose(remote);
-		remote = null;
-	}
-
-	/**
-	 * Force closure and ignore any exceptions.
-	 * @param closable The thing to close.
-	 */
-	private void forceClose(AutoCloseable closable) {
-		if (closable == null) {
-			return;
-		}
-		try {
-			closable.close();
-		} catch (Exception e) {
-			// Ignore the exception
-		}
+	public static void main(String[] args) throws IOException {
+		System.exit(new CommandLine(new CLI()).execute(args));
 	}
 }

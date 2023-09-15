@@ -9,7 +9,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,8 @@ limitations under the License.
 			</c:if>
 			<p>
 			<h2>Current State (read only)</h2>
-			Temperature: <span id="temperatureDisplay">...</span>
+			Temperature: <span id="temperatureDisplay">Reading...</span>
+			<!-- ${tempDataUri}?board_id=${board.id} -->
 			<script defer="defer">
 				loadTemperature("${ tempDataUri }", ${board.id}, "temperatureDisplay");
 			</script>
@@ -153,16 +154,11 @@ limitations under the License.
 			out in future allocations.
 		</form:form>
 		<h2>Blacklisted Hardware</h2>
-		<form:form method="POST" modelAttribute="bldata" action="${ blacklistControlUri }">
-			<form:hidden path="id" />
-			<c:if test="${ bldata.present }">
-				<form:textarea path="blacklist" />
-				<input type="submit" name="save" value="Save blacklist" />
-			</c:if>
-			<input type="submit" name="fetch" value="Refresh blacklist from board" />
-			<input type="submit" name="push" value="Push saved blacklist to board"
-				class="warningbutton" ${ bldata.synched ? 'disabled="disabled"' : '' } />
-		</form:form>
+		<textarea id="blacklistDisplay" cols="20" rows="20" disabled="true"></textarea><br/>
+		<span id="blacklistStatus"></span><br/>
+		<button id="saveBl" onclick="saveBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpId }, 'blacklistDisplay', 'saveBl', 'loadBl', 'blacklistStatus')" class="warningbutton" disabled="true">Write New Blacklist</button>
+		<button id="loadBl" onclick="loadBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpId }, 'blacklistDisplay', 'saveBl', 'loadBl', 'blacklistStatus')">Read Blacklist</button>
+		<br/>
 	</c:when>
 	<c:otherwise>
 		<form:form method="POST" modelAttribute="board">

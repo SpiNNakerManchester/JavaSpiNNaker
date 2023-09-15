@@ -81,7 +81,7 @@ class TestBlacklist {
 			var words = raw.asIntBuffer();
 			assertEquals(2, words.get());
 			assertEquals(0x0400008, words.get()); // chip 0,0 core 3 link 4
-			assertEquals(0x903ffff, words.get()); // chip 1,1 dead
+			assertEquals(0x9ffffff, words.get()); // chip 1,1 dead
 			// No data after that
 			assertThrows(BufferUnderflowException.class, words::get);
 
