@@ -225,20 +225,18 @@ public final class Blacklist implements Serializable {
 			} else {
 				// check for blacklisted cores
 				if (mcl != 0) {
-					cores.put(b,
-							range(0, MAX_NUM_CORES)
-									.filter(c -> (mcl & (1 << c)) != 0)
-									.mapToObj(Integer::valueOf)
-									.collect(toSet()));
+					cores.put(b, range(0, MAX_NUM_CORES)
+							.filter(c -> (mcl & (1 << c)) != 0)
+							.mapToObj(Integer::valueOf)
+							.collect(toSet()));
 				}
 				// check for blacklisted links
 				int mll = (entry >> MAX_NUM_CORES) & LINK_MASK;
 				if (mll != 0) {
-					links.put(b,
-							range(0, MAX_LINKS_PER_ROUTER)
-									.filter(c -> (mll & (1 << c)) != 0)
-									.mapToObj(Direction::byId)
-									.collect(toEnumSet(Direction.class)));
+					links.put(b, range(0, MAX_LINKS_PER_ROUTER)
+							.filter(c -> (mll & (1 << c)) != 0)
+							.mapToObj(Direction::byId)
+							.collect(toEnumSet(Direction.class)));
 				}
 			}
 		}
