@@ -97,6 +97,9 @@ public final class Blacklist implements Serializable {
 
 	private static final int LINK_MASK = (1 << MAX_LINKS_PER_ROUTER) - 1;
 
+	private static final int DEAD_MASK =
+			(LINK_MASK << MAX_NUM_CORES) | CORE_MASK;
+
 	private static final int PAYLOAD_BITS =
 			MAX_NUM_CORES + MAX_LINKS_PER_ROUTER;
 
@@ -169,7 +172,7 @@ public final class Blacklist implements Serializable {
 				int loc = (x << COORD_BITS) | y;
 				int value = 0;
 				if (chips.contains(chip)) {
-					value = CORE_MASK | (LINK_MASK << MAX_NUM_CORES);
+					value = DEAD_MASK;
 				} else {
 					if (cores.containsKey(chip)) {
 						value |= cores.get(chip).stream()
@@ -219,7 +222,7 @@ public final class Blacklist implements Serializable {
 			int mcl = entry & CORE_MASK;
 			if (mcl == CORE_MASK) {
 				chips.add(b);
-			} else if (mcl != 0) {
+			} else {
 				// check for blacklisted cores
 				cores.put(b,
 						range(0, MAX_NUM_CORES)
