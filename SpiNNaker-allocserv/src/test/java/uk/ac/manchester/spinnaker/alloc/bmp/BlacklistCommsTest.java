@@ -145,7 +145,8 @@ class BlacklistCommsTest extends TestSupport {
 		var bs = stateCtrl.findId(BOARD).orElseThrow();
 		var future = bmpWorker(Set.of(bs.bmpId), 1);
 
-		var bl = stateCtrl.readBlacklistFromMachine(bs).orElseThrow();
+		var bl = stateCtrl.readBlacklistFromMachine(bs.id, bs.bmpId)
+				.orElseThrow();
 
 		assertEquals(BMP_DONE_TOKEN, future.get());
 		assertEquals(new Blacklist("chip 5 5 core 5"), bl);
@@ -158,7 +159,7 @@ class BlacklistCommsTest extends TestSupport {
 		var future = bmpWorker(Set.of(bs.bmpId), 2);
 		assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 
-		stateCtrl.writeBlacklistToMachine(bs,
+		stateCtrl.writeBlacklistToMachine(bs.id, bs.bmpId,
 				new Blacklist("chip 4 4 core 4,6"));
 
 		assertEquals(BMP_DONE_TOKEN, future.get());
