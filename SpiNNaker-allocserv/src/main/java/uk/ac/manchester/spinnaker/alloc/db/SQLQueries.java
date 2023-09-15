@@ -2056,9 +2056,10 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
+	@ResultColumn("machine_id")
 	protected static final String GET_TEMP_INFO_REQS =
 			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
-					+ "cabinet, frame FROM blacklist_ops "
+					+ "cabinet, frame, boards.machine_id FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 3 AND NOT completed "
