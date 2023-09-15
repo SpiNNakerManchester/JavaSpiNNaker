@@ -281,6 +281,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public BoardRecord toBoardRecord() {
 			var br = new BoardRecord();
 			br.setId(id);
+			br.setBmpId(bmpId);
 			br.setMachineName(machineName);
 			br.setX(x);
 			br.setY(y);
@@ -480,18 +481,20 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Retrieve the blacklist for the given board from the board and store it in
 	 * the database.
 	 *
-	 * @param board
+	 * @param boardId
 	 *            The board to get the blacklist of.
+	 * @param bmpId
+	 *            The BMP of the board.
 	 * @return The blacklist that was transferred, if any.
 	 */
-	public Optional<Blacklist> pullBlacklist(BoardState board) {
+	public Optional<Blacklist> pullBlacklist(int boardId, int bmpId) {
 		try {
-			return readBlacklistFromMachine(board).map(bl -> {
-				blacklistStore.writeBlacklist(board.id, bl);
+			return readBlacklistFromMachine(boardId, bmpId).map(bl -> {
+				blacklistStore.writeBlacklist(boardId, bl);
 				execute(c -> {
 					// These must be done in ONE transaction
-					changed(c, board.id);
-					synched(c, board.id);
+					changed(c, boardId);
+					synched(c, boardId);
 					return this; // Unimportant result
 				});
 				return bl;
@@ -512,7 +515,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public Optional<Blacklist> pushBlacklist(BoardState board) {
 		return readBlacklistFromDB(board).map(bl -> {
 			try {
-				writeBlacklistToMachine(board, bl);
+				writeBlacklistToMachine(board.id, board.bmpId, bl);
 				execute(c -> synched(c, board.id)); // Unimportant result
 				return bl;
 			} catch (InterruptedException e) {
@@ -687,24 +690,25 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Given a board, write a blacklist for it to the database. Does
 	 * <em>not</em> push the blacklist to the board.
 	 *
-	 * @param board
-	 *            Which board to write the blacklist of.
+	 * @param boardId The ID of the board to write.
 	 * @param blacklist
 	 *            The blacklist to write.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
 	 */
-	public void writeBlacklistToDB(BoardState board,
+	public void writeBlacklistToDB(int boardId,
 			@Valid Blacklist blacklist) {
-		blacklistStore.writeBlacklist(board.id, blacklist);
-		execute(c -> changed(c, board.id)); // Unimportant result
+		blacklistStore.writeBlacklist(boardId, blacklist);
+		execute(c -> changed(c, boardId)); // Unimportant result
 	}
 
 	/**
 	 * Given a board, read its blacklist off the machine.
 	 *
-	 * @param board
+	 * @param boardId
 	 *            Which board to read the blacklist of.
+	 * @param bmpId
+	 *            The BMP of the board.
 	 * @return The board's blacklist.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
@@ -713,10 +717,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @throws InterruptedException
 	 *             If interrupted.
 	 */
-	public Optional<Blacklist> readBlacklistFromMachine(BoardState board)
+	public Optional<Blacklist> readBlacklistFromMachine(int boardId, int bmpId)
 			throws InterruptedException {
-		try (var op = new BmpOp(CREATE_BLACKLIST_READ, board.id)) {
-			bmpController.triggerSearch(List.of(board.bmpId));
+		try (var op = new BmpOp(CREATE_BLACKLIST_READ, boardId)) {
+			bmpController.triggerSearch(List.of(bmpId));
 			return op.getResult(serial("data", Blacklist.class));
 		}
 	}
@@ -724,8 +728,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Write a blacklist to a board on the machine.
 	 *
-	 * @param board
+	 * @param boardId
 	 *            Which board to write the blacklist of.
+	 * @param bmpId
+	 *            Which BMP the board belongs to.
 	 * @param blacklist
 	 *            The blacklist to write.
 	 * @throws DataAccessException
@@ -736,10 +742,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *             If interrupted. Note that interrupting the thread does
 	 *             <em>not</em> necessarily halt the write of the blacklist.
 	 */
-	public void writeBlacklistToMachine(BoardState board,
+	public void writeBlacklistToMachine(int boardId, int bmpId,
 			@Valid Blacklist blacklist) throws InterruptedException {
-		try (var op = new BmpOp(CREATE_BLACKLIST_WRITE, board.id, blacklist)) {
-			bmpController.triggerSearch(List.of(board.bmpId));
+		try (var op = new BmpOp(CREATE_BLACKLIST_WRITE, boardId, blacklist)) {
+			bmpController.triggerSearch(List.of(bmpId));
 			op.completed();
 		}
 	}

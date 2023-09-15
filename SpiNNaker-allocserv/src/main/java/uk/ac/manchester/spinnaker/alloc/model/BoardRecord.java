@@ -43,6 +43,8 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 public class BoardRecord {
 	private Integer id;
 
+	private Integer bmpId;
+
 	@NotBlank
 	private String machineName;
 
@@ -64,7 +66,7 @@ public class BoardRecord {
 	@ValidBoardNumber
 	private Integer board;
 
-	@IPAddress(nullOK = true)
+	@IPAddress(nullOK = true, emptyOK = true)
 	private String ipAddress;
 
 	private Boolean enabled;
@@ -96,6 +98,19 @@ public class BoardRecord {
 	 */
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	/** @return The BMP ID. */
+	public Integer getBmpId() {
+		return this.bmpId;
+	}
+
+	/**
+	 * @param bmpId
+	 *            The BMP ID.
+	 */
+	public void setBmpId(Integer bmpId) {
+		this.bmpId = bmpId;
 	}
 
 	/** @return Whether we have an ID. */
