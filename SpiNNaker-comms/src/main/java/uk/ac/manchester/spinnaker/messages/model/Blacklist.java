@@ -224,10 +224,13 @@ public final class Blacklist implements Serializable {
 				chips.add(b);
 			} else {
 				// check for blacklisted cores
-				cores.put(b,
-						range(0, MAX_NUM_CORES)
-								.filter(c -> (mcl & (1 << c)) != 0)
-								.mapToObj(Integer::valueOf).collect(toSet()));
+				if (mcl != 0) {
+					cores.put(b,
+							range(0, MAX_NUM_CORES)
+									.filter(c -> (mcl & (1 << c)) != 0)
+									.mapToObj(Integer::valueOf)
+									.collect(toSet()));
+				}
 				// check for blacklisted links
 				int mll = (entry >> MAX_NUM_CORES) & LINK_MASK;
 				if (mll != 0) {
