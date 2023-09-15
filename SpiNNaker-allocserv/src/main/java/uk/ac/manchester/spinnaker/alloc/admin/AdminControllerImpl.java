@@ -718,7 +718,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("saving changes to a board blacklist")
 	public ResponseEntity<Void> blacklistSave(BlacklistData bldata) {
-
 		if (bldata.isPresent()) {
 			try {
 				var blacklist = bldata.getParsedBlacklist();
@@ -736,9 +735,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("fetching a live board blacklist from the machine")
 	public BlacklistData blacklistFetch(int boardId, int bmpId) {
-
 		log.info("pulling blacklist from board {}", boardId);
-		BlacklistData data = new BlacklistData();
+		var data = new BlacklistData();
 		data.setBoardId(boardId);
 		data.setBmpId(bmpId);
 		machineController.pullBlacklist(boardId, bmpId).ifPresentOrElse(bl -> {
