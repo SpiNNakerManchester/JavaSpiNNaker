@@ -113,7 +113,6 @@ import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.SetBoardLEDs;
-import uk.ac.manchester.spinnaker.messages.bmp.EraseFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
@@ -123,7 +122,6 @@ import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlashCRC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector;
 import uk.ac.manchester.spinnaker.messages.bmp.ResetFPGA;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
-import uk.ac.manchester.spinnaker.messages.bmp.UpdateFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
@@ -1915,8 +1913,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data,
-			boolean update)
+			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
 			throws ProcessException, IOException, InterruptedException {
 		if (!data.hasRemaining()) {
 			// Zero length write?
@@ -1924,19 +1921,13 @@ public class Transceiver extends UDPTransceiver
 			return;
 		}
 
-		int size = data.remaining();
-		var workingBuffer =
-				get(bmp, new EraseFlash(board, baseAddress, size));
+		var serialVector = get(bmp, new ReadSerialVector(board));
+		var workingBuffer = serialVector.flashBuffer();
 		var targetAddr = baseAddress;
 		for (var buf : sliceUp(data, FLASH_CHUNK_SIZE)) {
 			writeBMPMemory(bmp, board, workingBuffer, buf);
-			call(bmp, new WriteFlashBuffer(board, targetAddr, false));
+			call(bmp, new WriteFlashBuffer(board, targetAddr, true));
 			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
-		}
-
-		if (update) {
-			call(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
-					new UpdateFlash(board, baseAddress, size));
 		}
 	}
 
