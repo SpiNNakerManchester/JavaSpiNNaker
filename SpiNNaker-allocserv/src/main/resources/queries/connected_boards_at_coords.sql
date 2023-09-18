@@ -38,7 +38,7 @@ WITH RECURSIVE
 	-- Boards on the machine in the rectangle of interest
 	bs(board_id, x, y, z, job_x, job_y, job_z) AS (
 		SELECT
-			boards.board_id, boards.x, boards.y, boards.z
+			boards.board_id, boards.x, boards.y, boards.z,
 			(boards.x - args.x) % machines.width,
 			(boards.y - args.y) % machines.height,
 			(boards.z - args.z) % machines.depth
