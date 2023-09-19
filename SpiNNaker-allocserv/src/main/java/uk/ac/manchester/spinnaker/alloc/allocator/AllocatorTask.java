@@ -585,7 +585,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			int maxImportance = -1;
 			log.trace("Allocate running");
 			var allocations = new Allocations();
-			for (AllocTask task : sql.getTasks.call(AllocTask::new, QUEUED)) {
+			for (var task : sql.getTasks.call(AllocTask::new, QUEUED)) {
 				if (task.importance > maxImportance) {
 					maxImportance = task.importance;
 				} else if (task.importance < maxImportance

@@ -80,7 +80,7 @@ abstract sealed class SQLiteStorage<APIType extends DatabaseAPI>
 			Object... args) throws SQLException {
 		statement.clearParameters();
 		int idx = 1;
-		for (Object o : args) {
+		for (var o : args) {
 			statement.setObject(idx, o);
 			idx++;
 		}

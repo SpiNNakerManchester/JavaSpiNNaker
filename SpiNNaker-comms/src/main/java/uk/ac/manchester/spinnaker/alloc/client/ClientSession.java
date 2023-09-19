@@ -633,7 +633,7 @@ final class ClientSession implements Session {
 		var headerFields = conn.getHeaderFields();
 		var cookiesHeader = headerFields.get(SET_COOKIE);
 		if (cookiesHeader != null) {
-			for (String setCookie : cookiesHeader) {
+			for (var setCookie : cookiesHeader) {
 				log.debug("Cookie header: {}", setCookie);
 				var m = SESSION_ID_RE.matcher(setCookie);
 				if (m.find()) {

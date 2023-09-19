@@ -88,7 +88,7 @@ public final class ChipSummaryInfo {
 
 	private static Set<Direction> parseWorkingLinks(int flags) {
 		var wl = EnumSet.noneOf(Direction.class);
-		for (Direction d : Direction.values()) {
+		for (var d : Direction.values()) {
 			if (bitset(flags, LINKS_FIELD_SHIFT + d.id)) {
 				wl.add(d);
 			}

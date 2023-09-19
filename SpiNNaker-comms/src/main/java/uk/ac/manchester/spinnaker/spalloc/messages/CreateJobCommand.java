@@ -63,7 +63,7 @@ public final class CreateJobCommand extends Command<Integer> {
 			throw new IllegalArgumentException(
 					"owner must be specified for all jobs");
 		}
-		for (String key : kwargs.keySet()) {
+		for (var key : kwargs.keySet()) {
 			addKwArg(key, kwargs.get(key));
 		}
 	}

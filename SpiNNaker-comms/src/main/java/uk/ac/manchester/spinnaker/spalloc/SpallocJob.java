@@ -694,7 +694,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public String getHostname()
 			throws IOException, SpallocServerException, InterruptedException {
-		for (Connection c : getConnections()) {
+		for (var c : getConnections()) {
 			if (c.chip().onSameChipAs(ZERO_ZERO)) {
 				return c.hostname();
 			}

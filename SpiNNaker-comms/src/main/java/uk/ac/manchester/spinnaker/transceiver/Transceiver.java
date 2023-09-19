@@ -460,7 +460,7 @@ public class Transceiver extends UDPTransceiver
 			}
 			connections.add(createScpConnection(desc.chip, desc.hostname));
 		}
-		for (Connection conn : connections) {
+		for (var conn : connections) {
 			identifyConnection(conn);
 		}
 		scpSelector = makeConnectionSelector();
@@ -601,7 +601,7 @@ public class Transceiver extends UDPTransceiver
 		allConnections.addAll(connections);
 		// if there has been SCAMP connections given, build them
 		if (scampConnections != null) {
-			for (ConnectionDescriptor desc : scampConnections) {
+			for (var desc : scampConnections) {
 				if (desc.portNumber != null
 						&& desc.portNumber != SCP_SCAMP_PORT) {
 					log.warn("ignoring unexpected SCAMP port: {}",
@@ -610,7 +610,7 @@ public class Transceiver extends UDPTransceiver
 				connections.add(createScpConnection(desc.chip, desc.hostname));
 			}
 		}
-		for (Connection conn : connections) {
+		for (var conn : connections) {
 			identifyConnection(conn);
 		}
 		scpSelector = makeConnectionSelector();
