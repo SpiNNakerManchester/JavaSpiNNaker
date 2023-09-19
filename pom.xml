@@ -35,13 +35,13 @@ limitations under the License.
 		<junit.version>5.10.0</junit.version>
 		<junit.platform.version>1.10.0</junit.platform.version>
 		<checkstyle.version>10.12.3</checkstyle.version>
-		<javadoc.version>3.5.0</javadoc.version>
+		<javadoc.version>3.6.0</javadoc.version>
 		<testing.version>3.1.2</testing.version>
 
 		<slf4j.version>2.0.9</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
 
-		<spring.version>5.3.29</spring.version>
+		<spring.version>5.3.30</spring.version>
 		<spring.boot.version>2.7.15</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
@@ -54,7 +54,7 @@ limitations under the License.
 		-->
 		<spring.security.version>5.8.6</spring.security.version>
 
-		<cxf.version>3.6.1</cxf.version>
+		<cxf.version>3.6.2</cxf.version>
 		<jackson.version>2.15.2</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.43.0.0</sqlite.version>

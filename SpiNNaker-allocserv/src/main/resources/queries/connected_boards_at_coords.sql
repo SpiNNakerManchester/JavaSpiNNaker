@@ -41,12 +41,19 @@ WITH RECURSIVE
 		FROM args, xrange, yrange, zrange, m
 		ORDER BY x, y, z),
 	-- Boards on the machine in the rectangle of interest
-	bs(board_id, x, y, z) AS (
-		SELECT boards.board_id, boards.x, boards.y, boards.z FROM boards
-		JOIN args USING (machine_id)
-		JOIN rect ON boards.x = rect.x AND boards.y = rect.y and boards.z = rect.z
+	bs(board_id, x, y, z, job_x, job_y, job_z) AS (
+		SELECT
+			boards.board_id, boards.x, boards.y, boards.z,
+			(boards.x - args.x + machines.width) % machines.width,
+			(boards.y - args.y + machines.height) % machines.height,
+			(boards.z - args.z + machines.depth) % machines.depth
+		FROM boards
+			JOIN args USING (machine_id)
+			JOIN rect ON boards.x = rect.x AND boards.y = rect.y
+				AND boards.z = rect.z
+			JOIN machines USING (machine_id)
 		WHERE may_be_allocated
-		ORDER BY 2, 3, 4),
+		ORDER BY 5, 6, 7),
 	-- Links between boards of interest
 	ls(b1, b2) AS (SELECT board_1, board_2 FROM links
 		WHERE board_1 IN (SELECT board_id FROM bs)
@@ -64,4 +71,4 @@ WITH RECURSIVE
 SELECT
 	bs.board_id
 FROM bs JOIN connected ON bs.board_id = connected.b
-ORDER BY bs.x ASC, bs.y ASC, bs.z ASC;
+ORDER BY bs.job_x ASC, bs.job_y ASC, bs.job_z ASC;
