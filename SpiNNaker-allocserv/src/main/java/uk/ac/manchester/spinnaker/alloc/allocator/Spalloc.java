@@ -1737,10 +1737,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				y -= chipRoot.getY();
 				// Allow for wrapping
 				if (x < 0) {
-					x += machine.getWidth();
+					x += machine.getWidth() * TRIAD_CHIP_SIZE;
 				}
 				if (y < 0) {
-					y += machine.getHeight();
+					y += machine.getHeight() * TRIAD_CHIP_SIZE;
 				}
 				return new ChipLocation(x, y);
 			}
