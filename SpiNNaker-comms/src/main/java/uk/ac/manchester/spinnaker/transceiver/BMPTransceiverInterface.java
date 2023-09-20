@@ -1550,7 +1550,30 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 
 		// Do the actual writes here; any failure before here is unimportant
 		writeFlash(bmp, board, BMP_BOOT_SECTOR_ADDR, data);
-		writeSerialFlash(bmp, board, NULL, ByteBuffer.wrap(sfData));
+		var sfBuffer = ByteBuffer.wrap(sfData);
+		writeSerialFlash(bmp, board, NULL, sfBuffer);
+
+		// Read back data from both places
+		var readData = readBMPMemory(bmp, board, BMP_BOOT_SECTOR_ADDR,
+				BMP_BOOT_SECTOR_SIZE);
+		var readDataEqual = data.position(0).equals(readData.position(0));
+		var sfReadData = readSerialFlash(bmp, board, NULL, sfData.length);
+		var readSfEqual = sfBuffer.position(0).equals(sfReadData.position(0));
+
+		if (!readDataEqual && !readSfEqual) {
+			throw new IOException(
+					"The write failed completely - try again"
+					+ " (but careful as pressing read may lose the blacklist"
+					+ " completely)");
+		} else if (!readDataEqual) {
+			throw new IOException(
+					"The flash write failed - try the write again");
+		} else if (!readSfEqual) {
+			throw new IOException(
+					"The serial flash write failed - try again"
+					+ " (but careful as pressing read may lose the blacklist"
+					+ " completely)");
+		}
 	}
 
 	/**
