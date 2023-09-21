@@ -26,11 +26,10 @@ import java.io.Serial;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.google.errorprone.annotations.MustBeClosed;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;

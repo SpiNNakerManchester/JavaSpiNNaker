@@ -22,8 +22,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.UriInfo;
-
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;

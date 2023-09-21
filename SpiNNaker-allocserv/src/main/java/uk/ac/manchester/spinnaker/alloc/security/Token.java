@@ -15,9 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.security.core.Authentication;
+
+import jakarta.servlet.http.HttpSession;
 
 /**
  * A saved authentication token. Categorically only ever valid in the session

@@ -46,7 +46,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.nmpi.model.job.JobManagerInterface;
 import uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters;

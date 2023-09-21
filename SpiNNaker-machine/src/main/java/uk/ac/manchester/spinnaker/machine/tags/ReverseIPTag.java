@@ -19,8 +19,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.Objects;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;

@@ -65,15 +65,15 @@ import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLA
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.ORGANISATION;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.MAIN_URI;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_URI;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_URI;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_PATH;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
@@ -87,9 +87,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +104,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;

@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

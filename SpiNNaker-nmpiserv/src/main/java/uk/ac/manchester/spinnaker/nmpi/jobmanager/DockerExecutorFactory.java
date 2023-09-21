@@ -26,8 +26,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.NotFoundException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.NotFoundException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;

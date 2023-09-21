@@ -43,11 +43,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -55,6 +50,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;

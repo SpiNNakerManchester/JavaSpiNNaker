@@ -41,8 +41,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +52,7 @@ import org.springframework.stereotype.Service;
 import com.google.errorprone.annotations.RestrictedApi;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.annotation.PostConstruct;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;

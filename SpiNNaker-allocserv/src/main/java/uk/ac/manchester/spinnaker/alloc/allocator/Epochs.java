@@ -27,13 +27,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 /**

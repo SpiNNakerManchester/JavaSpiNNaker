@@ -39,12 +39,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -55,6 +49,11 @@ import org.springframework.stereotype.Service;
 import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;

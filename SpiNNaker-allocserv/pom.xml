@@ -41,6 +41,7 @@ limitations under the License.
 		<truststore.file>${project.build.directory}/generated-resources/truststore.p12</truststore.file>
 		<truststore.pass>hunter2</truststore.pass>
 		<npm.command>build</npm.command>
+		<spring-security.version>6.1.4</spring-security.version>
 	</properties>
 
 	<build>
@@ -255,10 +256,12 @@ limitations under the License.
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.sling</groupId>
+					<groupId>io.leonard.maven.plugins</groupId>
 					<artifactId>jspc-maven-plugin</artifactId>
 					<configuration>
-						<sourceDirectory>${project.basedir}/src/main/webapp/WEB-INF</sourceDirectory>
+						<includes>
+							<include>${project.basedir}/src/main/webapp/WEB-INF/**/*.jsp</include>
+						</includes>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -267,6 +270,14 @@ limitations under the License.
 
 	<dependencyManagement>
 		<dependencies>
+	    	<dependency>
+				<!-- Redo the import of the Spring Security POM -->
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${spring-security.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<dependency>
 				<!-- Redo the import of the Spring POM -->
 				<groupId>org.springframework</groupId>
@@ -290,12 +301,6 @@ limitations under the License.
 				<version>${cxf.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<!-- Spring Boot doesn't say anything about this... -->
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.version}</version>
 			</dependency>
 
 			<!-- Something is forcing these to otherwise be wrong -->
@@ -354,6 +359,11 @@ limitations under the License.
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 		</dependency>
 		<dependency>
+			<!-- Not optional: we set a Feature -->
+			<groupId>jakarta.xml.ws</groupId>
+			<artifactId>jakarta.xml.ws-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
@@ -370,12 +380,12 @@ limitations under the License.
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
+			<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+			<artifactId>jackson-jakarta-rs-json-provider</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -389,9 +399,13 @@ limitations under the License.
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>jakarta.mail</groupId>
+		    <artifactId>jakarta.mail-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -414,11 +428,6 @@ limitations under the License.
 			<artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
 		</dependency>
 		<dependency>
-			<!-- Needed for swagger support to work because of how feature binding works. -->
-			<groupId>jakarta.xml.ws</groupId>
-			<artifactId>jakarta.xml.ws-api</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>
 			<scope>runtime</scope>
@@ -438,8 +447,8 @@ limitations under the License.
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
+		    <groupId>jakarta.servlet.jsp.jstl</groupId>
+		    <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -534,14 +543,14 @@ limitations under the License.
 				<plugins>
 					<plugin>
 						<!-- JSP syntax check via pre-compilation -->
-						<groupId>org.apache.sling</groupId>
+						<groupId>io.leonard.maven.plugins</groupId>
 						<artifactId>jspc-maven-plugin</artifactId>
 						<executions>
 							<execution>
+								<id>jspc</id>
 								<goals>
-									<goal>jspc</goal>
+									<goal>compile</goal>
 								</goals>
-								<phase>compile</phase>
 							</execution>
 						</executions>
 					</plugin>

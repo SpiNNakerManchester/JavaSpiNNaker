@@ -17,17 +17,17 @@ package uk.ac.manchester.spinnaker.nmpi.rest.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
-import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
-import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
+import static jakarta.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.StringWriter;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.ext.Provider;
 
 import org.apache.commons.io.output.WriterOutputStream;
 import org.slf4j.Logger;

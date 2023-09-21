@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.google.errorprone.annotations.Immutable;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Represents a directional link between SpiNNaker chips in the machine.
