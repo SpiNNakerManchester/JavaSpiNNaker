@@ -86,9 +86,8 @@ public abstract class ByteBufferUtils {
 	 */
 	public static MappableIterable<ByteBuffer> sliceUp(ByteBuffer src,
 			int chunkSize) {
+		var b = src.duplicate();
 		return () -> new Iterator<>() {
-			final ByteBuffer b = src.duplicate();
-
 			@Override
 			public boolean hasNext() {
 				return b.hasRemaining();
