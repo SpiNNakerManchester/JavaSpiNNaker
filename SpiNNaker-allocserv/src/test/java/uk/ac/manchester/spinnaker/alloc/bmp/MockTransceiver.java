@@ -236,6 +236,8 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data) {
 		log.info("writeFlash({},{},{},{})", bmp, board, baseAddress,
 				data.remaining());
+		slice(memory, baseAddress.address, data.remaining())
+				.put(data.duplicate());
 		var blData = data.duplicate().position(BMP_FLASH_BLACKLIST_OFFSET);
 		synchronized (setBlacklist) {
 			setBlacklist.setValue(new Blacklist(blData));
