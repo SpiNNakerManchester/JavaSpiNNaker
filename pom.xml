@@ -59,7 +59,7 @@ limitations under the License.
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.43.0.0</sqlite.version>
 		<keycloak.version>22.0.3</keycloak.version>
-		<swagger.version>5.6.1</swagger.version>
+		<swagger.version>5.7.2</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.21.1</error-prone.version>
