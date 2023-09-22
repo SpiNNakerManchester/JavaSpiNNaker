@@ -24,12 +24,10 @@ updates:
     labels:
       - "bug"
       - "dependabot"
-    milestone: 6   # This is the *ID* for the 7.0.0 milestone
     assignees:
-      - "dkfellows"
+      - "rowleya"
     reviewers:
       - "Christian-B"
-      - "rowleya"
   # The next two are branches that need to be kept current
   - package-ecosystem: maven
     directory: "/"
@@ -41,18 +39,7 @@ updates:
       - "dependabot"
     target-branch: "java-17"
     assignees:
-      - "dkfellows"
-  - package-ecosystem: maven
-    directory: "/"
-    schedule:
-      interval: weekly
-      day: tuesday
-    labels:
-      - "bug"
-      - "dependabot"
-    target-branch: "spring-6"
-    assignees:
-      - "dkfellows"
+      - "rowleya"
       
   # Actions are only checked on primary branch
   - package-ecosystem: "github-actions"
@@ -64,9 +51,7 @@ updates:
     labels:
       - "bug"
       - "dependabot"
-    milestone: 6   # This is the *ID* for the 7.0.0 milestone
     assignees:
-      - "dkfellows"
+      - "rowleya"
     reviewers:
       - "Christian-B"
-      - "rowleya"
