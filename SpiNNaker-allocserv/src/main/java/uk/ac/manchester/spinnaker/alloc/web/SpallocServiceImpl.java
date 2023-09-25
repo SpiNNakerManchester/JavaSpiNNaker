@@ -338,7 +338,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 				if (nonNull(req.board.x)) {
 					return new CreateDimensionsAt(req.dimensions.width,
 							req.dimensions.height, req.board.x, req.board.y,
-							req.board.z);
+							req.board.z, req.maxDeadBoards);
 				} else if (nonNull(req.board.cabinet)) {
 					return CreateDimensionsAt.physical(req.dimensions.width,
 							req.dimensions.height, req.board.cabinet,
