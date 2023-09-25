@@ -346,7 +346,7 @@
 <a class="jxr_linenumber" name="L338" href="#L338">338</a> 				<strong class="jxr_keyword">if</strong> (nonNull(req.board.x)) {
 <a class="jxr_linenumber" name="L339" href="#L339">339</a> 					<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CreateDimensionsAt(req.dimensions.width,
 <a class="jxr_linenumber" name="L340" href="#L340">340</a> 							req.dimensions.height, req.board.x, req.board.y,
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> 							req.board.z);
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> 							req.board.z, req.maxDeadBoards);
 <a class="jxr_linenumber" name="L342" href="#L342">342</a> 				} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (nonNull(req.board.cabinet)) {
 <a class="jxr_linenumber" name="L343" href="#L343">343</a> 					<strong class="jxr_keyword">return</strong> CreateDimensionsAt.physical(req.dimensions.width,
 <a class="jxr_linenumber" name="L344" href="#L344">344</a> 							req.dimensions.height, req.board.cabinet,
