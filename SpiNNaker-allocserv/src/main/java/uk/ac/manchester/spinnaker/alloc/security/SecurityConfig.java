@@ -272,7 +272,7 @@ public class SecurityConfig {
 			http.oauth2Login().loginPage(loginUrl)
 					.loginProcessingUrl(oidcPath("login/code/*"))
 					.authorizationEndpoint().baseUri(oidcPath("auth")).and()
-					.defaultSuccessUrl(rootPage, true)
+					.defaultSuccessUrl(rootPage, false)
 					.failureUrl(loginUrl + "?error=true").userInfoEndpoint()
 					.userAuthoritiesMapper(userAuthoritiesMapper());
 			http.oauth2Client();
@@ -280,7 +280,7 @@ public class SecurityConfig {
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
 					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
-					.defaultSuccessUrl(rootPage, true)
+					.defaultSuccessUrl(rootPage, false)
 					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler);
 		}
