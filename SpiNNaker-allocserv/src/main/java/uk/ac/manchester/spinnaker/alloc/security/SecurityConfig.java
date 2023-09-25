@@ -218,7 +218,8 @@ public class SecurityConfig {
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
 				.antMatchers(urlMaker.serviceUrl("info*"),
-						urlMaker.serviceUrl("info/**"))
+						urlMaker.serviceUrl("info/**"),
+						"/actuator/**")
 				.hasRole("ADMIN")
 				// Login process and static resources are available to all
 				.antMatchers(urlMaker.systemUrl("login*"),
