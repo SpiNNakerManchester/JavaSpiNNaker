@@ -116,6 +116,13 @@ public class BMPController extends DatabaseAwareBean {
 	private TaskScheduler scheduler;
 
 	/**
+	 * Synchronizer for power request access to the database (as otherwise
+	 * deadlocks can occur when multiple transactions try to update the boards
+	 * table).
+	 */
+	private Object powerDBSync = new Object();
+
+	/**
 	 * Map from BMP ID to worker task that handles it.
 	 */
 	private final Map<Integer, Worker> workers = new HashMap<>();
@@ -613,14 +620,20 @@ public class BMPController extends DatabaseAwareBean {
 					// Don't bother with pings when the dummy is enabled
 					controller.ping(powerOnBoards);
 				}
-				done();
+				synchronized (powerDBSync) {
+					done();
+				}
 			}, e -> {
-				failed();
+				synchronized (powerDBSync) {
+					failed();
+				}
 				synchronized (BMPController.this) {
 					bmpProcessingException = e;
 				}
 			}, ppe -> {
-				badBoard(ppe);
+				synchronized (powerDBSync) {
+					badBoard(ppe);
+				}
 			});
 			return ok;
 		}
