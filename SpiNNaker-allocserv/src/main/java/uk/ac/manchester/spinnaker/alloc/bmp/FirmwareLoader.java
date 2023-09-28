@@ -27,6 +27,7 @@ import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.BITFILE;
 import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.REGISTER;
+import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_ALL;
 import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_E_S;
@@ -36,6 +37,7 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.LEDO;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
+import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.FileNotFoundException;
@@ -62,11 +64,13 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
+import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /**
  * Handles loading of firmware into a BMP or an FPGA.
@@ -622,6 +626,20 @@ public class FirmwareLoader {
 			sleep(BIG_SLEEP);
 			log.info("completed post-load delay");
 		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		String bmpIp = args[0];
+		int boardId = Integer.parseInt(args[1]);
+
+		var boards = List.of(boardId);
+		var connData = List.of(new BMPConnectionData(0, 0, getByName(bmpIp),
+				boards,	SCP_SCAMP_PORT));
+
+		Transceiver txrx = new Transceiver(null, null, connData, null, null,
+				null, null, false, null, null, null);
+		var loader = new FirmwareLoader(txrx, new BMPBoard(boardId));
+		loader.bitLoad(true);
 	}
 }
 
