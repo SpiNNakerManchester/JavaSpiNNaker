@@ -106,6 +106,9 @@ public interface AdminController {
 	/** Path to temperature operations. */
 	String TEMPERATURE_PATH = "/boards/temperature";
 
+	/** Path to firmware operations. */
+	String FIRMWARE_PATH = "/boards/firmware";
+
 	/** Path to machine-instantiation operations. */
 	String MACHINE_PATH = "/machine";
 
@@ -447,7 +450,14 @@ public interface AdminController {
 	@GetMapping(value = TEMPERATURE_PATH)
 	@ResponseBody
 	BoardTemperatures getTemperatures(
-			@Valid @RequestParam("board_id") int boardId);
+			@Valid @RequestParam("board_id") int boardId,
+			@Valid @RequestParam("bmp_id") int bmpId);
+
+	@GetMapping(value = FIRMWARE_PATH)
+	@ResponseBody
+	ResponseEntity<Void> reloadFirmware(
+			@Valid @RequestParam("board_id") int boardId,
+			@Valid @RequestParam("bmp_id") int bmpId);
 
 	/**
 	 * Provide the form for uploading a machine definition.

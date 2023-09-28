@@ -120,6 +120,12 @@ class SpiNNaker1 implements SpiNNakerControl {
 		}
 	}
 
+	@Override
+	public void reloadFirmware(BMPBoard board)
+			throws ProcessException, InterruptedException, IOException {
+		loadFirmware(List.of(board));
+	}
+
 	/**
 	 * The factory. Forces the constructor to conform to the API.
 	 * <p>

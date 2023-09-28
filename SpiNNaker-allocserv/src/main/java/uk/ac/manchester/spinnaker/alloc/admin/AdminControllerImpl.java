@@ -33,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREA
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_USER_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_USER_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.DEFINED_MACHINES_OBJ;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.FIRMWARE_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROUPS_URI;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROUP_DETAILS_VIEW;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROUP_LIST_VIEW;
@@ -87,6 +88,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
@@ -706,7 +708,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		inflateBoardRecord(board, bs);
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
-		addUrl(model, TEMP_URI,	uri(admin().getTemperatures(board.getId())));
+		addUrl(model, TEMP_URI,	uri(admin().getTemperatures(
+				board.getId(), board.getBmpId())));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -750,15 +753,25 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("getting board temperature data from the machine")
-	public BoardTemperatures getTemperatures(int boardId) {
+	public BoardTemperatures getTemperatures(int boardId, int bmpId) {
 		try {
 			return new BoardTemperatures(
-					machineController.readTemperatureFromMachine(boardId)
+					machineController.readTemperatureFromMachine(boardId, bmpId)
 						.orElseThrow(() -> new WebApplicationException(
 								Status.NOT_FOUND)));
 		} catch (InterruptedException e) {
 			throw new WebApplicationException(e);
 		}
+	}
+
+	@Override
+	public ResponseEntity<Void> reloadFirmware(@Valid int boardId, int bmpId) {
+		try {
+			machineController.reloadFirmware(boardId, bmpId);
+		} catch (InterruptedException e) {
+			throw new WebApplicationException(e);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	/**
@@ -780,6 +793,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		addBlacklist(model, bldata);
 		addUrl(model, BLACKLIST_URI,
 				uri(admin().blacklistFetch(board.id, board.bmpId)));
+		addUrl(model, FIRMWARE_URI,
+				uri(admin().reloadFirmware(board.id, board.bmpId)));
 	}
 
 	/**

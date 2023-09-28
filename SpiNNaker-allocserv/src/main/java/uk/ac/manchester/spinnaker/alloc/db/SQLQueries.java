@@ -2196,6 +2196,17 @@ public abstract class SQLQueries {
 			"INSERT INTO blacklist_ops(board_id, op, completed) "
 					+ "VALUES(:board_id, 3, 0)";
 
+	/**
+	 * Insert a request to reload a board's firmware.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@GeneratesID
+	protected static final String CREATE_FIRMWARE_RELOAD_REQ =
+			"INSERT INTO blacklist_ops(board_id, op, completed) "
+					+ "VALUES(:board_id, 4, 0)";
+
 
 	/**
 	 * Read historical allocations to be written to the historical data DB.

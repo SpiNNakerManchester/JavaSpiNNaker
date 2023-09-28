@@ -157,6 +157,21 @@ public interface SpiNNakerControl {
 			throws ProcessException, InterruptedException, IOException;
 
 	/**
+	 * Reload the firmware on a given board
+	 *
+	 * @param board
+	 *            The board to load the firmware on to.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
+	 * @throws IOException
+	 *             If network I/O fails or we reach the limit on retries.
+	 * @throws InterruptedException
+	 *             If we're interrupted.
+	 */
+	void reloadFirmware(BMPBoard board)
+			throws ProcessException, InterruptedException, IOException;
+
+	/**
 	 * Ping the given boards.
 	 *
 	 * @param boards

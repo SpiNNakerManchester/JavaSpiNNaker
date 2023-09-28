@@ -74,7 +74,7 @@ limitations under the License.
 			Temperature: <span id="temperatureDisplay">Reading...</span>
 			<!-- ${tempDataUri}?board_id=${board.id} -->
 			<script defer="defer">
-				loadTemperature("${ tempDataUri }", ${board.id}, "temperatureDisplay");
+				loadTemperature("${ tempDataUri }", ${board.id}, ${board.bmpId} "temperatureDisplay");
 			</script>
 			<p>
 			Current job:
@@ -158,6 +158,9 @@ limitations under the License.
 		<span id="blacklistStatus"></span><br/>
 		<button id="saveBl" onclick="saveBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpId }, 'blacklistDisplay', 'saveBl', 'loadBl', 'blacklistStatus')" class="warningbutton" disabled="true">Write New Blacklist</button>
 		<button id="loadBl" onclick="loadBlacklist('${ blacklistControlUri }', ${ board.id }, ${ board.bmpId }, 'blacklistDisplay', 'saveBl', 'loadBl', 'blacklistStatus')">Read Blacklist</button>
+		<br/>
+		<span id="firmwareStatus"></span><br/>
+		<button id="reloadFirmware" onclick="reloadFirmware('${ firmwareControlUri }', ${ board.id }, ${ board.bmpId }, 'firmwareStatus')" class="warningbutton">Reload Firmware</button>
 		<br/>
 	</c:when>
 	<c:otherwise>

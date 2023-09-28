@@ -857,6 +857,9 @@ public class BMPController extends DatabaseAwareBean {
 				case READ_TEMP:
 					readTemps(controller);
 					break;
+				case RELOAD_FIRMWARE:
+					reloadFirmware(controller);
+					break;
 				default:
 					throw new IllegalArgumentException();
 				}
@@ -864,6 +867,8 @@ public class BMPController extends DatabaseAwareBean {
 				epochs.machineChanged(machineId);
 			}, e -> {
 				failed(e);
+				epochs.blacklistChanged(boardId);
+				epochs.machineChanged(machineId);
 			}, ppe -> {
 				takeOutOfService(ppe);
 			});
@@ -974,6 +979,14 @@ public class BMPController extends DatabaseAwareBean {
 			var adcInfo = controller.readTemp(board);
 			try (var c = getConnection()) {
 				c.transaction(() -> doneReadTemps(c, adcInfo));
+			}
+		}
+
+		private void reloadFirmware(SpiNNakerControl controller)
+				throws InterruptedException, ProcessException, IOException {
+			controller.reloadFirmware(board);
+			try (var c = getConnection()) {
+				c.transaction(() -> doneReadSerial(c));
 			}
 		}
 

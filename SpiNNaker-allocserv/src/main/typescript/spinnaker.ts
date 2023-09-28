@@ -1017,3 +1017,35 @@ function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 
 	r.send();
 }
+
+/**
+ * Reload firmware.
+ *
+ * @param sourceUri
+ * 		The URL to send the request to.
+ * @param boardId
+ * 		Which board this is about.
+ * @param bmpId
+ *      Which BMP the board is on.
+ * @param statusId
+ *      The status field to fill in.
+ */
+function reloadFirmware(sourceUri: string, boardId: number, bmpId: number, statusId: string) {
+	const status = document.getElementById(statusId);
+	var token = document.querySelector("meta[name='_csrf']") as HTMLMetaElement;
+	var header = document.querySelector("meta[name='_csrf_header']") as HTMLMetaElement;
+	const r = new XMLHttpRequest();
+	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmp_id=" + bmpId);
+
+	r.onload = () => {
+		status.innerHTML = "Firmware reloaded";
+	};
+	r.onerror = () => {
+		element.value = "Error reloading firmware!";
+	};
+
+	status.innerHTML = "Reloading firmware...";
+
+	r.send();
+}
+

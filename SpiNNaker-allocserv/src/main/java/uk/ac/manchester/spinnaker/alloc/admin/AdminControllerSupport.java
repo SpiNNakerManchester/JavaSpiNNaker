@@ -204,6 +204,11 @@ interface AdminControllerSupport {
 	String BLACKLIST_URI = "blacklistControlUri";
 
 	/**
+	 * How to call {@link AdminController#reloadFirmware(int, int)}
+	 */
+	String FIRMWARE_URI = "firmwareControlUri";
+
+	/**
 	 * How to call
 	 * {@link AdminController#getTemperatures(BoardRecord, ModelMap)}. In
 	 * {@link #BOARD_VIEW}.

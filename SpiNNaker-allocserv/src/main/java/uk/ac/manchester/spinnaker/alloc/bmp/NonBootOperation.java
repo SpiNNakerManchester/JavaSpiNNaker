@@ -33,5 +33,7 @@ public enum NonBootOperation {
 	/** Read the serial numbers from a board's BMP. */
 	GET_SERIAL,
 	/** Read the {@linkplain ADCInfo temperature data} from a board's BMP. */
-	READ_TEMP
+	READ_TEMP,
+	/** Reload firmware. */
+	RELOAD_FIRMWARE
 }

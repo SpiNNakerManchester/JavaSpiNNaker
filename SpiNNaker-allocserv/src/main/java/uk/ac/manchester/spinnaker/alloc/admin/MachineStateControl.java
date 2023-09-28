@@ -786,10 +786,32 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @throws InterruptedException
 	 *             If interrupted.
 	 */
-	public Optional<ADCInfo> readTemperatureFromMachine(int boardId)
+	public Optional<ADCInfo> readTemperatureFromMachine(int boardId, int bmpId)
 			throws InterruptedException {
 		try (var op = new Op(CREATE_TEMP_READ_REQ, boardId)) {
+			bmpController.triggerSearch(List.of(bmpId));
 			return op.getResult(serial("data", ADCInfo.class));
+		}
+	}
+
+	/**
+	 * Given a board, reload its firmware.
+	 *
+	 * @param boardId
+	 *            Which board to reload the firmware of.
+	 * @return The board's temperature data.
+	 * @throws DataAccessException
+	 *             If access to the DB fails.
+	 * @throws MachineStateException
+	 *             If the read fails.
+	 * @throws InterruptedException
+	 *             If interrupted.
+	 */
+	public void reloadFirmware(int boardId, int bmpId)
+			throws InterruptedException {
+		try (var op = new Op(CREATE_FIRMWARE_RELOAD_REQ, boardId)) {
+			bmpController.triggerSearch(List.of(bmpId));
+			op.completed();
 		}
 	}
 
