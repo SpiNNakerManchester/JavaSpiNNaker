@@ -1004,7 +1004,7 @@ function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 		loadButton.disabled = false;
 	};
 	r.onerror = () => {
-		element.value = "Error saving blacklist!";
+		status.innerHTML = "Error saving blacklist!";
 		element.disabled = false;
 		saveButton.disabled = false;
 		loadButton.disabled = false;
@@ -1041,7 +1041,7 @@ function reloadFirmware(sourceUri: string, boardId: number, bmpId: number, statu
 		status.innerHTML = "Firmware reloaded";
 	};
 	r.onerror = () => {
-		element.value = "Error reloading firmware!";
+		status.innerHTML = "Error reloading firmware!";
 	};
 
 	status.innerHTML = "Reloading firmware...";
