@@ -17,10 +17,8 @@ WITH
 	bs AS (SELECT board_id FROM boards WHERE allocated_job = :job_id)
 SELECT board_1 AS board_id, dir_1 AS direction FROM links
 	WHERE board_1 IN (SELECT board_id FROM bs)
-	AND live
-	AND NOT board_2 IN (SELECT board_id FROM bs)
+	AND NOT (live AND board_2 IN (SELECT board_id FROM bs))
 UNION
 SELECT board_2 AS board_id, dir_2 AS direction FROM links
 	WHERE board_2 IN (SELECT board_id FROM bs)
-	AND live
-	AND NOT board_1 IN (SELECT board_id FROM bs);
+	AND NOT (live AND board_1 IN (SELECT board_id FROM bs));
