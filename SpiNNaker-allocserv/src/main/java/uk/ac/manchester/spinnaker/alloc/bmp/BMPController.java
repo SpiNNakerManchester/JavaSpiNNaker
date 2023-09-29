@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.GET_SERIAL;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_BL;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_TEMP;
+import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.RELOAD_FIRMWARE;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.WRITE_BL;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
@@ -1086,6 +1087,7 @@ public class BMPController extends DatabaseAwareBean {
 					var getBlacklistReads = c.query(GET_BLACKLIST_READS);
 					var getBlacklistWrites = c.query(GET_BLACKLIST_WRITES);
 					var getReadSerialInfos = c.query(GET_SERIAL_INFO_REQS);
+					var getFirmwareReloads = c.query(GET_FIRMWARE_RELOAD_REQS);
 					var getReadTemps = c.query(GET_TEMP_INFO_REQS)) {
 				c.transaction(false, () -> {
 					// Batch power requests by job
@@ -1121,6 +1123,9 @@ public class BMPController extends DatabaseAwareBean {
 						requests.addAll(getReadTemps.call(
 								row -> new BoardRequest(bmpId, READ_TEMP, row),
 								bmpId));
+						requests.addAll(getFirmwareReloads.call(
+								row -> new BoardRequest(
+										bmpId, RELOAD_FIRMWARE, row)));
 					}
 				});
 			} catch (Exception e) {
