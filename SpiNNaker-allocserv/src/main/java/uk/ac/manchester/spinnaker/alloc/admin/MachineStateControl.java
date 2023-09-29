@@ -778,6 +778,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *
 	 * @param boardId
 	 *            Which board to read the temperature data of.
+	 * @param bmpId
+	 *            The BMP that controls the board.
 	 * @return The board's temperature data.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
@@ -786,9 +788,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @throws InterruptedException
 	 *             If interrupted.
 	 */
-	public Optional<ADCInfo> readTemperatureFromMachine(int boardId)
+	public Optional<ADCInfo> readTemperatureFromMachine(int boardId, int bmpId)
 			throws InterruptedException {
 		try (var op = new Op(CREATE_TEMP_READ_REQ, boardId)) {
+			bmpController.triggerSearch(List.of(bmpId));
 			return op.getResult(serial("data", ADCInfo.class));
 		}
 	}

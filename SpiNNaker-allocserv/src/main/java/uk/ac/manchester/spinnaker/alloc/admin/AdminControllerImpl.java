@@ -706,7 +706,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		inflateBoardRecord(board, bs);
 		addBoard(model, board);
 		addMachineList(model, getMachineNames(true));
-		addUrl(model, TEMP_URI,	uri(admin().getTemperatures(board.getId())));
+		addUrl(model, TEMP_URI,	uri(admin().getTemperatures(
+				board.getId(), board.getBmpId())));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -750,10 +751,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("getting board temperature data from the machine")
-	public BoardTemperatures getTemperatures(int boardId) {
+	public BoardTemperatures getTemperatures(int boardId, int bmpId) {
 		try {
 			return new BoardTemperatures(
-					machineController.readTemperatureFromMachine(boardId)
+					machineController.readTemperatureFromMachine(boardId, bmpId)
 						.orElseThrow(() -> new WebApplicationException(
 								Status.NOT_FOUND)));
 		} catch (InterruptedException e) {

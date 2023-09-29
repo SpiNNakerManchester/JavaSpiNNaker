@@ -2049,7 +2049,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see BMPController
 	 */
-	@Parameter("machine_id")
+	@Parameter("bmp_id")
 	@ResultColumn("op_id")
 	@ResultColumn("board_id")
 	@ResultColumn("bmp_serial_id")
@@ -2063,7 +2063,7 @@ public abstract class SQLQueries {
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 3 AND NOT completed "
-					+ "AND boards.machine_id = :machine_id";
+					+ "AND boards.bmp_id = :bmp_id";
 
 	/**
 	 * Set the BMP and physical serial IDs based on the information actually

@@ -442,12 +442,15 @@ public interface AdminController {
 	 *
 	 * @param boardId
 	 *            Which board to get the data for.
+	 * @param bmpId
+	 *            The BMP that controls the board.
 	 * @return the model and view in a future
 	 */
 	@GetMapping(value = TEMPERATURE_PATH)
 	@ResponseBody
 	BoardTemperatures getTemperatures(
-			@Valid @RequestParam("board_id") int boardId);
+			@Valid @RequestParam("board_id") int boardId,
+			@Valid @RequestParam("bmp_id") int bmpId);
 
 	/**
 	 * Provide the form for uploading a machine definition.

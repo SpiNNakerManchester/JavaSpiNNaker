@@ -74,7 +74,7 @@ limitations under the License.
 			Temperature: <span id="temperatureDisplay">Reading...</span>
 			<!-- ${tempDataUri}?board_id=${board.id} -->
 			<script defer="defer">
-				loadTemperature("${ tempDataUri }", ${board.id}, "temperatureDisplay");
+				loadTemperature("${ tempDataUri }", ${board.id}, ${board.bmpId}, "temperatureDisplay");
 			</script>
 			<p>
 			Current job:

@@ -877,6 +877,8 @@ public class BMPController extends DatabaseAwareBean {
 				epochs.machineChanged(machineId);
 			}, e -> {
 				failed(e);
+				epochs.blacklistChanged(boardId);
+				epochs.machineChanged(machineId);
 			}, ppe -> {
 				takeOutOfService(ppe);
 			});
