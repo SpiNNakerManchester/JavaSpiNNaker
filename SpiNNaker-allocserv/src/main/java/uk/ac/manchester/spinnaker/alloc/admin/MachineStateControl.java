@@ -778,6 +778,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *
 	 * @param boardId
 	 *            Which board to read the temperature data of.
+	 * @param bmpId
+	 *            The BMP that controls the board.
 	 * @return The board's temperature data.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.

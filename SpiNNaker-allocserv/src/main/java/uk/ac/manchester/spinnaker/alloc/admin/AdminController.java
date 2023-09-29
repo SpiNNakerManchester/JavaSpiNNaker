@@ -442,6 +442,8 @@ public interface AdminController {
 	 *
 	 * @param boardId
 	 *            Which board to get the data for.
+	 * @param bmpId
+	 *            The BMP that controls the board.
 	 * @return the model and view in a future
 	 */
 	@GetMapping(value = TEMPERATURE_PATH)
