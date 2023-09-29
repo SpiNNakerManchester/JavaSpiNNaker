@@ -1125,7 +1125,8 @@ public class BMPController extends DatabaseAwareBean {
 								bmpId));
 						requests.addAll(getFirmwareReloads.call(
 								row -> new BoardRequest(
-										bmpId, RELOAD_FIRMWARE, row)));
+										bmpId, RELOAD_FIRMWARE, row),
+								bmpId));
 					}
 				});
 			} catch (Exception e) {
