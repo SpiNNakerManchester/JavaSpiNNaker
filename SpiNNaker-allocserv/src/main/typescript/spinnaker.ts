@@ -895,18 +895,22 @@ function prettyDuration(elementId: string) {
  * @param elementId
  * 		Which element to replace the contents of with with the rendered result.
  */
-function loadTemperature(sourceUri: string, boardId: number, elementId: string) {
+function loadTemperature(sourceUri: string, boardId: number, bmpId: number, elementId: string) {
 	const element = document.getElementById(elementId);
 	if (element == null) {
 		return;
 	}
 	const r = new XMLHttpRequest();
-	r.open("GET", sourceUri + "?board_id=" + boardId);
+	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmpId=" + bmpId);
 	r.onload = () => {
-		const result = JSON.parse(r.response) as object;
-		if (result?.hasOwnProperty("boardTemperature")) {
-			const t = result["boardTemperature"] as number;
-			element.innerHTML = t + "&deg;C";
+		if (r.status == 200) {
+			const result = JSON.parse(r.response) as object;
+			if (result?.hasOwnProperty("boardTemperature")) {
+				const t = result["boardTemperature"] as number;
+				element.innerHTML = t + "&deg;C";
+			}
+		} else {
+			element.innerHTML = "Failed to load temperature: " + r.status + " - " + r.statusText + ": " + r.response;
 		}
 	};
 	r.send();
