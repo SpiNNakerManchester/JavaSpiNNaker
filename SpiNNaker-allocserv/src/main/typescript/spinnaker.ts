@@ -901,7 +901,7 @@ function loadTemperature(sourceUri: string, boardId: number, bmpId: number, elem
 		return;
 	}
 	const r = new XMLHttpRequest();
-	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmpId=" + bmpId);
+	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmp_id=" + bmpId);
 	r.onload = () => {
 		if (r.status == 200) {
 			const result = JSON.parse(r.response) as object;
