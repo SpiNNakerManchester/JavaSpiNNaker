@@ -447,7 +447,8 @@ public interface AdminController {
 	@GetMapping(value = TEMPERATURE_PATH)
 	@ResponseBody
 	BoardTemperatures getTemperatures(
-			@Valid @RequestParam("board_id") int boardId);
+			@Valid @RequestParam("board_id") int boardId,
+			@Valid @RequestParam("bmp_id") int bmpId);
 
 	/**
 	 * Provide the form for uploading a machine definition.
