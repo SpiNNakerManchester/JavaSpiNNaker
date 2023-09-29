@@ -984,6 +984,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private void reloadFirmware(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
+			log.info("Loading firmware on board {}, bmp {}", board, bmpId);
 			controller.reloadFirmware(board);
 			try (var c = getConnection()) {
 				c.transaction(() -> doneReadSerial(c));
