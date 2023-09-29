@@ -418,7 +418,8 @@ int&nbsp;delta,
 </tr>
 <tr class="altColor" id="i14">
 <td class="colFirst"><code><a href="../model/BoardTemperatures.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardTemperatures</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTemperatures(@javax.validation.Validint)">getTemperatures</a></span>&#8203;(@javax.validation.Valid int&nbsp;boardId)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTemperatures(@javax.validation.Validint,@javax.validation.Validint)">getTemperatures</a></span>&#8203;(@javax.validation.Valid int&nbsp;boardId,
+@javax.validation.Valid int&nbsp;bmpId)</code></th>
 <td class="colLast">
 <div class="block">Get the temperature data for a board.</div>
 </td>
@@ -1054,15 +1055,18 @@ int&nbsp;id,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getTemperatures(@javax.validation.Validint)">getTemperatures</a></h3>
+<h3><a id="getTemperatures(@javax.validation.Validint,@javax.validation.Validint)">getTemperatures</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@GetMapping</a>("/boards/temperature")
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@ResponseBody</a>
 </span><span class="returnType"><a href="../model/BoardTemperatures.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardTemperatures</a></span>&nbsp;<span class="memberName">getTemperatures</span>&#8203;(<span class="arguments"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@RequestParam</a>("board_id")
-@javax.validation.Valid int&nbsp;boardId)</span></div>
+@javax.validation.Valid int&nbsp;boardId,
+<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@RequestParam</a>("bmp_id")
+@javax.validation.Valid int&nbsp;bmpId)</span></div>
 <div class="block">Get the temperature data for a board.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>boardId</code> - Which board to get the data for.</dd>
+<dd><code>bmpId</code> - The BMP that controls the board.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the model and view in a future</dd>
 </dl>

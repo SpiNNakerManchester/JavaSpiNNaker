@@ -2057,7 +2057,7 @@
 <a class="jxr_linenumber" name="L2049" href="#L2049">2049</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="L2050" href="#L2050">2050</a> <em class="jxr_javadoccomment">	 * @see BMPController</em>
 <a class="jxr_linenumber" name="L2051" href="#L2051">2051</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L2052" href="#L2052">2052</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
+<a class="jxr_linenumber" name="L2052" href="#L2052">2052</a> 	@Parameter(<span class="jxr_string">"bmp_id"</span>)
 <a class="jxr_linenumber" name="L2053" href="#L2053">2053</a> 	@ResultColumn(<span class="jxr_string">"op_id"</span>)
 <a class="jxr_linenumber" name="L2054" href="#L2054">2054</a> 	@ResultColumn(<span class="jxr_string">"board_id"</span>)
 <a class="jxr_linenumber" name="L2055" href="#L2055">2055</a> 	@ResultColumn(<span class="jxr_string">"bmp_serial_id"</span>)
@@ -2071,7 +2071,7 @@
 <a class="jxr_linenumber" name="L2063" href="#L2063">2063</a> 					+ <span class="jxr_string">"JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "</span>
 <a class="jxr_linenumber" name="L2064" href="#L2064">2064</a> 					+ <span class="jxr_string">"LEFT JOIN board_serial USING (board_id) "</span>
 <a class="jxr_linenumber" name="L2065" href="#L2065">2065</a> 					+ <span class="jxr_string">"WHERE op = 3 AND NOT completed "</span>
-<a class="jxr_linenumber" name="L2066" href="#L2066">2066</a> 					+ <span class="jxr_string">"AND boards.machine_id = :machine_id"</span>;
+<a class="jxr_linenumber" name="L2066" href="#L2066">2066</a> 					+ <span class="jxr_string">"AND boards.bmp_id = :bmp_id"</span>;
 <a class="jxr_linenumber" name="L2067" href="#L2067">2067</a> 
 <a class="jxr_linenumber" name="L2068" href="#L2068">2068</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2069" href="#L2069">2069</a> <em class="jxr_javadoccomment">	 * Set the BMP and physical serial IDs based on the information actually</em>

@@ -303,7 +303,8 @@ int&nbsp;bmpId)</code></th>
 </tr>
 <tr class="rowColor" id="i13">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readTemperatureFromMachine(int)">readTemperatureFromMachine</a></span>&#8203;(int&nbsp;boardId)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readTemperatureFromMachine(int,int)">readTemperatureFromMachine</a></span>&#8203;(int&nbsp;boardId,
+int&nbsp;bmpId)</code></th>
 <td class="colLast">
 <div class="block">Given a board, read its temperature data off the machine.</div>
 </td>
@@ -656,13 +657,15 @@ int&nbsp;bmpId,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="readTemperatureFromMachine(int)">readTemperatureFromMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a>&gt;</span>&nbsp;<span class="memberName">readTemperatureFromMachine</span>&#8203;(<span class="arguments">int&nbsp;boardId)</span>
+<h3><a id="readTemperatureFromMachine(int,int)">readTemperatureFromMachine</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a>&gt;</span>&nbsp;<span class="memberName">readTemperatureFromMachine</span>&#8203;(<span class="arguments">int&nbsp;boardId,
+int&nbsp;bmpId)</span>
                                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Given a board, read its temperature data off the machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>boardId</code> - Which board to read the temperature data of.</dd>
+<dd><code>bmpId</code> - The BMP that controls the board.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The board's temperature data.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
