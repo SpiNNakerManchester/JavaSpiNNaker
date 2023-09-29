@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.regex.Pattern.compile;
@@ -43,6 +44,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -61,7 +64,10 @@ import uk.ac.manchester.spinnaker.alloc.TestSupport;
 	"spalloc.compat.service-user=" + TestSupport.USER_NAME,
 	"spalloc.compat.service-group=" + TestSupport.GROUP_NAME
 })
+@Execution(SAME_THREAD)
 class V1CompatTest extends TestSupport {
+	// Take care in this class: JSON documents must be SINGLE LINE too
+
 	/** The name of the database file. */
 	static final String DB = "target/compat_test.sqlite3";
 
@@ -72,6 +78,7 @@ class V1CompatTest extends TestSupport {
 
 	@BeforeEach
 	@SuppressWarnings("deprecation")
+	@Timeout(1)
 	void checkSetup(@Autowired V1CompatService compat) throws IOException {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		killDB();
@@ -157,22 +164,38 @@ class V1CompatTest extends TestSupport {
 
 	private static void destroy(PrintWriter to, UncheckedLineReader from,
 			Object jobId) {
+		destroy(to, from, jobId, VOID_RESPONSE);
+	}
+
+	private static void destroy(PrintWriter to, UncheckedLineReader from,
+			Object jobId, String expecting) {
 		to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
 				+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
-		assertEquals(VOID_RESPONSE, from.readLine());
+		assertEquals(expecting, from.readLine());
 	}
 
 	// The actual tests
 
+	/** Big enough to stress test some internal pools. */
+	private static final int MACHINERY_TEST_SIZE = 50;
+
+	private static final int MACHINERY_TEST_TIMEOUT = 15;
+
 	@Test
-	public void testMachineryTest() throws Exception {
-		for (int i = 0; i < 100; i++) {
+	@Timeout(MACHINERY_TEST_TIMEOUT)
+	public void testMachineryTestBidirectional() throws Exception {
+		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
 			withInstance((to, from) -> {
 				to.println();
 				from.readLine();
 			});
 		}
-		for (int i = 0; i < 100; i++) {
+	}
+
+	@Test
+	@Timeout(MACHINERY_TEST_TIMEOUT)
+	public void testMachineryTestUnidirectional() throws Exception {
+		for (int i = 0; i < MACHINERY_TEST_SIZE; i++) {
 			withInstance((to, from) -> {
 				to.println();
 			});
@@ -183,6 +206,7 @@ class V1CompatTest extends TestSupport {
 	@Nested
 	class WithoutJob {
 		@Test
+		@Timeout(5)
 		void version() throws Exception {
 			var response = "{\"return\":\"" + VERSION + "\"}";
 			withInstance((to, from) -> {
@@ -192,6 +216,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void listMachines() throws Exception {
 			var machinesResponse = "{\"return\":[{\"name\":\"" + MACHINE_NAME
 					+ "\",\"tags\":[],\"width\":1,\"height\":1,"
@@ -211,6 +236,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void listJobs() throws Exception {
 			var jobsResponse = "{\"return\":[]}";
 			withInstance((to, from) -> {
@@ -220,6 +246,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void notifyJob() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\": \"notify_job\"}");
@@ -230,6 +257,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void notifyMachine() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\": \"notify_machine\"}");
@@ -246,6 +274,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void whereIs() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\": \"where_is\", \"kwargs\":{"
@@ -264,6 +293,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void getBoardAtPosition() throws Exception {
 			// Physical->Logical map
 			var response = "{\"return\":[0,0,0]}";
@@ -277,6 +307,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void getBoardPosition() throws Exception {
 			// Logical->Physical map
 			var response = "{\"return\":[1,1,0]}";
@@ -289,20 +320,53 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
-		void jobCreateDelete() throws Exception {
+		@Timeout(5)
+		void jobCreateDeleteZeroArgs() throws Exception {
 			withInstance((to, from) -> {
 				var jobId = create(to, from);
+				log.debug("created() with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.debug("destroyed() ID={}", jobId);
+			});
+		}
 
-				jobId = create(to, from, 1);
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteOneArg() throws Exception {
+			withInstance((to, from) -> {
+				var jobId = create(to, from, 1);
+				log.debug("created(1) with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.debug("destroyed(1) ID={}", jobId);
+			});
+		}
 
-				jobId = create(to, from, 1, 1);
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteTwoArgs() throws Exception {
+			withInstance((to, from) -> {
+				var jobId = create(to, from, 1, 1);
+				log.debug("created(1,1) with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.debug("destroyed(1,1) ID={}", jobId);
+			});
+		}
 
-				jobId = create(to, from, 0, 0, 0);
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteThreeArgs() throws Exception {
+			withInstance((to, from) -> {
+				var jobId = create(to, from, 0, 0, 0);
+				log.debug("created(0,0,0) with ID={}", jobId);
 				destroy(to, from, jobId);
+				log.debug("destroyed(0,0,0) ID={}", jobId);
+			});
+		}
 
+		@Test
+		@Timeout(5)
+		void jobCreateDeleteFourArgs() throws Exception {
+			withInstance((to, from) -> {
 				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
 						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""
 						+ MACHINE_NAME + "\"}}");
@@ -310,10 +374,12 @@ class V1CompatTest extends TestSupport {
 						"{\"exception\":"
 								+ "\"unsupported number of arguments: 4\"}",
 						from.readLine());
+				destroy(to, from, 999999999, "{\"exception\":\"no such job\"}");
 			});
 		}
 
 		@Test
+		@Timeout(5)
 		void compound() throws Exception {
 			withInstance((to, from) -> {
 				var jobId = create(to, from, 1, 1);
@@ -345,6 +411,7 @@ class V1CompatTest extends TestSupport {
 
 		// Make an allocated job for us to work with
 		@BeforeEach
+		@Timeout(5)
 		void setupJob() {
 			jobId = makeJob();
 			expectedNotification = "{\"jobs_changed\":[" + jobId + "]}";
@@ -356,6 +423,7 @@ class V1CompatTest extends TestSupport {
 
 		// Get rid of the allocated job
 		@AfterEach
+		@Timeout(5)
 		void teardownJob() {
 			db.executeVoid(c -> {
 				allocateBoardToJob(c, BOARD, null);
@@ -374,6 +442,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void getJobState() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_job_state\",\"args\":[" + jobId
@@ -386,6 +455,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void getJobMachineInfo() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_job_machine_info\",\"args\":["
@@ -397,6 +467,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void jobKeepalive() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"job_keepalive\",\"args\":[" + jobId
@@ -406,6 +477,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void jobNotify() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"notify_job\",\"args\":[" + jobId
@@ -418,6 +490,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void jobPower() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"power_off_job_boards\","
@@ -427,6 +500,7 @@ class V1CompatTest extends TestSupport {
 		}
 
 		@Test
+		@Timeout(5)
 		void whereIs() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"where_is\",\"kwargs\":{\"job_id\":"

@@ -100,7 +100,7 @@ public class JobDone {
 	 * @param outputData
 	 *            the outputData to set
 	 */
-	public void setOutputData(final OutputData outputData) {
+	public void setOutputData(OutputData outputData) {
 		this.outputData = outputData;
 	}
 
@@ -119,7 +119,7 @@ public class JobDone {
 	 * @param provenance
 	 *            the provenance to set
 	 */
-	public void setProvenance(final ObjectNode provenance) {
+	public void setProvenance(ObjectNode provenance) {
 		this.provenance = provenance;
 	}
 }

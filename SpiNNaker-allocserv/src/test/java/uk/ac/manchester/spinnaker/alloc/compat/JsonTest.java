@@ -30,6 +30,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -48,6 +50,8 @@ class JsonTest {
 	JsonTest() {
 		// Set up the mapper in the same way that ServiceConfig does
 		mapper = JsonMapper.builder().findAndAddModules()
+				.addModule(new JavaTimeModule())
+				.addModule(new Jdk8Module())
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
 				.propertyNamingStrategy(SNAKE_CASE).build();
 	}
@@ -76,13 +80,19 @@ class JsonTest {
 					List.of(new Connection(ZERO_ZERO, "2.3.4.5")),
 					"gorp", List.of(new BoardCoordinates(0, 1, 2)));
 
-			JSONAssert.assertEquals(
-					"{ 'boards': [[0,1,2]], "
-							+ "'connections': [[[0,0],'2.3.4.5']], "
-							+ "'width': 0, "
-							+ "'height': 0, "
-							+ "'machine_name': 'gorp' }",
-					serialize(r), true);
+			JSONAssert.assertEquals("""
+					{
+						'boards': [
+							[0,1,2]
+						],
+						'connections': [
+							[[0, 0], '2.3.4.5']
+						],
+						'width': 0,
+						'height': 0,
+						'machine_name': 'gorp'
+					}
+					""", serialize(r), true);
 		}
 
 		@Test
@@ -95,14 +105,16 @@ class JsonTest {
 			r.setKeepalive(321);
 			r.setKeepalivehost("127.0.0.1");
 
-			JSONAssert.assertEquals(
-					"{ 'state': 2, "
-							+ "'start_time': 123, "
-							+ "'power': false, "
-							+ "'reason': 'gorp', "
-							+ "'keepalive': 321, "
-							+ "'keepalivehost': '127.0.0.1' }",
-					serialize(r.build()), true);
+			JSONAssert.assertEquals("""
+					{
+						'state': 2,
+						'start_time': 123,
+						'power': false,
+						'reason': 'gorp',
+						'keepalive': 321,
+						'keepalivehost': '127.0.0.1'
+					}
+					""", serialize(r.build()), true);
 		}
 
 		@Test
@@ -119,21 +131,24 @@ class JsonTest {
 			r.setStartTime(321.);
 			r.setState(State.POWER);
 
-			JSONAssert.assertEquals(
-					"[{ 'allocated_machine_name': 'foo', "
-							+ "'args': [0], "
-							+ "'boards': [], "
-							+ "'job_id': 1, "
-							+ "'keepalive': 123, "
-							+ "'keepalivehost': '127.0.0.1', "
-							+ "'kwargs': {}, "
-							+ "'owner': 'bar', "
-							+ "'power': false, "
-							+ "'reason': null, "
-							+ "'state': 2, "
-							+ "'start_time': 321 "
-							+ "}]",
-					serialize(new JobDescription[] {r.build()}), true);
+			JSONAssert.assertEquals("""
+					[
+						{
+							'allocated_machine_name': 'foo',
+							'args': [0],
+							'boards': [],
+							'job_id': 1,
+							'keepalive': 123,
+							'keepalivehost': '127.0.0.1',
+							'kwargs': {},
+							'owner': 'bar',
+							'power': false,
+							'reason': null,
+							'state': 2,
+							'start_time': 321
+						}
+					]
+					""", serialize(new JobDescription[] {r.build()}), true);
 		}
 
 		@Test
@@ -141,11 +156,18 @@ class JsonTest {
 			var r = new Machine("gorp", List.of("foo", "bar"), 0, 0, null,
 					null);
 
-			JSONAssert.assertEquals(
-					"[{ 'name': 'gorp', 'tags': ['foo', 'bar'], "
-							+ "'dead_boards': [], 'dead_links': [], "
-							+ "'height': 0, 'width': 0 }]",
-					serialize(new Machine[] {r}), true);
+			JSONAssert.assertEquals("""
+					[
+						{
+							'name': 'gorp',
+							'tags': ['foo', 'bar'],
+							'dead_boards': [],
+							'dead_links': [],
+							'height': 0,
+							'width': 0
+						}
+					]
+					""", serialize(new Machine[] {r}), true);
 		}
 
 		@Test
@@ -155,12 +177,17 @@ class JsonTest {
 					"gorp", new ChipLocation(0, 0),
 					new BoardPhysicalCoordinates(0, 1, 2));
 
-			JSONAssert.assertEquals(
-					"{'chip': [0,0], 'board_chip': [0,0],"
-							+ "'job_chip': [0,0], 'job_id': 0,"
-							+ "'logical': [0,1,2], 'physical': [0,1,2],"
-							+ "'machine': 'gorp'}",
-					serialize(r), true);
+			JSONAssert.assertEquals("""
+					{
+						'chip': [0, 0],
+						'board_chip': [0, 0],
+						'job_chip': [0, 0],
+						'job_id': 0,
+						'logical': [0, 1, 2],
+						'physical': [0, 1, 2],
+						'machine': 'gorp'
+					}
+					""", serialize(r), true);
 		}
 	}
 }

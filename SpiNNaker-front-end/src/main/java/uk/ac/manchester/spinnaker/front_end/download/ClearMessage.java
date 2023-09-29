@@ -15,11 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.CLEAR_TRANSMISSIONS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.nio.ByteBuffer;
 
@@ -45,7 +44,7 @@ public final class ClearMessage extends GatherProtocolMessage {
 	 * @return The created message.
 	 */
 	static ClearMessage create(HasCoreLocation destination, int transactionId) {
-		var payload = allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+		var payload = alloc(NUM_WORDS * WORD_SIZE);
 		payload.putInt(CLEAR_TRANSMISSIONS.value);
 		payload.putInt(transactionId);
 		payload.flip();

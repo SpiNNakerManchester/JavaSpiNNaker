@@ -15,15 +15,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.io.IOUtils.readFully;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
-// TODO use ByteBuffer.slice(int,int) from Java 14 onwards
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 
 import java.io.IOException;
@@ -35,13 +33,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
@@ -101,7 +98,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	private MockTransceiver(String machineName, BMPConnectionData data,
 			ValueHolder<Blacklist> setBlacklist) {
 		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
-				data.ipAddress, data.boards);
+				data.ipAddress(), data.boards());
 		status = new HashMap<>();
 		this.setBlacklist = setBlacklist;
 		current = this;
@@ -121,7 +118,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	 */
 	private static ByteBuffer syntheticVersionData(short versionCode) {
 		byte zero = 0;
-		var b = allocate(VERSION_INFO_SIZE).order(LITTLE_ENDIAN);
+		var b = alloc(VERSION_INFO_SIZE);
 		b.put(zero);
 		b.put(zero);
 		b.put(zero);
@@ -142,7 +139,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			Collection<BMPBoard> boards) {
 		log.info("power({},{},{})", powerCommand, bmp, boards);
 		for (var b : boards) {
-			status.put(b.board, powerCommand == POWER_ON);
+			status.put(b.board(), powerCommand == POWER_ON);
 		}
 	}
 
@@ -186,7 +183,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	private static final int MEM_SIZE = 8 * MEGABYTE;
 
 	private static ByteBuffer allocateMemory() {
-		var buf = allocate(MEM_SIZE).order(LITTLE_ENDIAN);
+		var buf = alloc(MEM_SIZE);
 		buf.position(0).limit(MEM_SIZE);
 		return buf;
 	}
@@ -201,8 +198,8 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		log.info("readSerialFlash({},{},{},{})", bmp, board, baseAddress,
 				length);
 		// Pad to length
-		var b = slice(flash, baseAddress.address, length);
-		if (baseAddress.address == SERIAL_FLASH_BLACKLIST_OFFSET) {
+		var b = flash.slice(baseAddress.address(), length).order(LITTLE_ENDIAN);
+		if (baseAddress.address() == SERIAL_FLASH_BLACKLIST_OFFSET) {
 			b.put(new Blacklist(blacklistData).getRawData());
 			b.position(0);
 		}
@@ -213,7 +210,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length) {
 		log.info("readBMPMemory({},{},{},{})", bmp, board, baseAddress, length);
-		return slice(memory, baseAddress.address, length);
+		return memory.slice(baseAddress.address(), length).order(LITTLE_ENDIAN);
 	}
 
 	@Override
@@ -227,7 +224,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			MemoryLocation baseAddress, ByteBuffer data) {
 		log.info("writeBMPMemory({},{},{}:{})", bmp, board, baseAddress,
 				data.remaining());
-		slice(memory, baseAddress.address, data.remaining())
+		memory.slice(baseAddress.address(), data.remaining())
 				.put(data.duplicate());
 	}
 
@@ -236,7 +233,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data) {
 		log.info("writeFlash({},{},{},{})", bmp, board, baseAddress,
 				data.remaining());
-		slice(memory, baseAddress.address, data.remaining())
+		memory.slice(baseAddress.address(), data.remaining())
 				.put(data.duplicate());
 		var blData = data.duplicate().position(BMP_FLASH_BLACKLIST_OFFSET);
 		synchronized (setBlacklist) {
@@ -253,7 +250,8 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			MemoryLocation baseAddress, ByteBuffer data) {
 		log.info("writeSerialFlash({},{},{}:{})", bmp, board, baseAddress,
 				data.remaining());
-		var b = slice(flash, baseAddress.address, data.remaining()).put(data);
+		var b = flash.slice(baseAddress.address(), data.remaining())
+				.order(LITTLE_ENDIAN).put(data);
 		b.position(SERIAL_FLASH_BLACKLIST_OFFSET);
 		var bl = new Blacklist(b);
 		synchronized (setBlacklist) {
@@ -271,7 +269,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			throws IOException {
 		log.info("writeSerialFlash({},{},{},{})", bmp, board, baseAddress,
 				size);
-		slice(flash, baseAddress.address, size).put(readFully(stream, size));
+		flash.slice(baseAddress.address(), size).put(readFully(stream, size));
 	}
 
 	@Override
@@ -288,7 +286,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		log.info("readSerialFlashCRC({},{},{},{})", bmp, board, baseAddress,
 				length);
 		var crc = new CRC32();
-		crc.update(slice(flash, baseAddress.address, length));
+		crc.update(flash.slice(baseAddress.address(), length));
 		return (int) (crc.getValue() & CRC_MASK);
 	}
 }

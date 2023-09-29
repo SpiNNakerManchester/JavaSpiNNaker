@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.random;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getLocalHost;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
@@ -43,6 +41,7 @@ import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.Router
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.LOC_PP;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.STOP;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFERED_SDRAM_START;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -200,7 +199,7 @@ public class TransceiverITCase {
 	}
 
 	private void readWrite(Transceiver txrx) throws Exception {
-		var writeData = allocate(1000);
+		var writeData = alloc(1000);
 		while (writeData.hasRemaining()) {
 			writeData.put((byte) (random() * 256));
 		}
@@ -398,7 +397,7 @@ public class TransceiverITCase {
 			 */
 			long longVal = 123456789123456789L;
 			int intVal = 123456789;
-			var longData = allocate(8).order(LITTLE_ENDIAN);
+			var longData = alloc(8);
 			longData.putLong(longVal).flip();
 
 			section("Test reading/writing blobs", () -> {

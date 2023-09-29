@@ -26,7 +26,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
@@ -37,6 +36,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.wordAsBuffer;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,15 +51,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
@@ -1905,7 +1904,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull MemoryLocation pointer)
 			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser0RegisterAddress(core),
-				pointer.address);
+				pointer.address());
 	}
 
 	/**
@@ -1946,7 +1945,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull MemoryLocation pointer)
 			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser1RegisterAddress(core),
-				pointer.address);
+				pointer.address());
 	}
 
 	/**
@@ -1987,7 +1986,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull MemoryLocation pointer)
 			throws ProcessException, IOException, InterruptedException {
 		writeMemory(core.getScampCore(), getUser2RegisterAddress(core),
-				pointer.address);
+				pointer.address());
 	}
 
 	/**
@@ -2547,10 +2546,10 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default ByteBuffer readMemory(@Valid HasCoreLocation core,
 			@NotNull HeapElement element)
 			throws IOException, ProcessException, InterruptedException {
-		if (element.isFree) {
+		if (element.isFree()) {
 			return null;
 		}
-		return readMemory(core, element.getDataAddress(), element.size);
+		return readMemory(core, element.dataAddress(), element.size());
 	}
 
 	/**
@@ -4015,8 +4014,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionEmergencyTimeout(
 			@Valid HasCoreLocation monitorCore, @NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa,
-				timeout.exponent);
+		setReinjectionEmergencyTimeout(monitorCore, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4058,8 +4057,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionEmergencyTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa,
-				timeout.exponent);
+		setReinjectionEmergencyTimeout(monitorCores, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4081,7 +4080,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@NotNull ReinjectionStatus status)
 			throws IOException, ProcessException, InterruptedException {
 		setReinjectionEmergencyTimeout(monitorCores,
-				status.getEmergencyTimeout());
+				status.emergencyTimeout());
 	}
 
 	/**
@@ -4123,7 +4122,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionTimeout(@Valid HasCoreLocation monitorCore,
 			@NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionTimeout(monitorCore, timeout.mantissa, timeout.exponent);
+		setReinjectionTimeout(monitorCore, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4165,7 +4165,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull RouterTimeout timeout)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionTimeout(monitorCores, timeout.mantissa, timeout.exponent);
+		setReinjectionTimeout(monitorCores, timeout.mantissa(),
+				timeout.exponent());
 	}
 
 	/**
@@ -4186,7 +4187,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void setReinjectionTimeout(@Valid CoreSubsets monitorCores,
 			@NotNull ReinjectionStatus status)
 			throws IOException, ProcessException, InterruptedException {
-		setReinjectionTimeout(monitorCores, status.getTimeout());
+		setReinjectionTimeout(monitorCores, status.timeout());
 	}
 
 	/**

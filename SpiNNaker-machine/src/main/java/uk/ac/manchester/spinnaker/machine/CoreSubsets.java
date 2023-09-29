@@ -25,8 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
@@ -293,11 +292,8 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof CoreSubsets) {
-			var other = (CoreSubsets) obj;
-			return Objects.equals(locations, other.locations);
-		}
-		return false;
+		return (obj instanceof CoreSubsets other)
+				&& Objects.equals(locations, other.locations);
 	}
 
 	@Override

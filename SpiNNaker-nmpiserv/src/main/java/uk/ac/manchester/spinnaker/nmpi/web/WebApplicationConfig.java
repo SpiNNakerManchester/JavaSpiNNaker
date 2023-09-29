@@ -16,16 +16,16 @@
 package uk.ac.manchester.spinnaker.nmpi.web;
 
 import static java.lang.System.getProperty;
-import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.ERROR;
-import static javax.servlet.DispatcherType.REQUEST;
+import static jakarta.servlet.DispatcherType.ASYNC;
+import static jakarta.servlet.DispatcherType.ERROR;
+import static jakarta.servlet.DispatcherType.REQUEST;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.boot.SpringApplication;
@@ -60,11 +60,11 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 	private static final boolean ADD_SERVLET = true;
 
 	@Override
-	public void onStartup(final ServletContext container)
+	public void onStartup(ServletContext container)
 			throws ServletException {
 		System.err.println("Starting...");
 		try {
-			final var properties = getPropertySource();
+			var properties = getPropertySource();
 			if (ADD_SERVLET | ADD_FILTER) {
 				container.addListener(getContextLoaderListener(properties));
 			}
@@ -74,7 +74,7 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 			if (ADD_FILTER) {
 				addFilterChain(container);
 			}
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			throw new ServletException(e);
 		}
 	}
@@ -87,13 +87,11 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 	 * @return The listener
 	 */
 	private ContextLoaderListener getContextLoaderListener(
-			final PropertySource<?> properties) {
-		final var annotationConfig =
-				new AnnotationConfigWebApplicationContext();
-		annotationConfig.getEnvironment().getPropertySources()
-				.addFirst(properties);
-		annotationConfig.register(RemoteSpinnakerBeans.class);
-		return new ContextLoaderListener(annotationConfig);
+			PropertySource<?> properties) {
+		var context = new AnnotationConfigWebApplicationContext();
+		context.getEnvironment().getPropertySources().addFirst(properties);
+		context.register(RemoteSpinnakerBeans.class);
+		return new ContextLoaderListener(context);
 	}
 
 	/**
@@ -104,8 +102,8 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 	 * @param properties
 	 *            The properties of the servlet
 	 */
-	private void addServlet(final ServletContext container,
-			final PropertySource<?> properties) {
+	private void addServlet(ServletContext container,
+			PropertySource<?> properties) {
 		container.addServlet("cxf", CXFServlet.class)
 				.addMapping(properties.getProperty("cxf.path") + "/*");
 	}
@@ -116,7 +114,7 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 	 * @param container
 	 *            The context of the chain.
 	 */
-	private void addFilterChain(final ServletContext container) {
+	private void addFilterChain(ServletContext container) {
 		container.addFilter(FILTER_NAME, new DelegatingFilterProxy(FILTER_NAME))
 				.addMappingForUrlPatterns(EnumSet.of(REQUEST, ERROR, ASYNC),
 						false, "/*");
@@ -130,7 +128,7 @@ public class WebApplicationConfig implements WebApplicationInitializer {
 	 *             If something goes wrong
 	 */
 	private PropertySource<?> getPropertySource() throws IOException {
-		final var source = new File(getProperty(LOCATION_PROPERTY));
+		var source = new File(getProperty(LOCATION_PROPERTY));
 		return new ResourcePropertySource(source.toURI().toString());
 	}
 

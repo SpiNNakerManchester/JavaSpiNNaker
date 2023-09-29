@@ -19,8 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -31,7 +30,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  *
  * @author Donal Fellows
  */
-public interface DSEStorage extends ProxyAwareStorage {
+public interface DSEStorage extends DatabaseAPI {
 	/**
 	 * Get a list of all ethernets that need to have DSE loading done on them.
 	 *

@@ -24,9 +24,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
 import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 
@@ -54,6 +53,7 @@ Board power: on
  *
  * (That's actually slightly edited output from {@code spalloc-job -info})
  */
+@JavaBean
 public class JobDescription {
 	private int id;
 
@@ -285,7 +285,7 @@ public class JobDescription {
 	 * @return The width of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadWidth() {
-		var stats = boards.stream().collect(summarizingInt(BoardCoords::getX));
+		var stats = boards.stream().collect(summarizingInt(BoardCoords::x));
 		if (stats.getCount() < 1) {
 			return 0;
 		}
@@ -296,7 +296,7 @@ public class JobDescription {
 	 * @return The height of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadHeight() {
-		var stats = boards.stream().collect(summarizingInt(BoardCoords::getY));
+		var stats = boards.stream().collect(summarizingInt(BoardCoords::y));
 		if (stats.getCount() < 1) {
 			return 0;
 		}

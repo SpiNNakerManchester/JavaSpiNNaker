@@ -45,8 +45,7 @@ public class TestDefaultMap {
 
 	@Test
 	public void testTyped() {
-		// Explicit to work around weird issue in Java 14 compiler
-		Map<String, List<Integer>> instance = new DefaultMap<>(ArrayList::new);
+		var instance = new DefaultMap<String, List<Integer>>(ArrayList::new);
 		var foo = instance.get("foo");
 		assertTrue(foo instanceof ArrayList);
 		// foo.add("a");
@@ -78,8 +77,7 @@ public class TestDefaultMap {
 
 	@Test
 	public void testKeyAware() {
-		DefaultMap<Integer, Integer> instance =
-				DefaultMap.newAdvancedDefaultMap(new Doubler());
+		var instance = DefaultMap.newAdvancedDefaultMap(new Doubler());
 		var two = instance.get(1);
 		assertEquals(2, two.intValue());
 	}

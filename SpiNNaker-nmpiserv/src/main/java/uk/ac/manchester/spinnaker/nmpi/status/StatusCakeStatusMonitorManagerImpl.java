@@ -17,7 +17,7 @@ package uk.ac.manchester.spinnaker.nmpi.status;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +56,7 @@ public class StatusCakeStatusMonitorManagerImpl
 	}
 
 	@Override
-	public void updateStatus(final int runningJobs, final int nBoardsInUse) {
+	public void updateStatus(int runningJobs, int nBoardsInUse) {
 		logger.debug(
 				"Updating to Status Cake - runningJobs = {}, nBoardsInUse = {}",
 				runningJobs, nBoardsInUse);

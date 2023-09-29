@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sark_cmd_write()} in {@code sark_base.c}.
  */
-public class WriteMemory extends SCPRequest<EmptyResponse> {
+public final class WriteMemory extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            the core to write via
@@ -44,7 +44,7 @@ public class WriteMemory extends SCPRequest<EmptyResponse> {
 	 */
 	public WriteMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(core, CMD_WRITE, baseAddress.address, data.remaining(),
+		super(core, CMD_WRITE, baseAddress.address(), data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}
@@ -62,7 +62,7 @@ public class WriteMemory extends SCPRequest<EmptyResponse> {
 	 */
 	public WriteMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			ByteBuffer data) {
-		super(chip.getScampCore(), CMD_WRITE, baseAddress.address,
+		super(chip.getScampCore(), CMD_WRITE, baseAddress.address(),
 				data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);

@@ -36,9 +36,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +43,12 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.errorprone.annotations.RestrictedApi;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
@@ -100,7 +101,8 @@ public class V1CompatService {
 
 	V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
-				.build();
+				.addModule(new Jdk8Module())
+				.addModule(new JavaTimeModule()).build();
 		var group = new ThreadGroup("spalloc-legacy-service");
 		var counter = new ValueHolder<>(1);
 		threadFactory = r -> {
@@ -227,7 +229,7 @@ public class V1CompatService {
 	private boolean acceptConnection() {
 		try {
 			var service = getTask(serv.accept());
-			executor.execute(() -> service.handleConnection());
+			executor.execute(service::handleConnection);
 		} catch (SocketException e) {
 			// Check here; interrupt = shutting down = no errors, please
 			if (interrupted()) {
@@ -287,7 +289,7 @@ public class V1CompatService {
 					throws Exception {
 				var service = taskFactory.getObject(V1CompatService.this,
 						new PipedReader(in), new PipedWriter(out));
-				return executor.submit(() -> service.handleConnection());
+				return executor.submit(service::handleConnection);
 			}
 		};
 	}

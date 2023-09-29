@@ -15,6 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import java.io.Serial;
+
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
@@ -24,6 +26,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  */
 public class UnroutableMessageException
 		extends UnexpectedResponseCodeException {
+	@Serial
 	private static final long serialVersionUID = 2106128799950032057L;
 
 	/** The full header from the response message. */

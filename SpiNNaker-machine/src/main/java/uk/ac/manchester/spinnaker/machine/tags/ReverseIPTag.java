@@ -19,8 +19,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.Objects;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -98,12 +97,9 @@ public final class ReverseIPTag extends Tag {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof ReverseIPTag) {
-			var otherTag = (ReverseIPTag) o;
-			return partialEquals(otherTag) && (sdpPort == otherTag.sdpPort)
-					&& destination.equals(otherTag.destination);
-		}
-		return false;
+		return (o instanceof ReverseIPTag otherTag) && partialEquals(otherTag)
+				&& (sdpPort == otherTag.sdpPort)
+				&& destination.equals(otherTag.destination);
 	}
 
 	@Override

@@ -23,8 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import javax.validation.Valid;
-
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -41,7 +40,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Calls {@code proc_start_app()} in {@code scamp-app.c}.
  */
 @UsedInJavadocOnly(SystemVariableDefinition.class)
-public class ApplicationRun extends SCPRequest<EmptyResponse> {
+public final class ApplicationRun extends SCPRequest<EmptyResponse> {
 	private static final int WAIT_BIT = 18;
 
 	/**
@@ -90,7 +89,7 @@ public class ApplicationRun extends SCPRequest<EmptyResponse> {
 				mask |= 1 << p;
 			}
 		}
-		mask |= appId.appID << BYTE3;
+		mask |= appId.appID() << BYTE3;
 		if (wait) {
 			mask |= 1 << WAIT_BIT;
 		}

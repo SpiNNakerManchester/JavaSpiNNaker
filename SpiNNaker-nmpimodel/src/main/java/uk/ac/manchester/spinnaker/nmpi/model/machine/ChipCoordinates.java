@@ -42,8 +42,7 @@ public class ChipCoordinates {
 	 * @param board
 	 *            The board containing the chip.
 	 */
-	public ChipCoordinates(final int cabinet, final int frame,
-			final int board) {
+	public ChipCoordinates(int cabinet, int frame, int board) {
 		this.cabinet = cabinet;
 		this.frame = frame;
 		this.board = board;

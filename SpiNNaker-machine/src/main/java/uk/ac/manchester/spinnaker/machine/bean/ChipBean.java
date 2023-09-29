@@ -15,14 +15,13 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
-import javax.validation.Valid;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -116,9 +115,9 @@ public class ChipBean {
 	public void addDefaults(MachineBean bean) {
 		ChipResources defaults;
 		if (details.getIpAddress() == null) {
-			defaults = bean.getStandardResources();
+			defaults = bean.standardResources();
 		} else {
-			defaults = bean.getEthernetResources();
+			defaults = bean.ethernetResources();
 		}
 		if (resources == null) {
 			resources = defaults;

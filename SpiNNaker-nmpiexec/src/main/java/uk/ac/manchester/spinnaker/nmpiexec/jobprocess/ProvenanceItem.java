@@ -35,7 +35,7 @@ public class ProvenanceItem {
 	 * @param value
 	 *            The content of the value.
 	 */
-	public ProvenanceItem(final List<String> path, final String value) {
+	public ProvenanceItem(List<String> path, String value) {
 		this.path = path;
 		this.value = value;
 	}

@@ -26,11 +26,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.NotFoundException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.NotFoundException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerAPI;
 import uk.ac.manchester.spinnaker.nmpi.rest.DockerCreateRequest;
@@ -39,7 +41,7 @@ import uk.ac.manchester.spinnaker.nmpi.rest.DockerInspectResponse;
 /**
  * Executor factory that uses Docker to run jobs.
  */
-public class DockerExecutorFactory implements JobExecuterFactory {
+public final class DockerExecutorFactory implements JobExecuterFactory {
 	/** Time to wait between docker inspects while waiting for finish. */
 	private static final int WAIT_SLEEP_TIME_MS = 1000;
 
@@ -57,7 +59,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	@Value("${liveUploadOutput}")
 	private boolean liveUploadOutput;
 
-	/** True if a spinnaker machine should be requested. */
+	/** True if a SpiNNaker machine should be requested. */
 	@Value("${requestSpiNNakerMachine}")
 	private boolean requestSpiNNakerMachine;
 
@@ -69,6 +71,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	private int maxNVirtualMachines;
 
 	/** The current number of VMs. */
+	@GuardedBy("lock")
 	private int nVirtualMachines = 0;
 
 	/** The docker client. */
@@ -96,8 +99,8 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	}
 
 	@Override
-	public JobExecuter createJobExecuter(final JobManager manager,
-			final URL baseUrl) throws IOException {
+	public JobExecuter createJobExecuter(JobManager manager, URL baseUrl)
+			throws IOException {
 		requireNonNull(manager);
 		requireNonNull(baseUrl);
 		waitToClaimVM();
@@ -143,7 +146,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 
 		private String id;
 
-		private Executor(final JobManager jobManager, final URL baseUrl)
+		private Executor(JobManager jobManager, URL baseUrl)
 				throws IOException {
 			this.manager = jobManager;
 			uuid = randomUUID().toString();
@@ -175,7 +178,8 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 			var response = dockerApi.create(
 					new DockerCreateRequest(image, args));
 			id = response.getId();
-			logger.info("Created docker container {}, warnings: {}", id);
+			logger.info("Created docker container {}, warnings: {}", id,
+					response.getWarnings());
 			dockerApi.start(id);
 			new Thread(threadGroup, this::waitForExit,
 					"Docker Executer (" + uuid + ")").start();
@@ -195,7 +199,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 				} catch (InterruptedException e) {
 					return;
 				}
-			} while (res.getState().isRunning() != running);
+			} while (res == null || res.getState().isRunning() != running);
 		}
 
 		/**
@@ -221,5 +225,4 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 			}
 		}
 	}
-
 }

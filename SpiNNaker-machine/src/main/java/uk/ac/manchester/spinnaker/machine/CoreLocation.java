@@ -16,8 +16,6 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import static java.lang.Integer.compare;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateCoreLocation;
 
 import java.io.Serializable;
@@ -26,44 +24,22 @@ import com.google.errorprone.annotations.Immutable;
 
 /**
  * The location of a {@link Processor} on a {@link Chip} as an X, Y, P tuple.
- * <p>
- * This class is final as it is used a key in maps.
  *
  * @author Alan Stokes
  * @author Donal Fellows
+ * @param x
+ *            The X coordinate, in range 0..255
+ * @param y
+ *            The Y coordinate, in range 0..255
+ * @param p
+ *            The P coordinate, in range 0..17
  */
 @Immutable
-public final class CoreLocation
+public record CoreLocation(@ValidX int x, @ValidY int y, @ValidP int p)
 		implements HasCoreLocation, Comparable<CoreLocation>, Serializable {
-	private static final long serialVersionUID = 2930811082362121057L;
-
-	/** The X coordinate. */
-	@ValidX
-	private final int x;
-
-	/** The Y coordinate. */
-	@ValidY
-	private final int y;
-
-	/** The P coordinate. */
-	@ValidP
-	private final int p;
-
-	/**
-	 * Create the location of a core on a SpiNNaker machine.
-	 *
-	 * @param x
-	 *            The X coordinate, in range 0..255
-	 * @param y
-	 *            The Y coordinate, in range 0..255
-	 * @param p
-	 *            The P coordinate, in range 0..17
-	 */
-	public CoreLocation(int x, int y, int p) {
+	/** Create an instance. */
+	public CoreLocation {
 		validateCoreLocation(x, y, p);
-		this.x = x;
-		this.y = y;
-		this.p = p;
 	}
 
 	/**
@@ -76,23 +52,6 @@ public final class CoreLocation
 	 */
 	public CoreLocation(HasChipLocation chip, int p) {
 		this(chip.getX(), chip.getY(), p);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj instanceof CoreLocation) {
-			var that = (CoreLocation) obj;
-			return (x == that.x) && (y == that.y) && (p == that.p);
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return (((x << COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p;
 	}
 
 	@Override

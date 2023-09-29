@@ -46,8 +46,8 @@ public class DateTimeSerialiser extends StdSerializer<DateTime> {
 	 * Perform serialisation.
 	 */
 	@Override
-	public void serialize(final DateTime value, final JsonGenerator jgen,
-			final SerializerProvider provider)
+	public void serialize(DateTime value, JsonGenerator jgen,
+			SerializerProvider provider)
 			throws IOException, JsonGenerationException {
 		jgen.writeString(FORMAT.print(value));
 	}

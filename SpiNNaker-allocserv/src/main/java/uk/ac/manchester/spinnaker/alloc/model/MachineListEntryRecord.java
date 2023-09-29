@@ -21,9 +21,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 /**
  * Entry in a table of machines. The table is like this:
@@ -58,6 +58,7 @@ import javax.validation.constraints.PositiveOrZero;
  * <td colspan=5>...
  * </table>
  */
+@JavaBean
 public class MachineListEntryRecord {
 	private int id;
 

@@ -38,7 +38,7 @@ public class DataItem {
 	 * @param url
 	 *            The URL to wrap.
 	 */
-	public DataItem(final String url) {
+	public DataItem(String url) {
 		this.url = url;
 	}
 
@@ -57,7 +57,7 @@ public class DataItem {
 	 * @param url
 	 *            The URL
 	 */
-	public void setUrl(final String url) {
+	public void setUrl(String url) {
 		this.url = url;
 	}
 
@@ -71,7 +71,7 @@ public class DataItem {
 	 * @hidden
 	 */
 	@JsonAnySetter
-	public void ignoreExtra(final String key, final String value) {
+	public void ignoreExtra(String key, String value) {
 		// Ignore anything else
 	}
 }

@@ -24,14 +24,13 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -162,8 +161,8 @@ public class ChipDetails {
 			HasChipLocation source, Machine machine) {
 		if (links != null) {
 			for (var bean : links) {
-				if (bean.sourceDirection == direction) {
-					return bean.destination;
+				if (bean.sourceDirection() == direction) {
+					return bean.destination();
 				}
 			}
 		}

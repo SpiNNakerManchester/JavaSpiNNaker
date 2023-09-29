@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code reinjection_set_packet_types()} in
  * {@code extra_monitor_support.c}.
  */
-public class SetReinjectionPacketTypes
+public final class SetReinjectionPacketTypes
 		extends ReinjectorRequest<EmptyResponse> {
 	/**
 	 * @param core

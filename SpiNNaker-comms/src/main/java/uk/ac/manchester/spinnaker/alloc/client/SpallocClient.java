@@ -22,14 +22,14 @@ import static org.apache.commons.io.IOUtils.readLines;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.google.errorprone.annotations.MustBeClosed;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
@@ -387,6 +387,7 @@ public interface SpallocClient {
 	 * Exception caused by the server sending an error.
 	 */
 	class SpallocException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -1363689283367574333L;
 
 		/** The HTTP response code that triggered the exception. */

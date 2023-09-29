@@ -23,10 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -36,6 +35,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  *
  * @author Donal Fellows
  */
+@JavaBean
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class MachineTagging {
 	@NotBlank

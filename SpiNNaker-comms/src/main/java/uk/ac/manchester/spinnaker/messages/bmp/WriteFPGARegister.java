@@ -16,8 +16,8 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FPGA_WRITE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.wordAsBuffer;
 
 import java.nio.ByteBuffer;
 
@@ -37,7 +37,8 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  * @see <a href="https://github.com/SpiNNakerManchester/spio/">The SpI/O project
  *      on GitHub</a>
  */
-public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
+public final class WriteFPGARegister
+		extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
@@ -53,7 +54,7 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	 */
 	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPBoard board) {
-		super(board, CMD_FPGA_WRITE, register.address, WORD_SIZE, fpga.value,
+		super(board, CMD_FPGA_WRITE, register.address(), WORD_SIZE, fpga.value,
 				wordAsBuffer(value));
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(

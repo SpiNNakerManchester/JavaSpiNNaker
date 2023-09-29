@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code reinjection_get_status()} in
  * {@code extra_monitor_support.c}.
  */
-public class GetReinjectionStatus
+public final class GetReinjectionStatus
 		extends ReinjectorRequest<GetReinjectionStatus.Response> {
 	/**
 	 * @param core

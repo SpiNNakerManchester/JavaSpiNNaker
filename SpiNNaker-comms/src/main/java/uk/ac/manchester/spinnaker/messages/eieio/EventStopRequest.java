@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.EVENT_STO
  * Packet used for the buffering input technique which causes the parser of the
  * input packet to terminate its execution.
  */
-public class EventStopRequest extends EIEIOCommandMessage {
+public final class EventStopRequest extends EIEIOCommandMessage {
 	/** Make a request to stop sending events. */
 	public EventStopRequest() {
 		super(EVENT_STOP);

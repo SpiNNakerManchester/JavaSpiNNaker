@@ -15,9 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 /**
@@ -28,7 +27,7 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  *      >Spalloc Server documentation</a>
  * @see WhereIs The basic result type associated with the request
  */
-public class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
+public final class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
 	/**
 	 * Create a request to locate a board on a machine.
 	 *
@@ -41,8 +40,8 @@ public class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
 			@Valid TriadCoords coords) {
 		super("where_is");
 		addKwArg("machine", machine);
-		addKwArg("x", coords.x);
-		addKwArg("y", coords.y);
-		addKwArg("z", coords.z);
+		addKwArg("x", coords.x());
+		addKwArg("y", coords.y());
+		addKwArg("z", coords.z());
 	}
 }

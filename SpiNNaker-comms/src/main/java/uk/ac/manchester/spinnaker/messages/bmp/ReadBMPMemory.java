@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 
@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code cmd_read()} in {@code bmp_cmd.c}.
  */
-public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
+public final class ReadBMPMemory extends BMPRequest<ReadBMPMemory.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(
@@ -49,8 +49,8 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public BMPReadMemory(BMPBoard board, MemoryLocation address, int size) {
-		super(board, CMD_READ, address.address, validate(size),
+	public ReadBMPMemory(BMPBoard board, MemoryLocation address, int size) {
+		super(board, CMD_READ, address.address(), validate(size),
 				efficientTransferUnit(address, size).value);
 	}
 
@@ -73,7 +73,7 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 		/** @return The data read, in a little-endian read-only buffer. */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			return readOnly(buffer);
 		}
 	}
 }

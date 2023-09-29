@@ -28,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
+
 /**
  * Physical board coordinates. The {@code cabinet} and {@code frame} (with
  * multiple frames per cabinet) describe where a board is located within the
@@ -48,40 +50,20 @@ import com.google.errorprone.annotations.Immutable;
  * <pre>[c:3,f:2,b:1]</pre>
  *
  * @author Donal Fellows
+ * @param c
+ *            Cabinet number.
+ * @param f
+ *            Frame number.
+ * @param b
+ *            Board number.
  */
 @Immutable
 @JsonDeserialize(using = PhysicalCoords.Deserializer.class)
-public final class PhysicalCoords implements Comparable<PhysicalCoords> {
-	/** Cabinet number. */
-	@ValidCabinetNumber
-	public final int c;
-
-	/** Frame number. */
-	@ValidFrameNumber
-	public final int f;
-
-	/** Board number. */
-	@ValidBoardNumber
-	public final int b;
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param c
-	 *            Cabinet number.
-	 * @param f
-	 *            Frame number.
-	 * @param b
-	 *            Board number.
-	 */
-	@JsonCreator
-	public PhysicalCoords(@JsonProperty("c") int c, @JsonProperty("f") int f,
-			@JsonProperty("b") int b) {
-		this.c = c;
-		this.f = f;
-		this.b = b;
-	}
-
+public record PhysicalCoords(//
+		@JsonProperty("c") @ValidCabinetNumber int c,
+		@JsonProperty("f") @ValidFrameNumber int f,
+		@JsonProperty("b") @ValidBoardNumber int b)
+		implements Comparable<PhysicalCoords> {
 	private static final Pattern PATTERN =
 			Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
 
@@ -95,33 +77,21 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.
+	 * @return The deserialised value.
 	 * @throws IllegalArgumentException
 	 *             If the string is not in the right form.
 	 */
 	@JsonCreator
-	public PhysicalCoords(String serialForm) {
+	public static PhysicalCoords parse(String serialForm) {
 		var m = PATTERN.matcher(serialForm);
 		if (!m.matches()) {
 			throw new IllegalArgumentException("bad argument: " + serialForm);
 		}
 		int idx = 0;
-		c = parseInt(m.group(++idx));
-		f = parseInt(m.group(++idx));
-		b = parseInt(m.group(++idx));
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof PhysicalCoords) {
-			var other = (PhysicalCoords) obj;
-			return c == other.c && f == other.f && b == other.b;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return c * 25 + f * 5 + b;
+		int c = parseInt(m.group(++idx));
+		int f = parseInt(m.group(++idx));
+		int b = parseInt(m.group(++idx));
+		return new PhysicalCoords(c, f, b);
 	}
 
 	@Override
@@ -169,35 +139,28 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 
 		@Override
 		PhysicalCoords deserializeObject() throws IOException {
-			Integer c = null, f = null, b = null;
+			var c = new ValueHolder<Integer>();
+			var f = new ValueHolder<Integer>();
+			var b = new ValueHolder<Integer>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {
-				case "cabinet":
-				case "c":
-					c = requireSetOnceInt(name, c);
-					break;
-				case "frame":
-				case "f":
-					f = requireSetOnceInt(name, f);
-					break;
-				case "board":
-				case "b":
-					b = requireSetOnceInt(name, b);
-					break;
-				default:
-					unknownProperty(name);
+				case "cabinet", "c" -> requireSetOnceInt(name, c);
+				case "frame", "f" -> requireSetOnceInt(name, f);
+				case "board", "b" -> requireSetOnceInt(name, b);
+				default -> unknownProperty(name);
 				}
 			}
-			if (c == null || f == null || b == null) {
-				missingProperty("c", c, "f", f, "b", b);
+			if (c.isEmpty() || f.isEmpty() || b.isEmpty()) {
+				missingProperty("c", c.getValue(), "f", f.getValue(), "b",
+						b.getValue());
 			}
-			return new PhysicalCoords(c, f, b);
+			return new PhysicalCoords(c.getValue(), f.getValue(), b.getValue());
 		}
 
 		@Override
 		PhysicalCoords deserializeString(String string) {
-			return new PhysicalCoords(string);
+			return PhysicalCoords.parse(string);
 		}
 
 		@Override

@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code rtr_alloc_id()} in {@code sark_alloc.c} via {@code cmd_alloc()}
  * in {@code scamp-cmd.c}.
  */
-public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
+public final class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	private final int numEntries;
 
 	/**
@@ -53,7 +53,7 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	}
 
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
+		return (appID.appID() << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
 	}
 
 	@Override

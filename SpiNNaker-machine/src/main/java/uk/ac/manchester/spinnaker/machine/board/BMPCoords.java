@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.errorprone.annotations.Immutable;
 
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
+
 /**
  * A simple description of a BMP to talk to. Supports equality and being used as
  * a hash key.
@@ -47,37 +49,20 @@ import com.google.errorprone.annotations.Immutable;
  * <pre>[c:3,f:2]</pre>
  *
  * @author Donal Fellows
+ * @param cabinet
+ *            The ID of the cabinet that contains the frame that contains the
+ *            BMPs.
+ * @param frame
+ *            The ID of the frame that contains the master BMP. Frames are
+ *            contained within a cabinet.
  */
 @Immutable
 @JsonDeserialize(using = BMPCoords.Deserializer.class)
-public final class BMPCoords implements Comparable<BMPCoords> {
+public record BMPCoords(@ValidCabinetNumber int cabinet,
+		@ValidFrameNumber int frame) implements Comparable<BMPCoords> {
 	/** Parses the result of {@link #toString()}. */
 	private static final Pattern PATTERN =
 			Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
-
-	/** The ID of the cabinet that contains the frame that contains the BMPs. */
-	@ValidCabinetNumber
-	public final int cabinet;
-
-	/**
-	 * The ID of the frame that contains the master BMP. Frames are contained
-	 * within a cabinet.
-	 */
-	@ValidFrameNumber
-	public final int frame;
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param cabinet
-	 *            Cabinet number.
-	 * @param frame
-	 *            Frame number.
-	 */
-	public BMPCoords(int cabinet, int frame) {
-		this.cabinet = cabinet;
-		this.frame = frame;
-	}
 
 	/**
 	 * Create an instance from its serial form. This is the form produced by
@@ -89,48 +74,20 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.
+	 * @return The deserialised value.
 	 * @throws IllegalArgumentException
 	 *             If the string is not in the right form.
 	 */
 	@JsonCreator
-	public BMPCoords(String serialForm) {
+	public static BMPCoords parse(String serialForm) {
 		var m = PATTERN.matcher(serialForm);
 		if (!m.matches()) {
 			throw new IllegalArgumentException("bad argument: " + serialForm);
 		}
 		int idx = 0;
-		cabinet = parseInt(m.group(++idx));
-		frame = parseInt(m.group(++idx));
-	}
-
-	/**
-	 * @return The ID of the cabinet that contains the frame that contains the
-	 *         BMPs.
-	 */
-	public int getCabinet() {
-		return cabinet;
-	}
-
-	/**
-	 * @return The ID of the frame that contains the master BMP. Frames are
-	 *         contained within a cabinet.
-	 */
-	public int getFrame() {
-		return frame;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof BMPCoords) {
-			var other = (BMPCoords) obj;
-			return cabinet == other.cabinet && frame == other.frame;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return cabinet * 5 + frame;
+		int cabinet = parseInt(m.group(++idx));
+		int frame = parseInt(m.group(++idx));
+		return new BMPCoords(cabinet, frame);
 	}
 
 	@Override
@@ -145,6 +102,17 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 			return cmp;
 		}
 		return compare(frame, other.frame);
+	}
+
+	/**
+	 * Convert to a full C, F, B tuple.
+	 *
+	 * @param board
+	 *            The coordinate of the board.
+	 * @return The C, F, B tuple.
+	 */
+	public BMPLocation locate(BMPBoard board) {
+		return new BMPLocation(cabinet, frame, board.board());
 	}
 
 	/** JSON deserializer for {@link BMPCoords}. */
@@ -165,31 +133,25 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 
 		@Override
 		BMPCoords deserializeObject() throws IOException {
-			Integer c = null, f = null;
+			var c = new ValueHolder<Integer>();
+			var f = new ValueHolder<Integer>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {
-				case "cabinet":
-				case "c":
-					c = requireSetOnceInt(name, c);
-					break;
-				case "frame":
-				case "f":
-					f = requireSetOnceInt(name, f);
-					break;
-				default:
-					unknownProperty(name);
+				case "cabinet", "c" -> requireSetOnceInt(name, c);
+				case "frame", "f" -> requireSetOnceInt(name, f);
+				default -> unknownProperty(name);
 				}
 			}
-			if (c == null || f == null) {
-				missingProperty("c", c, "f", f);
+			if (c.isEmpty() || f.isEmpty()) {
+				missingProperty("c", c.getValue(), "f", f.getValue());
 			}
-			return new BMPCoords(c, f);
+			return new BMPCoords(c.getValue(), f.getValue());
 		}
 
 		@Override
 		BMPCoords deserializeString(String string) {
-			return new BMPCoords(string);
+			return BMPCoords.parse(string);
 		}
 
 		@Override

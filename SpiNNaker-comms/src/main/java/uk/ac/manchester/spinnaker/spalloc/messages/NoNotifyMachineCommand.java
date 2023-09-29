@@ -22,7 +22,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.no_notify_machine"
  *      >Spalloc Server documentation</a>
  */
-public class NoNotifyMachineCommand extends Command<String> {
+public final class NoNotifyMachineCommand extends Command<String> {
 	//
 	/**
 	 * Create a request to not be notified of changes in machine state.

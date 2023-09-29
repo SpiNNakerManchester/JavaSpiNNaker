@@ -18,11 +18,10 @@ package uk.ac.manchester.spinnaker.storage;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -32,7 +31,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  *
  * @author Donal Fellows
  */
-public interface BufferManagerStorage extends ProxyAwareStorage {
+public interface BufferManagerStorage extends DatabaseAPI {
 	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
 	 * of a DSE region of a particular SpiNNaker core.

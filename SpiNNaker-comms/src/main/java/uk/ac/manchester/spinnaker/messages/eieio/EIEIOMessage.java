@@ -23,8 +23,8 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * @param <Header>
  *            The type of header on this message.
  */
-public interface EIEIOMessage<Header extends EIEIOHeader>
-		extends SerializableMessage {
+public sealed interface EIEIOMessage<Header extends EIEIOHeader> extends
+		SerializableMessage permits EIEIOCommandMessage, EIEIODataMessage {
 	/** @return the header of this message. */
 	Header getHeader();
 

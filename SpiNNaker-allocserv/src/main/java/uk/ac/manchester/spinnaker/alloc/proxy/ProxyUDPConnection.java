@@ -16,10 +16,9 @@
 package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.lang.Thread.currentThread;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_THROUGHPUT;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -70,7 +69,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		super(localHost, null, remoteHost, remotePort, IPTOS_THROUGHPUT);
 		this.session = session;
 		this.emergencyRemove = emergencyRemove;
-		workingBuffer = allocate(WORKING_BUFFER_SIZE).order(LITTLE_ENDIAN);
+		workingBuffer = alloc(WORKING_BUFFER_SIZE);
 		// Fixed header for this particular connection
 		workingBuffer.putInt(ProxyOp.MESSAGE.ordinal());
 		workingBuffer.putInt(id);
@@ -259,11 +258,11 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 				continue;
 			}
 			// SECURITY: drop any packet not from an allocated board
-			if (!recvFrom.contains(packet.getAddress().getAddress())) {
-				log.debug("dropped packet from {}", packet.getAddress());
+			if (!recvFrom.contains(packet.address().getAddress())) {
+				log.debug("dropped packet from {}", packet.address());
 				continue;
 			}
-			handleReceivedMessage(packet.getByteBuffer());
+			handleReceivedMessage(packet.byteBuffer());
 		}
 	}
 }

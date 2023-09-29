@@ -17,33 +17,19 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import com.google.errorprone.annotations.Immutable;
 
-/** Information about a tag pool on an Ethernet-connected chip. */
+/**
+ * Information about a tag pool on an Ethernet-connected chip.
+ *
+ * @param transientTimeout
+ *            The timeout for transient IP tags (i.e., responses to SCP
+ *            commands).
+ * @param poolSize
+ *            The count of the IP tag pool size.
+ * @param fixedSize
+ *            The count of the number of fixed IP tag entries.
+ * @author Donal Fellows
+ */
 @Immutable
-public final class TagInfo {
-	/**
-	 * The timeout for transient IP tags (i.e., responses to SCP commands).
-	 */
-	public final IPTagTimeOutWaitTime transientTimeout;
-
-	/** The count of the IP tag pool size. */
-	public final int poolSize;
-
-	/** The count of the number of fixed IP tag entries. */
-	public final int fixedSize;
-
-	/**
-	 * @param transientTimeout
-	 *            The timeout for transient IP tags (i.e., responses to SCP
-	 *            commands).
-	 * @param poolSize
-	 *            The count of the IP tag pool size.
-	 * @param fixedSize
-	 *            The count of the number of fixed IP tag entries.
-	 */
-	public TagInfo(IPTagTimeOutWaitTime transientTimeout, int poolSize,
-			int fixedSize) {
-		this.transientTimeout = transientTimeout;
-		this.poolSize = poolSize;
-		this.fixedSize = fixedSize;
-	}
+public record TagInfo(IPTagTimeOutWaitTime transientTimeout, int poolSize,
+		int fixedSize) {
 }

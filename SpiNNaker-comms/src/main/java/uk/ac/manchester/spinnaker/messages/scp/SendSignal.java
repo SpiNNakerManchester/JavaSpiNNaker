@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  *
  * @see CountState
  */
-public class SendSignal extends SCPRequest<EmptyResponse> {
+public final class SendSignal extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param appID
 	 *            The ID of the application to signal (only for multicast
@@ -62,7 +62,7 @@ public class SendSignal extends SCPRequest<EmptyResponse> {
 	// @formatter:on
 	private static int data(AppID appID, Signal signal) {
 		return (signal.value << BYTE2) | (APP_MASK << BYTE1)
-				| (appID.appID << BYTE0);
+				| (appID.appID() << BYTE0);
 	}
 
 	@Override

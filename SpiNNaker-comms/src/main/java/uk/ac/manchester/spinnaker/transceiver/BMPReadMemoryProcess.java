@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPReadMemory;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadBMPMemory;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
@@ -73,7 +73,7 @@ class BMPReadMemoryProcess extends BMPCommandProcess {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			accum.add(offset,
-					call(new BMPReadMemory(board, address.add(offset), chunk)));
+					call(new ReadBMPMemory(board, address.add(offset), chunk)));
 		}
 		return accum.finish();
 	}

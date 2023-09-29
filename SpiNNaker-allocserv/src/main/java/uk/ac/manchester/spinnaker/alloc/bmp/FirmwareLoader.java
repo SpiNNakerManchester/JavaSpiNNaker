@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Instant.ofEpochSecond;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.buffer;
@@ -35,15 +36,16 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_SW_W;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.LEDO;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,14 +53,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.zip.CRC32;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
@@ -168,6 +169,7 @@ public class FirmwareLoader {
 	/** Base class of exceptions thrown by the firmware loader. */
 	public abstract static class FirmwareLoaderException
 			extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -7057612243855126410L;
 
 		FirmwareLoaderException(String msg) {
@@ -177,6 +179,7 @@ public class FirmwareLoader {
 
 	/** An update of the firmware on a BMP failed. */
 	public static class UpdateFailedException extends FirmwareLoaderException {
+		@Serial
 		private static final long serialVersionUID = 7925582707336953554L;
 
 		/** The data read back from the BMP. */
@@ -184,13 +187,13 @@ public class FirmwareLoader {
 
 		UpdateFailedException(ByteBuffer data) {
 			super("failed to update flash data correctly!");
-			this.data = data.asReadOnlyBuffer();
-			this.data.order(LITTLE_ENDIAN);
+			this.data = readOnly(data);
 		}
 	}
 
 	/** A CRC check failed. */
 	public static class CRCFailedException extends FirmwareLoaderException {
+		@Serial
 		private static final long serialVersionUID = -4111893327837084643L;
 
 		/** The CRC calculated by the BMP. */
@@ -204,6 +207,7 @@ public class FirmwareLoader {
 
 	/** A data chunk was too large for the firmware loader to handle. */
 	public static class TooLargeException extends FirmwareLoaderException {
+		@Serial
 		private static final long serialVersionUID = -9025065456329109710L;
 
 		TooLargeException(long size) {
@@ -221,8 +225,7 @@ public class FirmwareLoader {
 		final ByteBuffer buf;
 
 		FlashDataSector() {
-			buf = ByteBuffer.allocate(DATA_SECTOR_LENGTH);
-			buf.order(LITTLE_ENDIAN);
+			buf = alloc(DATA_SECTOR_LENGTH);
 		}
 
 		static FlashDataSector registers(int numItems, List<Integer> data) {
@@ -274,7 +277,7 @@ public class FirmwareLoader {
 			buf.putShort((short) (BITFILE_ENABLED_FLAG + chip.bits));
 			buf.putInt(timestamp);
 			buf.putInt(crc);
-			buf.putInt(baseAddress.address);
+			buf.putInt(baseAddress.address());
 			buf.putInt(length);
 			buf.putInt(mtime);
 
@@ -298,14 +301,14 @@ public class FirmwareLoader {
 	 * just immediately, but also during BMP boot.
 	 *
 	 * @author Donal Fellows
+	 * @param fpga
+	 *            Which FPGA's register to set
+	 * @param address
+	 *            The location of the register to set in the FPGA address space
+	 * @param value
+	 *            What value to set
 	 */
-	public static class RegisterSet {
-		private final FPGA fpga;
-
-		private final MemoryLocation address;
-
-		private final int value;
-
+	public record RegisterSet(FPGA fpga, MemoryLocation address, int value) {
 		/**
 		 * @param fpga
 		 *            Which FPGA's registers to set
@@ -315,9 +318,7 @@ public class FirmwareLoader {
 		 *            The value to set
 		 */
 		public RegisterSet(FPGA fpga, FPGAMainRegisters register, int value) {
-			this.fpga = fpga;
-			this.address = register.getAddress();
-			this.value = value;
+			this(fpga, register.getAddress(), value);
 		}
 
 		/**
@@ -332,9 +333,7 @@ public class FirmwareLoader {
 		 */
 		public RegisterSet(FPGA fpga, FPGALinkRegisters register, int bank,
 				int value) {
-			this.fpga = fpga;
-			this.address = register.address(bank);
-			this.value = value;
+			this(fpga, register.address(bank), value);
 		}
 	}
 
@@ -359,7 +358,7 @@ public class FirmwareLoader {
 
 	private static int crc(ByteBuffer buffer, int from, int len) {
 		var crc = new CRC32();
-		crc.update(slice(buffer, from, len));
+		crc.update(buffer.slice(from, len));
 		return (int) (crc.getValue() & CRC_MASK);
 	}
 
@@ -401,8 +400,7 @@ public class FirmwareLoader {
 		log.info("BMP INFO:       {}",
 				format("%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]",
 						info.name, info.versionNumber, info.hardware,
-						info.physicalCPUID,
-						Instant.ofEpochSecond(info.buildDate),
+						info.physicalCPUID, ofEpochSecond(info.buildDate),
 						info.location.getCabinet(), info.location.getFrame(),
 						info.location.getBoard()));
 	}
@@ -417,19 +415,13 @@ public class FirmwareLoader {
 			throws ProcessException, IOException, InterruptedException {
 		var data = readFlashDataHead();
 		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
-			var chunk = slice(data, DATA_SECTOR_CHUNK_SIZE * i,
-					DATA_SECTOR_CHUNK_SIZE);
+			var chunk = data.slice(DATA_SECTOR_CHUNK_SIZE * i,
+					DATA_SECTOR_CHUNK_SIZE).order(LITTLE_ENDIAN);
 			byte type = chunk.get();
 			switch (DataSectorTypes.get(type)) {
-			case REGISTER:
-				logRegisterSets(chunk);
-				break;
-			case BITFILE:
-				logFPGABootBitfile(chunk, i);
-				break;
-			default:
-				// Ignore the chunk
-				break;
+			case REGISTER -> logRegisterSets(chunk);
+			case BITFILE -> logFPGABootBitfile(chunk, i);
+			default -> log.trace("ignoring chunk with type code {}", type);
 			}
 		}
 	}
@@ -483,10 +475,8 @@ public class FirmwareLoader {
 				length, crc));
 		log.info("FPGA BOOT:           File      {}",
 				new String(filenameBytes, 0, size, UTF_8).strip());
-		log.info("FPGA BOOT:           Written   {}",
-				Instant.ofEpochSecond(time));
-		log.info("FPGA BOOT:           ModTime   {}",
-				Instant.ofEpochSecond(mtime));
+		log.info("FPGA BOOT:           Written   {}", ofEpochSecond(time));
+		log.info("FPGA BOOT:           ModTime   {}", ofEpochSecond(mtime));
 	}
 
 	/**
@@ -508,8 +498,8 @@ public class FirmwareLoader {
 			throws ProcessException, IOException, InterruptedException {
 		var data = new ArrayList<Integer>();
 		for (var r : settings) {
-			data.add(r.address.address | r.fpga.value);
-			data.add(r.value);
+			data.add(r.address().address() | r.fpga().value);
+			data.add(r.value());
 		}
 		var sector = FlashDataSector.registers(settings.length, data);
 

@@ -57,7 +57,7 @@ public class TestRouter {
 	public void testLinks() {
 		var links = List.of(LINK00_01);
 		var router = new Router(links);
-		final var values = router.links();
+		var values = router.links();
 		assertEquals(1, values.size());
 		assertThrows(UnsupportedOperationException.class, () -> {
 			values.remove(LINK00_01);

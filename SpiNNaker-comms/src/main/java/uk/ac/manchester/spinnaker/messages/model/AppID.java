@@ -20,8 +20,10 @@ package uk.ac.manchester.spinnaker.messages.model;
  * owners.
  *
  * @author Donal Fellows
+ * @param appID
+ *            The proposed ID of the application. Must be between 0 and 255.
  */
-public final class AppID {
+public record AppID(int appID) {
 	/**
 	 * Maximum app ID.
 	 */
@@ -32,39 +34,12 @@ public final class AppID {
 	 */
 	public static final AppID DEFAULT = new AppID(0);
 
-	/**
-	 * The application ID.
-	 */
-	public final int appID;
-
-	/**
-	 * Create an application ID.
-	 *
-	 * @param appID
-	 *            The proposed ID of the application. Must be between 0 and 255.
-	 * @throws IllegalArgumentException
-	 *             If an illegal ID is given.
-	 */
-	public AppID(int appID) {
+	/** Make an instance. */
+	public AppID {
 		if (appID < 0 || appID > MAX_APP_ID) {
 			throw new IllegalArgumentException(
 					"appID must be between 0 and " + MAX_APP_ID);
 		}
-		this.appID = appID;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof AppID) {
-			var other = (AppID) o;
-			return appID == other.appID;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return (appID << 5) ^ 1236984681;
 	}
 
 	@Override

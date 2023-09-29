@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Integer.parseInt;
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -27,6 +26,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -37,6 +37,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_B
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.OR;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
@@ -45,6 +47,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -61,15 +64,13 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 
+import jakarta.validation.Valid;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
 import uk.ac.manchester.spinnaker.machine.ValidP;
-import uk.ac.manchester.spinnaker.utils.CollectionUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -81,6 +82,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 public final class Blacklist implements Serializable {
+	@Serial
 	private static final long serialVersionUID = -7759940789892168209L;
 
 	private static final Logger log = getLogger(Blacklist.class);
@@ -162,8 +164,7 @@ public final class Blacklist implements Serializable {
 	}
 
 	private ByteBuffer encodeBlacklist() {
-		var buf = allocate((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE)
-				.order(LITTLE_ENDIAN);
+		var buf = alloc((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE);
 		buf.putInt(0); // Size; filled in later
 		int count = 0;
 		for (int x = 0; x < SIZE_X_OF_ONE_BOARD; x++) {
@@ -308,13 +309,14 @@ public final class Blacklist implements Serializable {
 		return sb.toString();
 	}
 
-	private static Set<Integer> parseCommaSeparatedSet(String str) {
-		return CollectionUtils.parseCommaSeparatedSet(str, Integer::parseInt);
+	private static <T> Set<T> parseCommaSeparatedSet(String str,
+			Function<String, T> mapper) {
+		return stream(str.split(",")).map(mapper).collect(toUnmodifiableSet());
 	}
 
 	private static <T extends Enum<T>> Set<T> parseCommaSeparatedSet(
-			String str, Function<Integer, T> fun, Class<T> cls) {
-		return stream(str.split(",")).map(Integer::parseInt).map(fun)
+			String str, Function<Integer, T> mapper, Class<T> cls) {
+		return stream(str.split(",")).map(Integer::parseInt).map(mapper)
 				.collect(toEnumSet(cls));
 	}
 
@@ -349,7 +351,8 @@ public final class Blacklist implements Serializable {
 		while (true) {
 			m = CORE_PATTERN.matcher(rest);
 			if (m.find() && deadCores == null) {
-				deadCores = parseCommaSeparatedSet(m.group("cores"));
+				deadCores = parseCommaSeparatedSet(
+						m.group("cores"), Integer::parseInt);
 				deadCores.forEach(c -> {
 					if (c < 0 || c >= PROCESSORS_PER_CHIP) {
 						throw new IllegalArgumentException(
@@ -489,7 +492,7 @@ public final class Blacklist implements Serializable {
 
 	/** @return The raw blacklist data in little-endian form. Read only. */
 	public ByteBuffer getRawData() {
-		return rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		return readOnly(rawData);
 	}
 
 	@Override
@@ -499,12 +502,8 @@ public final class Blacklist implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Blacklist) {
-			var other = (Blacklist) object;
-			return chips.equals(other.chips) && cores.equals(other.cores)
-					&& links.equals(other.links);
-		}
-		return false;
+		return (object instanceof Blacklist other) && chips.equals(other.chips)
+				&& cores.equals(other.cores) && links.equals(other.links);
 	}
 
 	@Override
@@ -524,6 +523,7 @@ public final class Blacklist implements Serializable {
 	 *             If output fails.
 	 * @see ObjectOutputStream#defaultWriteObject()
 	 */
+	@Serial
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
 		out.writeInt(rawData.remaining());
@@ -548,6 +548,7 @@ public final class Blacklist implements Serializable {
 	 *             if the class of a serialized object could not be found.
 	 * @see ObjectInputStream#defaultReadObject()
 	 */
+	@Serial
 	private void readObject(ObjectInputStream in)
 			throws IOException, ClassNotFoundException {
 		in.defaultReadObject();

@@ -12,6 +12,11 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- --------------------------------------------------------------------------
+-- Get the set of boards at some coordinates within a triad rectangle that
+-- are connected (i.e., have at least one path over enableable links within
+-- the allocation) to the root board.
+
 WITH RECURSIVE
 	args(machine_id, x, y, z, width, height, depth) AS (
 		SELECT :machine_id, :x, :y, :z, :width, :height, :depth),

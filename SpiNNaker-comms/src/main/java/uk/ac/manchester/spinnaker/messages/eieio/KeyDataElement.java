@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 import java.nio.ByteBuffer;
 
 /** A data element that contains just a key. */
-public class KeyDataElement implements AbstractDataElement {
+public final class KeyDataElement implements AbstractDataElement {
 	private final int key;
 
 	/**
@@ -32,21 +32,16 @@ public class KeyDataElement implements AbstractDataElement {
 	}
 
 	@Override
-	public final void addToBuffer(ByteBuffer buffer, EIEIOType eieioType) {
+	public void addToBuffer(ByteBuffer buffer, EIEIOType eieioType) {
 		if (eieioType.payloadBytes != 0) {
 			throw new IllegalArgumentException(
 					"The type specifies a payload, but this element has no"
 							+ " payload");
 		}
 		switch (eieioType) {
-		case KEY_16_BIT:
-			buffer.putShort((short) key);
-			return;
-		case KEY_32_BIT:
-			buffer.putInt(key);
-			return;
-		default:
-			throw new IllegalArgumentException("Unknown type");
+		case KEY_16_BIT -> buffer.putShort((short) key);
+		case KEY_32_BIT -> buffer.putInt(key);
+		default -> throw new IllegalArgumentException("Unknown type");
 		}
 	}
 }

@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Handled by {@code cmp_led()} in {@code bmp_cmd.c}.
  */
 @UsedInJavadocOnly(SetLED.class)
-public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
+public final class SetBoardLEDs extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
 	 * Make a request.
 	 *
@@ -44,7 +44,7 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	 * @param boards
 	 *            The boards to talk to
 	 */
-	public BMPSetLED(Collection<Integer> leds, LEDAction action,
+	public SetBoardLEDs(Collection<Integer> leds, LEDAction action,
 			Collection<BMPBoard> boards) {
 		super(boards, CMD_LED, argument1(action, leds), argument2(boards));
 	}
@@ -54,7 +54,7 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	}
 
 	private static int argument2(Collection<BMPBoard> boards) {
-		return boards.stream().mapToInt(board -> 1 << board.board).sum();
+		return boards.stream().mapToInt(board -> 1 << board.board()).sum();
 	}
 
 	@Override

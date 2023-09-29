@@ -15,6 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
+import java.io.Serial;
+
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
 
 /**
@@ -22,6 +24,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
  * a message.
  */
 public class SpallocServerException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 3865188016221866202L;
 
 	/**

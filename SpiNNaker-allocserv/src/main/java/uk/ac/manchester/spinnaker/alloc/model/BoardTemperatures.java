@@ -20,6 +20,7 @@ import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 /**
  * A board temperature.
  */
+// Used by JSP, so not a record
 public class BoardTemperatures {
 	/** The board temperature. */
 	public final double boardTemperature;

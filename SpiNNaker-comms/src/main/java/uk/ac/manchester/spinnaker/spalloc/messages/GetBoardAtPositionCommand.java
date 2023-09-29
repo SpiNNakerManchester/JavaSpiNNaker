@@ -15,9 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 
 /**
@@ -28,7 +27,7 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
  *      >Spalloc Server documentation</a>
  * @see BoardCoordinates The basic result type associated with the request
  */
-public class GetBoardAtPositionCommand extends Command<Integer> {
+public final class GetBoardAtPositionCommand extends Command<Integer> {
 	/**
 	 * Create a request.
 	 *
@@ -42,8 +41,8 @@ public class GetBoardAtPositionCommand extends Command<Integer> {
 		super("get_board_at_position");
 		addKwArg("machine_name", machine);
 		// The current spalloc server expects the param names x, y, z
-		addKwArg("x", coords.c);
-		addKwArg("y", coords.f);
-		addKwArg("z", coords.b);
+		addKwArg("x", coords.c());
+		addKwArg("y", coords.f());
+		addKwArg("z", coords.b());
 	}
 }

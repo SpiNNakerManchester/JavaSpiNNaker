@@ -59,7 +59,7 @@ public final class ApplicationStop extends SCPRequest<EmptyResponse> {
 		// Call the SIG0 NN operation, subcode STOP (stop application)
 		// No masking of the app ID
 		return (SIG0_APP << SHIFT) | (STOP.value << BYTE2) | (APP_MASK << BYTE1)
-				| (appID.appID << BYTE0);
+				| (appID.appID() << BYTE0);
 	}
 
 	private static int nnConfig() {

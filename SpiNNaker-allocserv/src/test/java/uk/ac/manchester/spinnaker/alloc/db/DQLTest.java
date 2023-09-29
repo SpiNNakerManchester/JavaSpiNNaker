@@ -254,8 +254,8 @@ class DQLTest extends SimpleDBTestBase {
 				var dims = q.call1(r -> new MachineDimensions(r.getInt("width"),
 						r.getInt("height")), NO_JOB).orElseThrow();
 				// These two are actually NULL when there's no job
-				assertEquals(0, dims.width);
-				assertEquals(0, dims.height);
+				assertEquals(0, dims.width());
+				assertEquals(0, dims.height());
 			});
 		}
 	}
@@ -412,7 +412,7 @@ class DQLTest extends SimpleDBTestBase {
 
 	@Test
 	void getDeadLinks() {
-		try (var q = c.query(getDeadLinks)) {
+		try (var q = c.query(GET_DEAD_LINKS)) {
 			c.transaction(() -> {
 				assertEquals(List.of("machine_id"), q.getParameters());
 				assertEquals(List.of("board_1_x", "board_1_y", "board_1_z",
@@ -486,7 +486,7 @@ class DQLTest extends SimpleDBTestBase {
 
 	@Test
 	void getAllocationTasks() {
-		try (var q = c.query(getAllocationTasks)) {
+		try (var q = c.query(GET_ALLOCATION_TASKS)) {
 			c.transaction(() -> {
 				assertEquals(List.of("job_state"), q.getParameters());
 				assertEquals(List.of("req_id", "job_id", "num_boards", "width",
@@ -590,7 +590,7 @@ class DQLTest extends SimpleDBTestBase {
 
 	@Test
 	void findLocation() {
-		try (var q = c.query(findLocation)) {
+		try (var q = c.query(FIND_LOCATION)) {
 			c.transaction(() -> {
 				assertEquals(List.of("machine_id", "board_id"),
 						q.getParameters());
@@ -1093,7 +1093,7 @@ class DQLTest extends SimpleDBTestBase {
 
 	@Test
 	void getReportedBoards() {
-		try (var q = c.query(getReportedBoards)) {
+		try (var q = c.query(GET_REPORTED_BOARDS)) {
 			c.transaction(() -> {
 				assertEquals(List.of("threshold"), q.getParameters());
 				assertEquals(List.of("board_id", "num_reports", "x", "y", "z",

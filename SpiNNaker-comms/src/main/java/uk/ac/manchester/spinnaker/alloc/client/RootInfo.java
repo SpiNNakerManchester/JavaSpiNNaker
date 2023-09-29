@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
-class RootInfo {
+final class RootInfo {
 	/** Service version. */
 	Version version;
 

@@ -25,7 +25,7 @@ import java.util.Map;
  *      "https://spalloc-server.readthedocs.io/en/stable/protocol/#commands.create_job"
  *      >Spalloc Server documentation</a>
  */
-public class CreateJobCommand extends Command<Integer> {
+public final class CreateJobCommand extends Command<Integer> {
 	/**
 	 * Create a request to create a job. Short-hand form for most basic kind of
 	 * request.
@@ -63,7 +63,7 @@ public class CreateJobCommand extends Command<Integer> {
 			throw new IllegalArgumentException(
 					"owner must be specified for all jobs");
 		}
-		for (String key : kwargs.keySet()) {
+		for (var key : kwargs.keySet()) {
 			addKwArg(key, kwargs.get(key));
 		}
 	}

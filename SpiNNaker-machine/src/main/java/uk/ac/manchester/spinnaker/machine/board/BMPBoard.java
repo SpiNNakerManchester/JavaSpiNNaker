@@ -19,41 +19,28 @@ package uk.ac.manchester.spinnaker.machine.board;
  * Wrapper for a board number so that it can't get mixed up with other integers.
  *
  * @author Donal Fellows
+ * @param board
+ *            The board number.
  */
-public final class BMPBoard {
+public record BMPBoard(@ValidBoardNumber int board) {
 	/**
 	 * The maximum board number. There can be only up to 24 boards per frame.
 	 */
 	public static final int MAX_BOARD_NUMBER = 23;
 
-	/** The board number. */
-	@ValidBoardNumber
-	public final int board;
-
 	/**
-	 * @param board
-	 *            The board number.
+	 * Convert to a full C, F, B tuple.
+	 *
+	 * @param coords
+	 *            The coordinates of the frame.
+	 * @return The C, F, B tuple.
 	 */
-	public BMPBoard(int board) {
-		this.board = board;
+	public BMPLocation locate(BMPCoords coords) {
+		return new BMPLocation(coords.cabinet(), coords.frame(), board);
 	}
 
 	@Override
 	public String toString() {
 		return "board=" + board;
-	}
-
-	@Override
-	public int hashCode() {
-		return board;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof BMPBoard) {
-			var b = (BMPBoard) o;
-			return board == b.board;
-		}
-		return false;
 	}
 }

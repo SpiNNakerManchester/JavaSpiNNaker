@@ -19,7 +19,7 @@ import com.google.errorprone.annotations.Immutable;
 
 /** A multicast packet routing table entry. */
 @Immutable
-public class MulticastRoutingEntry extends RoutingEntry {
+public final class MulticastRoutingEntry extends RoutingEntry {
 	private final int key;
 
 	private final int mask;

@@ -31,17 +31,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.google.errorprone.annotations.Keep;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
@@ -328,7 +327,8 @@ public interface SpallocAPI {
 	 * @see CreateDimensionsAt
 	 * @see CreateBoard
 	 */
-	abstract class CreateDescriptor {
+	abstract sealed class CreateDescriptor
+			permits CreateDimensions, CreateNumBoards, HasBoardCoords {
 		/**
 		 * The maximum number of dead boards tolerated in the allocation.
 		 * Ignored when asking for a single board.
@@ -449,7 +449,8 @@ public interface SpallocAPI {
 	}
 
 	/** Some requests have the locations of boards. */
-	abstract class HasBoardCoords extends CreateDescriptor {
+	abstract sealed class HasBoardCoords
+			extends CreateDescriptor permits CreateDimensionsAt, CreateBoard {
 		/** The logical coordinates, or {@code null}. */
 		@Valid
 		public final TriadCoords triad;
@@ -763,7 +764,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T numBoards(@NotNull CreateNumBoards createNumBoards);
+		default T numBoards(@NotNull CreateNumBoards createNumBoards) {
+			return null;
+		}
 
 		/**
 		 * Visit a descriptor.
@@ -772,7 +775,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T dimensionsAt(@NotNull CreateDimensionsAt createDimensionsAt);
+		default T dimensionsAt(@NotNull CreateDimensionsAt createDimensionsAt) {
+			return null;
+		}
 
 		/**
 		 * Visit a descriptor.
@@ -781,7 +786,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T dimensions(@NotNull CreateDimensions createDimensions);
+		default T dimensions(@NotNull CreateDimensions createDimensions) {
+			return null;
+		}
 
 		/**
 		 * Visit a descriptor.
@@ -790,7 +797,9 @@ public interface SpallocAPI {
 		 *            The descriptor.
 		 * @return The result of the visiting.
 		 */
-		T board(@NotNull CreateBoard createBoard);
+		default T board(@NotNull CreateBoard createBoard) {
+			return null;
+		}
 	}
 
 	/**

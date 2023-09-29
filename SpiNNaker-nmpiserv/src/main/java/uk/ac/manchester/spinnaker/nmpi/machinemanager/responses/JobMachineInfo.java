@@ -49,7 +49,7 @@ public class JobMachineInfo {
 	 * @param width
 	 *            The width in chips
 	 */
-	public void setWidth(final int width) {
+	void setWidth(int width) {
 		this.width = width;
 	}
 
@@ -68,7 +68,7 @@ public class JobMachineInfo {
 	 * @param height
 	 *            The height in chips
 	 */
-	public void setHeight(final int height) {
+	void setHeight(int height) {
 		this.height = height;
 	}
 
@@ -87,7 +87,7 @@ public class JobMachineInfo {
 	 * @param connections
 	 *            The connections to set
 	 */
-	public void setConnections(final List<Connection> connections) {
+	void setConnections(List<Connection> connections) {
 		this.connections = connections;
 	}
 
@@ -106,7 +106,7 @@ public class JobMachineInfo {
 	 * @param machineName
 	 *            The name to set
 	 */
-	public void setMachineName(final String machineName) {
+	void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
 }

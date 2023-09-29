@@ -17,7 +17,7 @@ package uk.ac.manchester.spinnaker.nmpi.rest.utils;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
-import static javax.ws.rs.core.MediaType.WILDCARD;
+import static jakarta.ws.rs.core.MediaType.WILDCARD;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,17 +27,17 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 /**
  * Extended JSON serialisation handler.
@@ -65,8 +65,8 @@ public class CustomJacksonJsonProvider extends JacksonJsonProvider {
 	 * @param deserialiser
 	 *            The deserialiser.
 	 */
-	public <T> void addDeserialiser(final Class<T> type,
-			final StdDeserializer<T> deserialiser) {
+	public <T> void addDeserialiser(Class<T> type,
+			StdDeserializer<T> deserialiser) {
 		module.addDeserializer(type, deserialiser);
 	}
 
@@ -78,9 +78,8 @@ public class CustomJacksonJsonProvider extends JacksonJsonProvider {
 	 * @param mediaType
 	 *            The media type to handle
 	 */
-	private void registerMapper(final Class<?> type,
-			final MediaType mediaType) {
-		final var mapper = locateMapper(type, mediaType);
+	private void registerMapper(Class<?> type, MediaType mediaType) {
+		var mapper = locateMapper(type, mediaType);
 		if (!registeredMappers.contains(mapper)) {
 			mapper.registerModule(module);
 			mapper.setPropertyNamingStrategy(SNAKE_CASE);
@@ -91,21 +90,20 @@ public class CustomJacksonJsonProvider extends JacksonJsonProvider {
 	}
 
 	@Override
-	public Object readFrom(final Class<Object> type, final Type genericType,
-			final Annotation[] annotations, final MediaType mediaType,
-			final MultivaluedMap<String, String> httpHeaders,
-			final InputStream entityStream) throws IOException {
+	public Object readFrom(Class<Object> type, Type genericType,
+			Annotation[] annotations, MediaType mediaType,
+			MultivaluedMap<String, String> httpHeaders,
+			InputStream entityStream) throws IOException {
 		registerMapper(type, mediaType);
 		return super.readFrom(type, genericType, annotations, mediaType,
 				httpHeaders, entityStream);
 	}
 
 	@Override
-	public void writeTo(final Object value, final Class<?> type,
-			final Type genericType, final Annotation[] annotations,
-			final MediaType mediaType,
-			final MultivaluedMap<String, Object> httpHeaders,
-			final OutputStream entityStream) throws IOException {
+	public void writeTo(Object value, Class<?> type, Type genericType,
+			Annotation[] annotations, MediaType mediaType,
+			MultivaluedMap<String, Object> httpHeaders,
+			OutputStream entityStream) throws IOException {
 		registerMapper(type, mediaType);
 		super.writeTo(value, type, genericType, annotations, mediaType,
 				httpHeaders, entityStream);

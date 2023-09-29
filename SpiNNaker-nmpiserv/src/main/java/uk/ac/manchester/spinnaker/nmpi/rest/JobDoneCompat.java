@@ -87,13 +87,12 @@ public class JobDoneCompat {
 	 * @param timestampCompletion
 	 *            the timestampCompletion to set
 	 */
-	public void setTimestampCompletion(
-			final DateTime timestampCompletion) {
+	public void setTimestampCompletion(DateTime timestampCompletion) {
 		this.timestampCompletion = timestampCompletion;
 	}
 
 	/**
-	 * Get the outputData.
+	 * Get the output data items.
 	 *
 	 * @return the outputData
 	 */
@@ -107,7 +106,7 @@ public class JobDoneCompat {
 	 * @param outputData
 	 *            the outputData to set
 	 */
-	public void setOutputData(final List<DataItem> outputData) {
+	public void setOutputData(List<DataItem> outputData) {
 		this.outputData = outputData;
 	}
 
@@ -126,7 +125,7 @@ public class JobDoneCompat {
 	 * @param provenance
 	 *            the provenance to set
 	 */
-	public void setProvenance(final ObjectNode provenance) {
+	public void setProvenance(ObjectNode provenance) {
 		this.provenance = provenance;
 	}
 

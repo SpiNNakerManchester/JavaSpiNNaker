@@ -16,8 +16,6 @@
 package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.net.InetAddress.getByName;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.socket.CloseStatus.BAD_DATA;
@@ -25,6 +23,7 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.CLOSE;
 import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.OPEN_UNCONNECTED;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.KILOBYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
@@ -49,7 +48,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * The main proxy class for a particular web socket session. It's bound to a
@@ -125,10 +123,10 @@ public class ProxyCore implements AutoCloseable {
 		this.localHost = localHost;
 		for (var ci : connections) {
 			try {
-				hosts.put(ci.getChip(), getByName(ci.getHostname()));
+				hosts.put(ci.chip(), getByName(ci.hostname()));
 			} catch (UnknownHostException e) {
 				log.warn("unexpectedly unknown board address: {}",
-						ci.getHostname(), e);
+						ci.hostname(), e);
 			}
 		}
 		recvFrom = Set.copyOf(hosts.values());
@@ -140,21 +138,20 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	private Impl decode(int opcode) {
-		switch (ProxyOp.values()[opcode]) {
-		case OPEN:
-			return this::openConnectedChannel;
-		case CLOSE:
-			return this::closeChannel;
-		case MESSAGE:
-			return this::sendMessage;
-		case OPEN_UNCONNECTED:
-			return this::openUnconnectedChannel;
-		case MESSAGE_TO:
-			return this::sendMessageTo;
-		default:
-			log.warn("unexpected proxy opcode: {}", opcode);
-			throw new IllegalArgumentException("bad opcode");
-		}
+		return switch (ProxyOp.values()[opcode]) {
+		case OPEN -> this::openConnectedChannel;
+		case CLOSE -> this::closeChannel;
+		case MESSAGE -> this::sendMessage;
+		case OPEN_UNCONNECTED -> this::openUnconnectedChannel;
+		case MESSAGE_TO -> this::sendMessageTo;
+		default -> this::unexpectedMessage;
+		};
+	}
+
+	private ByteBuffer unexpectedMessage(ByteBuffer message) {
+		int opcode = message.getInt(0);
+		log.error("unexpected message: {}", opcode);
+		return composeError(-1, new Exception("unexpected message: " + opcode));
 	}
 
 	/**
@@ -186,7 +183,7 @@ public class ProxyCore implements AutoCloseable {
 	private static ByteBuffer response(ProxyOp op, int correlationId,
 			int additionalWords) {
 		int nWords = RESPONSE_WORDS + additionalWords;
-		var msg = allocate(nWords * WORD_SIZE).order(LITTLE_ENDIAN);
+		var msg = alloc(nWords * WORD_SIZE);
 		msg.putInt(op.ordinal());
 		msg.putInt(correlationId);
 		return msg;
@@ -212,8 +209,7 @@ public class ProxyCore implements AutoCloseable {
 				msg = null;
 				continue;
 			}
-			var data = allocate(WORD_SIZE + WORD_SIZE + msgBytes.length);
-			data.order(LITTLE_ENDIAN);
+			var data = alloc(WORD_SIZE + WORD_SIZE + msgBytes.length);
 			data.putInt(ProxyOp.ERROR.ordinal());
 			data.putInt(corId);
 			data.put(msgBytes);
@@ -318,17 +314,15 @@ public class ProxyCore implements AutoCloseable {
 		assertEndOfMessage(message);
 
 		try {
-			var localAddress = new ValueHolder<InetAddress>();
-			var localPort = new ValueHolder<Integer>();
-			int id = openUnconnected(localAddress, localPort);
-			var addr = localAddress.getValue().getAddress();
+			var uc = openUnconnected();
+			var addr = uc.localAddr().getAddress();
 			log.debug("Unconnected channel local address: {}", addr);
 
 			var msg = response(OPEN_UNCONNECTED, corId,
 					ID_WORDS + IP_ADDR_AND_PORT_WORDS);
-			msg.putInt(id);
+			msg.putInt(uc.id());
 			msg.put(addr);
-			msg.putInt(localPort.getValue());
+			msg.putInt(uc.localPort());
 			return msg;
 		} catch (Exception e) {
 			log.error("failed to open unconnected channel", e);
@@ -336,8 +330,10 @@ public class ProxyCore implements AutoCloseable {
 		}
 	}
 
-	private int openUnconnected(ValueHolder<InetAddress> localAddress,
-			ValueHolder<Integer> localPort) throws IOException {
+	private record Unconnected(int id, InetAddress localAddr, int localPort) {
+	}
+
+	private Unconnected openUnconnected() throws IOException {
 		int id = idIssuer.getAsInt();
 		var conn = new ProxyUDPConnection(session, null, 0, id,
 				() -> removeConnection(id), localHost);
@@ -350,10 +346,7 @@ public class ProxyCore implements AutoCloseable {
 
 		log.info("opened proxy unconnected channel {}:{} from {}:{}", session,
 				id, who, port);
-		// Arrange for values to be sent out
-		localAddress.setValue(who);
-		localPort.setValue(port);
-		return id;
+		return new Unconnected(id, who, port);
 	}
 
 	/**

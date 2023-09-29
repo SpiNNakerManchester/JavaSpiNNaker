@@ -27,7 +27,9 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 /**
  * A factory that produces job parameters.
  */
-public abstract class JobParametersFactory {
+public abstract sealed class JobParametersFactory
+		permits DirectPyNNJobParametersFactory, GitPyNNJobParametersFactory,
+		ZipPyNNJobParametersFactory {
 	/**
 	 * The argument to append to the script name to request that the system is
 	 * added to the command line.
@@ -78,19 +80,19 @@ public abstract class JobParametersFactory {
 	 * @return The parameters, or {@code null} if the parameters can't be
 	 *         generated.
 	 */
-	public static JobParameters getJobParameters(final Job job,
-			final File workingDirectory, final String setupScript,
-			final Map<String, JobParametersFactoryException> errors) {
-		for (final var factory : JOB_PARAMETER_FACTORIES) {
+	public static JobParameters getJobParameters(Job job, File workingDirectory,
+			String setupScript,
+			Map<String, JobParametersFactoryException> errors) {
+		for (var factory : JOB_PARAMETER_FACTORIES) {
 			try {
-				final var parameters = factory.getJobParameters(job,
-						workingDirectory, setupScript);
+				var parameters = factory.getJobParameters(job, workingDirectory,
+						setupScript);
 				if (nonNull(parameters)) {
 					return parameters;
 				}
-			} catch (final UnsupportedJobException e) {
+			} catch (UnsupportedJobException e) {
 				// Do Nothing
-			} catch (final JobParametersFactoryException e) {
+			} catch (JobParametersFactoryException e) {
 				errors.put(factory.getClass().getSimpleName(), e);
 			}
 		}

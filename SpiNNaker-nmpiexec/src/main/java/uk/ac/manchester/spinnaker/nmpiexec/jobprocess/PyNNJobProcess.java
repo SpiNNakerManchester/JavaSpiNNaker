@@ -41,7 +41,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,10 +81,11 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	private static final int FINALIZATION_DELAY = 1000;
 
 	/** The set of ignored file extensions in the outputs. */
-	private static final Set<String> IGNORED_EXTENSIONS = new HashSet<>();
+	private static final Set<String> IGNORED_EXTENSIONS = Set.of("pyc");
 
 	/** The set of ignored directories in the outputs. */
-	private static final Set<String> IGNORED_DIRECTORIES = new HashSet<>();
+	private static final Set<String> IGNORED_DIRECTORIES =
+			Set.of("application_generated_data_files", "reports");
 
 	/** The timeout for running jobs, in <em>hours.</em> */
 	private static final int RUN_TIMEOUT = 7 * 24;
@@ -96,20 +96,6 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	/** A pattern for finding arguments of the command to execute. */
 	private static final Pattern ARGUMENT_FINDER =
 			Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
-
-	static {
-		IGNORED_EXTENSIONS.add("pyc");
-		IGNORED_DIRECTORIES.add("application_generated_data_files");
-		IGNORED_DIRECTORIES.add("reports");
-	}
-
-	/** Provenance data items to be added to final provenance data. */
-	private static final String[] PROVENANCE_ITEMS_TO_ADD = new String[]{
-		"version_data/.*", "router_provenance/total_multi_cast_sent_packets",
-		"router_provenance/total_created_packets",
-		"router_provenance/total_dropped_packets",
-		"router_provenance/total_missed_dropped_packets",
-		"router_provenance/total_lost_dropped_packets"};
 
 	/** The directory where the process is executed. */
 	private File workingDirectory = null;
@@ -136,7 +122,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 *            The directory to find files in.
 	 * @return The set of files found.
 	 */
-	private static Set<File> gatherFiles(final File directory) {
+	private static Set<File> gatherFiles(File directory) {
 		return new LinkedHashSet<>(
 				listFiles(directory, fileFilter(), directoryFilter()));
 	}
@@ -149,7 +135,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	private static IOFileFilter fileFilter() {
 		return new AbstractFileFilter() {
 			@Override
-			public boolean accept(final File file) {
+			public boolean accept(File file) {
 				return !IGNORED_EXTENSIONS
 						.contains(getExtension(file.getName()));
 			}
@@ -164,7 +150,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	private static IOFileFilter directoryFilter() {
 		return new AbstractFileFilter() {
 			@Override
-			public boolean accept(final File file) {
+			public boolean accept(File file) {
 				return !IGNORED_DIRECTORIES.contains(file.getName());
 			}
 		};
@@ -174,25 +160,25 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 * Executes the process.
 	 */
 	@Override
-	public void execute(final String machineUrl, final SpinnakerMachine machine,
-			final PyNNJobParameters parameters, final LogWriter logWriter) {
+	public void execute(String machineUrl, SpinnakerMachine machine,
+			PyNNJobParameters parameters, LogWriter logWriter) {
 		try {
 			status = Running;
 			workingDirectory = new File(parameters.getWorkingDirectory());
 
 			// Run the setup
-			final int setupValue = runSetup(parameters, logWriter);
+			int setupValue = runSetup(parameters, logWriter);
 			if (setupValue != 0) {
 				throw new Exception("Setup exited with non-zero error code + ("
 						+ setupValue + ")");
 			}
 
 			// Create a spynnaker config file
-			final var cfgFile = new File(workingDirectory, "spynnaker.cfg");
+			var cfgFile = new File(workingDirectory, "spynnaker.cfg");
 
 			// Add the details of the machine
-			final var ini = new Ini();
-			final var config = ini.getConfig();
+			var ini = new Ini();
+			var config = ini.getConfig();
 			config.setEscape(false);
 			config.setLowerCaseSection(false);
 			config.setLowerCaseOption(false);
@@ -200,7 +186,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 				ini.load(cfgFile);
 			}
 
-			final Section section;
+			Section section;
 			if (!ini.containsKey(SECTION)) {
 				section = ini.add(SECTION);
 			} else {
@@ -209,7 +195,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			if (nonNull(machine)) {
 				section.put("machine_name", machine.getMachineName());
 				section.put("version", machine.getVersion());
-				final var bmpDetails = machine.getBmpDetails();
+				var bmpDetails = machine.getBmpDetails();
 				if (nonNull(bmpDetails)) {
 					section.put("bmp_names", bmpDetails);
 				}
@@ -219,7 +205,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			ini.store(cfgFile);
 
 			// Keep existing files to compare to later
-			final var existingFiles = gatherFiles(workingDirectory);
+			var existingFiles = gatherFiles(workingDirectory);
 
 			// Get a lifetime if there is one
 			var hwConfig = parameters.getHardwareConfiguration();
@@ -230,15 +216,15 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			}
 
 			// Execute the program
-			final int exitValue = runSubprocess(
+			int exitValue = runSubprocess(
 					parameters, logWriter, lifetimeHours);
 
 			// Get the provenance data
 			gatherProvenance(workingDirectory);
 
 			// Get any output files
-			final var allFiles = gatherFiles(workingDirectory);
-			for (final var file : allFiles) {
+			var allFiles = gatherFiles(workingDirectory);
+			for (var file : allFiles) {
 				if (!existingFiles.contains(file)) {
 					outputs.add(file);
 				}
@@ -255,7 +241,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 						+ exitValue + ")");
 			}
 			status = Finished;
-		} catch (final Throwable e) {
+		} catch (Throwable e) {
 			var stringWriter = new StringWriter();
 			var printWriter = new PrintWriter(stringWriter);
 			e.printStackTrace(printWriter);
@@ -273,22 +259,20 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 *            The parameters to the setup process.
 	 * @param logWriter
 	 *            Where to send log messages.
-	 * @return
-	 *            The exit value of the process
+	 * @return The exit value of the process
 	 * @throws IOException
-	 *            If there was an error starting the process
+	 *             If there was an error starting the process
 	 * @throws InterruptedException
-	 *            If the process was interrupted before return
+	 *             If the process was interrupted before return
 	 */
-	private int runSetup(final PyNNJobParameters parameters,
-			final LogWriter logWriter)
+	private int runSetup(PyNNJobParameters parameters, LogWriter logWriter)
 			throws IOException, InterruptedException {
-		final var command = new ArrayList<String>();
+		var command = new ArrayList<String>();
 		command.add(SETUP_RUNNER);
 		command.add(parameters.getSetupScript());
 
 		// Build a process
-		final var builder = new ProcessBuilder(command);
+		var builder = new ProcessBuilder(command);
 		builder.directory(workingDirectory);
 		builder.redirectErrorStream(true);
 		var mapper = new ObjectMapper();
@@ -297,15 +281,15 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			for (var entry: hardwareConfig.entrySet()) {
 				String stringValue = null;
 				var value = entry.getValue();
-				if (value instanceof String) {
-					stringValue = (String) value;
+				if (value instanceof String sv) {
+					stringValue = sv;
 				} else {
 					stringValue = mapper.writeValueAsString(value);
 				}
 				builder.environment().put(entry.getKey(), stringValue);
 			}
 		}
-		final var process = builder.start();
+		var process = builder.start();
 
 		// Run a thread to gather the log
 		try (var logger =
@@ -332,24 +316,22 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 * @throws InterruptedException
 	 *             If the process was interrupted before return
 	 */
-	private int runSubprocess(final PyNNJobParameters parameters,
-			final LogWriter logWriter, final int lifetime)
-			throws IOException, InterruptedException {
-		final var command = new ArrayList<String>();
+	private int runSubprocess(PyNNJobParameters parameters, LogWriter logWriter,
+			int lifetime) throws IOException, InterruptedException {
+		var command = new ArrayList<String>();
 		command.add(SUBPROCESS_RUNNER);
 
-		final var scriptMatcher =
-				ARGUMENT_FINDER.matcher(parameters.getUserScript());
+		var scriptMatcher = ARGUMENT_FINDER.matcher(parameters.getUserScript());
 		while (scriptMatcher.find()) {
 			command.add(
 					scriptMatcher.group(1).replace("{system}", "spiNNaker"));
 		}
 
-		final var builder = new ProcessBuilder(command);
+		var builder = new ProcessBuilder(command);
 		log("Running " + command + " in " + workingDirectory);
 		builder.directory(workingDirectory);
 		builder.redirectErrorStream(true);
-		final var process = builder.start();
+		var process = builder.start();
 
 		// Run a thread to gather the log
 		try (var logger =
@@ -375,8 +357,8 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 * @throws InterruptedException
 	 *             If the process was interrupted before return
 	 */
-	private static int runProcess(final Process process, final int lifetime,
-			final TimeUnit lifetimeUnits) throws InterruptedException {
+	private static int runProcess(Process process, int lifetime,
+			TimeUnit lifetimeUnits) throws InterruptedException {
 		if (!process.waitFor(lifetime, lifetimeUnits)) {
 			process.destroy();
 			if (!process.waitFor(FINALIZATION_DELAY, MILLISECONDS)) {
@@ -401,12 +383,10 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 * @throws JAXBException
 	 *             If anything goes wrong with deserialisation of the XML.
 	 */
-	private void zipProvenance(final ZipOutputStream reportsZip,
-			final File directory, final String path)
-			throws IOException {
-
+	private void zipProvenance(ZipOutputStream reportsZip, File directory,
+			String path) throws IOException {
 		// Go through the report files and zip them up
-		for (final var file : directory.listFiles()) {
+		for (var file : directory.listFiles()) {
 			if (file.isDirectory()) {
 				zipProvenance(reportsZip, file, path + "/" + file.getName());
 			} else {
@@ -429,12 +409,11 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	 * @throws JAXBException
 	 *             If anything goes wrong with deserialisation of XML.
 	 */
-	private void gatherProvenance(final File workingDirectory)
+	private void gatherProvenance(File workingDirectory)
 			throws IOException {
 		// Find the reports folder
-		final var reportsFolder = new File(workingDirectory, "reports");
+		var reportsFolder = new File(workingDirectory, "reports");
 		if (reportsFolder.isDirectory()) {
-
 			// Create a zip file of the reports
 			try (var reportsZip = new ZipOutputStream(new FileOutputStream(
 					new File(workingDirectory, "reports.zip")))) {
@@ -506,7 +485,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		 * @param writer
 		 *            The writer to write to
 		 */
-		ReaderLogWriter(final Reader reader, final LogWriter writer) {
+		ReaderLogWriter(Reader reader, LogWriter writer) {
 			super(threadGroup, "Reader Log Writer");
 			this.reader = buffer(reader);
 			this.writer = requireNonNull(writer);
@@ -522,7 +501,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		 * @param writer
 		 *            The writer to write to.
 		 */
-		ReaderLogWriter(final InputStream input, final LogWriter writer) {
+		ReaderLogWriter(InputStream input, LogWriter writer) {
 			this(new InputStreamReader(input), writer);
 		}
 
@@ -554,7 +533,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		 */
 		private void copyStream() throws IOException {
 			while (!interrupted()) {
-				final var line = reader.readLine();
+				var line = reader.readLine();
 				if (isNull(line)) {
 					return;
 				}
@@ -574,7 +553,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 					while (running) {
 						wait();
 					}
-				} catch (final InterruptedException e) {
+				} catch (InterruptedException e) {
 					// Does Nothing
 				}
 			}

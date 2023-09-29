@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,6 +48,7 @@ import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
+@Execution(SAME_THREAD)
 class BlacklistCommsTest extends TestSupport {
 
 	/** Timeouts on individual tests, in seconds. */
@@ -114,8 +117,10 @@ class BlacklistCommsTest extends TestSupport {
 		var future = exec.submit(() -> {
 			ready.fire();
 			// Time to allow main thread to submit the work we'll carry out
-			Thread.sleep(TEST_DELAY);
-			bmpCtrl.processRequests(TEST_DELAY, bmps);
+			for (int i = 0; i < count; i++) {
+				Thread.sleep(TEST_DELAY);
+				bmpCtrl.processRequests(TEST_DELAY, bmps);
+			}
 			return BMP_DONE_TOKEN;
 		});
 		ready.await();

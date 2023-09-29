@@ -23,18 +23,18 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Null;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Null;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * The description and model of a group. POJO class; changes not automatically
  * reflected in the DB.
  */
+@JavaBean
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class GroupRecord {
 	/** The type of a group. */

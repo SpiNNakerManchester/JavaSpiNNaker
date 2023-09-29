@@ -47,7 +47,7 @@ public class Connection {
 	 * @param chip
 	 *            The chip to set
 	 */
-	public void setChip(final Chip chip) {
+	void setChip(Chip chip) {
 		this.chip = chip;
 	}
 
@@ -66,7 +66,7 @@ public class Connection {
 	 * @param hostname
 	 *            The host name to set
 	 */
-	public void setHostname(final String hostname) {
+	void setHostname(String hostname) {
 		this.hostname = hostname;
 	}
 }

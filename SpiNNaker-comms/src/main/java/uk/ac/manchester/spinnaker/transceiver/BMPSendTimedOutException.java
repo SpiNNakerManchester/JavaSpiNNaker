@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
+import java.io.Serial;
 import java.net.SocketTimeoutException;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -27,6 +28,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  */
 public final class BMPSendTimedOutException
 		extends SocketTimeoutException {
+	@Serial
 	private static final long serialVersionUID = 1660563278795501381L;
 
 	BMPSendTimedOutException(SCPRequest<?> req, int timeout) {

@@ -17,17 +17,17 @@ package uk.ac.manchester.spinnaker.nmpi.rest.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
-import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
-import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
+import static jakarta.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.StringWriter;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.ext.Provider;
 
 import org.apache.commons.io.output.WriterOutputStream;
 import org.slf4j.Logger;
@@ -56,18 +56,18 @@ public class ErrorCaptureResponseFilter implements ClientResponseFilter {
 	private static final String IND2 = INDENT + INDENT;
 
 	@Override
-	public void filter(final ClientRequestContext requestContext,
-			final ClientResponseContext responseContext) throws IOException {
+	public void filter(ClientRequestContext requestContext,
+			ClientResponseContext responseContext) throws IOException {
 		if (!writeToLog) {
 			return;
 		}
-		final var family = responseContext.getStatusInfo().getFamily();
+		var family = responseContext.getStatusInfo().getFamily();
 		if ((family == CLIENT_ERROR) || (family == SERVER_ERROR)) {
 			logger.trace("Error when sending request:");
 			logger.trace(INDENT + "Headers:");
-			final var headers = requestContext.getStringHeaders();
-			for (final var headerName : headers.keySet()) {
-				for (final var headerValue : headers.get(headerName)) {
+			var headers = requestContext.getStringHeaders();
+			for (var headerName : headers.keySet()) {
+				for (var headerValue : headers.get(headerName)) {
 					logger.trace(IND2 + "{}: {}", headerName, headerValue);
 				}
 			}
@@ -75,7 +75,7 @@ public class ErrorCaptureResponseFilter implements ClientResponseFilter {
 			logger.trace(INDENT + "Entity:");
 			logger.trace(IND2 + "{}", requestContext.getEntity());
 
-			final var json = getRequestAsJSON(requestContext);
+			var json = getRequestAsJSON(requestContext);
 			if (nonNull(json)) {
 				logger.trace(INDENT + "JSON version:");
 				logger.trace(IND2 + "{}", json);
@@ -90,10 +90,11 @@ public class ErrorCaptureResponseFilter implements ClientResponseFilter {
 	 *            The context of the request
 	 * @return A JSON String
 	 */
-	private String getRequestAsJSON(final ClientRequestContext requestContext) {
+	private String getRequestAsJSON(ClientRequestContext requestContext) {
 		try {
-			final var jsonWriter = new StringWriter();
-			try (var jsonOutput = new WriterOutputStream(jsonWriter, UTF_8)) {
+			var jsonWriter = new StringWriter();
+			try (var jsonOutput = WriterOutputStream.builder().setCharset(UTF_8)
+					.setWriter(jsonWriter).get()) {
 				provider.writeTo(requestContext.getEntity(),
 						requestContext.getEntityClass(),
 						requestContext.getEntityType(),
@@ -102,7 +103,7 @@ public class ErrorCaptureResponseFilter implements ClientResponseFilter {
 						requestContext.getHeaders(), jsonOutput);
 			}
 			return jsonWriter.toString();
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			logger.trace("problem when converting request to JSON", e);
 			return null;
 		}

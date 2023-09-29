@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.nmpi.model;
 /**
  * A response from the queue; can end up being one of a number of items.
  */
-public interface QueueNextResponse {
+public sealed interface QueueNextResponse
+		permits QueueJob, QueueJobCompat, QueueEmpty {
 	// Does Nothing
 }

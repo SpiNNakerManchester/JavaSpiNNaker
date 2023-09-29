@@ -51,7 +51,7 @@ public class NMPILog {
 	 * @param content
 	 *            The content to set
 	 */
-	public void setContent(final String content) {
+	public void setContent(String content) {
 		this.buffer = new StringBuilder(content);
 	}
 
@@ -61,7 +61,7 @@ public class NMPILog {
 	 * @param content
 	 *            The string to append.
 	 */
-	public void appendContent(final String content) {
+	public void appendContent(String content) {
 		if (isNull(this.buffer)) {
 			this.buffer = new StringBuilder(content);
 		} else {

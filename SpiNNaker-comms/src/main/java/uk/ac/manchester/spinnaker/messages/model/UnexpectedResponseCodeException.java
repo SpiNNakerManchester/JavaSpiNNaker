@@ -17,6 +17,8 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.String.format;
 
+import java.io.Serial;
+
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 
 /**
@@ -24,6 +26,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
  * current operation.
  */
 public class UnexpectedResponseCodeException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 7864690081287752744L;
 
 	/** The response that cause this exception to be thrown, if known. */

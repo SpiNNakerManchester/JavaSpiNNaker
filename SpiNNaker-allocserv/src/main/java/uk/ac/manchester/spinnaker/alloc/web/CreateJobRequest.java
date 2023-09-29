@@ -20,17 +20,17 @@ import static java.util.Objects.nonNull;
 import java.time.Duration;
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Keep;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber;
 import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
@@ -45,93 +45,73 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * A request to create a job.
  *
  * @author Donal Fellows
+ * @param owner
+ *            Who owns the job. Ignored when the job is submitted by a
+ *            non-admin.
+ * @param group
+ *            What group will the job be accounted against; the owner
+ *            <em>must</em> be a member of the group. If {@code null}, the
+ *            single group that the owner is a member of will be used (with it
+ *            being an error for that to not exist or not be unique). Only one
+ *            of group, {@link #nmpiCollab} or {@link #nmpiJobId} must be
+ *            non-{@code null}, but all can be {@code null}.
+ * @param nmpiCollab
+ *            Which NMPI Collab the job will be accounted against; the owner
+ *            <em>must</em> be a member of the Collab. A session will be created
+ *            in the Collab and this will be accounted against. Only one of
+ *            {@link #group}, nmpiCollab or {@link #nmpiJobId} must be
+ *            non-{@code null}, but all can be {@code null}.
+ * @param nmpiJobId
+ *            Which NMPI Job the job will be accounted against; the owner
+ *            <em>must</em> be able to update the NMPI Job. Only the quota of
+ *            the NMPI Job will be updated at the end of the job, as will the
+ *            local quota of the Collab of the NMPI Job. Only one of
+ *            {@link #group}, {@link #nmpiCollab} or nmpiJobId must be
+ *            non-{@code null}, but all can be {@code null}.
+ * @param keepaliveInterval
+ *            How long after a keepalive message will the job be auto-deleted?
+ *            <em>Required.</em> Must be between 30 and 300 seconds.
+ * @param numBoards
+ *            The number of boards to allocate. May be {@code null} to either
+ *            use the default (1) or to let one of the other selectors
+ *            ({@link #dimensions}, {@link #board}) make the choice.
+ * @param dimensions
+ *            The dimensions of rectangle of triads of boards to allocate. May
+ *            be {@code null} to let one of the other selectors
+ *            ({@link #numBoards}, {@link #board}) make the choice.
+ * @param board
+ *            The specific board to allocate. May be {@code null} to let one of
+ *            the other selectors ({@link #numBoards}, {@link #dimensions}) make
+ *            the choice.
+ * @param machineName
+ *            Which machine to allocate on. This and {@link #tags} are mutually
+ *            exclusive, but at least one must be given.
+ * @param tags
+ *            The tags to select which machine to allocate on. This and
+ *            {@link #machineName} are mutually exclusive, but at least one must
+ *            be given.
+ * @param maxDeadBoards
+ *            The maximum number of dead boards allowed in a rectangular
+ *            allocation. Note that the allocation engine might increase this if
+ *            it decides to overallocate. Defaults to {@code 0}.
  */
-@SuppressWarnings("checkstyle:visibilitymodifier")
-public class CreateJobRequest {
-	/**
-	 * Who owns the job. Ignored when the job is submitted by a non-admin.
-	 */
-	public String owner;
-
-	/**
-	 * What group will the job be accounted against; the owner <em>must</em> be
-	 * a member of the group. If {@code null}, the single group that the owner
-	 * is a member of will be used (with it being an error for that to not exist
-	 * or not be unique).  Only one of group, {@link #nmpiCollab} or
-	 * {@link #nmpiJobId} must be {@code non-null}, but all can be {@code null}.
-	 */
-	public String group;
-
-	/**
-	 * Which NMPI Collab the job will be accounted against; the owner
-	 * <em>must</em> be a member of the Collab. A session will be created in
-	 * the Collab and this will be accounted against. Only one of
-	 * {@link #group}, nmpiCollab or {@link #nmpiJobId} must be
-	 * {@code non-null}, but all can be {@code null}.
-	 */
-	public String nmpiCollab;
-
-	/**
-	 * Which NMPI Job the job will be accounted against; the owner <em>must</em>
-	 * be able to update the NMPI Job.  Only the quota of the NMPI Job will be
-	 * updated at the end of the job, as will the local quota of the Collab of
-	 * the NMPI Job.  Only one of {@link #group}, {@link #nmpiCollab} or
-	 * nmpiJobId must be {@code non-null}, but all can be {@code null}.
-	 */
-	public Integer nmpiJobId;
-
-	/**
-	 * How long after a keepalive message will the job be auto-deleted?
-	 * <em>Required.</em> Must be between 30 and 300 seconds.
-	 */
-	@NotNull(message = "keepalive-interval is required")
-	public Duration keepaliveInterval;
-
-	/**
-	 * The number of boards to allocate. May be {@code null} to either use the
-	 * default (1) or to let one of the other selectors ({@link #dimensions},
-	 * {@link #board}) make the choice.
-	 */
-	@Positive(message = "number of boards must be at least 1 if given")
-	public Integer numBoards;
-
-	/**
-	 * The dimensions of rectangle of triads of boards to allocate. May be
-	 * {@code null} to let one of the other selectors ({@link #numBoards},
-	 * {@link #board}) make the choice.
-	 */
-	@Valid
-	public Dimensions dimensions;
-
-	/**
-	 * The specific board to allocate. May be {@code null} to let one of the
-	 * other selectors ({@link #numBoards}, {@link #dimensions}) make the
-	 * choice.
-	 */
-	@Valid
-	public SpecificBoard board;
-
-	/**
-	 * Which machine to allocate on. This and {@link #tags} are mutually
-	 * exclusive, but at least one must be given.
-	 */
-	public String machineName;
-
-	/**
-	 * The tags to select which machine to allocate on. This and
-	 * {@link #machineName} are mutually exclusive, but at least one must be
-	 * given.
-	 */
-	public List<@NotBlank(message = "tags must not be blank") String> tags;
-
-	/**
-	 * The maximum number of dead boards allowed in a rectangular allocation.
-	 * Note that the allocation engine might increase this if it decides to
-	 * overallocate. Defaults to {@code 0}.
-	 */
-	@PositiveOrZero(message = "max-dead-boards may not be negative")
-	public Integer maxDeadBoards;
-
+public record CreateJobRequest(@JsonProperty String owner,
+		@JsonProperty String group,
+		@JsonProperty("nmpi-collab") String nmpiCollab,
+		@Positive(message = "negative NMPI job IDs are unsupported") //
+		@JsonProperty("nmpi-job-id") Integer nmpiJobId,
+		@JsonProperty("keepalive-interval")
+		@NotNull(message = "keepalive-interval is "
+				+ "required") Duration keepaliveInterval,
+		@JsonProperty("num-boards") @Positive(message = "number of boards "
+				+ "must be at least 1 if given") Integer numBoards,
+		@JsonProperty @Valid Dimensions dimensions,
+		@JsonProperty @Valid SpecificBoard board,
+		@JsonProperty("machine-name") String machineName,
+		@JsonProperty List<@NotBlank(//
+				message = "tags must not be blank") String> tags,
+		@JsonProperty("max-dead-boards") @PositiveOrZero(message = //
+				"max-dead-boards may not be negative") Integer maxDeadBoards) {
 	// Extended validation
 
 	@Keep
@@ -150,6 +130,20 @@ public class CreateJobRequest {
 
 	@Keep
 	@JsonIgnore
+	@AssertFalse(message = "group, if given, must be non-blank")
+	private boolean isGroupInsane() {
+		return nonNull(group) && group.isBlank();
+	}
+
+	@Keep
+	@JsonIgnore
+	@AssertFalse(message = "nmpi-collab, if given, must be non-blank")
+	private boolean isCollabInsane() {
+		return nonNull(nmpiCollab) && nmpiCollab.isBlank();
+	}
+
+	@Keep
+	@JsonIgnore
 	@AssertTrue(
 			message = "either specify num-boards or dimensions and/or board")
 	private boolean isOverLocated() {
@@ -158,6 +152,24 @@ public class CreateJobRequest {
 			count++;
 		}
 		if (nonNull(dimensions) || nonNull(board)) {
+			count++;
+		}
+		return count <= 1;
+	}
+
+	@Keep
+	@JsonIgnore
+	@AssertTrue(message = "only at most one of group, nmpi-collab and "
+			+ "nmpi-job-id can be given")
+	private boolean isGroupLocatableInAtMostOneWayOnly() {
+		int count = 0;
+		if (nonNull(group)) {
+			count++;
+		}
+		if (nonNull(nmpiCollab)) {
+			count++;
+		}
+		if (nonNull(nmpiJobId)) {
 			count++;
 		}
 		return count <= 1;
@@ -180,47 +192,41 @@ public class CreateJobRequest {
 					&& keepaliveInterval.compareTo(MIN_KEEPALIVE) >= 0);
 	}
 
-	/** Describes a request for an allocation of given dimensions. */
-	public static class Dimensions {
-		/** The width of the rectangle of boards to allocate, in triads. */
-		@ValidTriadWidth
-		public int width;
-
-		/** The height of the rectangle of boards to allocate, in triads. */
-		@ValidTriadHeight
-		public int height;
+	/**
+	 * Describes a request for an allocation of given dimensions.
+	 *
+	 * @param width
+	 *            The width of the rectangle of boards to allocate, in triads.
+	 * @param height
+	 *            The height of the rectangle of boards to allocate, in triads.
+	 */
+	public record Dimensions(@ValidTriadWidth int width,
+			@ValidTriadHeight int height) {
 	}
 
-	/** Describes a request for a specific board. */
-	public static class SpecificBoard {
-		/** The X triad coordinate of the board. */
-		@ValidTriadX
-		public Integer x;
-
-		/** The Y triad coordinate of the board. */
-		@ValidTriadY
-		public Integer y;
-
-		/** The Z triad coordinate of the board. */
-		@ValidTriadZ
-		public Integer z;
-
-		/** The physical cabinet number of the board. */
-		@ValidCabinetNumber
-		public Integer cabinet;
-
-		/** The physical frame number of the board. */
-		@ValidFrameNumber
-		public Integer frame;
-
-		/** The physical board number of the board. */
-		@ValidBoardNumber
-		public Integer board;
-
-		/** The IP address of the board. */
-		@IPAddress(nullOK = true, message = "address must be an IP address")
-		public String address;
-
+	/**
+	 * Describes a request for a specific board.
+	 *
+	 * @param x
+	 *            The X triad coordinate of the board.
+	 * @param y
+	 *            The Y triad coordinate of the board.
+	 * @param z
+	 *            The Z triad coordinate of the board.
+	 * @param cabinet
+	 *            The physical cabinet number of the board.
+	 * @param frame
+	 *            The physical frame number of the board.
+	 * @param board
+	 *            The physical board number of the board.
+	 * @param address
+	 *            The IP address of the board.
+	 */
+	public record SpecificBoard(@ValidTriadX Integer x, @ValidTriadY Integer y,
+			@ValidTriadZ Integer z, @ValidCabinetNumber Integer cabinet,
+			@ValidFrameNumber Integer frame, @ValidBoardNumber Integer board,
+			@IPAddress(nullOK = true, message = "address must be "
+					+ "an IP address") String address) {
 		@JsonIgnore
 		private boolean isTriadValid() {
 			return nonNull(x) && nonNull(y) && nonNull(z);

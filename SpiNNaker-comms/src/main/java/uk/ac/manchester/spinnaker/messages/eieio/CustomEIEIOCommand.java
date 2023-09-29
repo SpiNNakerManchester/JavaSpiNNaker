@@ -21,7 +21,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
  * @see EIEIOCommandID#get(int)
  * @author Donal Fellows
  */
-public class CustomEIEIOCommand implements EIEIOCommand {
+public final class CustomEIEIOCommand implements EIEIOCommand {
 	// Must be power of 2 (minus 1)
 	private static final int MAX_COMMAND = 0x3FFF;
 
@@ -30,6 +30,8 @@ public class CustomEIEIOCommand implements EIEIOCommand {
 	/**
 	 * @param command
 	 *            The ID value of the command.
+	 * @throws IllegalArgumentException
+	 *             If the command ID is negative or too large.
 	 */
 	CustomEIEIOCommand(int command) {
 		if (command < 0 || command > MAX_COMMAND) {

@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code cmd_info()} in {@code scamp-cmd.c}.
  */
-public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
+public final class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	private static final int FLAGS = 0x5F;
 
 	private static final int SIZE_FLAG = 0x20;

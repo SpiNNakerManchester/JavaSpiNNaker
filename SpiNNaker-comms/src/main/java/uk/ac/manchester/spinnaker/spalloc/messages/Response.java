@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 /**
  * An (abstract) response from the machine manager. Responses are all POJOs.
  */
-public interface Response {
+public sealed interface Response
+		permits ExceptionResponse, Notification, ReturnResponse {
 	// Does Nothing
 }

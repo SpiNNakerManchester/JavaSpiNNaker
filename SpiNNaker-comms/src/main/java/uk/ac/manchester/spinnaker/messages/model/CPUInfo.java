@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /** Represents information about the state of a CPU. */
 @SARKStruct("vcpu")
-public class CPUInfo implements HasCoreLocation {
+public final class CPUInfo implements HasCoreLocation {
 	private final CoreLocation core;
 
 	@SARKField("r")

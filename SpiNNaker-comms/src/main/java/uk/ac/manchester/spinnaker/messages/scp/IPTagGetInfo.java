@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  *
  * @see IPTagGet
  */
-public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
+public final class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	private static final int IPTAG_MAX = 255;
 
 	/**
@@ -51,7 +51,7 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new IPTagGetInfo.Response(buffer);
+		return new Response(buffer);
 	}
 
 	/** An SCP response to a request for information about IP tags. */

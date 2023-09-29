@@ -17,11 +17,9 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Short.toUnsignedInt;
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.Instant.ofEpochSecond;
-import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.ofInstant;
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
@@ -138,10 +136,8 @@ public final class VersionInfo {
 
 	@Override
 	public String toString() {
-		return "VersionInfo(" + location + " (phys:" + physicalCPUID
-				+ "), version: " + versionNumber + ", " + name + "/" + hardware
-				+ ", " + ofInstant(ofEpochSecond(buildDate, 0), UTC)
-						.format(ISO_INSTANT)
-				+ ")";
+		return format("VersionInfo(%s (phys:%d), version: %s, %s/%s, %s)",
+				location, physicalCPUID, versionNumber, name, hardware,
+				ofEpochSecond(buildDate));
 	}
 }

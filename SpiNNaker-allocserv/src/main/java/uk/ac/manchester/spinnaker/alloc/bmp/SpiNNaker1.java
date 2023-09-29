@@ -24,13 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderException;
@@ -148,7 +147,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	/** Notes that a board probably needs its FPGA definitions reloading. */
-	private static class FPGAReloadRequired extends Exception {
+	private static final class FPGAReloadRequired extends Exception {
 		private static final long serialVersionUID = 1L;
 
 		final BMPBoard board;
@@ -210,7 +209,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private boolean canBoardManageFPGAs(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException {
 		var vi = txrx.readBMPVersion(board);
-		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
+		return vi.versionNumber.majorVersion() >= BMP_VERSION_MIN;
 	}
 
 	/**
@@ -222,8 +221,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void setLinkOff(Link link)
 			throws ProcessException, IOException, InterruptedException {
-		var board = link.getBoard();
-		var d = link.getLink();
+		var board = link.board();
+		var d = link.link();
 		// skip FPGA link configuration if old BMP version
 		if (!canBoardManageFPGAs(board)) {
 			return;
@@ -258,7 +257,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void powerOnAndCheck(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
 		var boardsToPower = boards;
-		log.debug("Power on and check boards {} for BMP {}", boards, bmp);
+		log.info("Power on and check boards {} for BMP {}", boards, bmp);
 		boolean reloadDone = false; // so we only do firmware loading once
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			if (attempt > 1) {
@@ -317,24 +316,28 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOff(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
+		log.info("Power off boards {} for BMP {}", boards, bmp);
 		txrx.powerOff(boards);
 	}
 
 	@Override
 	public String readSerial(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException {
+		log.info("Read serial number from board {} for BMP {}", board, bmp);
 		return txrx.readBoardSerialNumber(board);
 	}
 
 	@Override
 	public Blacklist readBlacklist(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException {
+		log.info("Read blacklist from board {} for BMP {}", board, bmp);
 		return txrx.readBlacklist(board);
 	}
 
 	@Override
 	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
 			throws ProcessException, InterruptedException, IOException {
+		log.info("Write blacklist to board {} for BMP {}", board, bmp);
 		txrx.writeBlacklist(board, blacklist);
 	}
 
@@ -346,6 +349,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 
 	@Override
 	public void ping(List<BMPBoard> boards) {
+		log.info("Ping boards {} for BMP {}", boards, bmp);
 		boards.parallelStream().forEach(id -> {
 			var address = boardAddresses.get(id);
 			if (Ping.ping(address) != 0) {

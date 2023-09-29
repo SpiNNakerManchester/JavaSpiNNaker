@@ -15,26 +15,28 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.Response.noContent;
+import static jakarta.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.GONE;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
+import static jakarta.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 import static java.util.Objects.nonNull;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.noContent;
-import static javax.ws.rs.core.Response.status;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.GONE;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
-import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import java.io.Serial;
 
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
+
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * Thrown to indicate various sorts of problems with the service. Very much like
@@ -43,6 +45,7 @@ import org.springframework.stereotype.Component;
  * @author Donal Fellows
  */
 public class RequestFailedException extends RuntimeException {
+	@Serial
 	private static final long serialVersionUID = -7522760691720854101L;
 
 	/** The status code. */
@@ -98,8 +101,8 @@ public class RequestFailedException extends RuntimeException {
 	 */
 	Response toResponse() {
 		var cause = getCause();
-		if (cause instanceof WebApplicationException) {
-			return ((WebApplicationException) cause).getResponse();
+		if (cause instanceof WebApplicationException waex) {
+			return waex.getResponse();
 		} else if (cause != null) {
 			// Be careful about what bits are extracted from message
 			var cls = cause.getClass().getName().replaceFirst("^.*[.]", "")
@@ -133,6 +136,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** A resource is no longer believed to exist. */
 	public static class ItsGone extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = 3774531853141947270L;
 
 		/**
@@ -146,6 +150,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** A resource cannot be located. */
 	public static class NotFound extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = 5991697173204757030L;
 
 		/**
@@ -169,6 +174,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** The client provided bad arguments in a request. */
 	public static class BadArgs extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = 7916573155067333350L;
 
 		/**
@@ -182,6 +188,7 @@ public class RequestFailedException extends RuntimeException {
 
 	/** The response is empty. */
 	public static class EmptyResponse extends RequestFailedException {
+		@Serial
 		private static final long serialVersionUID = -2944836034264700912L;
 
 		/** Create an instance. */

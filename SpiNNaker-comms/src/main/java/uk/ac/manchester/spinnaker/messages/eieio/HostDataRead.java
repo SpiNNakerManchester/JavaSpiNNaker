@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
  *
  * @see HostDataReadAck
  */
-public class HostDataRead extends EIEIOCommandMessage {
+public final class HostDataRead extends EIEIOCommandMessage {
 	private final Header header;
 
 	private final Ack acks;

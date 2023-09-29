@@ -63,7 +63,7 @@ public class Job {
 	 * @param code
 	 *            the code to set
 	 */
-	public void setCode(final String code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 
@@ -82,8 +82,7 @@ public class Job {
 	 * @param hardwareConfig
 	 *            the hardwareConfig to set
 	 */
-	public void setHardwareConfig(
-			final Map<String, Object> hardwareConfig) {
+	public void setHardwareConfig(Map<String, Object> hardwareConfig) {
 		this.hardwareConfig = hardwareConfig;
 	}
 
@@ -102,7 +101,7 @@ public class Job {
 	 * @param hardwarePlatform
 	 *            the hardwarePlatform to set
 	 */
-	public void setHardwarePlatform(final String hardwarePlatform) {
+	public void setHardwarePlatform(String hardwarePlatform) {
 		this.hardwarePlatform = hardwarePlatform;
 	}
 
@@ -121,7 +120,7 @@ public class Job {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -140,7 +139,7 @@ public class Job {
 	 * @param inputData
 	 *            the inputData to set
 	 */
-	public void setInputData(final List<DataItem> inputData) {
+	public void setInputData(List<DataItem> inputData) {
 		this.inputData = inputData;
 	}
 
@@ -159,7 +158,7 @@ public class Job {
 	 * @param collab
 	 *            the collab to set
 	 */
-	public void setCollab(final String collab) {
+	public void setCollab(String collab) {
 		this.collab = collab;
 	}
 
@@ -178,7 +177,7 @@ public class Job {
 	 * @param command
 	 *            the command to set
 	 */
-	public void setCommand(final String command) {
+	public void setCommand(String command) {
 		this.command = command;
 	}
 
@@ -197,7 +196,7 @@ public class Job {
 	 * @param userId
 	 *            the userId to set
 	 */
-	public void setUserId(final String userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
@@ -211,7 +210,7 @@ public class Job {
 	 * @hidden
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	public void set(String name, Object value) {
 		// Ignore
 	}
 }

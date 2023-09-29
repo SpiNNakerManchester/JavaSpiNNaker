@@ -53,7 +53,7 @@ import uk.ac.manchester.spinnaker.messages.scp.GetChipInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 
 /** A process for getting the machine details over a set of connections. */
-class GetMachineProcess extends TxrxProcess {
+final class GetMachineProcess extends TxrxProcess {
 	private static final Logger log = getLogger(GetMachineProcess.class);
 
 	/** A dictionary of (x, y) &rarr; ChipInfo. */
@@ -137,9 +137,9 @@ class GetMachineProcess extends TxrxProcess {
 	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
 			throws IOException, ProcessException, InterruptedException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
-		var p2pColumnData = new ByteBuffer[size.width];
-		int byteLength = getNumColumnBytes(size.height);
-		for (int col : range(0, size.width)) {
+		var p2pColumnData = new ByteBuffer[size.width()];
+		int byteLength = getNumColumnBytes(size.height());
+		for (int col : range(0, size.width())) {
 			sendGet(new ReadMemory(bootChip,
 					ROUTER_P2P.add(getColumnOffset(col)), byteLength),
 					bytes -> p2pColumnData[col] = bytes);
@@ -251,8 +251,8 @@ class GetMachineProcess extends TxrxProcess {
 	private static ChipLocation getChipOverLink(HasChipLocation chip,
 			MachineDimensions size, Direction link) {
 		/// TODO CHECK negative wraparound!
-		int x = (chip.getX() + link.xChange + size.width) % size.width;
-		int y = (chip.getY() + link.yChange + size.height) % size.height;
+		int x = (chip.getX() + link.xChange + size.width()) % size.width();
+		int y = (chip.getY() + link.yChange + size.height()) % size.height();
 		return new ChipLocation(x, y);
 	}
 

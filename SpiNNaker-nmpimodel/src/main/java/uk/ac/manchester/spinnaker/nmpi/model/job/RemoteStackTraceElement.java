@@ -45,7 +45,7 @@ public class RemoteStackTraceElement {
 	 * @param element
 	 *            The stack trace element to convert.
 	 */
-	public RemoteStackTraceElement(final StackTraceElement element) {
+	public RemoteStackTraceElement(StackTraceElement element) {
 		this.className = element.getClassName();
 		this.methodName = element.getMethodName();
 		this.fileName = element.getFileName();
@@ -67,7 +67,7 @@ public class RemoteStackTraceElement {
 	 * @param className
 	 *            the className to set
 	 */
-	public void setClassName(final String className) {
+	public void setClassName(String className) {
 		this.className = className;
 	}
 
@@ -86,7 +86,7 @@ public class RemoteStackTraceElement {
 	 * @param methodName
 	 *            the methodName to set
 	 */
-	public void setMethodName(final String methodName) {
+	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
 
@@ -105,7 +105,7 @@ public class RemoteStackTraceElement {
 	 * @param fileName
 	 *            the fileName to set
 	 */
-	public void setFileName(final String fileName) {
+	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 
@@ -124,7 +124,7 @@ public class RemoteStackTraceElement {
 	 * @param lineNumber
 	 *            the lineNumber to set
 	 */
-	public void setLineNumber(final int lineNumber) {
+	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
 	}
 

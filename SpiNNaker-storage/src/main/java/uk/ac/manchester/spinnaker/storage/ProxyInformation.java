@@ -15,55 +15,22 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
+import jakarta.validation.constraints.NotEmpty;
 import java.util.Map;
-
-import javax.validation.constraints.NotEmpty;
 
 /**
  * Information about the proxy to allow connection.
+ *
+ * @param spallocUrl
+ *            The URL of the spalloc server to connect to.
+ * @param jobUrl
+ *            The URL of the job to connect to.
+ * @param headers
+ *            The headers to use for authentication.
+ * @param cookies
+ *            The cookies to use for authentication.
  */
-public class ProxyInformation {
-	/**
-	 * The URL of the spalloc server to connect to.
-	 */
-	@NotEmpty
-	public final String spallocUrl;
-
-	/**
-	 * The URL of the job to connect to.
-	 */
-	@NotEmpty
-	public final String jobUrl;
-
-	/**
-	 * The headers to use for authentication.
-	 */
-	@NotEmpty
-	public final Map<String, String> headers;
-
-	/**
-	 * The cookies to use for authentication.
-	 */
-	@NotEmpty
-	public final Map<String, String> cookies;
-
-	/**
-	 * Create a new instance.
-	 *
-	 * @param spallocUrl
-	 *            The URL of the Spalloc server.
-	 * @param jobUrl
-	 *            The URL of the job.
-	 * @param headers
-	 *            The headers to use for authentication.
-	 * @param cookies
-	 *            The cookies to use for authentication.
-	 */
-	public ProxyInformation(String spallocUrl, String jobUrl,
-			Map<String, String> headers, Map<String, String> cookies) {
-		this.spallocUrl = spallocUrl;
-		this.jobUrl = jobUrl;
-		this.headers = headers;
-		this.cookies = cookies;
-	}
+public record ProxyInformation(@NotEmpty String spallocUrl,
+		@NotEmpty String jobUrl, @NotEmpty Map<String, String> headers,
+		@NotEmpty Map<String, String> cookies) {
 }

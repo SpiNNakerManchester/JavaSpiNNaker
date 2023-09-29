@@ -31,7 +31,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code cmd_fpga_read()} in {@code bmp_cmd.c}.
  */
-public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
+public final class ReadFPGARegister
+		extends BMPRequest<ReadFPGARegister.Response> {
 	/**
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
@@ -45,7 +46,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 */
 	public ReadFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPBoard board) {
-		super(board, CMD_FPGA_READ, register.address, WORD_SIZE, fpga.value);
+		super(board, CMD_FPGA_READ, register.address(), WORD_SIZE, fpga.value);
 		if (!register.isAligned()) {
 			throw new IllegalArgumentException(
 					"FPGA register addresses must be aligned");

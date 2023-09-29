@@ -48,6 +48,13 @@ abstract class SupportUtils {
 	static final int TIMEOUT = 101;
 
 	interface IConnection extends Closeable {
+		/**
+		 * Arrange for a message to be sent.
+		 *
+		 * @param jsonString
+		 *            The JSON message to be sent. Will be parsed and
+		 *            reformatted for the protocol.
+		 */
 		default void send(String jsonString) {
 			send(new JSONObject(jsonString));
 		}
@@ -66,6 +73,7 @@ abstract class SupportUtils {
 		int getPort();
 	}
 
+	@FunctionalInterface
 	interface WithConn {
 		void act(IServer s, SpallocClient c, MockServer.Joinable bgAccept)
 				throws Exception;
@@ -82,6 +90,7 @@ abstract class SupportUtils {
 		}
 	}
 
+	@FunctionalInterface
 	interface WithConnConn {
 		void act(SpallocClient client, IConnection serviceSideConnection)
 				throws Exception;
@@ -101,6 +110,7 @@ abstract class SupportUtils {
 		}
 	}
 
+	@FunctionalInterface
 	interface WithAdvancedConn {
 		void act(SpallocClient c) throws Exception;
 	}

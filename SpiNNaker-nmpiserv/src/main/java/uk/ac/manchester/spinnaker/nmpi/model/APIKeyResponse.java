@@ -37,7 +37,7 @@ public class APIKeyResponse {
 	 * @param key
 	 *            The key to set
 	 */
-	public void setKey(final String key) {
+	void setKey(String key) {
 		this.key = key;
 	}
 }

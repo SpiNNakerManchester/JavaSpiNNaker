@@ -112,10 +112,10 @@ abstract class Utils {
 		int n;
 		if (isNull(value)) {
 			return null;
-		} else if (value instanceof Number) {
-			n = ((Number) value).intValue();
-		} else if (value instanceof String) {
-			n = parseInt((String) value);
+		} else if (value instanceof Number num) {
+			n = num.intValue();
+		} else if (value instanceof String s) {
+			n = parseInt(s);
 		} else {
 			throw new IllegalArgumentException(
 					"needed a number, got a " + value.getClass().getName());
@@ -222,18 +222,14 @@ abstract class Utils {
 	 * @return The converted state.
 	 */
 	static State state(JobState state) {
-		switch (state) {
-		case QUEUED:
-			return State.QUEUED;
-		case POWER:
-			return State.POWER;
-		case READY:
-			return State.READY;
-		case DESTROYED:
-			return State.DESTROYED;
-		default:
-			return State.UNKNOWN;
-		}
+		// So trivial...
+		return switch (state) {
+		case QUEUED -> State.QUEUED;
+		case POWER -> State.POWER;
+		case READY -> State.READY;
+		case DESTROYED -> State.DESTROYED;
+		default -> State.UNKNOWN;
+		};
 	}
 
 	/**
@@ -244,8 +240,7 @@ abstract class Utils {
 	 * @return The converted coordinate.
 	 */
 	static BoardCoordinates board(BoardCoords coords) {
-		return new BoardCoordinates(coords.getX(), coords.getY(),
-				coords.getZ());
+		return new BoardCoordinates(coords.x(), coords.y(), coords.z());
 	}
 
 	/**
@@ -256,13 +251,13 @@ abstract class Utils {
 	 * @return A stream of ends of the link.
 	 */
 	static Stream<BoardLink> boardLinks(DownLink downLink) {
-		var bl1 = new BoardLink(downLink.end1.board.getX(),
-				downLink.end1.board.getY(), downLink.end1.board.getZ(),
-				downLink.end1.direction.ordinal());
+		var bl1 = new BoardLink(downLink.end1().board().x(),
+				downLink.end1().board().y(), downLink.end1().board().z(),
+				downLink.end1().direction().ordinal());
 
-		var bl2 = new BoardLink(downLink.end2.board.getX(),
-				downLink.end2.board.getY(), downLink.end2.board.getZ(),
-				downLink.end2.direction.ordinal());
+		var bl2 = new BoardLink(downLink.end2().board().x(),
+				downLink.end2().board().y(), downLink.end2().board().z(),
+				downLink.end2().direction().ordinal());
 
 		return List.of(bl1, bl2).stream();
 	}

@@ -66,12 +66,9 @@ public interface SCPSenderReceiver extends Connection {
 	default void send(SCPRequest<?> request) throws IOException {
 		var msg = getSCPData(request);
 		switch (request.sdpHeader.getFlags()) {
-		case REPLY_EXPECTED:
-		case REPLY_EXPECTED_NO_P2P:
+		case REPLY_EXPECTED, REPLY_EXPECTED_NO_P2P ->
 			send(msg, request.scpRequestHeader.getSequence());
-			break;
-		default:
-			send(msg);
+		default -> send(msg);
 		}
 	}
 

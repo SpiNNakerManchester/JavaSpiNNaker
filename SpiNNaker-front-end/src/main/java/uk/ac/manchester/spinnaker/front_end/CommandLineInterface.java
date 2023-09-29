@@ -16,14 +16,13 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import static picocli.CommandLine.ExitCode.USAGE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DOWNLOAD_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_APP_DESC;
-import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_MON_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_SYS_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.GATHER_DESC;
@@ -81,7 +80,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
+import uk.ac.manchester.spinnaker.storage.DatabaseAPI;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -701,14 +700,29 @@ public final class CommandLineInterface {
 	}
 
 	private static SpallocClient.Job getJob(
-			DatabaseEngine<? extends ProxyAwareStorage> databaseEngine)
+			DatabaseEngine<? extends DatabaseAPI> databaseEngine)
 			throws StorageException, IOException {
 		return getJob(databaseEngine.getStorageInterface());
 	}
 
-	private static SpallocClient.Job getJob(ProxyAwareStorage storage)
+	private static SpallocClient.Job getJob(DatabaseAPI storage)
 			throws StorageException, IOException {
 		return getJobFromProxyInfo(storage.getProxyInformation());
+	}
+
+	@MustBeClosed
+	private static TransceiverInterface makeTxrx(Machine machine,
+			SpallocClient.Job job)
+			throws IOException, SpinnmanException, InterruptedException {
+		if (job != null) {
+			return job.getTransceiver();
+		}
+		// No job; must be a direct connection
+		var conns = machine.ethernetConnectedChips().stream()
+				.map(chip -> new ConnectionDescriptor(chip.ipAddress,
+						SCP_SCAMP_PORT, chip.asChipLocation()))
+				.collect(toUnmodifiableList());
+		return Transceiver.makeWithDescriptors(machine.version, conns);
 	}
 
 	@MustBeClosed
@@ -716,27 +730,12 @@ public final class CommandLineInterface {
 	private static TransceiverInterface getTransceiver(Machine machine,
 			SpallocClient.Job job)
 			throws IOException, SpinnmanException, InterruptedException {
-		final TransceiverInterface txrx;
-		if (job == null) {
-			// No job; must be a direct connection
-			txrx = Transceiver.makeWithDescriptors(
-					machine.version, generateScampConnections(machine));
-		} else {
-			txrx = job.getTransceiver();
-		}
+		var txrx = makeTxrx(machine, job);
 		var scpSelector = txrx.getScampConnectionSelector();
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
+		if (scpSelector instanceof MachineAware ma) {
+			ma.setMachine(machine);
 		}
 		return txrx;
-	}
-
-	private static List<ConnectionDescriptor> generateScampConnections(
-			Machine machine) {
-		return machine.ethernetConnectedChips().stream()
-				.map(chip -> new ConnectionDescriptor(chip.ipAddress,
-						SCP_SCAMP_PORT, chip.asChipLocation()))
-				.collect(toList());
 	}
 }
 

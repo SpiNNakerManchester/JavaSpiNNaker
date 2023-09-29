@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.nmpi.nmpi;
 
 import java.util.List;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
@@ -28,6 +27,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 public interface NMPIQueueManager {
 	/**
 	 * Get jobs that are marked as running or in progress in some form.
+	 *
 	 * @return A list of jobs.
 	 */
 	List<? extends Job> getJobs();
@@ -70,14 +70,14 @@ public interface NMPIQueueManager {
 	 *            The ID of the job
 	 * @param logToAppend
 	 *            Any additional log messages to append to the existing log
-	 *            (null if none)
+	 *            ({@code null} if none)
 	 * @param outputs
 	 *            The outputs of the job (null if none)
 	 * @param provenance
 	 *            JSON provenance information
 	 */
-	void setJobFinished(int id, String logToAppend,
-			List<DataItem> outputs, ObjectNode provenance);
+	void setJobFinished(int id, String logToAppend, List<DataItem> outputs,
+			ObjectNode provenance);
 
 	/**
 	 * Marks a job as finished with an error.
@@ -86,7 +86,7 @@ public interface NMPIQueueManager {
 	 *            The ID of the job
 	 * @param logToAppend
 	 *            Any additional log messages to append to the existing log
-	 *            (null if none)
+	 *            ({@code null} if none)
 	 * @param outputs
 	 *            Any outputs generated, or null if none
 	 * @param error
@@ -94,9 +94,8 @@ public interface NMPIQueueManager {
 	 * @param provenance
 	 *            JSON provenance information
 	 */
-	void setJobError(int id, String logToAppend,
-			List<DataItem> outputs, Throwable error,
-			ObjectNode provenance);
+	void setJobError(int id, String logToAppend, List<DataItem> outputs,
+			Throwable error, ObjectNode provenance);
 
 	/**
 	 * Close the manager.

@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.TransferUnit.efficientTransferUnit;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 
@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sark_cmd_read()} in {@code sark_base.c}.
  */
-public class ReadMemory extends SCPRequest<ReadMemory.Response> {
+public final class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(
@@ -51,7 +51,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadMemory(HasCoreLocation core, MemoryLocation address, int size) {
-		super(core, CMD_READ, address.address, validate(size),
+		super(core, CMD_READ, address.address(), validate(size),
 				efficientTransferUnit(address, size).value);
 	}
 
@@ -64,7 +64,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadMemory(HasChipLocation chip, MemoryLocation address, int size) {
-		super(chip.getScampCore(), CMD_READ, address.address, validate(size),
+		super(chip.getScampCore(), CMD_READ, address.address(), validate(size),
 				efficientTransferUnit(address, size).value);
 	}
 
@@ -88,7 +88,7 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 		/** @return The data read, in a little-endian read-only buffer. */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			return readOnly(buffer);
 		}
 	}
 }

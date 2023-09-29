@@ -64,7 +64,7 @@ public class DockerCreateRequest {
 
 	/**
 	 * @param cmd
-	 *            the cmd to set
+	 *            the command to set
 	 */
 	public void setCmd(List<String> cmd) {
 		this.cmd = cmd;

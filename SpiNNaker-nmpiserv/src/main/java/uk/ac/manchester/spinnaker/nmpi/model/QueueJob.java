@@ -20,6 +20,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 /**
  * A Job that is a response from the queue.
  */
-public class QueueJob extends Job implements QueueNextResponse {
+public final class QueueJob extends Job implements QueueNextResponse {
 
 }

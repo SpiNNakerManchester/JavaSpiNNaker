@@ -40,7 +40,7 @@ public class Collab {
 	 * @param content
 	 *            The value to set.
 	 */
-	public void setContent(final String content) {
+	void setContent(String content) {
 		this.content = content;
 	}
 
@@ -59,7 +59,7 @@ public class Collab {
 	 * @param id
 	 *            The collab ID
 	 */
-	public void setId(final int id) {
+	void setId(int id) {
 		this.id = id;
 	}
 }

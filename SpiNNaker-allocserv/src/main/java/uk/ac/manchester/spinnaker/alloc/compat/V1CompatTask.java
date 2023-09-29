@@ -43,11 +43,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -55,6 +50,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
@@ -162,23 +161,31 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		} catch (InterruptedException | InterruptedIOException interrupted) {
 			log.debug("interrupted", interrupted);
 		} catch (IOException e) {
-			log.error("problem with socket {}", sock, e);
-		} finally {
-			log.debug("closing down connection from {}", sock);
-			closeNotifiers();
-			try {
-				if (nonNull(sock)) {
-					sock.close();
-				} else {
-					in.close();
-					synchronized (out) {
-						out.close();
-					}
-				}
-			} catch (IOException e) {
-				log.error("problem closing socket {}", sock, e);
+			if (!e.getMessage().equals("Pipe closed")) {
+				log.error("problem with socket {}", sock, e);
 			}
+		} finally {
+			shutdown();
 		}
+	}
+
+	private void shutdown() {
+		var origin = nonNull(sock) ? sock : "TEST";
+		log.debug("closing down connection from {}", origin);
+		closeNotifiers();
+		try {
+			if (nonNull(sock)) {
+				sock.close();
+			} else {
+				in.close();
+				synchronized (out) {
+					out.close();
+				}
+			}
+		} catch (IOException e) {
+			log.error("problem closing connection {}", origin, e);
+		}
+		log.debug("closed connection from {}", origin);
 	}
 
 	/**
@@ -258,13 +265,18 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			 * than matching the exception message. You'd think that you'd get
 			 * something better, but no...
 			 */
-			switch (e.getMessage()) {
-			case "Connection reset":
-			case "Connection timed out (Read failed)":
-				return Optional.empty();
-			default:
-				throw e;
-			}
+			return switch (e.getMessage()) {
+			case "Connection reset", "Connection timed out (Read failed)" ->
+				Optional.empty();
+			default -> throw e;
+			};
+		} catch (InterruptedIOException e) {
+			var ex = new InterruptedException();
+			ex.initCause(e);
+			throw ex;
+		}
+		if (currentThread().isInterrupted()) {
+			throw new InterruptedException();
 		}
 		if (currentThread().isInterrupted()) {
 			throw new InterruptedException();
@@ -438,73 +450,76 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		log.debug("calling operation '{}'", cmd.getCommand());
 		var args = cmd.getArgs();
 		var kwargs = cmd.getKwargs();
-		switch (cmd.getCommand()) {
-		case "create_job":
+		return switch (cmd.getCommand()) {
+		case "create_job" -> {
 			// This is three operations really, and an optional parameter.
 			byte[] serialCmd = getJsonMapper().writeValueAsBytes(cmd);
-			switch (args.size()) {
-			case 0:
-				return createJobNumBoards(1, kwargs, serialCmd).orElse(null);
-			case 1:
-				return createJobNumBoards(parseDec(args, 0), kwargs, serialCmd)
-						.orElse(null);
-			case 2:
-				return createJobRectangle(parseDec(args, 0), parseDec(args, 1),
-						kwargs, serialCmd).orElse(null);
-			case TRIAD_COORD_COUNT:
-				return createJobSpecificBoard(new TriadCoords(parseDec(args, 0),
+			// Checkstyle bug: indentation confusion
+			// CHECKSTYLE:OFF
+			yield switch (args.size()) {
+			case 0 -> createJobNumBoards(1, kwargs, serialCmd).orElse(null);
+			case 1 -> createJobNumBoards(parseDec(args, 0), kwargs, serialCmd)
+					.orElse(null);
+			case 2 -> createJobRectangle(parseDec(args, 0), parseDec(args, 1),
+					kwargs, serialCmd).orElse(null);
+			case TRIAD_COORD_COUNT ->
+				createJobSpecificBoard(new TriadCoords(parseDec(args, 0),
 						parseDec(args, 1), parseDec(args, 2)), kwargs,
 						serialCmd).orElse(null);
-			default:
-				throw new Oops(
-						"unsupported number of arguments: " + args.size());
-			}
-		case "destroy_job":
+			default -> throw new Oops(
+					"unsupported number of arguments: " + args.size());
+			};
+			// CHECKSTYLE:ON
+		}
+		case "destroy_job" -> {
 			destroyJob(parseDec(args, 0), (String) kwargs.get("reason"));
-			break;
-		case "get_board_at_position":
-			return requireNonNull(getBoardAtPhysicalPosition(
+			yield null;
+		}
+		case "get_board_at_position" ->
+			requireNonNull(getBoardAtPhysicalPosition(
 					(String) kwargs.get("machine_name"), parseDec(kwargs, "x"),
 					parseDec(kwargs, "y"), parseDec(kwargs, "z")));
-		case "get_board_position":
-			return requireNonNull(getBoardAtLogicalPosition(
-					(String) kwargs.get("machine_name"), parseDec(kwargs, "x"),
-					parseDec(kwargs, "y"), parseDec(kwargs, "z")));
-		case "get_job_machine_info":
-			return requireNonNull(getJobMachineInfo(parseDec(args, 0)));
-		case "get_job_state":
-			return requireNonNull(getJobState(parseDec(args, 0)));
-		case "job_keepalive":
+		case "get_board_position" -> requireNonNull(getBoardAtLogicalPosition(
+				(String) kwargs.get("machine_name"), parseDec(kwargs, "x"),
+				parseDec(kwargs, "y"), parseDec(kwargs, "z")));
+		case "get_job_machine_info" ->
+			requireNonNull(getJobMachineInfo(parseDec(args, 0)));
+		case "get_job_state" -> requireNonNull(getJobState(parseDec(args, 0)));
+		case "job_keepalive" -> {
 			jobKeepalive(parseDec(args, 0));
-			break;
-		case "list_jobs":
-			return requireNonNull(listJobs());
-		case "list_machines":
-			return requireNonNull(listMachines());
-		case "no_notify_job":
+			yield null;
+		}
+		case "list_jobs" -> requireNonNull(listJobs());
+		case "list_machines" -> requireNonNull(listMachines());
+		case "no_notify_job" -> {
 			notifyJob(optInt(args), false);
-			break;
-		case "no_notify_machine":
+			yield null;
+		}
+		case "no_notify_machine" -> {
 			notifyMachine(optStr(args), false);
-			break;
-		case "notify_job":
+			yield null;
+		}
+		case "notify_job" -> {
 			notifyJob(optInt(args), true);
-			break;
-		case "notify_machine":
+			yield null;
+		}
+		case "notify_machine" -> {
 			notifyMachine(optStr(args), true);
-			break;
-		case "power_off_job_boards":
+			yield null;
+		}
+		case "power_off_job_boards" -> {
 			powerJobBoards(parseDec(args, 0), OFF);
-			break;
-		case "power_on_job_boards":
+			yield null;
+		}
+		case "power_on_job_boards" -> {
 			powerJobBoards(parseDec(args, 0), ON);
-			break;
-		case "version":
-			return requireNonNull(version());
-		case "where_is":
+			yield null;
+		}
+		case "version" -> requireNonNull(version());
+		case "where_is" -> {
 			// This is four operations in a trench coat
 			if (kwargs.containsKey("job_id")) {
-				return requireNonNull(whereIsJobChip(parseDec(kwargs, "job_id"),
+				yield requireNonNull(whereIsJobChip(parseDec(kwargs, "job_id"),
 						parseDec(kwargs, "chip_x"),
 						parseDec(kwargs, "chip_y")));
 			} else if (!kwargs.containsKey("machine")) {
@@ -512,21 +527,22 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			}
 			var m = (String) kwargs.get("machine");
 			if (kwargs.containsKey("chip_x")) {
-				return requireNonNull(
+				yield requireNonNull(
 						whereIsMachineChip(m, parseDec(kwargs, "chip_x"),
 								parseDec(kwargs, "chip_y")));
 			} else if (kwargs.containsKey("x")) {
-				return requireNonNull(
+				yield requireNonNull(
 						whereIsMachineLogicalBoard(m, parseDec(kwargs, "x"),
 								parseDec(kwargs, "y"), parseDec(kwargs, "z")));
 			} else if (kwargs.containsKey("cabinet")) {
-				return requireNonNull(whereIsMachinePhysicalBoard(m,
+				yield requireNonNull(whereIsMachinePhysicalBoard(m,
 						parseDec(kwargs, "cabinet"), parseDec(kwargs, "frame"),
 						parseDec(kwargs, "board")));
 			} else {
 				throw new Oops("missing parameter: chip_x, x, or cabinet");
 			}
-		case "report_problem":
+		}
+		case "report_problem" -> {
 			var ip = args.get(0).toString();
 			Integer x = null, y = null, p = null;
 			var desc = "It doesn't work and I don't know why.";
@@ -541,13 +557,11 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				desc = Objects.toString(kwargs.get("description"));
 			}
 			reportProblem(ip, x, y, p, desc);
-			break;
-		case "login":
-			throw new Oops("upgrading security is not supported");
-		default:
-			throw new Oops("unknown command: " + cmd.getCommand());
+			yield null;
 		}
-		return null;
+		case "login" -> throw new Oops("upgrading security is not supported");
+		default -> throw new Oops("unknown command: " + cmd.getCommand());
+		};
 	}
 
 	/**

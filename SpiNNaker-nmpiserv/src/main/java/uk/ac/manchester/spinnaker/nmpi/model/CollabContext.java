@@ -58,7 +58,7 @@ public class CollabContext {
 	 * @param appId
 	 *            The ID to set
 	 */
-	public void setAppId(final String appId) {
+	void setAppId(String appId) {
 		this.appId = appId;
 	}
 
@@ -77,7 +77,7 @@ public class CollabContext {
 	 * @param collab
 	 *            The collab to set
 	 */
-	public void setCollab(final Collab collab) {
+	void setCollab(Collab collab) {
 		this.collab = collab;
 	}
 
@@ -96,7 +96,7 @@ public class CollabContext {
 	 * @param context
 	 *            The context to set
 	 */
-	public void setContext(final String context) {
+	void setContext(String context) {
 		this.context = context;
 	}
 
@@ -115,7 +115,7 @@ public class CollabContext {
 	 * @param id
 	 *            The ID
 	 */
-	public void setId(final int id) {
+	void setId(int id) {
 		this.id = id;
 	}
 
@@ -134,7 +134,7 @@ public class CollabContext {
 	 * @param name
 	 *            The name to set
 	 */
-	public void setName(final String name) {
+	void setName(String name) {
 		this.name = name;
 	}
 
@@ -153,7 +153,7 @@ public class CollabContext {
 	 * @param orderIndex
 	 *            The index to set
 	 */
-	public void setOrderIndex(final int orderIndex) {
+	void setOrderIndex(int orderIndex) {
 		this.orderIndex = orderIndex;
 	}
 
@@ -172,7 +172,7 @@ public class CollabContext {
 	 * @param parent
 	 *            The parent to set
 	 */
-	public void setParent(final int parent) {
+	void setParent(int parent) {
 		this.parent = parent;
 	}
 
@@ -191,7 +191,7 @@ public class CollabContext {
 	 * @param type
 	 *            The type to set
 	 */
-	public void setType(final String type) {
+	void setType(String type) {
 		this.type = type;
 	}
 }

@@ -88,6 +88,16 @@ public class GetDevId extends CredentialDB {
 
 	private Auth nextAuth;
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param databaseFile
+	 *            The database to store tokens and credentials in.
+	 * @throws SQLException
+	 *             If database operations fail.
+	 * @throws IOException
+	 *             If I/O operations fail.
+	 */
 	public GetDevId(File databaseFile) throws SQLException, IOException {
 		super(databaseFile);
 	}
@@ -248,8 +258,7 @@ public class GetDevId extends CredentialDB {
 			log.debug("response:\n{}", mapper.writeValueAsString(cr));
 		} catch (ClientRegistrationException e) {
 			log.error("failed", e);
-			if (e.getCause() instanceof HttpErrorException) {
-				var ex = (HttpErrorException) e.getCause();
+			if (e.getCause() instanceof HttpErrorException ex) {
 				log.info("status: {}", ex.getStatusLine().getStatusCode());
 				log.info("response: {}", ex.getErrorResponse());
 			}

@@ -48,6 +48,6 @@ class NeighbourIterator implements Iterator<ChipLocation> {
 
 	@Override
 	public ChipLocation next() {
-		return linksIter.next().destination;
+		return linksIter.next().destination();
 	}
 }

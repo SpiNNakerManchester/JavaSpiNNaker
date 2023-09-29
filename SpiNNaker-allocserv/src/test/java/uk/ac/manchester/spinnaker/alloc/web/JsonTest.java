@@ -17,9 +17,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
@@ -31,9 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.json.JSONException;
 import org.junit.jupiter.api.Nested;
@@ -42,7 +37,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -62,6 +61,8 @@ class JsonTest {
 	JsonTest() {
 		// Set up the mapper in the same way that ServiceConfig does
 		mapper = JsonMapper.builder().findAndAddModules()
+				.addModule(new JavaTimeModule())
+				.addModule(new Jdk8Module())
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
 				.propertyNamingStrategy(KEBAB_CASE).build();
 	}
@@ -234,11 +235,16 @@ class JsonTest {
 		@Test
 		void testServiceDescription() throws IOException, JSONException {
 			var d = new ServiceDescription();
-			d.setVersion(new Version("1.2.3"));
-			JSONAssert.assertEquals(
-					"{ \"version\": { \"major-version\": 1,"
-							+ "\"minor-version\": 2, \"revision\": 3 } }",
-					serialize(d), false);
+			d.setVersion(Version.parse("1.2.3"));
+			JSONAssert.assertEquals("""
+					{
+						"version": {
+							"major-version": 1,
+							"minor-version": 2,
+							"revision": 3
+						}
+					}
+					""", serialize(d), false);
 		}
 
 		@Test
@@ -248,23 +254,33 @@ class JsonTest {
 			r.setStartTime(Instant.ofEpochSecond(1633954394));
 			r.setKeepaliveHost("127.0.0.1");
 			r.setOwner("gorp");
-			JSONAssert.assertEquals(
-					"{ \"state\": \"READY\", "
-							+ "\"start-time\": \"2021-10-11T12:13:14Z\", "
-							+ "\"owner\": \"gorp\", "
-							+ "\"keepalive-host\": \"127.0.0.1\" }",
-					serialize(r), false);
+			JSONAssert.assertEquals("""
+					{
+						"state": "READY",
+						"start-time": "2021-10-11T12:13:14Z",
+						"owner": "gorp",
+						"keepalive-host": "127.0.0.1"
+					}
+					""", serialize(r), false);
 		}
 
 		@Test
 		void testSubMachineResponse() throws IOException, JSONException {
 			var r = new SubMachineResponse(new SM(), null);
-			JSONAssert.assertEquals(
-					"{ \"depth\": 1, \"width\": 1, \"height\": 1,"
-					+ "\"machine-name\": \"gorp\","
-					+ "\"boards\": [[0, 0, 0]],"
-					+ "\"connections\": [[[0, 0], \"2.3.4.5\"]] }",
-					serialize(r), true);
+			JSONAssert.assertEquals("""
+					{
+						"depth": 1,
+						"width": 1,
+						"height": 1,
+						"machine-name": "gorp",
+						"boards": [
+							[0, 0, 0]
+						],
+						"connections": [
+							[[0, 0], "2.3.4.5"]
+						]
+					}
+					""", serialize(r), true);
 		}
 
 		@Test
@@ -317,13 +333,17 @@ class JsonTest {
 				}
 			};
 			var r = new WhereIsResponse(loc, stubBuilder("http://localhost/"));
-			JSONAssert.assertEquals(
-					"{ \"machine\": \"gorp\", \"chip\": [1, 2], "
-							+ "\"job-id\": 12345, \"board-chip\": [3, 4],"
-							+ "\"job-chip\": [11, 12],"
-							+ "\"logical-board-coordinates\": [5, 6, 0],"
-							+ "\"physical-board-coordinates\": [7, 8, 9] }",
-					serialize(r), false);
+			JSONAssert.assertEquals("""
+					{
+						"machine": "gorp",
+						"chip": [1, 2],
+						"job-id": 12345,
+						"board-chip": [3, 4],
+						"job-chip": [11, 12],
+						"logical-board-coordinates": [5, 6, 0],
+						"physical-board-coordinates": [7, 8, 9]
+					}
+					""", serialize(r), false);
 		}
 	}
 
@@ -331,41 +351,76 @@ class JsonTest {
 	class Deserialization {
 		@Test
 		void testCreateJobRequestSimple() throws IOException {
-			var obj = "{\"owner\":\"bob\", \"keepalive-interval\":\"PT30S\"}";
-			var cjr = deserialize(obj, CreateJobRequest.class);
+			var cjr = deserialize("""
+					{
+						"owner": "bob",
+						"keepalive-interval": "PT30S"
+					}
+					""", CreateJobRequest.class);
 			assertNotNull(cjr);
-			assertEquals("bob", cjr.owner);
-			assertNotNull(cjr.keepaliveInterval);
-			assertEquals(30, cjr.keepaliveInterval.getSeconds());
-			assertNull(cjr.dimensions);
+			assertEquals("bob", cjr.owner());
+			assertNotNull(cjr.keepaliveInterval());
+			assertEquals(30, cjr.keepaliveInterval().getSeconds());
+			assertNull(cjr.dimensions());
 		}
 
 		@Test
 		void testCreateJobRequestComplex() throws IOException {
-			var obj = "{\"owner\": \"bob\", \"keepalive-interval\": \"PT30S\", "
-					+ "\"dimensions\": {\"width\": 1, \"height\": 2}, "
-					+ "\"tags\": [\"a\", \"b\"], "
-					+ "\"max-dead-boards\": 77, "
-					+ "\"machine-name\": \"gorp\"}";
-			var cjr = deserialize(obj, CreateJobRequest.class);
+			var cjr = deserialize("""
+					{
+						"owner": "bob",
+						"keepalive-interval": "PT30S",
+						"dimensions": {
+							"width": 1,
+							"height": 2
+						},
+						"tags": ["a", "b"],
+						"max-dead-boards": 77,
+						"machine-name": "gorp"
+					}
+					""", CreateJobRequest.class);
 			assertNotNull(cjr);
-			assertEquals("bob", cjr.owner);
-			assertNotNull(cjr.keepaliveInterval);
-			assertEquals(30, cjr.keepaliveInterval.getSeconds());
-			assertNotNull(cjr.dimensions);
-			assertEquals(1, cjr.dimensions.width);
-			assertNotNull(cjr.tags);
-			assertEquals(2, cjr.tags.size());
-			assertEquals("a", cjr.tags.get(0));
-			assertEquals("gorp", cjr.machineName);
-			assertEquals(77, cjr.maxDeadBoards);
+			assertEquals("bob", cjr.owner());
+			assertNotNull(cjr.keepaliveInterval());
+			assertEquals(30, cjr.keepaliveInterval().getSeconds());
+			assertNotNull(cjr.dimensions());
+			assertEquals(1, cjr.dimensions().width());
+			assertEquals(List.of("a", "b"), cjr.tags());
+			assertEquals("gorp", cjr.machineName());
+			assertEquals(77, cjr.maxDeadBoards());
+		}
+
+		@Test
+		void testCreateJobRequestSpecific() throws IOException {
+			// The part that testCreateJobRequestComplex() doesn't look at
+			assertEquals(3, deserialize("""
+				{
+					"owner": "bob",
+					"keepalive-interval": "PT30S",
+					"dimensions": {
+						"width": 1,
+						"height": 2
+					},
+					"board": {
+						"cabinet": 3,
+						"frame": 4,
+						"board": 5
+					},
+					"tags": ["a", "b"],
+					"max-dead-boards": 77,
+					"machine-name": "gorp"
+				}
+				""", CreateJobRequest.class).board().cabinet());
 		}
 
 		@Test
 		void testPowerRequest() throws IOException {
-			var obj = "{\"power\": \"ON\"}";
-			var mp = deserialize(obj, MachinePower.class);
-			assertEquals(ON, mp.getPower());
+			var mp = deserialize("""
+					{
+						"power": "ON"
+					}
+					""", MachinePower.class);
+			assertEquals(ON, mp.power());
 		}
 	}
 }

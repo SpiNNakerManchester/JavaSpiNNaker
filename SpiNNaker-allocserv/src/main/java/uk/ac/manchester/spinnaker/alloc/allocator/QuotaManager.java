@@ -27,8 +27,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.BadRequestException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.BadRequestException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,25 +210,14 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * operation.
 	 *
 	 * @author Donal Fellows
+	 * @param name
+	 *            The name of the group.
+	 * @param quota
+	 *            The new quota of the group.
 	 */
-	public static final class AdjustedQuota {
-		private final String name;
-
-		private final Long quota;
-
+	public record AdjustedQuota(String name, Long quota) {
 		private AdjustedQuota(Row row) {
-			this.name = row.getString("group_name");
-			this.quota = row.getLong("quota");
-		}
-
-		/** @return The name of the group. */
-		public String getName() {
-			return name;
-		}
-
-		/** @return The new quota of the group. */
-		public Long getQuota() {
-			return quota;
+			this(row.getString("group_name"), row.getLong("quota"));
 		}
 	}
 
@@ -240,6 +229,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		@Override
 		public void close() {
 			adjustQuota.close();
+			getQuota.close();
 			super.close();
 		}
 
@@ -278,7 +268,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private class ConsolidateSQL extends AbstractSQL {
+	private final class ConsolidateSQL extends AbstractSQL {
 		private final Query getConsoldationTargets =
 				conn.query(GET_CONSOLIDATION_TARGETS);
 
@@ -322,17 +312,13 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	private static class QuotaInfo {
-		/** The size of quota remaining, in board-seconds. */
-		final long quota;
-
-		/** The units that the quota was measured in on the NMPI. */
-		final String units;
-
-		QuotaInfo(long quota, String units) {
-			this.quota = quota;
-			this.units = units;
-		}
+	/**
+	 * @param quota
+	 *            The size of quota remaining, in board-seconds.
+	 * @param units
+	 *            The units that the quota was measured in on the NMPI.
+	 */
+	private record QuotaInfo(long quota, String units) {
 	}
 
 	private QuotaInfo parseQuotaData(List<Project> projects) {
@@ -371,16 +357,16 @@ public class QuotaManager extends DatabaseAwareBean {
 		var projects = nmpi.getProjects(STATUS_ACCEPTED, collab);
 		var info = parseQuotaData(projects);
 
-		log.debug("Setting quota of collab {} to {}", collab, info.quota);
+		log.debug("Setting quota of collab {} to {}", collab, info.quota());
 
 		// Update quota in group for collab from NMPI
 		try (var c = getConnection();
 				var setQuota = c.update(SET_COLLAB_QUOTA)) {
-			c.transaction(() -> setQuota.call(info.quota, collab));
+			c.transaction(() -> setQuota.call(info.quota(), collab));
 		}
 
-		if (info.quota > 0) {
-			return Optional.of(info.units);
+		if (info.quota() > 0) {
+			return Optional.of(info.units());
 		}
 		return Optional.empty();
 	}
@@ -489,17 +475,13 @@ public class QuotaManager extends DatabaseAwareBean {
 				new NMPIJobQuotaDetails(job.getCollab(), quotaUnits.get()));
 	}
 
-	static final class NMPIJobQuotaDetails {
-		/** The collaboratory ID. */
-		final String collabId;
-
-		/** The units of the Quota. */
-		final String quotaUnits;
-
-		private NMPIJobQuotaDetails(String collabId, String quotaUnits) {
-			this.collabId = collabId;
-			this.quotaUnits = quotaUnits;
-		}
+	/**
+	 * @param collabId
+	 *            The collaboratory ID.
+	 * @param quotaUnits
+	 *            The units of the Quota.
+	 */
+	record NMPIJobQuotaDetails(String collabId, String quotaUnits) {
 	}
 
 	void associateNMPIJob(int jobId, int nmpiJobId, String quotaUnits) {
@@ -511,12 +493,8 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/** Results of database queries. */
-	private static final class FinishInfo {
-		Optional<Long> quota;
-
-		Optional<Session> session;
-
-		Optional<NMPIJob> job;
+	private record FinishInfo(Optional<Long> quota, Optional<Session> session,
+			Optional<NMPIJob> job) {
 	}
 
 	private FinishInfo getFinishingInfo(int jobId) {
@@ -525,13 +503,11 @@ public class QuotaManager extends DatabaseAwareBean {
 				var getNMPIJob = c.query(GET_JOB_NMPI_JOB);
 				var getUsage = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 			// Get the quota used
-			return c.transaction(false, () -> {
-				var i = new FinishInfo();
-				i.quota = getUsage.call1(r -> r.getLong("quota_used"), jobId);
-				i.session = getSession.call1(Session::new, jobId);
-				i.job = getNMPIJob.call1(NMPIJob::new, jobId);
-				return i;
-			});
+			return c.transaction(false,
+					() -> new FinishInfo(
+							getUsage.call1(r -> r.getLong("quota_used"), jobId),
+							getSession.call1(Session::new, jobId),
+							getNMPIJob.call1(NMPIJob::new, jobId)));
 		}
 	}
 
@@ -541,16 +517,17 @@ public class QuotaManager extends DatabaseAwareBean {
 
 		// From here on, we don't touch the DB but we do touch the network
 
-		if (!info.quota.isPresent()) {
+		if (!info.quota().isPresent()) {
 			// No quota? No update!
 			return;
 		}
 
 		// If job has associated session, update quota in session
-		info.session.ifPresent(session -> {
+		info.session().ifPresent(session -> {
 			try {
-				nmpi.setSessionStatusAndResources(session.id, "finished",
-						getResourceUsage(info.quota.get(), session.quotaUnits));
+				nmpi.setSessionStatusAndResources(session.id(), "finished",
+						getResourceUsage(info.quota().get(),
+								session.quotaUnits()));
 			} catch (BadRequestException e) {
 				log.error(e.getResponse().readEntity(String.class));
 				throw e;
@@ -558,10 +535,10 @@ public class QuotaManager extends DatabaseAwareBean {
 		});
 
 		// If job has associated NMPI job, update quota on NMPI job
-		info.job.ifPresent(nmpiJob -> {
+		info.job().ifPresent(nmpiJob -> {
 			try {
-				nmpi.setJobResources(nmpiJob.id,
-						getResourceUsage(info.quota.get(), nmpiJob.quotaUnits));
+				nmpi.setJobResources(nmpiJob.id(), getResourceUsage(
+						info.quota().get(), nmpiJob.quotaUnits()));
 			} catch (BadRequestException e) {
 				log.error(e.getResponse().readEntity(String.class));
 				throw e;
@@ -569,25 +546,15 @@ public class QuotaManager extends DatabaseAwareBean {
 		});
 	}
 
-	private static final class Session {
-		private int id;
-
-		private String quotaUnits;
-
+	private record Session(int id, String quotaUnits) {
 		private Session(Row r) {
-			this.id = r.getInt("session_id");
-			this.quotaUnits = r.getString("quota_units");
+			this(r.getInt("session_id"), r.getString("quota_units"));
 		}
 	}
 
-	private static final class NMPIJob {
-		private int id;
-
-		private String quotaUnits;
-
+	private record NMPIJob(int id, String quotaUnits) {
 		private NMPIJob(Row r) {
-			this.id = r.getInt("nmpi_job_id");
-			this.quotaUnits = r.getString("quota_units");
+			this(r.getInt("nmpi_job_id"), r.getString("quota_units"));
 		}
 	}
 

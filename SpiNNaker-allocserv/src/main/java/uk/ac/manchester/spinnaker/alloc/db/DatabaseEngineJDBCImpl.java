@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +48,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * Implementation of the {@link DatabaseAPI} that uses JDBC to talk to MySQL.
@@ -256,16 +256,16 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			for (int i = 0; i < arguments.length; i++) {
 				var arg = arguments[i];
 				// The classes we augment the DB driver with
-				if (arg instanceof Optional) {
+				if (arg instanceof Optional<?> opt) {
 					// Unpack one layer of Optional only; absent = NULL
-					arg = ((Optional<?>) arg).orElse(null);
+					arg = opt.orElse(null);
 				}
-				if (arg instanceof Instant) {
-					arg = ((Instant) arg).getEpochSecond();
-				} else if (arg instanceof Duration) {
-					arg = ((Duration) arg).getSeconds();
-				} else if (arg instanceof Enum) {
-					arg = ((Enum<?>) arg).ordinal();
+				if (arg instanceof Instant inst) {
+					arg = inst.getEpochSecond();
+				} else if (arg instanceof Duration d) {
+					arg = d.getSeconds();
+				} else if (arg instanceof Enum<?> e) {
+					arg = e.ordinal();
 				} else if (arg != null && arg instanceof Serializable
 						&& !(arg instanceof String || arg instanceof Number
 								|| arg instanceof Boolean
@@ -363,8 +363,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	 */
 	private String readSQL(Resource resource) {
 		try (var is = resource.getInputStream()) {
-			var s = IOUtils.toString(is, UTF_8);
-			return s;
+			return IOUtils.toString(is, UTF_8);
 		} catch (IOException e) {
 			throw new UncategorizedScriptException(
 					"could not load SQL file from " + resource, e);

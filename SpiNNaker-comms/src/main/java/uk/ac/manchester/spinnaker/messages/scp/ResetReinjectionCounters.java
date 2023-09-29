@@ -29,7 +29,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code reinjection_reset_counters()} in
  * {@code extra_monitor_support.c}.
  */
-public class ResetReinjectionCounters extends ReinjectorRequest<EmptyResponse> {
+public final class ResetReinjectionCounters
+		extends ReinjectorRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            The coordinates of the monitor core.

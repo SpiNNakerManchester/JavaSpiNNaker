@@ -23,10 +23,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import java.io.IOException;
 import java.time.Instant;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
@@ -36,6 +32,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 
 @Component
@@ -64,25 +63,9 @@ class MyAuthenticationFailureHandler implements AuthenticationFailureHandler {
 			message += ": " + e.getLocalizedMessage();
 		}
 		mapper.writeValue(response.getOutputStream(),
-				new AuthFailureObject(message));
+				new AuthFailureObject(message, now()));
 	}
 
-	static class AuthFailureObject {
-		private String message;
-
-		private Instant timestamp;
-
-		AuthFailureObject(String message) {
-			this.message = message;
-			this.timestamp = now();
-		}
-
-		public String getMessage() {
-			return message;
-		}
-
-		public Instant getTimestamp() {
-			return timestamp;
-		}
+	record AuthFailureObject(String message, Instant timestamp) {
 	}
 }

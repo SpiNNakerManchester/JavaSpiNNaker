@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sf_crc32()} in {@code bmp_ssp.c}.
  */
-public class ReadSerialFlashCRC
+public final class ReadSerialFlashCRC
 		extends BMPRequest<ReadSerialFlashCRC.Response> {
 	/**
 	 * @param board
@@ -42,7 +42,7 @@ public class ReadSerialFlashCRC
 	 */
 	public ReadSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
 			int size) {
-		super(board, CMD_BMP_SF, baseAddress.address, size, CRC.value);
+		super(board, CMD_BMP_SF, baseAddress.address(), size, CRC.value);
 	}
 
 	@Override

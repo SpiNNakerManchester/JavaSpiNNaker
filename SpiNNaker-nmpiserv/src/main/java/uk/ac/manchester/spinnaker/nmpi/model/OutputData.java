@@ -42,7 +42,7 @@ public class OutputData {
 	 * @param repository
 	 *            The name of the repository.
 	 */
-	public OutputData(final String repository) {
+	public OutputData(String repository) {
 		this.repository = repository;
 	}
 
@@ -61,7 +61,7 @@ public class OutputData {
 	 * @param repository
 	 *            The repository to set.
 	 */
-	public void setRepository(String repository) {
+	void setRepository(String repository) {
 		this.repository = repository;
 	}
 

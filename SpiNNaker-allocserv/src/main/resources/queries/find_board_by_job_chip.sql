@@ -12,6 +12,10 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- --------------------------------------------------------------------------
+-- Locate a board (using a full set of coordinates) based on allocation-local
+-- chip coordinates.
+
 WITH
 	args(job, root, x, y) AS (SELECT :job_id, :board_id, :x, :y),
 	-- Boards that are allocated to the job

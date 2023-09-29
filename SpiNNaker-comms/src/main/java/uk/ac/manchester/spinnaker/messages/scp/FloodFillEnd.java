@@ -98,7 +98,7 @@ public final class FloodFillEnd extends SCPRequest<EmptyResponse> {
 				processorMask |= 1 << p;
 			}
 		}
-		processorMask |= appID.appID << BYTE3;
+		processorMask |= appID.appID() << BYTE3;
 		if (wait) {
 			processorMask |= 1 << WAIT_BIT;
 		}

@@ -29,7 +29,6 @@ import java.util.Collection;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.Link;
 import uk.ac.manchester.spinnaker.machine.Machine;
 
 /**
@@ -97,7 +96,7 @@ public abstract class Reports {
 			f.printf("Neighbouring chips:\n\t%s\n",
 					chip.router.neighbouringChipsCoords());
 			f.println("Router list of links for this chip are:");
-			for (Link link : chip.router.links()) {
+			for (var link : chip.router.links()) {
 				f.printf("\t%s\n", link);
 			}
 			f.println("\t\t==========================");

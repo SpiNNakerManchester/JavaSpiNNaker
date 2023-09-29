@@ -45,26 +45,26 @@ public class SessionResourceUpdate {
 	 * @param status
 	 *            the status to set
 	 */
-	public void setStatus(final String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
 	/**
 	 * Get the count of how much resource has been used by the job.
 	 *
-	 * @return the resourceUsage
+	 * @return the resource usage
 	 */
 	public ResourceUsage getResourceUsage() {
 		return resourceUsage;
 	}
 
 	/**
-	 * Sets the resourceUsage.
+	 * Sets the resource usage.
 	 *
 	 * @param resourceUsage
-	 *            the resourceUsage to set
+	 *            the resource usage to set
 	 */
-	public void setResourceUsage(final ResourceUsage resourceUsage) {
+	public void setResourceUsage(ResourceUsage resourceUsage) {
 		this.resourceUsage = resourceUsage;
 	}
 }

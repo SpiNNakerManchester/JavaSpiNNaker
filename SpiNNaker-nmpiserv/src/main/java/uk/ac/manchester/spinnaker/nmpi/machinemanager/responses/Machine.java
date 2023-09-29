@@ -48,7 +48,7 @@ public class Machine {
 	 * @param name
 	 *            The name of the machine to set
 	 */
-	public void setName(final String name) {
+	void setName(String name) {
 		this.name = name;
 	}
 
@@ -67,7 +67,7 @@ public class Machine {
 	 * @param tags
 	 *            The tags to set
 	 */
-	public void setTags(final List<String> tags) {
+	void setTags(List<String> tags) {
 		this.tags = tags;
 	}
 
@@ -86,7 +86,7 @@ public class Machine {
 	 * @param width
 	 *            The width in chips
 	 */
-	public void setWidth(final int width) {
+	void setWidth(int width) {
 		this.width = width;
 	}
 
@@ -105,7 +105,7 @@ public class Machine {
 	 * @param height
 	 *            The height in chips
 	 */
-	public void setHeight(final int height) {
+	void setHeight(int height) {
 		this.height = height;
 	}
 }

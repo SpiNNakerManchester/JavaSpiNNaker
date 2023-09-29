@@ -92,8 +92,8 @@ public abstract class Utils {
 	 */
 	public static boolean isBusy(DataAccessException exception) {
 		var root = exception.getMostSpecificCause();
-		if (root instanceof SQLException) {
-			return isBusy((SQLException) root);
+		if (root instanceof SQLException e) {
+			return isBusy(e);
 		}
 		return false;
 	}

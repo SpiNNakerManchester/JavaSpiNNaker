@@ -58,18 +58,63 @@ class TestJob {
 	 */
 	private static BlockingDeque<String> mockServerMessagesToSend() {
 		var send = new LinkedBlockingDeque<String>();
-		send.offer("{\"return\": 123}");
-		send.offer("{\"return\": null}");
-		send.offer("{\"return\": {\"state\": 2, \"power\": false}}");
-		send.offer("{\"return\": null}");
-		send.offer("{\"jobs_changed\": [123]}");
-		send.offer("{\"return\": {\"state\": 3, \"power\": true}}");
-		send.offer("{\"return\": {\"connections\":[[[0,0],\"10.11.223.33\"]],"
-				+ "\"width\":8,"
-				+ "\"machine_name\":\"Spin24b-223\","
-				+ "\"boards\":[[4,5,6], [7,8,9]],"
-				+ "\"height\":8}}");
-		send.offer("{\"return\": null}");
+		send.offer("""
+				{
+					"return": 123
+				}
+				""");
+		send.offer("""
+				{
+					"return": null
+				}
+				""");
+		send.offer("""
+				{
+					"return": {
+						"state": 2,
+						"power": false
+					}
+				}
+				""");
+		send.offer("""
+				{
+					"return": null
+				}
+				""");
+		send.offer("""
+				{
+					"jobs_changed": [123]
+				}
+				""");
+		send.offer("""
+				{
+					"return": {
+						"state": 3,
+						"power": true
+					}
+				}
+				""");
+		send.offer("""
+				{
+					"return": {
+						"connections": [
+							[[0,0], "10.11.223.33"]
+						],
+						"width": 8,
+						"machine_name": "Spin24b-223",
+						"boards": [
+							[4,5,6],
+							[7,8,9]
+						],
+						"height": 8
+					}
+				}
+				""");
+		send.offer("""
+				{
+					"return": null
+				}
+				""");
 		send.offer(STOP);
 		return send;
 	}
@@ -83,33 +128,61 @@ class TestJob {
 	private static void assertMockServerReceived(
 			BlockingDeque<JSONObject> received)
 			throws JSONException, InterruptedException {
-		JSONAssert.assertEquals("{\"command\": \"create_job\", "
-				+ "\"args\": [1, 2, 3], \"kwargs\": {"
-				+ "\"keepalive\": 1, \"owner\": \"java test harness\", "
-				+ "\"tags\": [\"default\"]}}", received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"power_on_job_boards\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"get_job_state\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert
-				.assertEquals("{\"command\": \"notify_job\", \"args\": [123], "
-						+ "\"kwargs\": {}}", received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"get_job_state\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"get_job_machine_info\", \"args\": [123], "
-						+ "\"kwargs\": {}}",
-				received.take(), true);
-		JSONAssert.assertEquals(
-				"{\"command\": \"destroy_job\", \"args\": [123], "
-						+ "\"kwargs\": {\"reason\": \"abc\"}}",
-				received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "create_job",
+					"args": [1, 2, 3],
+					"kwargs": {
+						"keepalive": 1,
+						"owner": "java test harness",
+						"tags": ["default"]
+					}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "power_on_job_boards",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "get_job_state",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "notify_job",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "get_job_state",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "get_job_machine_info",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", received.take(), true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "destroy_job",
+					"args": [123],
+					"kwargs": {
+						"reason": "abc"
+					}
+				}
+				""", received.take(), true);
 		assertTrue(received.isEmpty(),
 				"must have checked all received messages");
 	}
@@ -134,8 +207,13 @@ class TestJob {
 		// All should have the same message sent
 		var first = keepalives.take();
 		assertNotNull(first, "null in keepalive queue!");
-		JSONAssert.assertEquals("{\"command\": \"job_keepalive\", "
-				+ "\"args\": [123], \"kwargs\": {}}", first, true);
+		JSONAssert.assertEquals("""
+				{
+					"command": "job_keepalive",
+					"args": [123],
+					"kwargs": {}
+				}
+				""", first, true);
 		while (!keepalives.isEmpty()) {
 			JSONAssert.assertEquals(first, keepalives.take(), true);
 		}

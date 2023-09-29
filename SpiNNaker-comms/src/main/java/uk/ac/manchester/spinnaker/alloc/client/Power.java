@@ -15,7 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
-class Power {
+final class Power {
 	/** The power state. */
 	String power;
 

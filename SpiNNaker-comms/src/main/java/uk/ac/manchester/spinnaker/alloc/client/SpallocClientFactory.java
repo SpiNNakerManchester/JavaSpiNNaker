@@ -35,11 +35,9 @@ import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
@@ -52,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -147,9 +146,9 @@ public class SpallocClientFactory {
 		if (proxy == null) {
 			return null;
 		}
-		log.info("Using proxy {} for connections", proxy.spallocUrl);
-		return new SpallocClientFactory(URI.create(proxy.spallocUrl))
-				.getJob(proxy.jobUrl, proxy.headers, proxy.cookies);
+		log.info("Using proxy {} for connections", proxy.spallocUrl());
+		return new SpallocClientFactory(URI.create(proxy.spallocUrl()))
+				.getJob(proxy);
 	}
 
 	/**
@@ -167,16 +166,7 @@ public class SpallocClientFactory {
 	 *             made into an instance of the given class.
 	 */
 	static <T> T readJson(InputStream is, Class<T> cls) throws IOException {
-		BufferedReader streamReader = new BufferedReader(
-				new InputStreamReader(is, "UTF-8"));
-		StringBuilder responseStrBuilder = new StringBuilder();
-
-		String inputStr;
-		while ((inputStr = streamReader.readLine()) != null) {
-			responseStrBuilder.append(inputStr);
-		}
-		String json = responseStrBuilder.toString();
-
+		var json = IOUtils.toString(is, UTF_8);
 		try {
 			return JSON_MAPPER.readValue(json, cls);
 		} catch (IOException e) {
@@ -301,26 +291,23 @@ public class SpallocClientFactory {
 	/**
 	 * Get direct access to a Job.
 	 *
-	 * @param uri
-	 *            The URI of the job
-	 * @param headers
-	 *            The headers to read authentication from.
-	 * @param cookies
-	 *            The cookies to read authentication from.
+	 * @param proxyInfo
+	 *            The information (URL, headers, cookies) about the job.
 	 * @return A job.
 	 * @throws IOException
 	 *             If there is an error communicating with the server.
 	 */
-	public Job getJob(String uri, Map<String, String> headers,
-			Map<String, String> cookies) throws IOException {
-		var u = URI.create(uri);
-		var s = new ClientSession(baseUrl, headers, cookies);
+	private Job getJob(ProxyInformation proxyInfo) throws IOException {
+		var u = URI.create(proxyInfo.jobUrl());
+		var s = new ClientSession(baseUrl, proxyInfo.headers(),
+				proxyInfo.cookies());
 		var c = new ClientImpl(s, s.discoverRoot());
 		log.info("Connecting to job on {}", u);
 		return c.job(u);
 	}
 
-	private abstract static class Common {
+	private abstract static sealed class Common
+			permits ClientImpl, JobImpl, MachineImpl {
 		private final SpallocClient client;
 
 		final Session s;
@@ -331,7 +318,7 @@ public class SpallocClientFactory {
 		}
 
 		final Machine getMachine(String name) throws IOException {
-			Machine m = MACHINE_MAP.get(name);
+			var m = MACHINE_MAP.get(name);
 			if (m == null) {
 				client.listMachines();
 				m = MACHINE_MAP.get(name);
@@ -373,7 +360,7 @@ public class SpallocClientFactory {
 
 		private URI machines;
 
-		private ClientImpl(Session s, RootInfo ri) throws IOException {
+		private ClientImpl(Session s, RootInfo ri) {
 			super(null, s);
 			this.v = ri.version;
 			this.jobs = asDir(ri.jobsURI);
@@ -795,14 +782,14 @@ public class SpallocClientFactory {
 		public WhereIs getBoard(TriadCoords coords) throws IOException {
 			return whereis(
 					bmd.uri.resolve(format("logical-board?x=%d&y=%d&z=%d",
-							coords.x, coords.y, coords.z)));
+							coords.x(), coords.y(), coords.z())));
 		}
 
 		@Override
 		public WhereIs getBoard(PhysicalCoords coords) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("physical-board?cabinet=%d&frame=%d&board=%d",
-							coords.c, coords.f, coords.b)));
+							coords.c(), coords.f(), coords.b())));
 		}
 
 		@Override

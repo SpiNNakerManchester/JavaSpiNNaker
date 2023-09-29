@@ -28,21 +28,32 @@ public abstract class ByteBufferUtils {
 	private ByteBufferUtils() {
 	}
 
+	private static final int WORD_SIZE = 4;
+
 	/**
-	 * Make a slice of a byte buffer without modifying the original buffer.
+	 * Allocate a new little-endian byte buffer.
 	 *
-	 * @param src
-	 *            The originating buffer.
-	 * @param from
-	 *            The offset into the originating buffer where the slice starts.
-	 * @param len
-	 *            The length of the slice.
-	 * @return The little-endian slice. This will be read-only if and only if
-	 *         the original buffer is read-only.
+	 * @param capacity
+	 *            The capacity of the buffer.
+	 * @return The buffer.
 	 */
-	public static ByteBuffer slice(ByteBuffer src, int from, int len) {
-		var s = src.duplicate().position(from).slice();
-		return s.limit(len).order(LITTLE_ENDIAN);
+	public static ByteBuffer alloc(int capacity) {
+		return ByteBuffer.allocate(capacity).order(LITTLE_ENDIAN);
+	}
+
+	/**
+	 * Convert a word to a buffer that could form part of a message understood
+	 * by SpiNNaker.
+	 *
+	 * @param value
+	 *            The value to put in the buffer as a single 32-bit word.
+	 * @return The buffer, flipped. The buffer is writable and has a backing
+	 *         array.
+	 */
+	public static ByteBuffer wordAsBuffer(int value) {
+		var b = alloc(WORD_SIZE);
+		b.putInt(value).flip();
+		return b;
 	}
 
 	/**
@@ -75,9 +86,8 @@ public abstract class ByteBufferUtils {
 	 */
 	public static MappableIterable<ByteBuffer> sliceUp(ByteBuffer src,
 			int chunkSize) {
+		var b = src.duplicate();
 		return () -> new Iterator<>() {
-			final ByteBuffer b = src.duplicate();
-
 			@Override
 			public boolean hasNext() {
 				return b.hasRemaining();
@@ -122,5 +132,16 @@ public abstract class ByteBufferUtils {
 			return null;
 		}
 		return tmp.limit(size);
+	}
+
+	/**
+	 * Convert the remaining bytes in a buffer into a read-only buffer.
+	 *
+	 * @param buffer
+	 *            message buffer to convert
+	 * @return The read-only view.
+	 */
+	public static ByteBuffer readOnly(ByteBuffer buffer) {
+		return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 }

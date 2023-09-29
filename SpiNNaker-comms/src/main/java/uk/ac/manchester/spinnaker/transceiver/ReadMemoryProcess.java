@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
 /** A process for reading memory on a SpiNNaker chip. */
-class ReadMemoryProcess extends TxrxProcess {
+final class ReadMemoryProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.

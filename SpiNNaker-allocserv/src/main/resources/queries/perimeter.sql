@@ -12,9 +12,14 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-WITH
+-- --------------------------------------------------------------------------
+-- Get the links on the perimeter of the allocation to a job. The perimeter
+-- is defined as being the live links between a board that is part of the
+-- allocation and a board that is not.
+
+WITH bs AS (
 	-- Boards that are allocated to the job
-	bs AS (SELECT board_id FROM boards WHERE allocated_job = :job_id)
+	SELECT board_id FROM boards WHERE allocated_job = :job_id)
 SELECT board_1 AS board_id, dir_1 AS direction FROM links
 	WHERE board_1 IN (SELECT board_id FROM bs)
 	AND NOT (live AND board_2 IN (SELECT board_id FROM bs))

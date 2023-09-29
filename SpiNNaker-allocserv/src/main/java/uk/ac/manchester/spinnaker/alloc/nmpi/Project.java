@@ -53,7 +53,7 @@ public class Project {
 	 * @hidden
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

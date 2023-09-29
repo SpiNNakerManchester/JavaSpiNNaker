@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Ultimately handled by {@code rtr_mc_load()} in {@code sark_hw.c} (via
  * {@code cmd_rtr()} in {@code scamp-cmd.c}).
  */
-public class RouterInit extends SCPRequest<EmptyResponse> {
+public final class RouterInit extends SCPRequest<EmptyResponse> {
 	/** One reserved for SCAMP. */
 	private static final int MAX_ENTRIES = 1023;
 
@@ -57,7 +57,7 @@ public class RouterInit extends SCPRequest<EmptyResponse> {
 	public RouterInit(HasChipLocation chip, int numEntries,
 			MemoryLocation tableAddress, int baseIndex, AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
-				tableAddress.address, baseIndex);
+				tableAddress.address(), baseIndex);
 		if (baseIndex < 0) {
 			throw new IllegalArgumentException(
 					"baseIndex must not be negative");
@@ -72,7 +72,7 @@ public class RouterInit extends SCPRequest<EmptyResponse> {
 			throw new IllegalArgumentException(
 					"numEntries must be no more than " + MAX_ENTRIES);
 		}
-		return (numEntries << HALF1) | (appID.appID << BYTE1)
+		return (numEntries << HALF1) | (appID.appID() << BYTE1)
 				| (LOAD.value << BYTE0);
 	}
 

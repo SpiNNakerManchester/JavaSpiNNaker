@@ -15,9 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 
@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code cmd_link_read()} in {@code scamp-cmd.c}.
  */
-public class ReadLink extends SCPRequest<ReadLink.Response> {
+public final class ReadLink extends SCPRequest<ReadLink.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(
@@ -55,7 +55,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, int size) {
-		super(core, CMD_LINK_READ, baseAddress.address, validate(size),
+		super(core, CMD_LINK_READ, baseAddress.address(), validate(size),
 				link.id);
 	}
 
@@ -71,7 +71,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 */
 	public ReadLink(HasChipLocation chip, Direction link,
 			MemoryLocation baseAddress, int size) {
-		super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address,
+		super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address(),
 				validate(size), link.id);
 	}
 
@@ -95,7 +95,7 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 		/** @return The data read, as a read-only little-endian buffer. */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			return readOnly(buffer);
 		}
 	}
 }

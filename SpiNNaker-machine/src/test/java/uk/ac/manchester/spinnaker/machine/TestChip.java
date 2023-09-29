@@ -187,7 +187,7 @@ public class TestChip {
 	public void testLinksVirtualMachine() throws UnknownHostException {
 		var chip = new Chip(LOCATION_00, createRouter(), createInetAddress(),
 				LOCATION_11);
-		final var values = chip.router.links();
+		var values = chip.router.links();
 		assertEquals(2, values.size());
 		assertThrows(UnsupportedOperationException.class, () -> {
 			values.remove(LINK_00_01);

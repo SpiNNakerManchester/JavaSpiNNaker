@@ -17,9 +17,7 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.String.format;
 import static java.net.InetAddress.getByAddress;
-import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNullElse;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
@@ -28,6 +26,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.hexbyte;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -390,7 +389,7 @@ public abstract class UDPConnection<T> implements Connection {
 	protected ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException, InterruptedException {
 		socket.setSoTimeout(timeout);
-		var buffer = allocate(receivePacketSize);
+		var buffer = alloc(receivePacketSize);
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
@@ -399,7 +398,7 @@ public abstract class UDPConnection<T> implements Connection {
 					pkt.getSocketAddress());
 			log.debug("message data: {}", describe(buffer));
 		}
-		return buffer.order(LITTLE_ENDIAN);
+		return buffer;
 	}
 
 	@Override
@@ -430,7 +429,7 @@ public abstract class UDPConnection<T> implements Connection {
 	protected UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
-		var buffer = allocate(receivePacketSize);
+		var buffer = alloc(receivePacketSize);
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
@@ -439,7 +438,7 @@ public abstract class UDPConnection<T> implements Connection {
 					pkt.getSocketAddress());
 			log.debug("message data: {}", describe(buffer));
 		}
-		return new UDPPacket(buffer.order(LITTLE_ENDIAN),
+		return new UDPPacket(buffer,
 				(InetSocketAddress) pkt.getSocketAddress());
 	}
 

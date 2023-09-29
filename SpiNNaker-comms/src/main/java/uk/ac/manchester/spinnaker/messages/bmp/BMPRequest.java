@@ -41,19 +41,24 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @param <T>
  *            The type of the response to the request.
  */
-public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
-		extends SCPRequest<T> {
+public abstract sealed class BMPRequest<T extends BMPRequest.BMPResponse>
+		extends SCPRequest<T>
+		permits EraseFlash, GetBMPVersion, GetFPGAResetStatus, InitFPGA,
+		ReadADC, ReadBMPMemory, ReadCANStatus, ReadFPGARegister, ReadIPAddress,
+		ReadSerialFlash, ReadSerialFlashCRC, ReadSerialVector, ResetFPGA,
+		SetBoardLEDs, SetPower, UpdateFlash, WriteBMPMemory, WriteFlashBuffer,
+		WriteFPGAData, WriteFPGARegister, WriteSerialFlash {
 	private static SDPHeader header(int board) {
 		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(0, 0, board),
 				DEFAULT_PORT);
 	}
 
 	private static SDPHeader header(BMPBoard board) {
-		return header(board.board);
+		return header(board.board());
 	}
 
 	private static SDPHeader header(Collection<BMPBoard> boards) {
-		return header(boards.stream().mapToInt(b -> b.board).min().orElse(0));
+		return header(boards.stream().mapToInt(b -> b.board()).min().orElse(0));
 	}
 
 	/**
@@ -172,7 +177,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append(getClass().getSimpleName());
 		builder.append('(');
 		builder.append("command=");
@@ -197,7 +202,8 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @see CheckOKResponse
 	 */
 	@UsedInJavadocOnly(CheckOKResponse.class)
-	public static class BMPResponse extends SCPResponse {
+	public static sealed class BMPResponse extends SCPResponse
+			permits PayloadedResponse {
 		/**
 		 * Make a response object.
 		 *
@@ -223,8 +229,14 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param <T>
 	 *            The type of the parsed payload.
 	 */
-	public abstract static class PayloadedResponse<T> extends BMPResponse
-			implements Supplier<T> {
+	public abstract static sealed class PayloadedResponse<T> extends BMPResponse
+			implements Supplier<T>
+			permits EraseFlash.Response, GetBMPVersion.Response,
+			GetFPGAResetStatus.Response, ReadADC.Response,
+			ReadBMPMemory.Response, ReadCANStatus.Response,
+			ReadFPGARegister.Response, ReadIPAddress.Response,
+			ReadSerialFlash.Response, ReadSerialFlashCRC.Response,
+			ReadSerialVector.Response {
 		private final T value;
 
 		/**

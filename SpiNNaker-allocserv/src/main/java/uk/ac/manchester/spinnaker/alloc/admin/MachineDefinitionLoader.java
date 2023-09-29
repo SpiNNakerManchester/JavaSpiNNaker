@@ -26,21 +26,13 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-import javax.validation.ValidatorFactory;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +49,14 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.Keep;
 import com.google.errorprone.annotations.RestrictedApi;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Update;
@@ -242,8 +242,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@JsonIgnore
 		@AssertTrue(message = "all boards must have sane logical coordinates")
 		private boolean isCoordinateSane() {
-			return boardLocations.keySet().stream().allMatch(loc -> (loc.x >= 0)
-					&& (loc.x < width) && (loc.y >= 0) && (loc.y < height));
+			return boardLocations.keySet().stream()
+					.allMatch(loc -> (loc.x() >= 0) && (loc.x() < width)
+							&& (loc.y() >= 0) && (loc.y() < height));
 		}
 
 		@Keep
@@ -313,9 +314,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 * @return The new location
 		 */
 		private TriadCoords move(TriadCoords here, Direction direction) {
-			var di = DirInfo.get(here.z, direction);
-			return new TriadCoords(limit(here.x + di.dx, width),
-					limit(here.y + di.dy, height), here.z + di.dz);
+			var di = DirInfo.get(here.z(), direction);
+			return new TriadCoords(limit(here.x() + di.dx, width),
+					limit(here.y() + di.dy, height), here.z() + di.dz);
 		}
 
 		@JsonPOJOBuilder
@@ -414,88 +415,36 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	}
 
 	/**
-	 * A configuration description. JSON-deserializable (the only supported
-	 * mechanism for generating an instance). Largely ignored as it represents
-	 * configuration settings that we handle elsewhere. However, the
+	 * A configuration description. JSON-deserializable (the only actually
+	 * supported mechanism for generating an instance). Largely ignored as it
+	 * represents configuration settings that we handle elsewhere. However, the
 	 * {@code machines} property <em>is</em> interesting.
 	 *
 	 * @author Donal Fellows
+	 * @param machines
+	 *            The machines to manage.
+	 * @param port
+	 *            The port for the service to listen on. (Ignored)
+	 * @param ip
+	 *            The host address for the service to listen on. Empty = all
+	 *            interfaces. (Ignored)
+	 * @param timeoutCheckInterval
+	 *            How often (in seconds) to check for timeouts. (Ignored)
+	 * @param maxRetiredJobs
+	 *            How many retired jobs to retain. (Ignored)
+	 * @param secondsBeforeFree
+	 *            Time to wait before freeing. (Ignored)
 	 */
-	public static final class Configuration {
-		private @NotNull List<@Valid Machine> machines;
-
-		@TCPPort
-		private int port;
-
-		@IPAddress(nullOK = true, emptyOK = true)
-		private String ip;
-
-		@Positive
-		private double timeoutCheckInterval;
-
-		@Positive
-		private int maxRetiredJobs;
-
-		@Positive
-		private int secondsBeforeFree;
-
-		/** @return The machines to manage. */
-		public List<Machine> getMachines() {
-			return machines;
-		}
-
-		void setMachines(List<Machine> machines) {
-			this.machines = copy(machines);
-		}
-
-		/** @return The port for the service to listen on. (Ignored) */
-		public int getPort() {
-			return port;
-		}
-
-		void setPort(int port) {
-			this.port = port;
-		}
-
-		/**
-		 * @return The host address for the service to listen on. Empty = all
-		 *         interfaces. (Ignored)
-		 */
-		public String getIp() {
-			return ip;
-		}
-
-		void setIp(String ip) {
-			this.ip = ip;
-		}
-
-		/** @return How often (in seconds) to check for timeouts. (Ignored) */
-		public double getTimeoutCheckInterval() {
-			return timeoutCheckInterval;
-		}
-
-		void setTimeoutCheckInterval(double timeoutCheckInterval) {
-			this.timeoutCheckInterval = timeoutCheckInterval;
-		}
-
-		/** @return How many retired jobs to retain. (Ignored) */
-		public int getMaxRetiredJobs() {
-			return maxRetiredJobs;
-		}
-
-		void setMaxRetiredJobs(int maxRetiredJobs) {
-			this.maxRetiredJobs = maxRetiredJobs;
-		}
-
-		/** @return Time to wait before freeing. (Ignored) */
-		public int getSecondsBeforeFree() {
-			return secondsBeforeFree;
-		}
-
-		void setSecondsBeforeFree(int secondsBeforeFree) {
-			this.secondsBeforeFree = secondsBeforeFree;
-		}
-
+	public record Configuration(//
+			@JsonProperty("machines") @NotNull @Valid List<Machine> machines,
+			@JsonProperty("port") @TCPPort int port,
+			@JsonProperty("ip") @IPAddress(nullOK = true, emptyOK = true) //
+			String ip, //
+			@JsonProperty("timeout-check-interval") @Positive //
+			double timeoutCheckInterval,
+			@JsonProperty("max-retired-jobs") @Positive int maxRetiredJobs,
+			@JsonProperty("seconds-before-free") @Positive //
+			double secondsBeforeFree) {
 		@Override
 		public String toString() {
 			return new StringBuilder("Configuration(").append("machines=")
@@ -541,7 +490,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			throws IOException, JsonParseException, JsonMappingException {
 		var cfg = mapper.readValue(file, Configuration.class);
 		validate(cfg);
-		return cfg.getMachines();
+		return cfg.machines();
 	}
 
 	/**
@@ -563,7 +512,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			throws IOException, JsonParseException, JsonMappingException {
 		var cfg = mapper.readValue(stream, Configuration.class);
 		validate(cfg);
-		return cfg.getMachines();
+		return cfg.machines();
 	}
 
 	/**
@@ -654,7 +603,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	public void loadMachineDefinitions(Configuration configuration) {
 		try (var sql = new Updates()) {
-			for (var machine : configuration.getMachines()) {
+			for (var machine : configuration.machines()) {
 				sql.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}
@@ -678,6 +627,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	public static class InsertFailedException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -4930512416142843777L;
 
 		InsertFailedException(String table) {
@@ -719,7 +669,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			int machineId) {
 		var bmpIds = new HashMap<BMPCoords, Integer>();
 		machine.bmpIPs.forEach((bmp, ip) -> sql.makeBMP
-				.key(machineId, ip, bmp.cabinet, bmp.frame)
+				.key(machineId, ip, bmp.cabinet(), bmp.frame())
 				.ifPresent(id -> bmpIds.put(bmp, id)));
 		return bmpIds;
 	}
@@ -737,12 +687,12 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 					machine.deadBoards.contains(triad) ? "dead" : "live",
 					triad);
 			sql.makeBoard
-					.key(machineId, addr, bmpID, phys.b, triad.x, triad.y,
-							triad.z, root.getX(), root.getY(),
+					.key(machineId, addr, bmpID, phys.b(), triad.x(), triad.y(),
+							triad.z(), root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
-			maxX = max(maxX, triad.x * TRIAD_CHIP_SIZE);
-			maxY = max(maxY, triad.y * TRIAD_CHIP_SIZE);
+			maxX = max(maxX, triad.x() * TRIAD_CHIP_SIZE);
+			maxY = max(maxY, triad.y() * TRIAD_CHIP_SIZE);
 		}
 		/*
 		 * Note that even in single-board setups, the max coordinates are as if

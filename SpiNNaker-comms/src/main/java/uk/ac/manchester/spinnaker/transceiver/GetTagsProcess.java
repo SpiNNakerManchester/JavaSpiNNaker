@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 
 /** Gets IP tags and reverse IP tags. */
-class GetTagsProcess extends TxrxProcess {
+final class GetTagsProcess extends TxrxProcess {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -60,10 +60,10 @@ class GetTagsProcess extends TxrxProcess {
 	Collection<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {
 		var tags = new TreeMap<Integer, Tag>();
-		for (var tag : range(0, getTagCount(connection)).toArray()) {
-			sendGet(new IPTagGet(connection.getChip(), tag), info -> {
-				if (info.isInUse()) {
-					tags.put(tag, info.getTag());
+		for (var tagId : range(0, getTagCount(connection)).toArray()) {
+			sendGet(new IPTagGet(connection.getChip(), tagId), info -> {
+				if (info.inUse()) {
+					tags.put(tagId, info.tag());
 				}
 			});
 		}
@@ -74,7 +74,7 @@ class GetTagsProcess extends TxrxProcess {
 	private int getTagCount(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {
 		var tagInfo = retrieve(new IPTagGetInfo(connection.getChip()));
-		return tagInfo.poolSize + tagInfo.fixedSize;
+		return tagInfo.poolSize() + tagInfo.fixedSize();
 	}
 
 	/**
@@ -94,10 +94,10 @@ class GetTagsProcess extends TxrxProcess {
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {
 		var tagUsages = new TreeMap<Tag, Integer>();
-		for (var tag : range(0, getTagCount(connection)).toArray()) {
-			sendGet(new IPTagGet(connection.getChip(), tag), info -> {
-				if (info.isInUse()) {
-					tagUsages.put(info.getTag(), info.count);
+		for (var tagId : range(0, getTagCount(connection)).toArray()) {
+			sendGet(new IPTagGet(connection.getChip(), tagId), info -> {
+				if (info.inUse()) {
+					tagUsages.put(info.tag(), info.count());
 				}
 			});
 		}

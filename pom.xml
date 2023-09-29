@@ -25,7 +25,7 @@ limitations under the License.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>11</maven.compiler.release>
+		<maven.compiler.release>17</maven.compiler.release>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
@@ -34,15 +34,15 @@ limitations under the License.
 
 		<junit.version>5.10.0</junit.version>
 		<junit.platform.version>1.10.0</junit.platform.version>
-		<checkstyle.version>10.12.2</checkstyle.version>
+		<checkstyle.version>10.12.3</checkstyle.version>
 		<javadoc.version>3.6.0</javadoc.version>
 		<testing.version>3.1.2</testing.version>
 
 		<slf4j.version>2.0.9</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
 
-		<spring.version>5.3.30</spring.version>
-		<spring.boot.version>2.7.16</spring.boot.version>
+		<spring.version>6.0.12</spring.version>
+		<spring.boot.version>3.1.4</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -52,9 +52,9 @@ limitations under the License.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>5.8.7</spring.security.version>
+		<spring.security.version>6.1.4</spring.security.version>
 
-		<cxf.version>3.6.2</cxf.version>
+		<cxf.version>4.0.3</cxf.version>
 		<jackson.version>2.15.2</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.43.0.0</sqlite.version>
@@ -62,7 +62,7 @@ limitations under the License.
 		<swagger.version>5.7.2</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
-		<error-prone.version>2.18.0</error-prone.version>
+		<error-prone.version>2.22.0</error-prone.version>
 		<picocli.version>4.7.5</picocli.version>
 		<mysql.version>8.1.0</mysql.version>
 		<testcontainers.version>1.19.0</testcontainers.version>
@@ -90,6 +90,13 @@ limitations under the License.
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
 				<version>${spring.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${spring.security.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -305,14 +312,14 @@ limitations under the License.
 				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>${spring.security.version}</version>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>6.0.0</version>
 			</dependency>
 			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>8.0.1</version>
+			    <groupId>jakarta.mail</groupId>
+			    <artifactId>jakarta.mail-api</artifactId>
+			    <version>2.1.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -358,7 +365,7 @@ limitations under the License.
 			<dependency>
 				<groupId>jakarta.validation</groupId>
 				<artifactId>jakarta.validation-api</artifactId>
-				<version>2.0.2</version>
+				<version>3.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.errorprone</groupId>
@@ -386,6 +393,11 @@ limitations under the License.
 				<artifactId>system-lambda</artifactId>
 				<version>1.2.1</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>8.0.1.Final</version>
 			</dependency>
 			<dependency>
                 <groupId>org.rauschig</groupId>
@@ -443,6 +455,9 @@ limitations under the License.
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.11.0</version>
+					<configuration>
+						<parameters>true</parameters>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -581,10 +596,8 @@ limitations under the License.
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
 							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
-							<!-- This isn't modular so javadoc 14 gets snooty
-							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
-							-->
 							<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
+							<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 							<link>https://errorprone.info/api/latest/</link>
 							<link>https://www.slf4j.org/api/</link>
 							<link>https://www.joda.org/joda-time/apidocs/</link>
@@ -696,9 +709,9 @@ limitations under the License.
 					<version>1.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.sling</groupId>
+					<groupId>io.leonard.maven.plugins</groupId>
 					<artifactId>jspc-maven-plugin</artifactId>
-					<version>2.3.4</version>
+					<version>4.1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>
@@ -873,6 +886,7 @@ limitations under the License.
 		<module>SpiNNaker-nmpimodel</module>
 		<module>SpiNNaker-nmpiexec</module>
 		<module>SpiNNaker-proxy</module>
+		<module>keycloak-management-client</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
@@ -1089,13 +1103,6 @@ limitations under the License.
 			</build>
 		</profile>
 		<profile>
-			<!-- This module needs Java 11 to build at all. -->
-			<id>KeycloakClient</id>
-			<modules>
-				<module>keycloak-management-client</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>CheckForFIXME</id>
 			<!-- See https://stackoverflow.com/q/18129106/301832-->
 			<build>
@@ -1133,33 +1140,6 @@ limitations under the License.
 			</build>
 		</profile>
 		<profile>
-			<id>Java17extras</id>
-			<activation>
-				<jdk>[17,)</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<configuration>
-							<links>
-								<!-- Repeat these -->
-								<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
-								<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
-								<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
-								<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
-								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
-								<link>https://errorprone.info/api/latest/</link>
-								<link>https://www.slf4j.org/api/</link>
-								<link>https://www.joda.org/joda-time/apidocs/</link>
-							</links>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
 			<id>ErrorProne</id>
 			<build>
 				<pluginManagement>
@@ -1180,6 +1160,8 @@ limitations under the License.
 													 documentation for getters, and its suggested replacement
 													 is terrible. -->
 												-Xep:MissingSummary:OFF
+												<!-- Broken in 2.17.0 only -->
+												-Xep:StatementSwitchToExpressionSwitch:OFF
 											</arg>
 										</compilerArgs>
 										<annotationProcessorPaths>
@@ -1208,6 +1190,8 @@ limitations under the License.
 													 documentation for getters, and its suggested replacement
 													 is terrible. -->
 												-Xep:MissingSummary:OFF
+												<!-- Broken in 2.17.0 only -->
+												-Xep:StatementSwitchToExpressionSwitch:OFF
 											</arg>
 										</compilerArgs>
 										<annotationProcessorPaths>

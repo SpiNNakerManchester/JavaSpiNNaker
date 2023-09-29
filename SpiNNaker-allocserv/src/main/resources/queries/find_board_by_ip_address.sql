@@ -12,6 +12,10 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- --------------------------------------------------------------------------
+-- Locate a board (using a full set of coordinates) based on the IP address
+-- of its ethernet chip.
+
 SELECT
 	-- IDs
 	boards.board_id,

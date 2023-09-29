@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        java: [14]
+        java: [17]
     env:
       SITE_DIR: target/staging
 

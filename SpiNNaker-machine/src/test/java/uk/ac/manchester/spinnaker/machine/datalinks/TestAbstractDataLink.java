@@ -62,8 +62,7 @@ public class TestAbstractDataLink {
 
 		@Override
 		public boolean equals(Object obj) {
-			return (obj instanceof AbstractDataLink)
-					&& sameAs((AbstractDataLink) obj);
+			return (obj instanceof AbstractDataLink link) && sameAs(link);
 		}
 	}
 }

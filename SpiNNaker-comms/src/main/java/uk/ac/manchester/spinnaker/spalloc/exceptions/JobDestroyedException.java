@@ -15,8 +15,11 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
+import java.io.Serial;
+
 /** Thrown when the job was destroyed while waiting for it to become ready. */
 public class JobDestroyedException extends Exception {
+	@Serial
 	private static final long serialVersionUID = 6082560756316191208L;
 
 	/**

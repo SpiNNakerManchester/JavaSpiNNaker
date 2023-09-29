@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
@@ -443,7 +443,7 @@ public class Chip implements HasChipLocation {
 		if (this == obj) {
 			return true;
 		}
-		return (obj instanceof Chip) && isNull(difference((Chip) obj));
+		return (obj instanceof Chip c) && isNull(difference(c));
 	}
 
 	/**

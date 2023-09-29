@@ -21,7 +21,8 @@ package uk.ac.manchester.spinnaker.messages.eieio;
  *
  * @author Donal Fellows
  */
-public interface EIEIOCommand {
+public sealed interface EIEIOCommand
+		permits EIEIOCommandID, CustomEIEIOCommand {
 	/**
 	 * Get the encoded ID number of the command.
 	 *

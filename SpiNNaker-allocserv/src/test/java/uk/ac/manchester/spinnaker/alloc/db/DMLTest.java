@@ -271,7 +271,7 @@ class DMLTest extends SimpleDBTestBase {
 	@Test
 	void issueChangeForJob() {
 		assumeWritable(c);
-		try (var u = c.update(issueChangeForJob)) {
+		try (var u = c.update(ISSUE_CHANGE_FOR_JOB)) {
 			c.transaction(() -> {
 				assertEquals(
 						List.of("job_id", "board_id", "from_state", "to_state",

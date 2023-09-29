@@ -694,9 +694,9 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public String getHostname()
 			throws IOException, SpallocServerException, InterruptedException {
-		for (Connection c : getConnections()) {
-			if (c.getChip().onSameChipAs(ZERO_ZERO)) {
-				return c.getHostname();
+		for (var c : getConnections()) {
+			if (c.chip().onSameChipAs(ZERO_ZERO)) {
+				return c.hostname();
 			}
 		}
 		return null;
@@ -883,7 +883,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			switch (curState) {
 			case READY:
 				log.info("job:{} is now ready", id);
-				// Now in the ready state!
+				// Now in the ready state! Done successfully.
 				return;
 			case QUEUED:
 				log.info("job:{} has been queued by the spalloc server", id);
@@ -915,7 +915,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			throw new IllegalStateException(
 					"received null instead of machine location");
 		}
-		return result.getPhysical();
+		return result.physical();
 	}
 
 	/**

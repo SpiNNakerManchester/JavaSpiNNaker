@@ -18,11 +18,13 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static java.time.Instant.now;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,6 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
+@Execution(SAME_THREAD)
 class LocalAuthTest extends TestSupport {
 
 	private TestAPI authEngine;
@@ -56,10 +59,12 @@ class LocalAuthTest extends TestSupport {
 		try (var c = db.getConnection()) {
 			c.transaction(() -> {
 				// 90k seconds is more than one day
-				try (var setLocked =
-						c.update("UPDATE user_info SET locked = :locked, "
-								+ "last_fail_timestamp = :time - 90000 "
-								+ "WHERE user_id = :user_id")) {
+				try (var setLocked = c.update("""
+						UPDATE user_info
+						SET locked = :locked,
+							last_fail_timestamp = :time - 90000
+						WHERE user_id = :user_id
+						""")) {
 					setLocked.call(true, now(), USER);
 				}
 			});
@@ -69,8 +74,11 @@ class LocalAuthTest extends TestSupport {
 
 		try (var c = db.getConnection()) {
 			assertEquals(false, c.transaction(() -> {
-				try (var q = c.query("SELECT locked FROM user_info "
-						+ "WHERE user_id = :user_id")) {
+				try (var q = c.query("""
+						SELECT locked
+						FROM user_info
+						WHERE user_id = :user_id
+						""")) {
 					return q.call1(Row.bool("locked"), USER).orElseThrow();
 				}
 			}));

@@ -19,8 +19,6 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -30,6 +28,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 
 import com.google.errorprone.annotations.RestrictedApi;
 
+import jakarta.servlet.http.HttpServletRequest;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 
 /**

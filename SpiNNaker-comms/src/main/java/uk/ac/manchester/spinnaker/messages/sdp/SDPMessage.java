@@ -17,7 +17,7 @@ package uk.ac.manchester.spinnaker.messages.sdp;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 
@@ -105,11 +105,9 @@ public class SDPMessage extends SpinnakerRequest {
 	 *
 	 * @param buffer
 	 *            The buffer holding the message.
-	 * @param isBMP
-	 *            Whether we're really talking to a BMP
 	 */
-	public SDPMessage(ByteBuffer buffer, boolean isBMP) {
-		super(new SDPHeader(buffer, isBMP));
+	public SDPMessage(ByteBuffer buffer) {
+		super(new SDPHeader(buffer));
 		databuf = buffer.duplicate();
 	}
 
@@ -131,6 +129,6 @@ public class SDPMessage extends SpinnakerRequest {
 		} else {
 			buffer = allocate(0);
 		}
-		return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		return readOnly(buffer);
 	}
 }

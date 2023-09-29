@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @see FloodFillStart
  * @see FloodFillEnd
  */
-public class FloodFillData extends SCPRequest<EmptyResponse> {
+public final class FloodFillData extends SCPRequest<EmptyResponse> {
 	private static final int FFD_NNP_FORWARD_RETRY =
 			(FORWARD_LINKS << BYTE3) | ((DELAY | DATA_RESEND) << BYTE2);
 
@@ -80,7 +80,7 @@ public class FloodFillData extends SCPRequest<EmptyResponse> {
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			MemoryLocation baseAddress, byte[] data, int offset, int length) {
 		super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
-				keyBase(blockNumber, length), baseAddress.address,
+				keyBase(blockNumber, length), baseAddress.address(),
 				wrap(data, offset, length));
 	}
 
@@ -100,7 +100,7 @@ public class FloodFillData extends SCPRequest<EmptyResponse> {
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
 			MemoryLocation baseAddress, ByteBuffer data) {
 		super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
-				keyBase(blockNumber, data.remaining()), baseAddress.address,
+				keyBase(blockNumber, data.remaining()), baseAddress.address(),
 				data);
 	}
 

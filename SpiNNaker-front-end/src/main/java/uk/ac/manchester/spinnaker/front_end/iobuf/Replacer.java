@@ -39,7 +39,7 @@ import org.slf4j.Logger;
  *
  * @author Donal Fellows
  */
-class Replacer {
+final class Replacer {
 	private static final Logger log = getLogger(Replacer.class);
 
 	private static final Pattern FORMAT_SEQUENCE =
@@ -149,14 +149,9 @@ class Replacer {
 		}
 	}
 
-	private static final class Replacement {
-		private final String match;
-
-		private final int index;
-
+	private record Replacement(String match, int index) {
 		private Replacement(MatchResult m, int index) {
-			match = m.group();
-			this.index = index;
+			this(m.group(), index);
 		}
 
 		void replace(StringBuilder buffer, String[] parts) {

@@ -43,7 +43,7 @@ public class CollabPermissions {
 	 * @param delete
 	 *            Whether to give permission
 	 */
-	public void setDelete(final boolean delete) {
+	void setDelete(boolean delete) {
 		this.delete = delete;
 	}
 
@@ -63,7 +63,7 @@ public class CollabPermissions {
 	 * @param update
 	 *            Whether permission is given
 	 */
-	public void setUpdate(final boolean update) {
+	void setUpdate(boolean update) {
 		this.update = update;
 	}
 }

@@ -16,11 +16,8 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Thread.interrupted;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BLACKLIST_BLANK;
@@ -32,6 +29,8 @@ import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_ADDR;
 import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_LEN;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.crc;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.fill;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.wordAsBuffer;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,12 +39,11 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-
 import com.google.errorprone.annotations.CheckReturnValue;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
@@ -1520,8 +1518,7 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 		interrupted();
 
 		// Prepare the boot data
-		var data = allocate(BMP_BOOT_SECTOR_SIZE);
-		data.order(LITTLE_ENDIAN);
+		var data = alloc(BMP_BOOT_SECTOR_SIZE);
 		data.put(readBMPMemory(bmp, board, BMP_BOOT_SECTOR_ADDR,
 				BMP_BOOT_SECTOR_SIZE));
 		fill(data, BMP_BOOT_BLACKLIST_OFFSET, SF_BL_LEN, BLACKLIST_BLANK);
@@ -1535,11 +1532,11 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 		}
 
 		// Prepare the serial flash update; must read part of the data first
-		var sfData = new byte[SF_BL_ADDR.address + SF_BL_LEN];
-		readSerialFlash(bmp, board, NULL, SF_BL_ADDR.address).get(sfData, 0,
-				SF_BL_ADDR.address);
+		var sfData = new byte[SF_BL_ADDR.address() + SF_BL_LEN];
+		readSerialFlash(bmp, board, NULL, SF_BL_ADDR.address()).get(sfData, 0,
+				SF_BL_ADDR.address());
 		data.position(BMP_BOOT_BLACKLIST_OFFSET);
-		data.get(sfData, SF_BL_ADDR.address, SF_BL_LEN);
+		data.get(sfData, SF_BL_ADDR.address(), SF_BL_LEN);
 
 		data.position(0); // Prep for write
 

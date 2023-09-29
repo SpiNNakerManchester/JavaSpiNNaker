@@ -28,7 +28,7 @@ public class DockerCreateResponse {
 	private List<String> warnings;
 
 	/**
-	 * @return the id
+	 * @return the ID
 	 */
 	public String getId() {
 		return id;

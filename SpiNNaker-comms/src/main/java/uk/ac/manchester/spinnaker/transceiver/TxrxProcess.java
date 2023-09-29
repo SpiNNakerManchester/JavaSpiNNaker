@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.Serial;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -467,16 +468,7 @@ public class TxrxProcess {
 	 * States that a particular request failed with a particular exception. The
 	 * request should not be retried once this has been generated.
 	 */
-	// TODO make into a record once on a new enough language profile
-	private static class Failure {
-		private final SCPRequest<?> req;
-
-		private final Exception exn;
-
-		Failure(SCPRequest<?> req, Exception exn) {
-			this.req = req;
-			this.exn = exn;
-		}
+	private record Failure(SCPRequest<?> req, Exception exn) {
 	}
 
 	/**
@@ -567,12 +559,9 @@ public class TxrxProcess {
 				log.debug("Sending request {} with connection {}", request,
 						connection);
 				switch (request.sdpHeader.getFlags()) {
-				case REPLY_EXPECTED:
-				case REPLY_EXPECTED_NO_P2P:
+				case REPLY_EXPECTED, REPLY_EXPECTED_NO_P2P ->
 					connection.send(requestData, seq);
-					break;
-				default:
-					connection.send(requestData);
+				default -> connection.send(requestData);
 				}
 				nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 			}
@@ -731,8 +720,7 @@ public class TxrxProcess {
 		 */
 		private <T extends CheckOKResponse> Request<T> registerRequest(
 				SCPRequest<T> request, Consumer<T> callback) {
-			if (request instanceof ConnectionAwareMessage) {
-				ConnectionAwareMessage cam = (ConnectionAwareMessage) request;
+			if (request instanceof ConnectionAwareMessage cam) {
 				cam.setConnection(connection);
 			}
 			synchronized (outstandingRequests) {
@@ -940,6 +928,7 @@ public class TxrxProcess {
 	 * Indicates that a request timed out.
 	 */
 	static class SendTimedOutException extends SocketTimeoutException {
+		@Serial
 		private static final long serialVersionUID = -7911020002602751941L;
 
 		/**
@@ -959,6 +948,7 @@ public class TxrxProcess {
 	 * Indicates that a request could not be sent.
 	 */
 	static class SendFailedException extends IOException {
+		@Serial
 		private static final long serialVersionUID = -5555562816486761027L;
 
 		/**
@@ -982,6 +972,7 @@ public class TxrxProcess {
 	 */
 	static class DuplicateSequenceNumberException
 			extends IllegalThreadStateException {
+		@Serial
 		private static final long serialVersionUID = -4033792283948201730L;
 
 		DuplicateSequenceNumberException() {

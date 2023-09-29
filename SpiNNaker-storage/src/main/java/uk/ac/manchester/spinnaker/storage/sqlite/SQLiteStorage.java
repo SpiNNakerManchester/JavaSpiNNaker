@@ -17,18 +17,26 @@ package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COOKIE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_PROXY_INFORMATION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.HEADER;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PROXY_URI;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SPALLOC;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SPALLOC_URI;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.sqlite.SQLiteException;
 
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
-import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DatabaseAPI;
+import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
@@ -39,20 +47,21 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *            The type of the connections used inside this class. Probably the
  *            type of the concrete subclass of this class.
  */
-abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
-	private static final Logger log = getLogger(SQLiteConnectionManager.class);
+abstract sealed class SQLiteStorage<APIType extends DatabaseAPI>
+		implements DatabaseAPI
+		permits SQLiteBufferStorage, SQLiteDataSpecStorage {
+	private static final Logger log = getLogger(SQLiteStorage.class);
 
 	@GuardedBy("itself")
-	private final ConnectionProvider<APIType> connProvider;
+	private final DatabaseEngine<APIType> db;
 
 	/**
-	 * @param connProvider
+	 * @param db
 	 *            The source of database connections.
 	 * @see Connection
 	 */
-	protected SQLiteConnectionManager(
-			ConnectionProvider<APIType> connProvider) {
-		this.connProvider = connProvider;
+	protected SQLiteStorage(DatabaseEngine<APIType> db) {
+		this.db = db;
 	}
 
 	/**
@@ -71,7 +80,7 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 			Object... args) throws SQLException {
 		statement.clearParameters();
 		int idx = 1;
-		for (Object o : args) {
+		for (var o : args) {
 			statement.setObject(idx, o);
 			idx++;
 		}
@@ -131,8 +140,8 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	 */
 	final <T> T callR(CallWithResult<T> call, String actionDescription)
 			throws StorageException {
-		synchronized (connProvider) {
-			try (var conn = connProvider.getConnection()) {
+		synchronized (db) {
+			try (var conn = db.getConnection()) {
 				startTransaction(conn);
 				try {
 					var result = call.call(conn);
@@ -160,8 +169,8 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	 */
 	final void callV(CallWithoutResult call, String actionDescription)
 			throws StorageException {
-		synchronized (connProvider) {
-			try (var conn = connProvider.getConnection()) {
+		synchronized (db) {
+			try (var conn = db.getConnection()) {
 				startTransaction(conn);
 				try {
 					call.call(conn);
@@ -187,20 +196,79 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 				return;
 			} catch (SQLiteException e) {
 				switch (e.getResultCode()) {
-				case SQLITE_BUSY:
-				case SQLITE_BUSY_RECOVERY:
-				case SQLITE_BUSY_SNAPSHOT:
-				case SQLITE_BUSY_TIMEOUT:
-					if (log.isDebugEnabled()) {
-						log.debug("database busy; trying to relock");
-					}
+				case SQLITE_BUSY, SQLITE_BUSY_RECOVERY, SQLITE_BUSY_SNAPSHOT,
+						SQLITE_BUSY_TIMEOUT -> {
+					log.debug("database busy; trying to relock");
 					code = e.getResultCode();
-					continue;
-				default:
-					throw e;
+				}
+				default -> throw e;
 				}
 			}
 		}
 		throw new SQLiteException("database very busy", code);
+	}
+
+	@Override
+	public ProxyInformation getProxyInformation() throws StorageException {
+		return callR(conn -> getProxyInfo(conn), "get proxy");
+	}
+
+	/**
+	 * Get the proxy information from a database.
+	 *
+	 * @param conn
+	 *            The connection to read the data from.
+	 * @return The proxy information.
+	 * @throws SQLException
+	 *             If there is an error reading the database.
+	 * @throws Unreachable
+	 *             If a bad row is retrieved; should be unreachable if SQL is
+	 *             synched to code.
+	 */
+	@SuppressWarnings("checkstyle:InnerAssignment") // Rule is misapplying
+	private ProxyInformation getProxyInfo(Connection conn) throws SQLException {
+		String spallocUri = null;
+		String jobUri = null;
+		var headers = new HashMap<String, String>();
+		var cookies = new HashMap<String, String>();
+
+		try (var s = conn.prepareStatement(GET_PROXY_INFORMATION);
+				var rs = s.executeQuery()) {
+			while (rs.next()) {
+				var kind = rs.getString("kind");
+				var name = rs.getString("name");
+				var value = rs.getString("value");
+				if (kind == null || name == null || value == null) {
+					continue;
+				}
+				switch (kind) {
+				case SPALLOC -> {
+					switch (name) {
+					case SPALLOC_URI -> spallocUri = value;
+					case PROXY_URI -> jobUri = value;
+					default -> throw new Unreachable();
+					}
+				}
+
+				case COOKIE -> cookies.put(name, value);
+				case HEADER -> headers.put(name, value);
+				default -> throw new Unreachable();
+				}
+			}
+		}
+		// If we don't have all pieces of info, we can't talk to the proxy
+		if (spallocUri == null || jobUri == null) {
+			return null;
+		}
+		return new ProxyInformation(spallocUri, jobUri, headers, cookies);
+	}
+
+	/** Thrown when an unreachable state is reached. */
+	private static class Unreachable extends IllegalStateException {
+		private static final long serialVersionUID = 1L;
+
+		Unreachable() {
+			super("unreachable reached");
+		}
 	}
 }

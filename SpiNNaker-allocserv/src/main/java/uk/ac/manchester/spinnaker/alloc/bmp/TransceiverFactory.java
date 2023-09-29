@@ -15,20 +15,17 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.util.Objects.hash;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,8 @@ import org.springframework.stereotype.Service;
 import com.google.errorprone.annotations.RestrictedApi;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
@@ -68,29 +67,7 @@ public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
-	private static final class Key {
-		final String machine;
-
-		final BMPCoords bmp;
-
-		Key(String machine, BMPCoords bmp) {
-			this.machine = machine;
-			this.bmp = bmp;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o instanceof Key) {
-				var other = (Key) o;
-				return machine.equals(other.machine) && bmp.equals(other.bmp);
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return hash(machine, bmp);
-		}
+	private record Key(String machine, BMPCoords bmp) {
 	}
 
 	@GuardedBy("itself")
@@ -130,18 +107,19 @@ public class TransceiverFactory
 			}
 		} catch (TransceiverFactoryException e) {
 			var t = e.getCause();
-			if (t instanceof IOException) {
-				throw (IOException) t;
-			} else if (t instanceof SpinnmanException) {
-				throw (SpinnmanException) t;
-			} else if (t instanceof InterruptedException) {
-				throw (InterruptedException) t;
+			if (t instanceof IOException ioe) {
+				throw ioe;
+			} else if (t instanceof SpinnmanException se) {
+				throw se;
+			} else if (t instanceof InterruptedException ie) {
+				throw ie;
 			}
 			throw e;
 		}
 	}
 
 	private static class TransceiverFactoryException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = 2102592240724419836L;
 
 		TransceiverFactoryException(String msg, Exception e) {
@@ -213,7 +191,7 @@ public class TransceiverFactory
 					throw e;
 				}
 				log.error("failed to connect to BMP; will ping and retry", e);
-				log.debug("ping result was {}", ping(data.ipAddress));
+				log.debug("ping result was {}", ping(data.ipAddress()));
 			}
 		}
 	}

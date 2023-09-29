@@ -15,8 +15,11 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.net.InetAddress.getByAddress;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.COMMAND_FIELD;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.CORE_MASK;
+import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.PORT_SHIFT;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagFieldDefinitions.THREE_BITS_MASK;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagCommand.GET;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
@@ -25,8 +28,10 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.TagID;
+import uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime;
 import uk.ac.manchester.spinnaker.messages.model.TagDescription;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
@@ -37,7 +42,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_iptag()} in {@code scamp-cmd.c} (or {@code bmp_cmd.c},
  * if sent to a BMP).
  */
-public class IPTagGet extends SCPRequest<IPTagGet.Response>
+public final class IPTagGet extends SCPRequest<IPTagGet.Response>
 		implements ConnectionAwareMessage {
 	private final int tag;
 
@@ -67,26 +72,52 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response>
 
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException, UnknownHostException {
+			throws UnexpectedResponseCodeException {
+		requireNonNull(conn,
+				"can only parse a tag description after the message has "
+						+ "been sent on a connection");
 		return new Response(buffer);
 	}
 
+	private static final int IPV4_BYTES = 4;
+
+	private static final int MAC_BYTES = 6;
+
 	/** An SCP response to a request for an IP tags. */
 	protected final class Response
-			extends PayloadedResponse<TagDescription, UnknownHostException> {
+			extends PayloadedResponse<TagDescription, RuntimeException> {
 		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException, UnknownHostException {
+				throws UnexpectedResponseCodeException {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
 		}
 
 		@Override
-		protected TagDescription parse(ByteBuffer buffer)
-				throws UnknownHostException {
-			requireNonNull(conn,
-					"can only describe a tag fully after the message has "
-							+ "been sent on a connection");
-			return new TagDescription(buffer, sdpHeader.getSource(),
-					conn.getRemoteIPAddress(), tag);
+		protected TagDescription parse(ByteBuffer buffer) {
+			var ipBytes = new byte[IPV4_BYTES];
+			buffer.get(ipBytes);
+
+			var macAddress = new byte[MAC_BYTES];
+			buffer.get(macAddress);
+
+			int port = Short.toUnsignedInt(buffer.getShort());
+			var timeout = IPTagTimeOutWaitTime.get(buffer.getShort());
+			short flags = buffer.getShort();
+			int count = buffer.getInt();
+			int rxPort = Short.toUnsignedInt(buffer.getShort());
+			int y = Byte.toUnsignedInt(buffer.get());
+			int x = Byte.toUnsignedInt(buffer.get());
+			int pp = Byte.toUnsignedInt(buffer.get()); // processor+port
+
+			try {
+				return new TagDescription(count, flags, getByAddress(ipBytes),
+						macAddress, port, rxPort,
+						new CoreLocation(x, y, pp & CORE_MASK),
+						(pp >>> PORT_SHIFT) & THREE_BITS_MASK, timeout,
+						sdpHeader.getSource().asChipLocation(),
+						conn.getRemoteIPAddress(), tag);
+			} catch (UnknownHostException unexpectedException) {
+				return null;
+			}
 		}
 	}
 }

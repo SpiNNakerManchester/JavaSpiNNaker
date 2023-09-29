@@ -65,30 +65,28 @@ import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLA
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.ORGANISATION;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.MAIN_URI;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_URI;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_URI;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_PATH;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PATH;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +104,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
@@ -330,6 +330,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static class AdminException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = 8401068773689159840L;
 
 		AdminException(String message) {
@@ -338,6 +339,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static final class NoUser extends AdminException {
+		@Serial
 		private static final long serialVersionUID = 6430674580385445089L;
 
 		private NoUser() {
@@ -346,6 +348,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static final class NoGroup extends AdminException {
+		@Serial
 		private static final long serialVersionUID = -4593707687103047377L;
 
 		private NoGroup() {
@@ -354,6 +357,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static final class NoBoard extends AdminException {
+		@Serial
 		private static final long serialVersionUID = -4017368969526085002L;
 
 		private NoBoard() {
@@ -640,8 +644,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView adjustGroupQuota(int id, int delta,
 			RedirectAttributes attrs) {
 		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -> {
-			log.info("adjusted quota for group {} to {}", aq.getName(),
-					aq.getQuota());
+			log.info("adjusted quota for group {} to {}", aq.name(),
+					aq.quota());
 			// addNotice(attrs, "quota updated");
 		});
 		return redirectTo(showGroupInfoUrl(id), attrs);
@@ -713,7 +717,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("saving changes to a board blacklist")
 	public ResponseEntity<Void> blacklistSave(BlacklistData bldata) {
-
 		if (bldata.isPresent()) {
 			try {
 				var blacklist = bldata.getParsedBlacklist();
@@ -731,9 +734,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("fetching a live board blacklist from the machine")
 	public BlacklistData blacklistFetch(int boardId, int bmpId) {
-
 		log.info("pulling blacklist from board {}", boardId);
-		BlacklistData data = new BlacklistData();
+		var data = new BlacklistData();
 		data.setBoardId(boardId);
 		data.setBmpId(bmpId);
 		machineController.pullBlacklist(boardId, bmpId).ifPresentOrElse(bl -> {

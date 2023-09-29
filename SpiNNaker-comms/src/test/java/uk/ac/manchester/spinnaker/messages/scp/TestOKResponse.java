@@ -15,10 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_DPRI;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
@@ -27,6 +24,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_E
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.utils.ByteBufferUtils;
 
 class TestOKResponse {
 	private static final short PADDING = 0;
@@ -60,7 +58,7 @@ class TestOKResponse {
 		short srcXYShort = (short) (srcX << 8 | srcY);
 
 		short seq = 103;
-		var bytes = allocate(14).order(LITTLE_ENDIAN).putShort(PADDING);
+		var bytes = ByteBufferUtils.alloc(14).putShort(PADDING);
 		bytes.putShort(flagTagShort).putShort(destSourceShort);
 		bytes.putShort(destXYShort).putShort(srcXYShort);
 		bytes.putShort(result).putShort(seq).flip();
@@ -93,7 +91,7 @@ class TestOKResponse {
 		short srcXYShort = (short) (srcX << 8 | srcY);
 
 		short seq = 103;
-		var bytes = allocate(14).order(LITTLE_ENDIAN).putShort(PADDING);
+		var bytes = ByteBufferUtils.alloc(14).putShort(PADDING);
 		bytes.putShort(flagTagShort).putShort(destSourceShort);
 		bytes.putShort(destXYShort).putShort(srcXYShort);
 		bytes.putShort(result).putShort(seq).flip();

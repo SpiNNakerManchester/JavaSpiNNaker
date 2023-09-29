@@ -37,7 +37,7 @@ import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.Router
 /**
  * Represents a set of diagnostic information available from a chip router.
  */
-public class RouterDiagnostics {
+public final class RouterDiagnostics {
 	/** The "mon" part of the control register. */
 	public final int mon;
 

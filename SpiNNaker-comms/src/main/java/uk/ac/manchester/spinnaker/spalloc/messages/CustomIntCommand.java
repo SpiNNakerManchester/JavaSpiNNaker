@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.storage;
+package uk.ac.manchester.spinnaker.spalloc.messages;
 
 /**
- * Storage interface that knows how to get information about the proxy system
- * from the DB.
- *
- * @author Donal Fellows
+ * A custom command not part of the standard protocol. <em>These are not
+ * guaranteed to be accepted by any spalloc service.</em>
  */
-public interface ProxyAwareStorage extends DatabaseAPI {
+public abstract non-sealed class CustomIntCommand extends Command<Integer> {
 	/**
-	 * Get the proxy information from the database.
+	 * Create a command.
 	 *
-	 * @return The proxy information, or {@code null} if none defined. When
-	 *         there is no proxy, only direct connections to SpiNNaker are
-	 *         possible.
-	 * @throws StorageException
-	 *             If anything goes wrong.
+	 * @param name
+	 *            The name of the command.
+	 * @param args
+	 *            The integer positional arguments.
 	 */
-	ProxyInformation getProxyInformation() throws StorageException;
+	public CustomIntCommand(String name, int... args) {
+		super(name);
+		for (int arg : args) {
+			addArg(arg);
+		}
+	}
 }

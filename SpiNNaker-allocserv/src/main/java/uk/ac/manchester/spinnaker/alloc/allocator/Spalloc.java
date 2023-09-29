@@ -32,10 +32,10 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.chip;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
-import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
+import java.io.Serial;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,7 +50,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -362,7 +361,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<Job> getJob(Permit permit, int id) {
 		return executeRead(conn -> getJob(id, conn).map(j -> (Job) j));
 	}
@@ -374,7 +372,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<JobDescription> getJobInfo(Permit permit, int id) {
 		return executeRead(conn -> {
 			try (var s = conn.query(GET_JOB);
@@ -563,7 +560,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		var quotaDetails = collab.get();
 
 		var job = execute(conn -> createJobInGroup(
-				owner, quotaDetails.collabId, descriptor, machineName,
+				owner, quotaDetails.collabId(), descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
 		// On failure to get job, just return; shouldn't happen as quota checked
 		// earlier, but just in case!
@@ -572,7 +569,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId,
-				quotaDetails.quotaUnits);
+				quotaDetails.quotaUnits());
 
 		// Return the job created
 		return job;
@@ -626,17 +623,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	private class BoardLocated {
-		int boardId;
-
-		int z;
-
-		BoardLocated(Row row) {
-			boardId = row.getInt("board_id");
-			z = row.getInt("z");
-		}
-	}
-
 	/**
 	 * Resolve a machine name and {@link HasBoardCoords} to a board identifier.
 	 *
@@ -655,20 +641,26 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 */
 	private Integer locateBoard(Connection conn, String machineName,
 			HasBoardCoords b, boolean requireTriadRoot) {
+		record BoardLocated(int boardId, int z) {
+			BoardLocated(Row row) {
+				this(row.getInt("board_id"), row.getInt("z"));
+			}
+		}
+
 		try (var findTriad = conn.query(FIND_BOARD_BY_NAME_AND_XYZ);
 				var findPhysical = conn.query(FIND_BOARD_BY_NAME_AND_CFB);
 				var findIP = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 			if (nonNull(b.triad)) {
 				return findTriad.call1(BoardLocated::new,
-						machineName, b.triad.x, b.triad.y, b.triad.z)
+						machineName, b.triad.x(), b.triad.y(), b.triad.z())
 						.filter(board -> !requireTriadRoot || board.z == 0)
 						.map(board -> board.boardId)
 						.orElseThrow(() -> new IllegalArgumentException(
 								NO_BOARD_MSG));
 			} else if (nonNull(b.physical)) {
 				return findPhysical.call1(
-						BoardLocated::new, machineName, b.physical.c,
-								b.physical.f, b.physical.b)
+						BoardLocated::new, machineName, b.physical.c(),
+								b.physical.f(), b.physical.b())
 						.filter(board -> !requireTriadRoot || board.z == 0)
 						.map(board -> board.boardId)
 						.orElseThrow(() -> new IllegalArgumentException(
@@ -723,8 +715,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		if (isNull(description)) {
 			description = "<null>";
 		}
-		if (coreLocation instanceof HasCoreLocation) {
-			var loc = (HasCoreLocation) coreLocation;
+		if (coreLocation instanceof HasCoreLocation loc) {
 			description += format(" (at core %d of chip %s)", loc.getP(),
 					loc.asChipLocation());
 		} else if (nonNull(coreLocation)) {
@@ -734,14 +725,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		return description;
 	}
 
-	private class Problem {
-		int boardId;
-
-		Integer jobId;
-
+	private record Problem(int boardId, Integer jobId) {
 		Problem(Row row) {
-			boardId = row.getInt("board_id");
-			jobId = row.getInt("job_id");
+			this(row.getInt("board_id"), row.getInt("job_id"));
 		}
 	}
 
@@ -784,28 +770,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		});
 	}
 
-	private class Reported {
-		int boardId;
-
-		int x;
-
-		int y;
-
-		int z;
-
-		String address;
-
-		int numReports;
-
+	private record Reported(int boardId, int x, int y, int z, String address,
+			int numReports) {
 		Reported(Row row) {
-			boardId = row.getInt("board_id");
-			x = row.getInt("x");
-			y = row.getInt("y");
-			z = row.getInt("z");
-			address = row.getString("address");
-			numReports = row.getInt("numReports");
+			this(row.getInt("board_id"), row.getInt("x"), row.getInt("y"),
+					row.getInt("z"), row.getString("address"),
+					row.getInt("numReports"));
 		}
-
 	}
 
 	/**
@@ -847,7 +818,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				board2, row.getEnum("dir_2", Direction.class));
 	}
 
-	private class MachineImpl implements Machine {
+	private final class MachineImpl implements Machine {
 		private final int id;
 
 		private final boolean inService;
@@ -903,14 +874,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 		}
 
+		private BoardLocation boardLoc(Row row) {
+			return new BoardLocationImpl(row, this);
+		}
+
 		@Override
 		public Optional<BoardLocation> getBoardByChip(HasChipLocation chip) {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByGlobalChip)) {
-				return conn.transaction(false,
-						() -> findBoard.call1(
-								row -> new BoardLocationImpl(row, this), id,
-								chip.getX(), chip.getY()));
+				return conn.transaction(false, () -> findBoard
+						.call1(this::boardLoc, id, chip.getX(), chip.getY()));
 			}
 		}
 
@@ -920,9 +893,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByPhysicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(
-								row -> new BoardLocationImpl(row, this), id,
-								coords.c, coords.f, coords.b));
+						() -> findBoard.call1(this::boardLoc, id, coords.c(),
+								coords.f(), coords.b()));
 			}
 		}
 
@@ -932,9 +904,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByLogicalCoords)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(
-								row -> new BoardLocationImpl(row, this), id,
-								coords.x, coords.y, coords.z));
+						() -> findBoard.call1(this::boardLoc, id, coords.x(),
+								coords.y(), coords.z()));
 			}
 		}
 
@@ -943,9 +914,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var findBoard = conn.query(findBoardByIPAddress)) {
 				return conn.transaction(false,
-						() -> findBoard.call1(
-								row -> new BoardLocationImpl(row, this), id,
-								address));
+						() -> findBoard.call1(this::boardLoc, id, address));
 			}
 		}
 
@@ -953,8 +922,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public String getRootBoardBMPAddress() {
 			try (var conn = getConnection();
 					var rootBMPaddr = conn.query(GET_ROOT_BMP_ADDRESS)) {
-				return conn.transaction(false, () -> rootBMPaddr.call1(
-						string("address"), id).orElse(null));
+				return conn
+						.transaction(false,
+								() -> rootBMPaddr.call1(string("address"), id))
+						.orElse(null);
 			}
 		}
 
@@ -998,7 +969,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				}
 			}
 			try (var conn = getConnection();
-					var boardNumbers = conn.query(getDeadLinks)) {
+					var boardNumbers = conn.query(GET_DEAD_LINKS)) {
 				var downLinks = conn.transaction(false, () -> boardNumbers
 						.call(Spalloc::makeDownLinkFromRow, id));
 				synchronized (Spalloc.this) {
@@ -1052,10 +1023,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public String getBMPAddress(BMPCoords bmp) {
 			try (var conn = getConnection();
 					var bmpAddr = conn.query(GET_BMP_ADDRESS)) {
-				return conn.transaction(false,
-						() -> bmpAddr
-								.call1(string("address"), id, bmp.getCabinet(),
-										bmp.getFrame()).orElse(null));
+				return conn
+						.transaction(false,
+								() -> bmpAddr.call1(string("address"), id,
+										bmp.cabinet(), bmp.frame()))
+						.orElse(null);
 			}
 		}
 
@@ -1064,17 +1036,15 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (var conn = getConnection();
 					var boardNumbers = conn.query(GET_BMP_BOARD_NUMBERS)) {
 				return conn.transaction(false,
-						() -> boardNumbers
-								.call(integer("board_num"), id,
-										bmp.getCabinet(), bmp.getFrame()));
+						() -> boardNumbers.call(integer("board_num"), id,
+								bmp.cabinet(), bmp.frame()));
 			}
 		}
 
 		@Override
 		public boolean equals(Object other) {
 			// Equality is defined exactly by the database ID
-			return (other instanceof MachineImpl)
-					&& (id == ((MachineImpl) other).id);
+			return (other instanceof MachineImpl m) && (id == m.id);
 		}
 
 		@Override
@@ -1191,7 +1161,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		final Update insertReport = conn.update(INSERT_BOARD_REPORT);
 
-		final Query getReported = conn.query(getReportedBoards);
+		final Query getReported = conn.query(GET_REPORTED_BOARDS);
 
 		final Update setFunctioning = conn.update(SET_FUNCTIONING_FIELD);
 
@@ -1236,24 +1206,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		void chip(ReportedBoard board) {
 			b.format("\tBoard for job (%d) chip %s\n", //
-					id, board.chip);
+					id, board.chip());
 		}
 
 		void triad(ReportedBoard board) {
 			b.format("\tBoard for job (%d) board (X:%d,Y:%d,Z:%d)\n", //
-					id, board.x, board.y, board.z);
+					id, board.x(), board.y(), board.z());
 		}
 
 		void phys(ReportedBoard board) {
 			b.format(
 					"\tBoard for job (%d) board "
 							+ "[Cabinet:%d,Frame:%d,Board:%d]\n", //
-					id, board.cabinet, board.frame, board.board);
+					id, board.cabinet(), board.frame(), board.board());
 		}
 
 		void ip(ReportedBoard board) {
 			b.format("\tBoard for job (%d) board (IP: %s)\n", //
-					id, board.address);
+					id, board.address());
 		}
 
 		void issue(int issueId) {
@@ -1487,9 +1457,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var result = q.transaction(
 						() -> reportIssue(report, permit, email, q));
 				emailSender.sendServiceMail(email);
-				for (var m : report.boards.stream()
+				for (var m : report.boards().stream()
 						.map(b -> q.getNamedMachine.call1(
-								r -> r.getInt("machine_id"), b.machine, true))
+								r -> r.getInt("machine_id"), b.machine(), true))
 						.collect(toSet())) {
 					if (m.isPresent()) {
 						epochs.machineChanged(m.get());
@@ -1525,13 +1495,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		 */
 		private String reportIssue(IssueReportRequest report, Permit permit,
 				EmailBuilder email, BoardReportSQL q) throws ReportRollbackExn {
-			email.header(report.issue, report.boards.size(), permit.name);
+			email.header(report.issue(), report.boards().size(), permit.name);
 			int userId = getUser(q.getConnection(), permit.name)
 					.orElseThrow(() -> new ReportRollbackExn(
 							"no such user: %s", permit.name));
-			for (var board : report.boards) {
+			for (var board : report.boards()) {
 				addIssueReport(q, getJobBoardForReport(q, board, email),
-						report.issue, userId, email);
+						report.issue(), userId, email);
 			}
 			return takeBoardsOutOfService(q, email).map(acted -> {
 				email.footer(acted);
@@ -1555,46 +1525,47 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		private int getJobBoardForReport(BoardReportSQL q, ReportedBoard board,
 				EmailBuilder email) throws ReportRollbackExn {
 			Problem r;
-			if (nonNull(board.chip)) {
+			if (nonNull(board.chip())) {
 				r = q.findBoardByChip
-						.call1(Problem::new, id, root, board.chip.getX(),
-								board.chip.getY())
-						.orElseThrow(() -> new ReportRollbackExn(board.chip));
+						.call1(Problem::new, id, root, board.chip().getX(),
+								board.chip().getY())
+						.orElseThrow(() -> new ReportRollbackExn(board.chip()));
 				email.chip(board);
-			} else if (nonNull(board.x)) {
+			} else if (nonNull(board.x())) {
 				r = q.findBoardByTriad
-						.call1(Problem::new, machineId, board.x, board.y,
-								board.z)
+						.call1(Problem::new, machineId, board.x(), board.y(),
+								board.z())
 						.orElseThrow(() -> new ReportRollbackExn(
-								"triad (%s,%s,%s) not in machine", board.x,
-								board.y, board.z));
+								"triad (%s,%s,%s) not in machine", board.x(),
+								board.y(), board.z()));
 				if (isNull(r.jobId) || id != r.jobId) {
 					throw new ReportRollbackExn(
-							"triad (%s,%s,%s) not allocated to job %d", board.x,
-							board.y, board.z, id);
+							"triad (%s,%s,%s) not allocated to job %d",
+							board.x(), board.y(), board.z(), id);
 				}
 				email.triad(board);
-			} else if (nonNull(board.cabinet)) {
+			} else if (nonNull(board.cabinet())) {
 				r = q.findBoardPhys
-						.call1(Problem::new, machineId, board.cabinet,
-								board.frame, board.board)
+						.call1(Problem::new, machineId, board.cabinet(),
+								board.frame(), board.board())
 						.orElseThrow(() -> new ReportRollbackExn(
 								"physical board [%s,%s,%s] not in machine",
-								board.cabinet, board.frame, board.board));
+								board.cabinet(), board.frame(), board.board()));
 				if (isNull(r.jobId) || id != r.jobId) {
 					throw new ReportRollbackExn(
 							"physical board [%s,%s,%s] not allocated to job %d",
-							board.cabinet, board.frame, board.board, id);
+							board.cabinet(), board.frame(), board.board(), id);
 				}
 				email.phys(board);
-			} else if (nonNull(board.address)) {
-				r = q.findBoardNet.call1(Problem::new, machineId, board.address)
+			} else if (nonNull(board.address())) {
+				r = q.findBoardNet
+						.call1(Problem::new, machineId, board.address())
 						.orElseThrow(() -> new ReportRollbackExn(
-								"board at %s not in machine", board.address));
+								"board at %s not in machine", board.address()));
 				if (isNull(r.jobId) || id != r.jobId) {
 					throw new ReportRollbackExn(
 							"board at %s not allocated to job %d",
-							board.address, id);
+							board.address(), id);
 				}
 				email.ip(board);
 			} else {
@@ -1666,7 +1637,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public boolean equals(Object other) {
 			// Equality is defined exactly by the database ID
-			return (other instanceof JobImpl) && (id == ((JobImpl) other).id);
+			return (other instanceof JobImpl j) && (id == j.id);
 		}
 
 		@Override
@@ -1906,6 +1877,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	static class PartialJobException extends IllegalStateException {
+		@Serial
 		private static final long serialVersionUID = 2997856394666135483L;
 
 		PartialJobException() {
@@ -1929,6 +1901,7 @@ class ReportRollbackExn extends RuntimeException {
 }
 
 abstract class GroupsException extends RuntimeException {
+	@Serial
 	private static final long serialVersionUID = 6607077117924279611L;
 
 	GroupsException(String message) {
@@ -1941,6 +1914,7 @@ abstract class GroupsException extends RuntimeException {
 }
 
 class NoSuchGroupException extends GroupsException {
+	@Serial
 	private static final long serialVersionUID = 5193818294198205503L;
 
 	@FormatMethod
@@ -1950,6 +1924,7 @@ class NoSuchGroupException extends GroupsException {
 }
 
 class MultipleGroupsException extends GroupsException {
+	@Serial
 	private static final long serialVersionUID = 6284332340565334236L;
 
 	@FormatMethod

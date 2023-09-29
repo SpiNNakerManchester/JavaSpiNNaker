@@ -26,7 +26,8 @@ import java.sql.Statement;
  *
  * @author Donal Fellows
  */
-class OTStatement extends OTWrapper implements Statement {
+sealed class OTStatement extends OTWrapper
+		implements Statement permits OTPrepared {
 	private final Statement s;
 
 	OTStatement(OneThread ot, Statement s) {

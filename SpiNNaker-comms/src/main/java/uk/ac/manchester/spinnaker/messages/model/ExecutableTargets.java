@@ -21,15 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 
 /** Encapsulate the binaries and cores on which to execute them. */
-public class ExecutableTargets {
+public final class ExecutableTargets {
 	private final Map<@NotBlank String, @Valid CoreSubsets> targets;
 
 	@PositiveOrZero

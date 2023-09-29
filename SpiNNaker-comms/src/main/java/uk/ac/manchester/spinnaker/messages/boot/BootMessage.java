@@ -25,7 +25,8 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * A message used for booting the board. Note that boot messages are big endian,
  * unlike the rest of SpiNNaker.
  */
-public class BootMessage implements SerializableMessage {
+public sealed class BootMessage implements SerializableMessage
+		permits BootDataBlock, EndOfBootMessages, StartOfBootMessages {
 	private static final short BOOT_MESSAGE_VERSION = 1;
 
 	private static final int BOOT_PACKET_SIZE = 256 * WORD_SIZE;

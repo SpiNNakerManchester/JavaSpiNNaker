@@ -50,7 +50,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
-class ThrottledConnection implements Closeable {
+final class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
 
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */

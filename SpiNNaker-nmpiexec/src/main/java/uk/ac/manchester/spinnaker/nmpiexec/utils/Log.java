@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.nmpiexec.utils;
  * A very simple-minded logger.
  */
 public abstract class Log {
-
 	/**
 	 * Avoid instantiation.
 	 */
@@ -33,7 +32,7 @@ public abstract class Log {
 	 * @param message
 	 *            The message to write.
 	 */
-	public static void log(final String message) {
+	public static void log(String message) {
 		System.err.println(message);
 	}
 
@@ -43,7 +42,7 @@ public abstract class Log {
 	 * @param exception
 	 *            The exception to write.
 	 */
-	public static void log(final Throwable exception) {
+	public static void log(Throwable exception) {
 		exception.printStackTrace(System.err);
 	}
 }

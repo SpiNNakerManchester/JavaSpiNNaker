@@ -16,14 +16,13 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.Math.min;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.Constants.NEXT_MESSAGES_COUNT;
 import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.START_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.alloc;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
@@ -87,7 +86,7 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 */
 	private static ByteBuffer allocateWords(int numDataWords, int overhead) {
 		int numWords = min(SDP_PAYLOAD_WORDS, numDataWords + overhead);
-		return allocate(numWords * WORD_SIZE).order(LITTLE_ENDIAN);
+		return alloc(numWords * WORD_SIZE);
 	}
 
 	/**

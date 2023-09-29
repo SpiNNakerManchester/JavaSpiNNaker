@@ -63,7 +63,7 @@ public class JobState {
 	 * @param state
 	 *            The state to set
 	 */
-	public void setState(final int state) {
+	void setState(int state) {
 		this.state = state;
 	}
 
@@ -82,7 +82,7 @@ public class JobState {
 	 * @param power
 	 *            True for on, False for off
 	 */
-	public void setPower(final Boolean power) {
+	void setPower(Boolean power) {
 		this.power = power;
 	}
 
@@ -101,7 +101,7 @@ public class JobState {
 	 * @param keepAlive
 	 *            The number of seconds to set
 	 */
-	public void setKeepAlive(final double keepAlive) {
+	void setKeepAlive(double keepAlive) {
 		this.keepAlive = keepAlive;
 	}
 
@@ -120,7 +120,7 @@ public class JobState {
 	 * @param reason
 	 *            The reason to set.
 	 */
-	public void setReason(final String reason) {
+	void setReason(String reason) {
 		this.reason = reason;
 	}
 }

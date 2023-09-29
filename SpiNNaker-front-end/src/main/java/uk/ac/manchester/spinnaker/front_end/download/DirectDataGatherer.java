@@ -49,7 +49,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @see RecordingRegionDataGatherer
  */
 @Deprecated
-public class DirectDataGatherer extends DataGatherer {
+public final class DirectDataGatherer extends DataGatherer {
 	/** The number of memory regions in the DSE model. */
 	private static final int MAX_MEM_REGIONS = 16;
 
@@ -112,9 +112,9 @@ public class DirectDataGatherer extends DataGatherer {
 			map = coreTableCache.computeIfAbsent(core, __ -> new HashMap<>());
 		}
 		// Individual cores are only ever handled from one thread
-		var buffer = map.get(vertex.getBase());
+		var buffer = map.get(vertex.base());
 		if (buffer == null) {
-			buffer = txrx.readMemory(core, vertex.getBase(),
+			buffer = txrx.readMemory(core, vertex.base(),
 					WORD_SIZE * (MAX_MEM_REGIONS + 2));
 			int word = buffer.getInt();
 			if (word != APPDATA_MAGIC_NUM) {
@@ -126,7 +126,7 @@ public class DirectDataGatherer extends DataGatherer {
 				throw new IllegalStateException(
 						format("unexpected DSE version: %08x", word));
 			}
-			map.put(vertex.getBase(), buffer);
+			map.put(vertex.base(), buffer);
 		}
 		return buffer.asIntBuffer();
 	}
@@ -135,7 +135,7 @@ public class DirectDataGatherer extends DataGatherer {
 	protected List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, InterruptedException {
 		var b = getCoreRegionTable(placement.asCoreLocation(),
-				placement.getVertex());
+				placement.vertex());
 		// TODO This is wrong because of shared regions!
 		int size = b.get(regionID + 1) - b.get(regionID);
 		return List.of(new Region(placement, regionID,

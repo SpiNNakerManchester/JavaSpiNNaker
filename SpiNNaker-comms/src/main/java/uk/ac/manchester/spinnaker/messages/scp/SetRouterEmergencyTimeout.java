@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code reinjection_set_emergency_timeout_sdp()} in
  * {@code extra_monitor_support.c}.
  */
-public class SetRouterEmergencyTimeout
+public final class SetRouterEmergencyTimeout
 		extends ReinjectorRequest<EmptyResponse> {
 	/**
 	 * @param core

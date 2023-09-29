@@ -15,8 +15,19 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
-import java.nio.ByteBuffer;
 import static java.nio.ByteBuffer.wrap;
+import static java.util.Objects.nonNull;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_REGION_POINTER;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
+
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,16 +37,6 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_START_ADDRESS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_REGION_POINTER;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.SET_START_ADDRESS;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
-
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.RegionInfo;
@@ -46,17 +47,17 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
+public final class SQLiteDataSpecStorage extends SQLiteStorage<DSEStorage>
 		implements DSEStorage {
 	/**
 	 * Create an instance.
 	 *
-	 * @param connectionProvider
-	 *            The connection provider that will be asked for how to talk SQL
-	 *            to the database.
+	 * @param db
+	 *            The database engine that will be asked for how to talk SQL to
+	 *            the database.
 	 */
-	public SQLiteDataSpecStorage(DSEDatabaseEngine connectionProvider) {
-		super(connectionProvider);
+	public SQLiteDataSpecStorage(DSEDatabaseEngine db) {
+		super(db);
 	}
 
 	@Override
@@ -79,11 +80,11 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 	}
 
 	private static EthernetImpl sanitise(Ethernet ethernet) {
-		if (!(ethernet instanceof EthernetImpl)) {
-			throw new IllegalArgumentException("can only list cores"
-					+ " for ethernets described by this class");
+		if (ethernet instanceof EthernetImpl eth) {
+			return eth;
 		}
-		return (EthernetImpl) ethernet;
+		throw new IllegalArgumentException("can only list cores"
+				+ " for ethernets described by this class");
 	}
 
 	@Override
@@ -143,39 +144,42 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 
 	private static HashMap<Integer, RegionInfo> getRegionPointersAndContent(
 			Connection conn, CoreLocation xyp) throws SQLException {
-		HashMap<Integer, RegionInfo> results =
-				new HashMap<Integer, RegionInfo>();
 		try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
 			// x, y, p
 			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
 			try (var rs = s.executeQuery()) {
+				var results = new HashMap<Integer, RegionInfo>();
 				while (rs.next()) {
-					ByteBuffer content = null;
-					if (rs.getBytes("content") != null) {
-						content =
-								wrap(rs.getBytes("content")).asReadOnlyBuffer();
-					}
-					var info = new RegionInfo(
-							content, new MemoryLocation(rs.getInt("pointer")));
-					results.put(rs.getInt("region_num"), info);
+					results.put(rs.getInt("region_num"),
+							new RegionInfo(
+									wrapIfNotNull(rs.getBytes("content")),
+									new MemoryLocation(rs.getInt("pointer"))));
 				}
+				return results;
 			}
-			return results;
 		}
+	}
+
+	private static ByteBuffer wrapIfNotNull(byte[] buffer) {
+		if (nonNull(buffer)) {
+			return readOnly(wrap(buffer));
+		}
+		return null;
 	}
 
 	@Override
 	public void setStartAddress(CoreLocation xyp,
 			MemoryLocation start) throws StorageException {
-		callV(conn -> setStartAddres(conn, xyp, start),
+		callV(conn -> setStartAddress(conn, xyp, start),
 				"saving data loading metadata");
 	}
 
-	private static void setStartAddres(Connection conn,
+	private static void setStartAddress(Connection conn,
 			CoreLocation xyp, MemoryLocation start) throws SQLException {
 		try (var s = conn.prepareStatement(SET_START_ADDRESS)) {
 			// start_address, x, y, p
-			setArguments(s, start.address, xyp.getX(), xyp.getY(), xyp.getP());
+			setArguments(s, start.address(), xyp.getX(), xyp.getY(),
+					xyp.getP());
 			s.executeUpdate();
 		}
 	}
@@ -246,11 +250,8 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 
 		@Override
 		public boolean equals(Object other) {
-			if (!(other instanceof EthernetImpl)) {
-				return false;
-			}
-			var b = (EthernetImpl) other;
-			return location == b.location;
+			return (other instanceof EthernetImpl b)
+					&& (location == b.location);
 		}
 
 		@Override

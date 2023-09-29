@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
+import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.GET_SERIAL;
@@ -30,7 +31,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,8 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
@@ -54,6 +52,7 @@ import org.springframework.stereotype.Service;
 import com.google.errorprone.annotations.RestrictedApi;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.annotation.PostConstruct;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
@@ -224,7 +223,7 @@ public class BMPController extends DatabaseAwareBean {
 		for (var b : bmps) {
 			var worker = workers.get(b);
 			if (worker != null) {
-				scheduler.schedule(() -> worker.run(), Instant.now());
+				scheduler.schedule(worker::run, now());
 			} else {
 				log.error("Could not find worker for BMP {}", b);
 			}
@@ -236,7 +235,8 @@ public class BMPController extends DatabaseAwareBean {
 		void act() throws ProcessException, IOException, InterruptedException;
 	}
 
-	private abstract class Request {
+	private abstract sealed class Request
+			permits BoardRequest, PowerRequest {
 		final int bmpId;
 
 		private int numTries = 0;
@@ -462,15 +462,15 @@ public class BMPController extends DatabaseAwareBean {
 				List<PowerChange> powerChanges) {
 			super(bmpId);
 			for (var change : powerChanges) {
-				if (change.power) {
-					powerOnBoards.add(new BMPBoard(change.boardNum));
+				if (change.power()) {
+					powerOnBoards.add(new BMPBoard(change.boardNum()));
 				} else {
-					powerOffBoards.add(new BMPBoard(change.boardNum));
+					powerOffBoards.add(new BMPBoard(change.boardNum()));
 				}
-				change.offLinks.stream().forEach(link ->
-						linkRequests.add(new Link(change.boardNum, link)));
-				changeIds.add(change.changeId);
-				boardToId.put(change.boardNum, change.boardId);
+				change.offLinks().stream().forEach(link ->
+						linkRequests.add(new Link(change.boardNum(), link)));
+				changeIds.add(change.changeId());
+				boardToId.put(change.boardNum(), change.boardId);
 			}
 			this.jobId = jobId;
 			this.from = from;
@@ -687,7 +687,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		private Integer getBoardId(BMPBoard board) {
-			return boardToId.get(board.board);
+			return boardToId.get(board.board());
 		}
 	}
 
@@ -858,20 +858,11 @@ public class BMPController extends DatabaseAwareBean {
 				throws InterruptedException {
 			return bmpAction(() -> {
 				switch (op) {
-				case WRITE_BL:
-					writeBlacklist(controller);
-					break;
-				case READ_BL:
-					readBlacklist(controller);
-					break;
-				case GET_SERIAL:
-					readSerial(controller);
-					break;
-				case READ_TEMP:
-					readTemps(controller);
-					break;
-				default:
-					throw new IllegalArgumentException();
+				case WRITE_BL -> writeBlacklist(controller);
+				case READ_BL -> readBlacklist(controller);
+				case GET_SERIAL -> readSerial(controller);
+				case READ_TEMP ->  readTemps(controller);
+				default -> throw new IllegalArgumentException();
 				}
 				epochs.blacklistChanged(boardId);
 				epochs.machineChanged(machineId);
@@ -1000,34 +991,20 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
-	private class PowerChange {
-		final Integer changeId;
-
-		final int jobId;
-
-		final Integer boardId;
-
-		final Integer boardNum;
-
-		final boolean power;
-
-		final JobState from;
-
-		final JobState to;
-
-		final List<Direction> offLinks;
-
+	private record PowerChange(Integer changeId, int jobId, Integer boardId,
+			Integer boardNum, boolean power, JobState from, JobState to,
+			List<Direction> offLinks) {
 		PowerChange(Row row) {
-			changeId = row.getInteger("change_id");
-			jobId = row.getInt("job_id");
-			boardId = row.getInteger("board_id");
-			boardNum = row.getInteger("board_num");
-			power = row.getBoolean("power");
-			from = row.getEnum("from_state", JobState.class);
-			to = row.getEnum("to_state", JobState.class);
-			offLinks = List.of(Direction.values()).stream().filter(
-					link -> !row.getBoolean(link.columnName)).collect(
-							Collectors.toList());
+			this(row.getInteger("change_id"), //
+					row.getInt("job_id"), //
+					row.getInteger("board_id"), //
+					row.getInteger("board_num"), //
+					row.getBoolean("power"),
+					row.getEnum("from_state", JobState.class),
+					row.getEnum("to_state", JobState.class),
+					List.of(Direction.values()).stream()
+							.filter(link -> !row.getBoolean(link.columnName))
+							.collect(Collectors.toList()));
 		}
 
 		boolean isSameJob(PowerChange p) {
@@ -1099,8 +1076,8 @@ public class BMPController extends DatabaseAwareBean {
 						}
 						if (!jobChanges.isEmpty()) {
 							log.debug("Running job changes {}", jobChanges);
-							requests.add(new PowerRequest(bmpId, change.jobId,
-									change.from, change.to, jobChanges));
+							requests.add(new PowerRequest(bmpId, change.jobId(),
+									change.from(), change.to(), jobChanges));
 						}
 					}
 
@@ -1177,15 +1154,13 @@ public class BMPController extends DatabaseAwareBean {
 				throws IOException, SpinnmanException, InterruptedException;
 
 		/**
-		 * Get the last BMP exception.
+		 * Get the most recently thrown BMP processing exception.
 		 *
-		 * @return The exception.
+		 * @return Current processing exception.
 		 */
 		Throwable getBmpException();
 
-		/**
-		 * Clear the last BMP exception.
-		 */
+		/** Clear the current processing exception. */
 		void clearBmpException();
 	}
 

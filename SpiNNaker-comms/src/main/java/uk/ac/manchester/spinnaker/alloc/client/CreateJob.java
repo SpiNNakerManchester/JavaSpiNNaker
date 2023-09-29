@@ -21,14 +21,13 @@ import static java.util.Objects.nonNull;
 import java.time.Duration;
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.google.errorprone.annotations.Keep;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
@@ -327,7 +326,7 @@ public final class CreateJob {
 	 *            coordinates.
 	 */
 	public CreateJob(String machine, TriadCoords triad) {
-		board = new SpecificBoard(true, triad.x, triad.y, triad.z);
+		board = new SpecificBoard(true, triad.x(), triad.y(), triad.z());
 		machineName = machine;
 	}
 
@@ -343,7 +342,8 @@ public final class CreateJob {
 	 *            The physical coordinates of the board to request.
 	 */
 	public CreateJob(String machine, PhysicalCoords coords) {
-		this.board = new SpecificBoard(false, coords.c, coords.f, coords.b);
+		this.board =
+				new SpecificBoard(false, coords.c(), coords.f(), coords.b());
 		machineName = machine;
 	}
 

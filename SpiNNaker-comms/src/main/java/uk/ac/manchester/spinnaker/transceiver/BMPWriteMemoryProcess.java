@@ -17,9 +17,9 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.Constants;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPWriteMemory;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteBMPMemory;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -80,7 +80,7 @@ class BMPWriteMemoryProcess extends BMPCommandProcess {
 
 			@Override
 			ByteBuffer prepareSendBuffer(int chunkSize) {
-				var buffer = slice(data, offset, chunkSize);
+				var buffer = data.slice(offset, chunkSize).order(LITTLE_ENDIAN);
 				offset += chunkSize;
 				return buffer;
 			}
@@ -137,7 +137,7 @@ class BMPWriteMemoryProcess extends BMPCommandProcess {
  *
  * @author Donal Fellows
  */
-abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
+abstract class BMPWriteIterator implements Iterable<WriteBMPMemory> {
 	private final BMPBoard board;
 
 	private int sizeRemaining;
@@ -172,7 +172,7 @@ abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
 	abstract ByteBuffer prepareSendBuffer(int plannedSize);
 
 	@Override
-	public Iterator<BMPWriteMemory> iterator() {
+	public Iterator<WriteBMPMemory> iterator() {
 		return new Iterator<>() {
 			@Override
 			public boolean hasNext() {
@@ -185,10 +185,10 @@ abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
 			}
 
 			@Override
-			public BMPWriteMemory next() {
+			public WriteBMPMemory next() {
 				int chunkSize = sendBuffer.remaining();
 				try {
-					return new BMPWriteMemory(board, address, sendBuffer);
+					return new WriteBMPMemory(board, address, sendBuffer);
 				} finally {
 					address = address.add(chunkSize);
 					sizeRemaining -= chunkSize;

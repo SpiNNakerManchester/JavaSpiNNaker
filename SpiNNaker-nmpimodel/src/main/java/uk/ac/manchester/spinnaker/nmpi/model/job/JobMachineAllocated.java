@@ -35,7 +35,7 @@ public class JobMachineAllocated {
 	 * @param allocated
 	 *            Whether the job was allocated.
 	 */
-	public JobMachineAllocated(final boolean allocated) {
+	public JobMachineAllocated(boolean allocated) {
 		this.allocated = allocated;
 	}
 
@@ -54,7 +54,7 @@ public class JobMachineAllocated {
 	 * @param allocated
 	 *            The allocation status
 	 */
-	public void setAllocated(final boolean allocated) {
+	public void setAllocated(boolean allocated) {
 		this.allocated = allocated;
 	}
 }

@@ -12,6 +12,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- --------------------------------------------------------------------------
+
 WITH RECURSIVE
 	-- Name the arguments for sanity
 	args(width, height, machine_id, max_dead_boards) AS (

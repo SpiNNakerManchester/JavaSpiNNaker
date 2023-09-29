@@ -53,7 +53,7 @@ public enum EIEIOPrefix {
 	 *             if the encoded prefix encoding is unrecognised.
 	 */
 	public static EIEIOPrefix getByValue(int value) {
-		for (EIEIOPrefix p : values()) {
+		for (var p : values()) {
 			if (p.value == value) {
 				return p;
 			}

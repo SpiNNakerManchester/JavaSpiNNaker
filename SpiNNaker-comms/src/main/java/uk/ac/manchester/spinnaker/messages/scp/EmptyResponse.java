@@ -22,7 +22,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /**
  * An SCP response to a request which has an empty payload.
  */
-public class EmptyResponse extends CheckOKResponse {
+public final class EmptyResponse extends CheckOKResponse {
 	/**
 	 * Create an instance.
 	 *

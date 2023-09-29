@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
@@ -26,6 +27,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +51,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
+@Execution(SAME_THREAD)
 class MDefLoaderTest extends SimpleDBTestBase {
 	@ResultColumn("c")
 	@SingleRowResult
@@ -72,6 +75,9 @@ class MDefLoaderTest extends SimpleDBTestBase {
 	@Value("classpath:bad-board-example.json")
 	private Resource badBoard;
 
+	@Value("classpath:bad-board-example2.json")
+	private Resource badBoard2;
+
 	@Test
 	void readSingleBoardExample() throws IOException {
 		var machines = loader.readMachineDefinitions(singleBoard.getFile());
@@ -90,12 +96,22 @@ class MDefLoaderTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void readBadBoardExample() throws IOException {
+	void readBadBoardExample() {
 		var e = assertThrows(IOException.class,
 				() -> loader.readMachineDefinitions(badBoard.getFile()));
 		assertEquals(
 				"failed to validate configuration: "
 						+ "'1.2.3.4.5.not-an-ip' is a bad IPv4 address",
+				e.getMessage());
+	}
+
+	@Test
+	void readBadBoardExample2() {
+		var e = assertThrows(IOException.class,
+				() -> loader.readMachineDefinitions(badBoard2.getFile()));
+		assertEquals(
+				"failed to validate configuration: "
+						+ "'1.2.3.4.5.6.not-an-ip' is a bad IPv4 address",
 				e.getMessage());
 	}
 

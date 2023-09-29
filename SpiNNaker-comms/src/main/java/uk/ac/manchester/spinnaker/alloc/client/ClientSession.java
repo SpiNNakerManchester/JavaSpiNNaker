@@ -241,7 +241,12 @@ final class ClientSession implements Session {
 		}
 
 		private synchronized int issueCorrelationId() {
-			return correlationCounter++;
+			int i = correlationCounter++;
+			if (i < 1) {
+				correlationCounter = 1;
+				i = 0;
+			}
+			return i;
 		}
 
 		/**
@@ -308,24 +313,30 @@ final class ClientSession implements Session {
 			message.order(LITTLE_ENDIAN);
 			int code = message.getInt();
 			switch (ProxyProtocol.values()[code]) {
-			case OPEN:
-			case CLOSE:
-			case OPEN_U:
+			case OPEN, CLOSE, OPEN_U ->
+				// Response to call
 				requireNonNull(replyHandlers.remove(message.getInt()),
 						"uncorrelated response").complete(message);
-				break;
-			case MSG:
+			case MSG ->
+				// Async message from board
 				requireNonNull(channels.get(message.getInt()),
 						"unrecognised channel").receive(message);
-				break;
-			case ERR:
-				requireNonNull(replyHandlers.remove(message.getInt()),
-						"uncorrelated response")
-						.completeExceptionally(manufactureException(message));
-				break;
-			// case MSG_TO: // Never sent
-			default:
-				log.error("unexpected message code: {}", code);
+			case ERR -> {
+				// Error from call
+				int correlationId = message.getInt();
+				var exception = manufactureException(message);
+				if (correlationId < 0) {
+					// General error message
+					log.error("general failure reported by service", exception);
+				} else {
+					// Response to a particular call
+					requireNonNull(replyHandlers.remove(correlationId),
+							"uncorrelated response")
+							.completeExceptionally(exception);
+				}
+			}
+			// case MSG_TO -> // Never sent by service, only by us
+			default -> log.error("unexpected message code: {}", code);
 			}
 		}
 
@@ -419,9 +430,7 @@ final class ClientSession implements Session {
 			 *            The message off the websocket.
 			 */
 			private void receive(ByteBuffer msg) {
-				msg = msg.slice();
-				msg.order(LITTLE_ENDIAN);
-				receiveQueue.add(msg);
+				receiveQueue.add(msg.slice().order(LITTLE_ENDIAN));
 			}
 
 			/**
@@ -624,7 +633,7 @@ final class ClientSession implements Session {
 		var headerFields = conn.getHeaderFields();
 		var cookiesHeader = headerFields.get(SET_COOKIE);
 		if (cookiesHeader != null) {
-			for (String setCookie : cookiesHeader) {
+			for (var setCookie : cookiesHeader) {
 				log.debug("Cookie header: {}", setCookie);
 				var m = SESSION_ID_RE.matcher(setCookie);
 				if (m.find()) {

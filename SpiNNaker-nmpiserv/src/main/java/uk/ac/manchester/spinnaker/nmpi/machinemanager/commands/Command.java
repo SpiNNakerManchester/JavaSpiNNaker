@@ -26,7 +26,11 @@ import java.util.Map;
  * @param <A>
  *            The type of arguments.
  */
-public abstract class Command<A> {
+public abstract sealed class Command<A>
+		permits CreateJobCommand, DestroyJobCommand, GetJobMachineInfoCommand,
+		GetJobStateCommand, JobKeepAliveCommand, ListMachinesCommand,
+		NoNotifyJobCommand, NotifyJobCommand, PowerOffJobBoardsCommand,
+		PowerOnJobBoardsCommand, WhereIsCommand {
 	/** The name of the command. */
 	private final String command;
 
@@ -44,7 +48,7 @@ public abstract class Command<A> {
 	 * @param value
 	 *            The argument value; will be converted to a string
 	 */
-	protected final void addKwArg(final String key, final Object value) {
+	protected final void addKwArg(String key, Object value) {
 		kwargs.put(key, value);
 	}
 
@@ -55,8 +59,8 @@ public abstract class Command<A> {
 	 *            The arguments to add.
 	 */
 	@SafeVarargs
-	protected final void addArg(final A... values) {
-		for (final A value : values) {
+	protected final void addArg(A... values) {
+		for (var value : values) {
 			args.add(value);
 		}
 	}
@@ -67,7 +71,7 @@ public abstract class Command<A> {
 	 * @param command
 	 *            The command token.
 	 */
-	public Command(final String command) {
+	protected Command(String command) {
 		this.command = command;
 	}
 

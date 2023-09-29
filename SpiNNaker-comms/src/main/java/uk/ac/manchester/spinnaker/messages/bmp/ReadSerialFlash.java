@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.SerialFlashOp.READ;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 
@@ -32,7 +32,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * <p>
  * Calls {@code sf_read()} in {@code bmp_ssp.c}.
  */
-public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
+public final class ReadSerialFlash
+		extends BMPRequest<ReadSerialFlash.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(
@@ -50,7 +51,7 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	 *            The number of bytes to read, between 1 and 256
 	 */
 	public ReadSerialFlash(BMPBoard board, MemoryLocation address, int size) {
-		super(board, CMD_BMP_SF, address.address, validate(size), READ.value);
+		super(board, CMD_BMP_SF, address.address(), validate(size), READ.value);
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 		/** @return The data read, in a little-endian read-only buffer. */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+			return readOnly(buffer);
 		}
 	}
 }

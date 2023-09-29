@@ -111,7 +111,7 @@ public class SDPConnection extends UDPConnection<SDPMessage> {
 			throws IOException, InterruptedIOException, InterruptedException {
 		var buffer = receive(timeout);
 		buffer.getShort(); // SKIP TWO PADDING BYTES
-		return new SDPMessage(buffer, false);
+		return new SDPMessage(buffer);
 	}
 
 	/**

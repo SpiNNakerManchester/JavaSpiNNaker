@@ -22,5 +22,6 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  *
  * @author Donal Fellows
  */
-public interface EIEIOHeader extends SerializableMessage {
+public sealed interface EIEIOHeader extends SerializableMessage
+		permits EIEIOCommandMessage.Header, EIEIODataMessage.Header {
 }

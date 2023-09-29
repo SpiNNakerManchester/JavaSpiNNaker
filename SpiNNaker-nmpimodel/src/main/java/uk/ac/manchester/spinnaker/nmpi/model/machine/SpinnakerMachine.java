@@ -20,7 +20,9 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsFirst;
 import static java.util.Objects.nonNull;
 
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -29,75 +31,47 @@ import java.util.Objects;
  */
 public class SpinnakerMachine
 		implements Serializable, Comparable<SpinnakerMachine> {
-
-	/**
-	 * Serial version UID.
-	 */
+	/** Serial version UID. */
+	@Serial
 	private static final long serialVersionUID = -2247744763327978524L;
 
-	/**
-	 * The number of parts that make up a machine description as a string.
-	 */
+	/** The number of parts that make up a machine description as a string. */
 	private static final int N_PARTS = 6;
 
-	/**
-	 * Part of the string that is the name of the machine.
-	 */
+	/** Part of the string that is the name of the machine. */
 	private static final int MACHINE_NAME_PART = 0;
 
-	/**
-	 * Part of the string that is the version of the machine.
-	 */
+	/** Part of the string that is the version of the machine. */
 	private static final int VERSION_PART = 1;
 
-	/**
-	 * Part of the string that is the width of the machine.
-	 */
+	/** Part of the string that is the width of the machine. */
 	private static final int WIDTH_PART = 2;
 
-	/**
-	 * Part of the string that is the height of the machine.
-	 */
+	/** Part of the string that is the height of the machine. */
 	private static final int HEIGHT_PART = 3;
 
-	/**
-	 * Part of the string that is the number of boards in the machine.
-	 */
+	/** Part of the string that is the number of boards in the machine. */
 	private static final int N_BOARDS_PART = 4;
 
-	/**
-	 * Part of the string that is the BMP details of the machine.
-	 */
+	/** Part of the string that is the BMP details of the machine. */
 	private static final int BMP_DETAILS_PART = 5;
 
-	/**
-	 * The name of the machine.
-	 */
+	/** The name of the machine. */
 	private String machineName = null;
 
-	/**
-	 * The version of the machine.
-	 */
+	/** The version of the machine. */
 	private String version = null;
 
-	/**
-	 * The width of the machine.
-	 */
+	/** The width of the machine. */
 	private int width = 0;
 
-	/**
-	 * The height of the machine.
-	 */
+	/** The height of the machine. */
 	private int height = 0;
 
-	/**
-	 * The number of boards in the machine.
-	 */
+	/** The number of boards in the machine. */
 	private int nBoards = 0;
 
-	/**
-	 * The BMP details of the machine.
-	 */
+	/** The BMP details of the machine. */
 	private String bmpDetails = null;
 
 	/**
@@ -118,13 +92,13 @@ public class SpinnakerMachine
 	 * @throws NumberFormatException
 	 *             if one of the parts that should be numeric isn't
 	 */
-	public static SpinnakerMachine parse(final String value) {
+	public static SpinnakerMachine parse(String value) {
 		if (!value.startsWith("(") || !value.endsWith(")")) {
 			throw new IllegalArgumentException("Cannot convert string \""
 					+ value + "\" - missing start and end brackets");
 		}
 
-		final var parts = value.substring(1, value.length() - 1).split(":");
+		var parts = value.substring(1, value.length() - 1).split(":");
 		if (parts.length != N_PARTS) {
 			throw new IllegalArgumentException(
 					"Wrong number of :-separated arguments - " + parts.length
@@ -144,13 +118,12 @@ public class SpinnakerMachine
 	 */
 	@Override
 	public String toString() {
-		final var output = new StringBuilder();
+		var output = new StringBuilder();
 		// Note: List.of won't work here because things can be null and
 		// List.of doesn't allow null things
-		final var potentials = new Object[] {
-			machineName, version, bmpDetails, width, height, bmpDetails
-		};
-		for (final var potential : potentials) {
+		var potentials = Arrays.asList(machineName, version, bmpDetails, width,
+				height, bmpDetails);
+		for (var potential : potentials) {
 			if (nonNull(potential)) {
 				if (output.length() > 0) {
 					output.append(':');
@@ -177,9 +150,8 @@ public class SpinnakerMachine
 	 * @param bmpDetails
 	 *            How to contact the machine's Board Management Processor
 	 */
-	public SpinnakerMachine(final String machineName, final String version,
-			final int width, final int height, final int numBoards,
-			final String bmpDetails) {
+	public SpinnakerMachine(String machineName, String version, int width,
+			int height, int numBoards, String bmpDetails) {
 		this.machineName = machineName;
 		this.version = version;
 		this.width = width;
@@ -203,7 +175,7 @@ public class SpinnakerMachine
 	 * @param machineName
 	 *            The name of the machine
 	 */
-	public void setMachineName(final String machineName) {
+	public void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
 
@@ -222,7 +194,7 @@ public class SpinnakerMachine
 	 * @param version
 	 *            The version of the machine
 	 */
-	public void setVersion(final String version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -241,7 +213,7 @@ public class SpinnakerMachine
 	 * @param width
 	 *            The width of the machine
 	 */
-	public void setWidth(final int width) {
+	public void setWidth(int width) {
 		this.width = width;
 	}
 
@@ -260,7 +232,7 @@ public class SpinnakerMachine
 	 * @param height
 	 *            The height of the machine
 	 */
-	public void setHeight(final int height) {
+	public void setHeight(int height) {
 		this.height = height;
 	}
 
@@ -284,7 +256,7 @@ public class SpinnakerMachine
 	 * @param nBoards
 	 *            The number of boards in the machine
 	 */
-	public void setnBoards(final int nBoards) {
+	public void setnBoards(int nBoards) {
 		this.nBoards = nBoards;
 	}
 
@@ -303,7 +275,7 @@ public class SpinnakerMachine
 	 * @param bmpDetails
 	 *            The BMP details of the machine
 	 */
-	public void setBmpDetails(final String bmpDetails) {
+	public void setBmpDetails(String bmpDetails) {
 		this.bmpDetails = bmpDetails;
 	}
 
@@ -311,15 +283,11 @@ public class SpinnakerMachine
 	 * Check for equality with another machine.
 	 */
 	@Override
-	public boolean equals(final Object o) {
-		if (o instanceof SpinnakerMachine) {
-			// TODO Is this the right way to determine equality?
-			final var m = (SpinnakerMachine) o;
-			return Objects.equals(machineName, m.machineName)
-					&& Objects.equals(version, m.version);
-		} else {
-			return false;
-		}
+	public boolean equals(Object o) {
+		// TODO Is this the right way to determine equality?
+		return (o instanceof SpinnakerMachine m)
+				&& Objects.equals(machineName, m.machineName)
+				&& Objects.equals(version, m.version);
 	}
 
 	/** Null-safe string comparator. */
@@ -336,7 +304,7 @@ public class SpinnakerMachine
 	 * Compare to another machine; order by name then by version.
 	 */
 	@Override
-	public int compareTo(final SpinnakerMachine m) {
+	public int compareTo(SpinnakerMachine m) {
 		return M_COMPARE.compare(this, m);
 	}
 

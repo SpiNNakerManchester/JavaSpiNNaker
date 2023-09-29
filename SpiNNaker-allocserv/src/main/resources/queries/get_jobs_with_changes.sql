@@ -12,6 +12,12 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- --------------------------------------------------------------------------
+-- Get jobs on a machine that have changes that can be processed. This
+-- respects a machine-level policy on how long a board must be switched off
+-- before it can be switched on again, and how long a board must be switched
+-- on before it can be switched off.
+
 WITH
 	-- Arguments and current timestamp
 	args(machine_id, now) AS (

@@ -21,7 +21,6 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.IOUtils.buffer;
@@ -37,7 +36,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FI
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.bmp.SerialVector.SERIAL_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
@@ -76,15 +74,14 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
@@ -114,7 +111,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
+import uk.ac.manchester.spinnaker.messages.bmp.SetBoardLEDs;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
@@ -462,7 +459,7 @@ public class Transceiver extends UDPTransceiver
 			}
 			connections.add(createScpConnection(desc.chip, desc.hostname));
 		}
-		for (Connection conn : connections) {
+		for (var conn : connections) {
 			identifyConnection(conn);
 		}
 		scpSelector = makeConnectionSelector();
@@ -603,7 +600,7 @@ public class Transceiver extends UDPTransceiver
 		allConnections.addAll(connections);
 		// if there has been SCAMP connections given, build them
 		if (scampConnections != null) {
-			for (ConnectionDescriptor desc : scampConnections) {
+			for (var desc : scampConnections) {
 				if (desc.portNumber != null
 						&& desc.portNumber != SCP_SCAMP_PORT) {
 					log.warn("ignoring unexpected SCAMP port: {}",
@@ -612,7 +609,7 @@ public class Transceiver extends UDPTransceiver
 				connections.add(createScpConnection(desc.chip, desc.hostname));
 			}
 		}
-		for (Connection conn : connections) {
+		for (var conn : connections) {
 			identifyConnection(conn);
 		}
 		scpSelector = makeConnectionSelector();
@@ -639,33 +636,31 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private void identifyConnection(Connection conn) {
 		// locate the only boot send conn
-		if (conn instanceof BootConnection) {
+		if (conn instanceof BootConnection bc) {
 			if (bootConnection != null) {
 				throw new IllegalArgumentException(
 						"Only a single BootSender can be specified");
 			}
-			bootConnection = (BootConnection) conn;
+			bootConnection = bc;
 		}
 
 		// Locate any connections listening on a UDP port
-		if (conn instanceof UDPConnection) {
-			registerConnection((UDPConnection<?>) conn);
+		if (conn instanceof UDPConnection<?> udpc) {
+			registerConnection(udpc);
 		}
 
 		// Locate any connections that can send SDP
-		if (conn instanceof SDPConnection) {
-			sdpConnections.add((SDPConnection) conn);
+		if (conn instanceof SDPConnection sdpc) {
+			sdpConnections.add(sdpc);
 		}
 
 		// Locate any connections that can send and receive SCP
 		// If it is a BMP connection, add it here
-		if (conn instanceof BMPConnection) {
-			var bmpc = (BMPConnection) conn;
+		if (conn instanceof BMPConnection bmpc) {
 			bmpConnections.add(bmpc);
 			bmpSelectors.put(bmpc.getCoords(),
 					new SingletonConnectionSelector<>(bmpc));
-		} else if (conn instanceof SCPConnection) {
-			var scpc = (SCPConnection) conn;
+		} else if (conn instanceof SCPConnection scpc) {
 			scpConnections.add(scpc);
 			udpScpConnections.put(scpc.getRemoteIPAddress(), scpc);
 		}
@@ -713,32 +708,27 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException, InterruptedException {
 		var buffer = readMemory(chip, SYS_VARS.add(dataItem.offset),
 				dataItem.type.value);
-		switch (dataItem.type) {
-		case BYTE:
-			return Byte.toUnsignedInt(buffer.get());
-		case SHORT:
-			return Short.toUnsignedInt(buffer.getShort());
-		case INT:
-			return buffer.getInt();
-		case LONG:
-			return buffer.getLong();
-		case BYTE_ARRAY:
+		return switch (dataItem.type) {
+		case BYTE -> Byte.toUnsignedInt(buffer.get());
+		case SHORT -> Short.toUnsignedInt(buffer.getShort());
+		case INT -> buffer.getInt();
+		case LONG -> buffer.getLong();
+		case BYTE_ARRAY -> {
 			byte[] dst = (byte[]) dataItem.getDefault();
 			buffer.get(dst);
-			return dst;
-		case ADDRESS:
-			return new MemoryLocation(buffer.getInt());
-		default:
-			// Unreachable
-			throw new IllegalStateException();
+			yield dst;
 		}
+		case ADDRESS -> new MemoryLocation(buffer.getInt());
+		// Unreachable
+		default -> throw new IllegalStateException();
+		};
 	}
 
 	private ConnectionSelector<BMPConnection> bmpConnection(BMPCoords bmp) {
 		if (!bmpSelectors.containsKey(bmp)) {
 			throw new IllegalArgumentException(
-					"Unknown combination of cabinet (" + bmp.getCabinet()
-							+ ") and frame (" + bmp.getFrame() + ")");
+					"Unknown combination of cabinet (" + bmp.cabinet()
+							+ ") and frame (" + bmp.frame() + ")");
 		}
 		return bmpSelectors.get(bmp);
 	}
@@ -790,7 +780,7 @@ public class Transceiver extends UDPTransceiver
 			try {
 				var versionInfo = readBMPVersion(conn.getCoords(), conn.boards);
 				if (!BMP_NAME.equals(versionInfo.name) || !BMP_MAJOR_VERSIONS
-						.contains(versionInfo.versionNumber.majorVersion)) {
+						.contains(versionInfo.versionNumber.majorVersion())) {
 					throw new IOException(format(
 							"The BMP at %s is running %s %s which is "
 									+ "incompatible with this transceiver, "
@@ -902,8 +892,8 @@ public class Transceiver extends UDPTransceiver
 		machine = machine.rebuild();
 
 		// update the SCAMP selector with the machine
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
+		if (scpSelector instanceof MachineAware ma) {
+			ma.setMachine(machine);
 		}
 
 		/*
@@ -1108,24 +1098,7 @@ public class Transceiver extends UDPTransceiver
 	 * @return true exactly when they are compatible
 	 */
 	public static boolean isScampVersionCompatible(Version version) {
-		// The major version must match exactly
-		if (version.majorVersion != SCAMP_VERSION.majorVersion) {
-			return false;
-		}
-
-		/*
-		 * If the minor version matches, the patch version must be >= the
-		 * required version
-		 */
-		if (version.minorVersion == SCAMP_VERSION.minorVersion) {
-			return version.revision >= SCAMP_VERSION.revision;
-		}
-
-		/*
-		 * If the minor version is > than the required version, the patch
-		 * version is irrelevant
-		 */
-		return version.minorVersion > SCAMP_VERSION.minorVersion;
+		return version.compatibleWith(SCAMP_VERSION);
 	}
 
 	/**
@@ -1164,9 +1137,9 @@ public class Transceiver extends UDPTransceiver
 	private TxrxProcess simpleProcess(SDPConnection connector)
 			throws IOException {
 		// Avoid delegation of the connection if not needed
-		if (connector instanceof SCPConnection) {
-			return new TxrxProcess(new SingletonConnectionSelector<>(
-					(SCPConnection) connector), this);
+		if (connector instanceof SCPConnection scpConn) {
+			return new TxrxProcess(new SingletonConnectionSelector<>(scpConn),
+					this);
 		}
 		return new TxrxProcess(new SingletonConnectionSelector<>(
 				new DelegatingSCPConnection(connector)), this);
@@ -1803,7 +1776,7 @@ public class Transceiver extends UDPTransceiver
 	public void setLED(Collection<Integer> leds, LEDAction action,
 			BMPCoords bmp, Collection<BMPBoard> board)
 			throws IOException, ProcessException, InterruptedException {
-		call(bmp, new BMPSetLED(leds, action, board));
+		call(bmp, new SetBoardLEDs(leds, action, board));
 	}
 
 	@Override
@@ -1871,17 +1844,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new ReadSerialVector(board)).getFlashBuffer();
+		return get(bmp, new ReadSerialVector(board)).flashBuffer();
 	}
 
 	@Override
 	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException, InterruptedException {
-		var serialNumber = new int[SERIAL_LENGTH];
-		get(bmp, new ReadSerialVector(board)).getSerialNumber()
-				.get(serialNumber);
-		return format("%08x-%08x-%08x-%08x",
-				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
+		var sn = get(bmp, new ReadSerialVector(board)).serialNumber();
+		return format("%08x-%08x-%08x-%08x", //
+				sn.get(), sn.get(), sn.get(), sn.get());
 	}
 
 	@Override
@@ -1950,7 +1921,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		var serialVector = get(bmp, new ReadSerialVector(board));
-		var workingBuffer = serialVector.getFlashBuffer();
+		var workingBuffer = serialVector.flashBuffer();
 		var targetAddr = baseAddress;
 		for (var buf : sliceUp(data, FLASH_CHUNK_SIZE)) {
 			writeBMPMemory(bmp, board, workingBuffer, buf);
@@ -2688,17 +2659,18 @@ public class Transceiver extends UDPTransceiver
 		return bmpSelectors;
 	}
 
-	/** A simple description of a connnection to create. */
-	public static final class ConnectionDescriptor {
-		/** What host to talk to. */
-		private InetAddress hostname;
-
-		/** What port to talk to, or {@code null} for default. */
-		private Integer portNumber;
-
-		/** What chip to talk to. */
-		private ChipLocation chip;
-
+	/**
+	 * A simple description of a connection to create.
+	 *
+	 * @param hostname
+	 *            What host to talk to.
+	 * @param portNumber
+	 *            What port to talk to, or {@code null} for default.
+	 * @param chip
+	 *            What chip to talk to.
+	 */
+	public record ConnectionDescriptor(InetAddress hostname, Integer portNumber,
+			ChipLocation chip) {
 		/**
 		 * Create a connection descriptor.
 		 *
@@ -2709,9 +2681,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		public ConnectionDescriptor(InetAddress hostname,
 				HasChipLocation chip) {
-			this.hostname = requireNonNull(hostname);
-			this.chip = chip.asChipLocation();
-			this.portNumber = null;
+			this(requireNonNull(hostname), null, chip.asChipLocation());
 		}
 
 		/**
@@ -2726,9 +2696,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		public ConnectionDescriptor(InetAddress host, int port,
 				HasChipLocation chip) {
-			this.hostname = requireNonNull(host);
-			this.chip = chip.asChipLocation();
-			this.portNumber = port;
+			this(requireNonNull(host), (Integer) port, chip.asChipLocation());
 		}
 	}
 

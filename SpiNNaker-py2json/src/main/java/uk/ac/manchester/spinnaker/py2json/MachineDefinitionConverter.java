@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.py2json;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static jakarta.validation.Validation.byDefaultProvider;
 import static java.lang.System.exit;
-import static javax.validation.Validation.buildDefaultValidatorFactory;
 import static org.python.core.Py.getSystemState;
 import static org.python.core.Py.newString;
 import static org.python.core.PySystemState.initialize;
@@ -28,8 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import javax.validation.ValidatorFactory;
-
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
@@ -37,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.errorprone.annotations.MustBeClosed;
 
+import jakarta.validation.ValidatorFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ITypeConverter;
@@ -51,7 +51,9 @@ import picocli.CommandLine.TypeConversionException;
  */
 public class MachineDefinitionConverter implements AutoCloseable {
 	private static final ValidatorFactory VALIDATOR_FACTORY =
-			buildDefaultValidatorFactory();
+			byDefaultProvider().configure()
+					.messageInterpolator(new ParameterMessageInterpolator())
+					.buildValidatorFactory();
 
 	private PySystemState sys;
 

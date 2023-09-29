@@ -26,7 +26,6 @@ import uk.ac.manchester.spinnaker.machine.board.HasBMPLocation;
  * or a BMP location.  As such it can be interpreted as either.
  */
 public class SDPLocation implements HasCoreLocation, HasBMPLocation {
-
 	/** Shift for major in hash code. **/
 	private static final int MAJOR_SHIFT = 24;
 
@@ -51,7 +50,8 @@ public class SDPLocation implements HasCoreLocation, HasBMPLocation {
 	/**
 	 * Make an SDPLocation from a core location.
 	 *
-	 * @param core The core location to use.
+	 * @param core
+	 *            The core location to use.
 	 */
 	public SDPLocation(HasCoreLocation core) {
 		major = core.getX();
@@ -75,11 +75,14 @@ public class SDPLocation implements HasCoreLocation, HasBMPLocation {
 	}
 
 	/**
-	 * Make an SDPLocation from components.
+	 * Make an instance from components.
 	 *
-	 * @param major The first part of the location (x or cabinet).
-	 * @param minor The second part of the location (y or frame).
-	 * @param detail The third part of the location (p or board).
+	 * @param major
+	 *            The first part of the location (x or cabinet).
+	 * @param minor
+	 *            The second part of the location (y or frame).
+	 * @param detail
+	 *            The third part of the location (p or board).
 	 */
 	public SDPLocation(int major, int minor, int detail) {
 		this.major = major;
@@ -179,11 +182,8 @@ public class SDPLocation implements HasCoreLocation, HasBMPLocation {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof SDPLocation)) {
-			return false;
-		}
-		SDPLocation sdp = (SDPLocation) obj;
-		return sdp.major == major && sdp.minor == minor && sdp.detail == detail;
+		return (obj instanceof SDPLocation sdp) && (sdp.major == major)
+				&& (sdp.minor == minor) && (sdp.detail == detail);
 	}
 
 	private static class InvalidSDPHeaderUseException extends RuntimeException {

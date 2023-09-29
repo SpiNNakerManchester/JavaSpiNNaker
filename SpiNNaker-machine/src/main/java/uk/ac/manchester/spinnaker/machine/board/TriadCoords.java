@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Triad coordinates.
@@ -49,9 +50,19 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * <pre>[x:3,y:2,z:1]</pre>
  *
  * @author Donal Fellows
+ * @param x
+ *            X coordinate of triad.
+ * @param y
+ *            Y coordinate of triad.
+ * @param z
+ *            Z coordinate of triad.
  */
 @JsonDeserialize(using = TriadCoords.Deserializer.class)
-public final class TriadCoords implements Comparable<TriadCoords> {
+public record TriadCoords(//
+		@JsonProperty("x") @ValidTriadX int x,
+		@JsonProperty("y") @ValidTriadY int y,
+		@JsonProperty("z") @ValidTriadZ int z)
+		implements Comparable<TriadCoords> {
 	/** The width and height of a triad, in chips. */
 	private static final int TRIAD_CHIP_SIZE = 12;
 
@@ -63,36 +74,6 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	private static final Pattern PATTERN =
 			Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
 
-	/** X coordinate of triad. */
-	@ValidTriadX
-	public final int x;
-
-	/** Y coordinate of triad. */
-	@ValidTriadY
-	public final int y;
-
-	/** Z coordinate of triad. */
-	@ValidTriadZ
-	public final int z;
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param x
-	 *            X coordinate.
-	 * @param y
-	 *            Y coordinate.
-	 * @param z
-	 *            Z coordinate.
-	 */
-	@JsonCreator
-	public TriadCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
-			@JsonProperty("z") int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
 	/**
 	 * Create an instance from its serial form. The serial form (where the
 	 * numbers may vary) is:
@@ -103,20 +84,22 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.
+	 * @return The deserialised value.
 	 * @throws IllegalArgumentException
 	 *             If the string is not in the right form.
 	 */
 	@JsonCreator
-	public TriadCoords(String serialForm) {
+	public static TriadCoords parse(String serialForm) {
 		var m = PATTERN.matcher(serialForm);
 		if (!m.matches()) {
 			throw new IllegalArgumentException(
 					"bad argument: " + serialForm);
 		}
 		int idx = 0;
-		x = parseInt(m.group(++idx));
-		y = parseInt(m.group(++idx));
-		z = parseInt(m.group(++idx));
+		int x = parseInt(m.group(++idx));
+		int y = parseInt(m.group(++idx));
+		int z = parseInt(m.group(++idx));
+		return new TriadCoords(x, y, z);
 	}
 
 	/**
@@ -128,33 +111,18 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 		int rootX = x * TRIAD_CHIP_SIZE;
 		int rootY = y * TRIAD_CHIP_SIZE;
 		switch (z) {
-		case 1:
+		case 1 -> {
 			rootX += TRIAD_MAJOR_OFFSET;
 			rootY += TRIAD_MINOR_OFFSET;
-			break;
-		case 2:
+		}
+		case 2 -> {
 			rootX += TRIAD_MINOR_OFFSET;
 			rootY += TRIAD_MAJOR_OFFSET;
-			break;
-		case 0:
-		default:
-			break;
+		}
+		default -> {
+		}
 		}
 		return new ChipLocation(rootX, rootY);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TriadCoords) {
-			var other = (TriadCoords) obj;
-			return x == other.x && y == other.y && z == other.z;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return x * 25 + y * 5 + z;
 	}
 
 	@Override
@@ -194,32 +162,28 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 
 		@Override
 		TriadCoords deserializeObject() throws IOException {
-			Integer x = null, y = null, z = null;
+			var x = new ValueHolder<Integer>();
+			var y = new ValueHolder<Integer>();
+			var z = new ValueHolder<Integer>();
 			String name;
 			while ((name = getNextFieldName()) != null) {
 				switch (name) {
-				case "x":
-					x = requireSetOnceInt(name, x);
-					break;
-				case "y":
-					y = requireSetOnceInt(name, y);
-					break;
-				case "z":
-					z = requireSetOnceInt(name, z);
-					break;
-				default:
-					unknownProperty(name);
+				case "x" -> requireSetOnceInt(name, x);
+				case "y" -> requireSetOnceInt(name, y);
+				case "z" -> requireSetOnceInt(name, z);
+				default -> unknownProperty(name);
 				}
 			}
-			if (x == null || y == null || z == null) {
-				missingProperty("x", x, "y", y, "z", z);
+			if (x.isEmpty() || y.isEmpty() || z.isEmpty()) {
+				missingProperty("x", x.getValue(), "y", y.getValue(), "z",
+						z.getValue());
 			}
-			return new TriadCoords(x, y, z);
+			return new TriadCoords(x.getValue(), y.getValue(), z.getValue());
 		}
 
 		@Override
 		TriadCoords deserializeString(String string) {
-			return new TriadCoords(string);
+			return TriadCoords.parse(string);
 		}
 
 		@Override

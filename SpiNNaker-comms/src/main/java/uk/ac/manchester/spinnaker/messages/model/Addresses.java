@@ -17,23 +17,14 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import java.net.InetAddress;
 
-/** The IP addresses associated with a SpiNNaker board. */
-public final class Addresses {
-	// TODO convert to record in 17
-	/** The IPv4 address of the BMP. */
-	public final InetAddress bmpIPAddress;
-
-	/** The IPv4 address of the managed SpiNNaker board. */
-	public final InetAddress spinIPAddress;
-
-	/**
-	 * @param bmpIPAddress
-	 *            The IPv4 address of the BMP.
-	 * @param spinIPAddress
-	 *            The IPv4 address of the managed SpiNNaker board.
-	 */
-	public Addresses(InetAddress bmpIPAddress, InetAddress spinIPAddress) {
-		this.bmpIPAddress = bmpIPAddress;
-		this.spinIPAddress = spinIPAddress;
-	}
+/**
+ * The IP addresses associated with a SpiNNaker board.
+ *
+ * @param bmpIPAddress
+ *            The IPv4 address of the BMP.
+ * @param spinIPAddress
+ *            The IPv4 address of the managed SpiNNaker board.
+ * @author Donal Fellows
+ */
+public record Addresses(InetAddress bmpIPAddress, InetAddress spinIPAddress) {
 }

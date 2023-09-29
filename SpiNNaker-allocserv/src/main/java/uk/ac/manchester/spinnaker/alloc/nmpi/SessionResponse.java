@@ -35,12 +35,12 @@ public class SessionResponse {
 	}
 
 	/**
-	 * Sets the id.
+	 * Sets the ID.
 	 *
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -55,7 +55,7 @@ public class SessionResponse {
 	 * @hidden
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

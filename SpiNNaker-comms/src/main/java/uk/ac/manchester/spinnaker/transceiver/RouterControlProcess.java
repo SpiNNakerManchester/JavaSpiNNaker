@@ -47,7 +47,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Access to the control facilities for a set of routers. Depends on access to
  * the extra monitor cores running on those chips.
  */
-class RouterControlProcess extends TxrxProcess {
+final class RouterControlProcess extends TxrxProcess {
 	private static final int REGISTER = 4;
 
 	private static final int NUM_REGISTERS = 16;

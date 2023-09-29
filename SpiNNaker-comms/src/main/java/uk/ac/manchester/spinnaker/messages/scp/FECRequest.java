@@ -15,10 +15,10 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import static uk.ac.manchester.spinnaker.messages.Utils.wordAsBuffer;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.RUNNING_COMMAND_SDP_PORT;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.wordAsBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -31,8 +31,9 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
  * @param <T>
  *            The type of response expected.
  */
-// TODO Seal in 17
-public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
+public abstract sealed class FECRequest<T extends SCPResponse>
+		extends SCPRequest<
+				T> permits ClearIOBUF, UpdateProvenanceAndExit, UpdateRuntime {
 	/**
 	 * @param core
 	 *            Where to send the request.

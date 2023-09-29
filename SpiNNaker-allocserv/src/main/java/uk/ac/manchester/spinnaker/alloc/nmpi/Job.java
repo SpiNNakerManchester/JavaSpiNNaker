@@ -52,7 +52,7 @@ public class Job {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -71,7 +71,7 @@ public class Job {
 	 * @param collab
 	 *            the collab to set
 	 */
-	public void setCollab(final String collab) {
+	public void setCollab(String collab) {
 		this.collab = collab;
 	}
 
@@ -90,7 +90,7 @@ public class Job {
 	 * @param status
 	 *            the status to set
 	 */
-	public void setStatus(final String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -109,7 +109,7 @@ public class Job {
 	 * @param userId
 	 *            the userId to set
 	 */
-	public void setUserId(final String userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
@@ -128,7 +128,7 @@ public class Job {
 	 * @param resourceUsage
 	 *            the resourceUsage to set
 	 */
-	public void setResourceUsage(final ResourceUsage resourceUsage) {
+	public void setResourceUsage(ResourceUsage resourceUsage) {
 		this.resourceUsage = resourceUsage;
 	}
 
@@ -143,7 +143,7 @@ public class Job {
 	 * @hidden
 	 */
 	@JsonAnySetter
-	public void set(final String name, final Object value) {
+	void set(String name, Object value) {
 		// Ignore any other values
 	}
 }

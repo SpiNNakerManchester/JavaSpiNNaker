@@ -68,9 +68,8 @@ public class Icinga2CheckResult {
 	 * @param service
 	 *            The service to report on.
 	 */
-	public Icinga2CheckResult(final int exitStatus, final String pluginOutput,
-			final String performanceData, final Integer ttl, final String host,
-			final String service) {
+	public Icinga2CheckResult(int exitStatus, String pluginOutput,
+			String performanceData, Integer ttl, String host, String service) {
 		this.exitStatus = exitStatus;
 		this.pluginOutput = pluginOutput;
 		this.performanceData = performanceData;

@@ -23,14 +23,12 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * inter-board link to be off.
  *
  * @author Donal Fellows
+ * @param board
+ *            The database ID of the board that the FPGA is located on.
+ * @param link
+ *            Which link (and hence which FPGA).
  */
-public final class Link {
-	/** The database ID of the board that the FPGA is located on. */
-	private final BMPBoard board;
-
-	/** Which link (and hence which FPGA). */
-	private final Direction link;
-
+public record Link(BMPBoard board, Direction link) {
 	/**
 	 * Create a request.
 	 *
@@ -40,22 +38,11 @@ public final class Link {
 	 *            Which link (and hence which FPGA).
 	 */
 	Link(int board, Direction link) {
-		this.board = new BMPBoard(board);
-		this.link = link;
+		this(new BMPBoard(board), link);
 	}
 
 	@Override
 	public String toString() {
 		return "Link(" + board + "," + link + ":OFF)";
-	}
-
-	/** @return The database ID of the board that the FPGA is located on. */
-	public BMPBoard getBoard() {
-		return board;
-	}
-
-	/** @return Which link (and hence which FPGA). */
-	public Direction getLink() {
-		return link;
 	}
 }

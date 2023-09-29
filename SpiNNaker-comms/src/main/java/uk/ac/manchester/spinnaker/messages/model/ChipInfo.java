@@ -17,7 +17,6 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.net.InetAddress.getByAddress;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.ADDRESS;
@@ -99,6 +98,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.x_size;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -117,7 +117,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 /**
  * Represents the system variables for a chip, received from the chip SDRAM.
  */
-public class ChipInfo implements HasChipLocation {
+public final class ChipInfo implements HasChipLocation {
 	private static final byte[] NO_IP = {
 		0, 0, 0, 0
 	};
@@ -151,7 +151,7 @@ public class ChipInfo implements HasChipLocation {
 	 *            The data retrieved from SDRAM on the board.
 	 */
 	public ChipInfo(ByteBuffer systemData) {
-		this.systemData = systemData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		this.systemData = readOnly(systemData);
 
 		int links = read(links_available);
 		linksAvailable = BitSet.valueOf(new byte[] {
@@ -186,19 +186,12 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	private int read(SystemVariableDefinition var) {
-		switch (var.type) {
-		case BYTE:
-			return systemData.get(systemData.position() + var.offset);
-		case INT:
-			return systemData.getInt(systemData.position() + var.offset);
-		case SHORT:
-			return systemData.getShort(systemData.position() + var.offset);
-		case BYTE_ARRAY:
-		case LONG:
-		case ADDRESS:
-		default:
-			throw new IllegalArgumentException();
-		}
+		return switch (var.type) {
+		case BYTE -> systemData.get(systemData.position() + var.offset);
+		case INT -> systemData.getInt(systemData.position() + var.offset);
+		case SHORT -> systemData.getShort(systemData.position() + var.offset);
+		default -> throw new IllegalArgumentException();
+		};
 	}
 
 	private long readLong(SystemVariableDefinition var) {

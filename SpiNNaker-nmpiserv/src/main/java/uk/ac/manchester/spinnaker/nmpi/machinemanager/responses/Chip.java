@@ -33,9 +33,9 @@ public class Chip {
 	private int y;
 
 	/**
-	 * Get the x-coordinate of the chip.
+	 * Get the X-coordinate of the chip.
 	 *
-	 * @return The x-coordinate of the chip
+	 * @return The X-coordinate of the chip
 	 */
 	public int getX() {
 		return x;
@@ -47,14 +47,14 @@ public class Chip {
 	 * @param x
 	 *            The x-coordinate of the chip
 	 */
-	public void setX(final int x) {
+	void setX(int x) {
 		this.x = x;
 	}
 
 	/**
-	 * Get the y-coordinate of the chip.
+	 * Get the Y-coordinate of the chip.
 	 *
-	 * @return The y-coordinate of the chip
+	 * @return The Y-coordinate of the chip
 	 */
 	public int getY() {
 		return y;
@@ -66,7 +66,7 @@ public class Chip {
 	 * @param y
 	 *            The y-coordinate of the chip
 	 */
-	public void setY(final int y) {
+	void setY(int y) {
 		this.y = y;
 	}
 }

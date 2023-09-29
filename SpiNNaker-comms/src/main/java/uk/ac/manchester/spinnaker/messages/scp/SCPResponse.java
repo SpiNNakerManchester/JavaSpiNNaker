@@ -46,7 +46,7 @@ public abstract class SCPResponse {
 		assert buffer.order() == LITTLE_ENDIAN : "buffer.order="
 				+ buffer.order();
 		buffer.getShort(); // SKIP TWO PADDING BYTES
-		sdpHeader = new SDPHeader(buffer, false);
+		sdpHeader = new SDPHeader(buffer);
 		result = SCPResult.get(buffer.getShort());
 		sequence = Short.toUnsignedInt(buffer.getShort());
 	}
@@ -71,8 +71,7 @@ public abstract class SCPResponse {
 		case RC_OK:
 			return;
 		case RC_ROUTE:
-			throw new UnroutableMessageException(operation, command,
-					sdpHeader);
+			throw new UnroutableMessageException(operation, command, sdpHeader);
 		default:
 			throw new UnexpectedResponseCodeException(operation, command,
 					result);

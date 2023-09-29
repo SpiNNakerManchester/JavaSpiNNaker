@@ -53,20 +53,19 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-public class SQLiteBufferStorage
-		extends SQLiteProxyStorage<BufferManagerStorage>
-		implements BufferManagerStorage {
+public final class SQLiteBufferStorage extends
+		SQLiteStorage<BufferManagerStorage> implements BufferManagerStorage {
 	private static final Logger log = getLogger(SQLiteBufferStorage.class);
 
 	/**
 	 * Create an instance.
 	 *
-	 * @param connectionProvider
-	 *            The connection provider that will be asked for how to talk SQL
-	 *            to the database.
+	 * @param db
+	 *            The database engine that will be asked for how to talk SQL to
+	 *            the database.
 	 */
-	public SQLiteBufferStorage(BufferManagerDatabaseEngine connectionProvider) {
-		super(connectionProvider);
+	public SQLiteBufferStorage(BufferManagerDatabaseEngine db) {
+		super(db);
 	}
 
 	private static int getRecordingCore(Connection conn, CoreLocation core)
@@ -107,7 +106,7 @@ public class SQLiteBufferStorage
 		try (var s = conn.prepareStatement(INSERT_REGION)) {
 			// core_id, local_region_index, address
 			setArguments(s, coreID, region.regionIndex,
-					region.startAddress.address);
+					region.startAddress.address());
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt("region_id");

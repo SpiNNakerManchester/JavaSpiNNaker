@@ -40,7 +40,7 @@ public class TestMappableIterable {
 		MappableIterable<Integer> mi = values::iterator;
 
 		int i = 3;
-		for (Integer value : mi.map(x -> x * 3)) {
+		for (var value : mi.map(x -> x * 3)) {
 			assertEquals(i, value);
 			i += 3;
 		}
@@ -51,7 +51,7 @@ public class TestMappableIterable {
 
 		mi = () -> empty.iterator();
 		i = 0;
-		for (Integer value : mi.map(x -> 1 << x)) {
+		for (var value : mi.map(x -> 1 << x)) {
 			i += value;
 		}
 		assertEquals(i, 0);
@@ -70,25 +70,25 @@ public class TestMappableIterable {
 		MappableIterable<Integer> mi = values::iterator;
 
 		int i = 1;
-		for (Integer value : mi.filter(x -> (x & 1) > 0)) {
+		for (var value : mi.filter(x -> (x & 1) > 0)) {
 			assertEquals(i, value);
 			i += 2;
 		}
 		assertEquals(i, 7);
 
 		i = 2;
-		for (Integer value : mi.filter(x -> (x & 1) == 0)) {
+		for (var value : mi.filter(x -> (x & 1) == 0)) {
 			assertEquals(i, value);
 			i += 2;
 		}
 		assertEquals(i, 6);
 
-		for (Integer value : mi.filter(x -> x < 1)) {
+		for (var value : mi.filter(x -> x < 1)) {
 			assertUnreachable();
 		}
 
 		mi = () -> empty.iterator();
-		for (Integer value : mi.filter(x -> {
+		for (var value : mi.filter(x -> {
 			assertUnreachable();
 			return true;
 		})) {

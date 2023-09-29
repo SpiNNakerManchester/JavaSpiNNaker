@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * monitoring of these values is done in {@code check_status()} in
  * {@code bmp_main.c}.
  */
-public class ReadADC extends BMPRequest<ReadADC.Response> {
+public final class ReadADC extends BMPRequest<ReadADC.Response> {
 	/**
 	 * @param board
 	 *            which board to request the ADC register from

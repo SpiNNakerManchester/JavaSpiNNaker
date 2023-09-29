@@ -15,19 +15,17 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import static difflib.DiffUtils.diff;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.DebuggingUtils.compareBuffers;
 import static uk.ac.manchester.spinnaker.front_end.download.MissingSequenceNumbersMessage.createMessages;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.IOException;
@@ -46,10 +44,6 @@ import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
-import difflib.ChangeDelta;
-import difflib.Chunk;
-import difflib.DeleteDelta;
-import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.connections.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
@@ -66,7 +60,6 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -75,8 +68,9 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public abstract class DataGatherer extends BoardLocalSupport
-		implements AutoCloseable {
+@SuppressWarnings("deprecation")
+public abstract sealed class DataGatherer extends BoardLocalSupport implements
+		AutoCloseable permits DirectDataGatherer, RecordingRegionDataGatherer {
 	/**
 	 * Logger for the gatherer.
 	 */
@@ -201,30 +195,20 @@ public abstract class DataGatherer extends BoardLocalSupport
 	}
 
 	/**
-	 * Trivial POJO holding the pairing of monitor and list of lists of memory
+	 * Trivial record holding the pairing of monitor and list of lists of memory
 	 * blocks.
 	 *
 	 * @author Donal Fellows
+	 * @param monitor
+	 *            Monitor that is used to download the regions.
+	 * @param regions
+	 *            List of information about where to download. The inner
+	 *            sub-lists are ordered, and are either one or two items long to
+	 *            represent what pieces of memory should really be downloaded.
+	 *            The outer list could theoretically be done in any order... but
+	 *            needs to be processed single-threaded anyway.
 	 */
-	private static final class WorkItems {
-		/**
-		 * Monitor that is used to download the regions.
-		 */
-		private final Monitor monitor;
-
-		/**
-		 * List of information about where to download. The inner sub-lists are
-		 * ordered, and are either one or two items long to represent what
-		 * pieces of memory should really be downloaded. The outer list could
-		 * theoretically be done in any order... but needs to be processed
-		 * single-threaded anyway.
-		 */
-		private final List<List<Region>> regions;
-
-		WorkItems(Monitor m, List<List<Region>> region) {
-			this.monitor = m;
-			this.regions = region;
-		}
+	private record WorkItems(Monitor monitor, List<List<Region>> regions) {
 	}
 
 	/**
@@ -258,7 +242,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 				for (var p : m.getPlacements()) {
 					var regions = new ArrayList<List<Region>>();
-					for (int id : p.getVertex().getRecordedRegionIds()) {
+					for (int id : p.vertex().recordedRegionIds()) {
 						var r = getRegion(p, id);
 						if (!r.isEmpty()) {
 							regions.add(r);
@@ -369,14 +353,14 @@ public abstract class DataGatherer extends BoardLocalSupport
 			log.info("processing fast downloads for {}", conn.getChip());
 			var dl = new Downloader(conn);
 			for (var item : work) {
-				for (var regionsOnCore : item.regions) {
+				for (var regionsOnCore : item.regions()) {
 					/*
 					 * Once there's something too small, all subsequent
 					 * retrieves for that recording region have to be done the
 					 * same way to get the data in the DB in the right order.
 					 */
 					for (var region : regionsOnCore) {
-						var data = dl.doDownload(item.monitor, region);
+						var data = dl.doDownload(item.monitor(), region);
 						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
 							compareDownloadWithSCP(region, data);
 						}
@@ -389,10 +373,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	private void sanityCheck(List<Gather> gatherers) {
 		var sel = txrx.getScampConnectionSelector();
-		MostDirectConnectionSelector<?> s = null;
-		if (sel instanceof MostDirectConnectionSelector) {
-			s = (MostDirectConnectionSelector<?>) sel;
-		}
+		var s = (sel instanceof MostDirectConnectionSelector<?> ss ? ss : null);
 
 		// Sanity check the inputs
 		for (var g : gatherers) {
@@ -417,45 +398,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 			log.error("different buffer sizes: {} with gatherer, {} with SCP",
 					data.remaining(), data2.remaining());
 		}
-		for (int i = 0; i < data.remaining(); i++) {
-			if (data.get(i) != data2.get(i)) {
-				log.error("downloaded buffer contents different");
-				for (var delta : diff(list(data2), list(data)).getDeltas()) {
-					if (delta instanceof ChangeDelta) {
-						var delete = delta.getOriginal();
-						var insert = delta.getRevised();
-						log.warn(
-								"swapped {} bytes (SCP) for {} (gather) "
-										+ "at {}->{}",
-								delete.getLines().size(),
-								insert.getLines().size(), delete.getPosition(),
-								insert.getPosition());
-						log.info("change {} -> {}", describeChunk(delete),
-								describeChunk(insert));
-					} else if (delta instanceof DeleteDelta) {
-						var delete = delta.getOriginal();
-						log.warn("gather deleted {} bytes at {}",
-								delete.getLines().size(), delete.getPosition());
-						log.info("delete {}", describeChunk(delete));
-					} else if (delta instanceof InsertDelta) {
-						var insert = delta.getRevised();
-						log.warn("gather inserted {} bytes at {}",
-								insert.getLines().size(), insert.getPosition());
-						log.info("insert {}", describeChunk(insert));
-					}
-				}
-				break;
-			}
-		}
-	}
-
-	private static List<Byte> list(ByteBuffer buffer) {
-		return sliceUp(buffer, 1).map(ByteBuffer::get).toList();
-	}
-
-	private static List<String> describeChunk(Chunk<Byte> chunk) {
-		return chunk.getLines().stream().map(MathUtils::hexbyte)
-				.collect(toList());
+		compareBuffers(data, data2, log);
 	}
 
 	/**

@@ -25,10 +25,10 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.validation.Constraint;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.Payload;
 
 /**
  * Validates that an argument is a sane value to pass in a classic spalloc API
@@ -69,8 +69,8 @@ public @interface SaneParameter {
 class IsSaneValidator implements ConstraintValidator<SaneParameter, Object> {
 	@Override
 	public boolean isValid(Object value, ConstraintValidatorContext context) {
-		if (value instanceof String) {
-			return !((String) value).isBlank();
+		if (value instanceof String s) {
+			return !s.isBlank();
 		} else {
 			return (value instanceof Boolean) || (value instanceof Number);
 		}

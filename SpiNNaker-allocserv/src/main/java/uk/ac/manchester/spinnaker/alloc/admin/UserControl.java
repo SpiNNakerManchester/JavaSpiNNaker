@@ -85,7 +85,8 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	@UsedInJavadocOnly(SQLQueries.class)
-	private class UserCheckSQL extends AbstractSQL {
+	private sealed class UserCheckSQL extends AbstractSQL
+			permits CreateSQL, DeleteUserSQL, UpdateAllSQL, UpdatePassSQL {
 		private final Query userCheck = conn.query(GET_USER_ID);
 
 		/** See {@link SQLQueries#GET_USER_DETAILS}. */
@@ -300,7 +301,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<UserRecord> listUsers() {
 		try (var sql = new AllUsersSQL()) {
-			return sql.transactionRead(() -> sql.allUsers());
+			return sql.transactionRead(sql::allUsers);
 		}
 	}
 
@@ -597,24 +598,6 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Just a tuple extracted from a row. Only used in
-	 * {@link #updateUser(Principal,PasswordChangeRecord,UpdatePassSQL)}; it's
-	 * only not a local class to work around <a href=
-	 * "https://bugs.openjdk.java.net/browse/JDK-8144673">JDK-8144673</a> (fixed
-	 * by Java 11).
-	 */
-	private static class GetUserResult {
-		final PasswordChangeRecord baseUser;
-
-		final String oldEncPass;
-
-		GetUserResult(Row row) {
-			baseUser = passChange(row);
-			oldEncPass = row.getString("encrypted_password");
-		}
-	}
-
-	/**
 	 * Back end of {@link #updateUser(Principal,PasswordChangeRecord)}.
 	 * <p>
 	 * <strong>Do not hold a transaction when calling this!</strong> This is a
@@ -626,10 +609,28 @@ public class UserControl extends DatabaseAwareBean {
 	 *            What to update
 	 * @param sql
 	 *            How to touch the DB
-	 * @return What was updated
+	 * @return What was updated, <em>without</em> the actual password fields
+	 *         filled out.
 	 */
 	private PasswordChangeRecord updateUser(Principal principal,
 			PasswordChangeRecord user, UpdatePassSQL sql) {
+		/**
+		 * Record extracted from a row of the {@code user_info} table.
+		 *
+		 * @param baseUser
+		 *            The user's password change record, <em>without</em> the
+		 *            actual password fields filled out.
+		 * @param oldEncPass
+		 *            Old encoded password.
+		 * @see UserControl#updateUser(Principal, PasswordChangeRecord,
+		 *      UpdatePassSQL)
+		 */
+		record GetUserResult(PasswordChangeRecord baseUser, String oldEncPass) {
+			private GetUserResult(Row row) {
+				this(passChange(row), row.getString("encrypted_password"));
+			}
+		}
+
 		var result = sql
 				.transaction(() -> sql.getPasswordedUser
 						.call1(GetUserResult::new, principal.getName()))
@@ -641,7 +642,7 @@ public class UserControl extends DatabaseAwareBean {
 
 		// This is a SLOW operation; must not hold transaction here
 		if (!passServices.matchPassword(user.getOldPassword(),
-				result.oldEncPass)) {
+				result.oldEncPass())) {
 			throw new BadCredentialsException("bad password");
 		}
 
@@ -652,11 +653,11 @@ public class UserControl extends DatabaseAwareBean {
 		var newEncPass = passServices.encodePassword(user.getNewPassword());
 		return sql.transaction(() -> {
 			if (sql.setPassword.call(newEncPass,
-					result.baseUser.getUserId()) != 1) {
+					result.baseUser().getUserId()) != 1) {
 				throw new InternalAuthenticationServiceException(
 						"failed to update database");
 			}
-			return result.baseUser;
+			return result.baseUser();
 		});
 	}
 
@@ -667,7 +668,7 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public List<GroupRecord> listGroups() {
 		try (var sql = new GroupsSQL()) {
-			return sql.transactionRead(() -> sql.listGroups());
+			return sql.transactionRead(sql::listGroups);
 		}
 	}
 

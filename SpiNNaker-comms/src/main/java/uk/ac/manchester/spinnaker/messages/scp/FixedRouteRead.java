@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (FIXED.value << BYTE0);
+		return (appID.appID() << BYTE1) | (FIXED.value << BYTE0);
 	}
 
 	// Top bit set = do a read

@@ -17,10 +17,10 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static java.lang.System.setProperty;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.status;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.cxf.message.Message.PROTOCOL_HEADERS;
 import static org.apache.cxf.phase.Phase.RECEIVE;
 import static org.apache.cxf.transport.http.AbstractHTTPDestination.HTTP_REQUEST;
@@ -33,15 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletRequest;
 import javax.sql.DataSource;
-import javax.validation.ValidationException;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
@@ -82,8 +74,18 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletRequest;
+import jakarta.validation.ValidationException;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.HistoricalDataProperties;
@@ -121,6 +123,7 @@ public class ServiceConfig extends Application {
 
 	@Bean(name = "mainDatasource")
 	@Role(ROLE_INFRASTRUCTURE)
+	@Primary
 	@ConfigurationProperties(prefix = "spalloc.datasource")
 	DataSource mainDatasource() {
 		return DataSourceBuilder.create().build();
@@ -143,8 +146,7 @@ public class ServiceConfig extends Application {
 	 */
 	@Bean(name = "mainDatabase")
 	@Role(ROLE_SUPPORT)
-	public JdbcTemplate mainDatabase(
-			@Qualifier("mainDatasource") DataSource ds) {
+	JdbcTemplate mainDatabase(@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
 
@@ -158,7 +160,7 @@ public class ServiceConfig extends Application {
 	 */
 	@Bean(name = "historicalDatabase")
 	@Role(ROLE_SUPPORT)
-	public JdbcTemplate historicalDatabase(
+	JdbcTemplate historicalDatabase(
 			@Qualifier("historicalDatasource") DataSource ds) {
 		return new JdbcTemplate(ds);
 	}
@@ -173,7 +175,7 @@ public class ServiceConfig extends Application {
 	 */
 	@Bean(name = "mainTransactionManager")
 	@Role(ROLE_SUPPORT)
-	public PlatformTransactionManager mainTransactionManager(
+	PlatformTransactionManager mainTransactionManager(
 			@Qualifier("mainDatasource") DataSource ds) {
 		return new JdbcTransactionManager(ds);
 	}
@@ -210,6 +212,8 @@ public class ServiceConfig extends Application {
 	@Role(ROLE_INFRASTRUCTURE)
 	JsonMapper mapper() {
 		return JsonMapper.builder().findAndAddModules()
+				.addModule(new JavaTimeModule())
+				.addModule(new Jdk8Module())
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
 				.propertyNamingStrategy(KEBAB_CASE).build();
 	}

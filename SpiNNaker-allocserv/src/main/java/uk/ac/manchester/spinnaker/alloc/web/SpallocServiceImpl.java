@@ -21,11 +21,11 @@ import static java.lang.String.join;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.created;
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.Response.created;
+import static jakarta.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.address;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.physical;
@@ -38,12 +38,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
@@ -214,9 +214,11 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	/**
 	 * Select one of the ways to create a job based on the request parameters.
-	 * Note this will pick the first non-null of (group, nmpiCollabId,
-	 * nmpiJobId) from req to determine the spalloc call to make (also
-	 * acceptable if all are null).
+	 * <p>
+	 * <strong>Note</strong> that this will pick the first non-{@code null} of
+	 * (group, nmpiCollabId, nmpiJobId) from req to determine the spalloc call
+	 * to make (also acceptable if all are {@code null}). Validation
+	 * <em>should</em> ensure that at most one of those is non-{@code null}.
 	 *
 	 * @param req
 	 *            The request details.
@@ -228,50 +230,33 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 */
 	private Optional<SpallocAPI.Job> createJob(CreateJobRequest req,
 			CreateDescriptor crds) throws JsonProcessingException {
-		if (!isNull(req.group)) {
-			return core.createJobInGroup(trim(req.owner), trim(req.group), crds,
-					req.machineName, req.tags, req.keepaliveInterval,
+		if (!isNull(req.group())) {
+			return core.createJobInGroup(trim(req.owner()), trim(req.group()),
+					crds, req.machineName(), req.tags(),
+					req.keepaliveInterval(), mapper.writeValueAsBytes(req));
+		} else if (!isNull(req.nmpiCollab())) {
+			return core.createJobInCollabSession(trim(req.owner()),
+					trim(req.nmpiCollab()), crds, req.machineName(), req.tags(),
+					req.keepaliveInterval(), mapper.writeValueAsBytes(req));
+		} else if (!isNull(req.nmpiJobId())) {
+			return core.createJobForNMPIJob(trim(req.owner()), req.nmpiJobId(),
+					crds, req.machineName(), req.tags(),
+					req.keepaliveInterval(), mapper.writeValueAsBytes(req));
+		} else {
+			return core.createJob(trim(req.owner()), crds, req.machineName(),
+					req.tags(), req.keepaliveInterval(),
 					mapper.writeValueAsBytes(req));
 		}
-		if (!isNull(req.nmpiCollab)) {
-			return core.createJobInCollabSession(trim(req.owner),
-					trim(req.nmpiCollab), crds,
-					req.machineName, req.tags, req.keepaliveInterval,
-					mapper.writeValueAsBytes(req));
-		}
-		if (!isNull(req.nmpiJobId)) {
-			return core.createJobForNMPIJob(trim(req.owner),
-					req.nmpiJobId, crds,
-					req.machineName, req.tags, req.keepaliveInterval,
-					mapper.writeValueAsBytes(req));
-		}
-		return core.createJob(trim(req.owner), crds,
-				req.machineName, req.tags, req.keepaliveInterval,
-				mapper.writeValueAsBytes(req));
 	}
 
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
-		var crds = validateAndApplyDefaultsToJobRequest(req, security);
+		var r = validateCreateJobNonSizeAttrs(req, security);
+		var crds = validateAndApplyDefaultsToJobRequest(r, security);
 
-		// Ensure we only have at most one "group" specifier (0 also fine).
-		var nonNullGroups = 0;
-		var items = new Object[] {
-			req.group, req.nmpiCollab, req.nmpiJobId
-		};
-		for (Object item : items) {
-			if (!isNull(item)) {
-				nonNullGroups += 1;
-			}
-		}
-		if (nonNullGroups > 1) {
-			response.resume(status(BAD_REQUEST).type(TEXT_PLAIN).entity(
-					"At most one of group, nmpiCollabId or nmpiJobId"
-					+ " can be specified").build());
-		}
 		bgAction(response, () -> ifElse(
-				createJob(req, crds),
+				createJob(r, crds),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
 						.entity(new CreateJobResponse(job, ui)).build(),
@@ -280,86 +265,96 @@ public class SpallocServiceImpl extends BackgroundSupport
 						.entity("out of quota").build()));
 	}
 
-	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
-			CreateJobRequest req, SecurityContext security) throws BadArgs {
+	private CreateJobRequest validateCreateJobNonSizeAttrs(CreateJobRequest req,
+			SecurityContext security) {
 		if (isNull(req)) {
 			throw new BadArgs("request must be supplied");
 		}
 
+		var owner = req.owner();
 		if (!security.isUserInRole("ADMIN")
 				&& !security.isUserInRole("NMPI_EXEC")
-				&& !isNull(req.owner) && !req.owner.isBlank()) {
+				&& !isNull(owner) && !owner.isBlank()) {
 			throw new BadArgs("Only admin and NMPI users can specify an owner");
 		}
 
-		if (isNull(req.owner) || req.owner.isBlank()) {
-			req.owner = security.getUserPrincipal().getName();
+		if (isNull(owner) || owner.isBlank()) {
+			owner = security.getUserPrincipal().getName();
 		}
-		if (isNull(req.owner) || req.owner.isBlank()) {
+		if (isNull(owner) || owner.isBlank()) {
 			throw new BadArgs(
 					"request must be connected to an identified owner");
 		}
-		req.owner = req.owner.strip();
+		owner = owner.strip();
 
 		var ka = properties.getKeepalive();
-		if (isNull(req.keepaliveInterval)
-				|| req.keepaliveInterval.compareTo(ka.getMin()) < 0) {
+		if (isNull(req.keepaliveInterval())
+				|| req.keepaliveInterval().compareTo(ka.getMin()) < 0) {
 			throw new BadArgs(
 					"keepalive interval must be at least " + ka.getMin());
 		}
-		if (req.keepaliveInterval.compareTo(ka.getMax()) > 0) {
+		if (req.keepaliveInterval().compareTo(ka.getMax()) > 0) {
 			throw new BadArgs(
 					"keepalive interval must be no more than " + ka.getMax());
 		}
 
-		if (isNull(req.tags)) {
-			req.tags = new ArrayList<>();
-			if (isNull(req.machineName)) {
-				req.tags.add("default");
+		var tags = req.tags();
+		if (isNull(tags)) {
+			tags = new ArrayList<>();
+			if (isNull(req.machineName())) {
+				tags.add("default");
 			}
 		}
-		if (nonNull(req.machineName) && !req.tags.isEmpty()) {
+		if (nonNull(req.machineName()) && !tags.isEmpty()) {
 			throw new BadArgs(
 					"must not specify machine name and tags together");
 		}
 
-		if (isNull(req.maxDeadBoards)) {
-			req.maxDeadBoards = 0;
-		} else if (req.maxDeadBoards < 0) {
+		return new CreateJobRequest(owner, req.group(), req.nmpiCollab(),
+				req.nmpiJobId(), req.keepaliveInterval(), req.numBoards(),
+				req.dimensions(), req.board(), req.machineName(), tags,
+				req.maxDeadBoards());
+	}
+
+	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
+			CreateJobRequest req, SecurityContext security) throws BadArgs {
+		var maxDead = req.maxDeadBoards();
+		if (isNull(maxDead)) {
+			maxDead = 0;
+		} else if (maxDead < 0) {
 			throw new BadArgs(
 					"the maximum number of dead boards must not be negative");
 		}
 
-		if (nonNull(req.numBoards)) {
-			return new CreateNumBoards(req.numBoards, req.maxDeadBoards);
-		} else if (nonNull(req.dimensions)) {
-			if (nonNull(req.board)) {
+		if (nonNull(req.numBoards())) {
+			return new CreateNumBoards(req.numBoards(), maxDead);
+		} else if (nonNull(req.dimensions())) {
+			var size = req.dimensions();
+			var specific = req.board();
+			if (nonNull(specific)) {
 				// Both dimensions AND board; rooted rectangle
-				if (nonNull(req.board.x)) {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.x, req.board.y,
-							req.board.z, req.maxDeadBoards);
-				} else if (nonNull(req.board.cabinet)) {
-					return CreateDimensionsAt.physical(req.dimensions.width,
-							req.dimensions.height, req.board.cabinet,
-							req.board.frame, req.board.board,
-							req.maxDeadBoards);
+				if (nonNull(specific.x())) {
+					return new CreateDimensionsAt(size.width(), size.height(),
+							specific.x(), specific.y(), specific.z(), maxDead);
+				} else if (nonNull(specific.cabinet())) {
+					return CreateDimensionsAt.physical(size.width(),
+							size.height(), specific.cabinet(), specific.frame(),
+							specific.board(), maxDead);
 				} else {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.address,
-							req.maxDeadBoards);
+					return new CreateDimensionsAt(size.width(), size.height(),
+							specific.address(), maxDead);
 				}
 			}
-			return new CreateDimensions(req.dimensions.width,
-					req.dimensions.height, req.maxDeadBoards);
-		} else if (nonNull(req.board)) {
-			if (nonNull(req.board.x)) {
-				return triad(req.board.x, req.board.y, req.board.z);
-			} else if (nonNull(req.board.cabinet)) {
-				return physical(req.board.cabinet, req.board.frame,
-						req.board.board);
+			return new CreateDimensions(size.width(), size.height(), maxDead);
+		} else if (nonNull(req.board())) {
+			var specific = req.board();
+			if (nonNull(specific.x())) {
+				return triad(specific.x(), specific.y(), specific.z());
+			} else if (nonNull(specific.cabinet())) {
+				return physical(specific.cabinet(), specific.frame(),
+						specific.board());
 			} else {
-				return address(req.board.address);
+				return address(specific.address());
 			}
 		} else {
 			// It's a single board

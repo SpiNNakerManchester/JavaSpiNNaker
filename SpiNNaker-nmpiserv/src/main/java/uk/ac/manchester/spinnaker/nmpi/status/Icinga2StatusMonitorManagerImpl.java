@@ -20,8 +20,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.WebApplicationException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.apache.ws.commons.util.Base64;
 import org.slf4j.Logger;
@@ -86,13 +86,13 @@ public class Icinga2StatusMonitorManagerImpl implements StatusMonitorManager {
 	}
 
 	@Override
-	public void updateStatus(final int runningJobs, final int nBoardsInUse) {
-		final var performanceData = "'Running Jobs'=" + runningJobs
+	public void updateStatus(int runningJobs, int nBoardsInUse) {
+		var performanceData = "'Running Jobs'=" + runningJobs
 				+ " 'Boards In Use'=" + nBoardsInUse;
-		final int ttl = JobManager.STATUS_UPDATE_PERIOD
-				* STATUS_UPDATE_TTL_MULTIPLIER;
-		final var result = new Icinga2CheckResult(
-				STATUS, STATUS_MESSAGE, performanceData, ttl, host, service);
+		int ttl =
+				JobManager.STATUS_UPDATE_PERIOD * STATUS_UPDATE_TTL_MULTIPLIER;
+		var result = new Icinga2CheckResult(STATUS, STATUS_MESSAGE,
+				performanceData, ttl, host, service);
 		try {
 			var response = icinga.processCheckResult(authHeader, result);
 			logger.debug("Status updated, result = {}", response);

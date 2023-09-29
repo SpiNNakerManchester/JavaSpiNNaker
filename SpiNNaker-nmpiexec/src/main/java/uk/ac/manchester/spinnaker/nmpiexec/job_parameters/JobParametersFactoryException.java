@@ -29,7 +29,7 @@ public class JobParametersFactoryException extends Exception {
 	 * @param message
 	 *            The message
 	 */
-	public JobParametersFactoryException(final String message) {
+	public JobParametersFactoryException(String message) {
 		super(message);
 	}
 
@@ -41,8 +41,7 @@ public class JobParametersFactoryException extends Exception {
 	 * @param cause
 	 *            The cause
 	 */
-	public JobParametersFactoryException(final String message,
-			final Throwable cause) {
+	public JobParametersFactoryException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

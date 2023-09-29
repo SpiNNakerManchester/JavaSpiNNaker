@@ -84,7 +84,7 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 	public InetAddress receiveMessage(int timeout) {
 		try {
 			var packet = receiveWithAddress(timeout);
-			var addr = packet.getAddress();
+			var addr = packet.address();
 			if (addr.getPort() == BOOTROM_SPINN_PORT) {
 				return addr.getAddress();
 			}

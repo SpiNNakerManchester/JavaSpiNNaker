@@ -19,10 +19,11 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Math.floorDiv;
 import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Collections.emptyIterator;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix.LOWER_HALF_WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
+import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.readOnly;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
@@ -36,7 +37,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Sergio Davies
  * @author Donal Fellows
  */
-public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
+public final class EIEIODataMessage
+		implements EIEIOMessage<EIEIODataMessage.Header>,
 		MappableIterable<AbstractDataElement> {
 	private final Header header;
 
@@ -63,7 +65,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	EIEIODataMessage(ByteBuffer data) {
 		this.header = new Header(data);
 		this.elements = null;
-		this.data = data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		this.data = readOnly(data);
 	}
 
 	/**
@@ -166,7 +168,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 	/** @return The raw data of this message. */
 	public ByteBuffer getData() {
-		return data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		return readOnly(data);
 	}
 
 	/**
@@ -198,44 +200,35 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 	@Override
 	public Iterator<AbstractDataElement> iterator() {
-		final var d =
-				data == null ? null : data.duplicate().order(LITTLE_ENDIAN);
+		if (data == null) {
+			return emptyIterator();
+		}
+
+		var d = readOnly(data);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
 
 			@Override
 			public boolean hasNext() {
-				return d != null && elementsRead < header.getCount();
+				return elementsRead < header.getCount();
 			}
 
 			@Override
 			public AbstractDataElement next() {
-				if (d == null || !hasNext()) {
+				if (!hasNext()) {
 					throw new NoSuchElementException("read all elements");
 				}
 				elementsRead++;
-				int key;
-				Integer payload;
-				switch (header.eieioType) {
-				case KEY_16_BIT:
-					key = d.getShort();
-					payload = null;
-					break;
-				case KEY_PAYLOAD_16_BIT:
-					key = d.getShort();
-					payload = (int) d.getShort();
-					break;
-				case KEY_32_BIT:
-					key = d.getInt();
-					payload = null;
-					break;
-				case KEY_PAYLOAD_32_BIT:
-					key = d.getInt();
-					payload = d.getInt();
-					break;
-				default:
-					throw new IllegalStateException();
-				}
+				int key = switch (header.eieioType) {
+				case KEY_16_BIT, KEY_PAYLOAD_16_BIT ->
+					toUnsignedInt(d.getShort());
+				case KEY_32_BIT, KEY_PAYLOAD_32_BIT -> d.getInt();
+				};
+				var payload = switch (header.eieioType) {
+				case KEY_PAYLOAD_16_BIT -> toUnsignedInt(d.getShort());
+				case KEY_PAYLOAD_32_BIT -> d.getInt();
+				default -> null;
+				};
 				if (header.prefix != null) {
 					key |= header.prefix << header.prefixType.shift;
 				}
@@ -246,10 +239,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 						payload = header.payloadBase;
 					}
 				}
-				if (payload == null) {
-					return new KeyDataElement(key);
-				}
-				return new KeyPayloadDataElement(key, payload, header.isTime);
+				return (payload == null) ? new KeyDataElement(key)
+						: new KeyPayloadDataElement(key, payload,
+								header.isTime);
 			}
 		};
 	}
@@ -260,7 +252,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	}
 
 	/** EIEIO header for data packets. */
-	public static class Header implements EIEIOHeader {
+	public static final class Header implements EIEIOHeader {
 		/** The type of packet (size of various fields). */
 		public final EIEIOType eieioType;
 
@@ -327,12 +319,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			count = buffer.get();
 			byte flags = buffer.get();
 			boolean havePrefix = bit(flags, PREFIX_BIT) != 0;
-			if (havePrefix) {
-				prefixType =
-						EIEIOPrefix.getByValue(bit(flags, PREFIX_TYPE_BIT));
-			} else {
-				prefixType = null;
-			}
+			prefixType = havePrefix
+					? EIEIOPrefix.getByValue(bit(flags, PREFIX_TYPE_BIT))
+					: null;
 			boolean havePayload = bit(flags, PAYLOAD_BIT) != 0;
 			isTime = bit(flags, TIME_BIT) != 0;
 			eieioType = EIEIOType.getByValue(bits(flags, TYPE_BITS));
@@ -343,18 +332,12 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 				prefix = null;
 			}
 			if (havePayload) {
-				switch (eieioType) {
-				case KEY_PAYLOAD_16_BIT:
-				case KEY_16_BIT:
-					payloadBase = toUnsignedInt(buffer.getShort());
-					break;
-				case KEY_PAYLOAD_32_BIT:
-				case KEY_32_BIT:
-					payloadBase = buffer.getInt();
-					break;
-				default:
-					payloadBase = null;
-				}
+				payloadBase = switch (eieioType) {
+				case KEY_PAYLOAD_16_BIT, KEY_16_BIT ->
+					toUnsignedInt(buffer.getShort());
+				case KEY_PAYLOAD_32_BIT, KEY_32_BIT -> buffer.getInt();
+				default -> null;
+				};
 			} else {
 				payloadBase = null;
 			}
@@ -442,16 +425,11 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 				return;
 			}
 			switch (eieioType) {
-			case KEY_PAYLOAD_16_BIT:
-			case KEY_16_BIT:
+			case KEY_PAYLOAD_16_BIT, KEY_16_BIT ->
 				buffer.putShort((short) payloadBase.intValue());
-				return;
-			case KEY_PAYLOAD_32_BIT:
-			case KEY_32_BIT:
+			case KEY_PAYLOAD_32_BIT, KEY_32_BIT ->
 				buffer.putInt(payloadBase.intValue());
-				return;
-			default:
-				throw new IllegalStateException("unexpected EIEIO type");
+			default -> throw new IllegalStateException("unexpected EIEIO type");
 			}
 		}
 	}

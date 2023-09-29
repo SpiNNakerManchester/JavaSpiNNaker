@@ -56,11 +56,11 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	 *             If socket creation fails.
 	 */
 	public BMPConnection(BMPConnectionData connectionData) throws IOException {
-		super(null, null, connectionData.ipAddress,
-				(connectionData.portNumber == null ? SCP_SCAMP_PORT
-						: connectionData.portNumber), IPTOS_RELIABILITY);
-		coords = connectionData.bmp;
-		boards = connectionData.boards;
+		super(null, null, connectionData.ipAddress(),
+				(connectionData.portNumber() == null ? SCP_SCAMP_PORT
+						: connectionData.portNumber()), IPTOS_RELIABILITY);
+		coords = connectionData.bmp();
+		boards = connectionData.boards();
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	@Override
 	public SDPMessage receiveMessage(int timeout)
 			throws IOException, InterruptedException {
-		return new SDPMessage(receive(timeout), true);
+		return new SDPMessage(receive(timeout));
 	}
 
 	/**

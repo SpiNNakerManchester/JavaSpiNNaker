@@ -19,29 +19,25 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.net.URI;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.errorprone.annotations.Immutable;
 
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 
 /**
  * Describes a newly-created job.
  *
  * @author Donal Fellows
+ * @param jobId
+ *            The ID of the job. Probably should be ignored.
+ * @param jobRef
+ *            The link to the job. Clients should not make this themselves.
  */
 @Immutable
-public class CreateJobResponse {
-	/** The ID of the job. Probably should be ignored. */
-	public final int jobId;
-
-	/** The link to the job. Clients should not make this themselves. */
-	@JsonInclude(NON_NULL)
-	public final URI jobRef;
-
+public record CreateJobResponse(int jobId, @JsonInclude(NON_NULL) URI jobRef) {
 	CreateJobResponse(SpallocAPI.Job j, UriInfo ui) {
-		jobId = j.getId();
-		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
+		this(j.getId(),
+				ui.getRequestUriBuilder().path("{id}").build(j.getId()));
 	}
 }

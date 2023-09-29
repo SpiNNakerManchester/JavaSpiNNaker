@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -59,7 +60,7 @@ public final class Permit {
 	 * @param context
 	 *            The originating security context.
 	 */
-	public Permit(javax.ws.rs.core.SecurityContext context) {
+	public Permit(jakarta.ws.rs.core.SecurityContext context) {
 		authorities = STDAUTH.stream().filter(context::isUserInRole)
 				.map(SimpleGrantedAuthority::new).collect(toUnmodifiableList());
 		admin = is(authorities, GRANT_ADMIN);
@@ -189,6 +190,7 @@ public final class Permit {
 				}
 			}
 
+			@Serial
 			private void writeObject(ObjectOutputStream out)
 					throws NotSerializableException {
 				throw new NotSerializableException("not actually serializable");

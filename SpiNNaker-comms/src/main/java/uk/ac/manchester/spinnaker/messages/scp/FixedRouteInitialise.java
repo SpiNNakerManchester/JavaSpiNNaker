@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public final class FixedRouteInitialise extends SCPRequest<EmptyResponse> {
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (FIXED.value << BYTE0);
+		return (appID.appID() << BYTE1) | (FIXED.value << BYTE0);
 	}
 
 	/**

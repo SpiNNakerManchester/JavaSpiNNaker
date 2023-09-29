@@ -47,13 +47,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -92,7 +91,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 @Component
 @Prototype
 class V1TaskImpl extends V1CompatTask {
-
 	/**
 	 * We are compatible with spalloc-server release version 5.0.0.
 	 */
@@ -185,7 +183,7 @@ class V1TaskImpl extends V1CompatTask {
 			}
 		}
 		return new JobMachineInfo(w, h, machine.getConnections().stream()
-				.map(ci -> new Connection(ci.getChip(), ci.getHostname()))
+				.map(ci -> new Connection(ci.chip(), ci.hostname()))
 				.collect(toList()), machine.getMachine().getName(),
 				machine.getBoards());
 	}
@@ -246,12 +244,12 @@ class V1TaskImpl extends V1CompatTask {
 	 */
 	private static List<String> tags(Object src, boolean mayForceDefault) {
 		var vals = new ArrayList<String>();
-		if (src instanceof List) {
-			for (var o : (List<?>) src) {
+		if (src instanceof List<?> lst) {
+			for (var o : lst) {
 				vals.add(Objects.toString(o));
 			}
-		} else if (src instanceof String) {
-			vals.add((String) src);
+		} else if (src instanceof String s) {
+			vals.add(s);
 		}
 		if (vals.isEmpty() && mayForceDefault) {
 			return List.of("default");
@@ -277,7 +275,8 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final Optional<Integer> createJobSpecificBoard(TriadCoords coords,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd);
+		return createJob(triad(coords.x(), coords.y(), coords.z()), kwargs,
+				cmd);
 	}
 
 	private static String getOwner(Map<String, Object> kwargs)
@@ -370,7 +369,7 @@ class V1TaskImpl extends V1CompatTask {
 				jd.setArgs(args);
 				jd.setKwargs(cmd.getKwargs());
 				// Override shrouded owner from above
-				Object owner = cmd.getKwargs().get("owner");
+				var owner = cmd.getKwargs().get("owner");
 				if (owner != null) {
 					jd.setOwner(owner.toString());
 				}
@@ -378,7 +377,7 @@ class V1TaskImpl extends V1CompatTask {
 			jd.setMachine(job.getMachineName());
 			jd.setPower(job.isPowered());
 			jd.setBoards(job.getBoards().stream().map(
-					b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
+					b -> new BoardCoordinates(b.x(), b.y(), b.z()))
 					.collect(toList()));
 			return jd.build();
 		}
@@ -470,7 +469,7 @@ class V1TaskImpl extends V1CompatTask {
 					try {
 						var changed = epoch.getChanged(
 								mainProps.getCompat().getNotifyWaitTime());
-						return changed.stream().map(id -> invMap.get(id))
+						return changed.stream().map(invMap::get)
 								.collect(toList());
 					} catch (InterruptedException e) {
 						return List.of();

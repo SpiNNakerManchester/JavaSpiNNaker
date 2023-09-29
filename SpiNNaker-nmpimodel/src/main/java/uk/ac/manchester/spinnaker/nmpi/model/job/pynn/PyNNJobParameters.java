@@ -56,9 +56,8 @@ public class PyNNJobParameters implements JobParameters {
 	 * @param hardwareConfiguration
 	 *            The hardware configuration desired.
 	 */
-	public PyNNJobParameters(final String workingDirectory,
-			final String setupScript, final String userScript,
-			final Map<String, Object> hardwareConfiguration) {
+	public PyNNJobParameters(String workingDirectory, String setupScript,
+			String userScript, Map<String, Object> hardwareConfiguration) {
 		this.workingDirectory = workingDirectory;
 		this.userScript = userScript;
 		this.setupScript = setupScript;
@@ -80,7 +79,7 @@ public class PyNNJobParameters implements JobParameters {
 	 * @param workingDirectory
 	 *            the workingDirectory to set
 	 */
-	public void setWorkingDirectory(final String workingDirectory) {
+	public void setWorkingDirectory(String workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
 
@@ -99,7 +98,7 @@ public class PyNNJobParameters implements JobParameters {
 	 * @param setupScript
 	 *            the script
 	 */
-	public void setSetupScript(final String setupScript) {
+	public void setSetupScript(String setupScript) {
 		this.setupScript = setupScript;
 	}
 
@@ -118,7 +117,7 @@ public class PyNNJobParameters implements JobParameters {
 	 * @param userScript
 	 *            the script to set
 	 */
-	public void setUserScript(final String userScript) {
+	public void setUserScript(String userScript) {
 		this.userScript = userScript;
 	}
 
@@ -138,7 +137,7 @@ public class PyNNJobParameters implements JobParameters {
 	 *            the hardwareConfiguration to set
 	 */
 	public void setHardwareConfiguration(
-			final Map<String, Object> hardwareConfiguration) {
+			Map<String, Object> hardwareConfiguration) {
 		this.hardwareConfiguration = hardwareConfiguration;
 	}
 }

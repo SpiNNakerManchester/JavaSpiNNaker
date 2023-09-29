@@ -15,10 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 
 /**
@@ -29,7 +28,7 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
  *      >Spalloc Server documentation</a>
  * @see WhereIs The basic result type associated with the request
  */
-public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
+public final class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 	/**
 	 * Create a request to locate a board on a machine.
 	 *
@@ -42,8 +41,8 @@ public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
 			@Valid @NotNull PhysicalCoords coords) {
 		super("where_is");
 		addKwArg("machine", machine);
-		addKwArg("cabinet", coords.c);
-		addKwArg("frame", coords.f);
-		addKwArg("board", coords.b);
+		addKwArg("cabinet", coords.c());
+		addKwArg("frame", coords.f());
+		addKwArg("board", coords.b());
 	}
 }

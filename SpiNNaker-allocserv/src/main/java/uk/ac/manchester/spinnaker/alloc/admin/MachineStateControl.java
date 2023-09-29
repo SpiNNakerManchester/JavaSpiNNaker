@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.batch;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -37,12 +38,6 @@ import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +49,11 @@ import org.springframework.stereotype.Service;
 import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
@@ -111,10 +111,13 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private void launchBackground() {
 		props = properties.getStateControl();
 		// After a minute, start retrieving board serial numbers
-		readAllTask =
-				executor.schedule((Runnable) this::readAllBoardSerialNumbers,
-						Instant.now().plus(props.getBlacklistTimeout()));
-		// Why can't I pass a Duration directly there?
+		// Don't do this if testing
+		if (!properties.getTransceiver().isDummy()) {
+			readAllTask = executor.schedule(
+					(Runnable) this::readAllBoardSerialNumbers,
+					Instant.now().plus(props.getBlacklistTimeout()));
+			// Why can't I pass a Duration directly there?
+		}
 	}
 
 	@PreDestroy
@@ -327,8 +330,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 			@Valid @NonNull TriadCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
-				return q.call1(BoardState::new, machine, coords.x, coords.y,
-						coords.z);
+				return q.call1(BoardState::new, machine, coords.x(), coords.y(),
+						coords.z());
 			}
 		});
 	}
@@ -346,8 +349,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 			@Valid @NotNull PhysicalCoords coords) {
 		return executeRead(conn -> {
 			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
-				return q.call1(BoardState::new, machine, coords.c, coords.f,
-						coords.b);
+				return q.call1(BoardState::new, machine, coords.c(), coords.f(),
+						coords.b());
 			}
 		});
 	}
@@ -386,28 +389,23 @@ public class MachineStateControl extends DatabaseAwareBean {
 		});
 	}
 
-	private class MachineNameId {
-		int id;
-
-		String name;
-
-		MachineNameId(Row row) {
-			id = row.getInt("machine_id");
-			name = row.getString("machine_name");
-		}
-	}
-
 	/**
 	 * @return The unacknowledged reports about boards with potential problems
 	 *         in existing machines, categorised by machine.
 	 */
 	public Map<String, List<BoardIssueReport>> getMachineReports() {
+		record MachineNameId(int id, String name) {
+			MachineNameId(Row row) {
+				this(row.getInt("machine_id"), row.getString("machine_name"));
+			}
+		}
+
 		return executeRead(conn -> {
 			try (var getMachines = conn.query(GET_ALL_MACHINES);
 					var getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
 				return Row.stream(getMachines.call(MachineNameId::new, true))
-						.toMap(m -> m.name, m -> getMachineReports.call(
-								BoardIssueReport::new, m.id));
+						.toMap(MachineNameId::name, m -> getMachineReports
+								.call(BoardIssueReport::new, m.id()));
 			}
 		});
 	}
@@ -466,6 +464,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	public static final class MachineStateException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -6450838951059318431L;
 
 		private MachineStateException(String msg, Exception exn) {
@@ -566,7 +565,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private void scheduleSerialNumberReads(String machineName) {
 		batchReqs(machineName, "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
-				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
+				id -> new BmpOp(CREATE_SERIAL_READ_REQ, id), BmpOp::completed);
 	}
 
 	private interface InterruptableConsumer<T> {
@@ -600,8 +599,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            How to process the results of an individual operation.
 	 */
 	private void batchReqs(String machineName, String action, int batchSize,
-			Function<Integer, Op> opGenerator,
-			InterruptableConsumer<Op> opResultsHandler) {
+			Function<Integer, BmpOp> opGenerator,
+			InterruptableConsumer<BmpOp> opResultsHandler) {
 		var boards = executeRead(c -> listAllBoards(c, machineName));
 		for (var batch : batch(batchSize, boards)) {
 			/*
@@ -626,7 +625,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 					}
 				}
 			} finally {
-				ops.forEach(Op::close);
+				ops.forEach(BmpOp::close);
 			}
 			if (stop) {
 				// Mark as interrupted
@@ -646,7 +645,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public void updateAllBlacklists(@NotBlank String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving blacklists",
 				props.getBlacklistReadBatchSize(),
-				id -> new Op(CREATE_BLACKLIST_READ, id),
+				id -> new BmpOp(CREATE_BLACKLIST_READ, id),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> {
 							blacklistStore.writeBlacklist(op.boardId, bl);
@@ -719,7 +718,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<Blacklist> readBlacklistFromMachine(int boardId, int bmpId)
 			throws InterruptedException {
-		try (var op = new Op(CREATE_BLACKLIST_READ, boardId)) {
+		try (var op = new BmpOp(CREATE_BLACKLIST_READ, boardId)) {
 			bmpController.triggerSearch(List.of(bmpId));
 			return op.getResult(serial("data", Blacklist.class));
 		}
@@ -744,7 +743,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public void writeBlacklistToMachine(int boardId, int bmpId,
 			@Valid Blacklist blacklist) throws InterruptedException {
-		try (var op = new Op(CREATE_BLACKLIST_WRITE, boardId, blacklist)) {
+		try (var op = new BmpOp(CREATE_BLACKLIST_WRITE, boardId, blacklist)) {
 			bmpController.triggerSearch(List.of(bmpId));
 			op.completed();
 		}
@@ -765,7 +764,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public String getSerialNumber(BoardState board)
 			throws InterruptedException {
-		try (var op = new Op(CREATE_SERIAL_READ_REQ, board.id)) {
+		try (var op = new BmpOp(CREATE_SERIAL_READ_REQ, board.id)) {
 			bmpController.triggerSearch(List.of(board.bmpId));
 			op.completed();
 		}
@@ -788,7 +787,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<ADCInfo> readTemperatureFromMachine(int boardId)
 			throws InterruptedException {
-		try (var op = new Op(CREATE_TEMP_READ_REQ, boardId)) {
+		try (var op = new BmpOp(CREATE_TEMP_READ_REQ, boardId)) {
 			return op.getResult(serial("data", ADCInfo.class));
 		}
 	}
@@ -816,7 +815,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *
 	 * @author Donal Fellows
 	 */
-	private final class Op implements AutoCloseable {
+	private final class BmpOp implements AutoCloseable {
 		private final int op;
 
 		private final Epoch epoch;
@@ -833,7 +832,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 *            will be the board that the operation refers to.
 		 */
 		@MustBeClosed
-		Op(@CompileTimeConstant final String operation, Object... args) {
+		@SuppressWarnings("CompileTimeConstant")
+		BmpOp(@CompileTimeConstant final String operation, Object... args) {
 			boardId = (Integer) args[0];
 			var e = epochs.getBlacklistEpoch(boardId);
 			op = execute(conn -> {

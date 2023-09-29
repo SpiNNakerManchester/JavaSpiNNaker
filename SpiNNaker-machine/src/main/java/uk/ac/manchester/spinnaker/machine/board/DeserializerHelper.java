@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.FormatMethod;
 
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
+
 /**
  * A helper class for JSON deserializers.
  *
@@ -47,17 +49,15 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 		try {
 			CONTEXT.set(ctxt);
 			PARSER.set(p);
-			switch (p.currentToken()) {
-			case START_ARRAY:
-				return deserializeArray();
-			case START_OBJECT:
-				return deserializeObject();
-			case VALUE_STRING:
-				return deserializeString(p.getValueAsString());
-			default:
+			return switch (p.currentToken()) {
+			case START_ARRAY -> deserializeArray();
+			case START_OBJECT -> deserializeObject();
+			case VALUE_STRING -> deserializeString(p.getValueAsString());
+			default -> {
 				ctxt.handleUnexpectedToken(_valueClass, p);
-				return null;
+				yield null;
 			}
+			};
 		} finally {
 			CONTEXT.remove();
 			PARSER.remove();
@@ -168,6 +168,14 @@ abstract class DeserializerHelper<T> extends StdDeserializer<T> {
 			inputMismatch("Duplicate property '%s'", name);
 		}
 		return PARSER.get().nextIntValue(0);
+	}
+
+	void requireSetOnceInt(String name, ValueHolder<Integer> holder)
+			throws IOException {
+		if (!holder.isEmpty()) {
+			inputMismatch("Duplicate property '%s'", name);
+		}
+		holder.setValue(PARSER.get().nextIntValue(0));
 	}
 
 	void missingProperty(String n1, Object v1) throws IOException {

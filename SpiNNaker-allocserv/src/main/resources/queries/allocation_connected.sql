@@ -12,6 +12,11 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- --------------------------------------------------------------------------
+-- Count the number of connected boards (i.e., have at least one path over
+-- enabled links to the root board of the allocation) within a rectangle of
+-- triads. The triads are taken as being full depth.
+
 WITH RECURSIVE
 	args(machine_id, x, y, width, height) AS (
 		SELECT :machine_id, :x, :y, :width, :height),

@@ -19,7 +19,7 @@ import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
 
 import java.util.List;
 
-class Machines {
+final class Machines {
 	/** The machine info. */
 	List<BriefMachineDescription> machines;
 

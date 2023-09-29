@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,8 +41,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -97,6 +97,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
  * @see AuthProperties Configuration properties
  * @author Donal Fellows
  */
+@SuppressWarnings("deprecation")
 @Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider<LocalAuthProviderImpl.TestAPI> {
@@ -189,6 +190,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private static final class SetupException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -3915472090182223715L;
 
 		SetupException(String message) {
@@ -230,28 +232,26 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 
 		try {
-			if (auth instanceof UsernamePasswordAuthenticationToken) {
-				return authenticateDirect(
-						(UsernamePasswordAuthenticationToken) auth);
-			} else if (auth instanceof OAuth2AuthenticationToken) {
+			if (auth instanceof UsernamePasswordAuthenticationToken userpass) {
+				return authenticateDirect(userpass);
+			} else if (auth instanceof OAuth2AuthenticationToken oauth) {
 				/*
 				 * Technically, at this point we're already authenticated as
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var user = ((OAuth2AuthenticationToken) auth).getPrincipal();
+				var user = oauth.getPrincipal();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ user.getAttribute(PREFERRED_USERNAME),
 						user.getAttribute(SUB), new OriginatingCredential(user),
 						auth.getAuthorities());
-			} else if (auth instanceof BearerTokenAuthentication) {
+			} else if (auth instanceof BearerTokenAuthentication bearerAuth) {
 				/*
 				 * Technically, at this point we're already authenticated as
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var bearerAuth = (BearerTokenAuthentication) auth;
 				var token = bearerAuth.getToken();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
@@ -300,7 +300,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/** The classes that we <em>know</em> we don't ever want to handle. */
 	private static final Class<?>[] UNSUPPORTED_AUTH_TOKEN_CLASSES = {
 		AnonymousAuthenticationToken.class, RememberMeAuthenticationToken.class,
-		RunAsUserToken.class, TestingAuthenticationToken.class
+		TestingAuthenticationToken.class
 	};
 
 	@Override
@@ -337,6 +337,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final class PerformedUsernamePasswordAuthenticationToken
 			extends UsernamePasswordAuthenticationToken
 			implements AlreadyDoneMarker {
+		@Serial
 		private static final long serialVersionUID = -3164620207079316329L;
 
 		PerformedUsernamePasswordAuthenticationToken(String name,
@@ -424,19 +425,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	/** Holds either a {@link OAuth2User} or a {@link Jwt}. */
-	private static final class OriginatingCredential {
-		private final OAuth2User user;
-
-		private final OAuth2AccessToken token;
-
+	private record OriginatingCredential(OAuth2User user,
+			OAuth2AccessToken token) {
 		OriginatingCredential(OAuth2User user) {
-			this.user = requireNonNull(user);
-			this.token = null;
+			this(requireNonNull(user), null);
 		}
 
 		OriginatingCredential(OAuth2AccessToken token) {
-			this.user = null;
-			this.token = requireNonNull(token);
+			this(null, requireNonNull(token));
 		}
 
 		@Override
@@ -452,6 +448,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final class OpenIDDerivedAuthenticationToken
 			extends AbstractAuthenticationToken
 			implements OpenIDUserAware, AlreadyDoneMarker {
+		@Serial
 		private static final long serialVersionUID = 970898019896708267L;
 
 		private final String who;
@@ -708,6 +705,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Immutable
 	static final class CollabratoryAuthority extends SimpleGrantedAuthority {
+		@Serial
 		private static final long serialVersionUID = 4964366746649162092L;
 
 		private final String collabratory;
@@ -724,6 +722,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Immutable
 	static final class OrganisationAuthority extends SimpleGrantedAuthority {
+		@Serial
 		private static final long serialVersionUID = 8260068770503054502L;
 
 		private final String organisation;
@@ -847,29 +846,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		mapAuthorities("userinfo", user.getUserInfo(), ga);
 	}
 
+	/**
+	 * Auth succeeded.
+	 *
+	 * @param userId
+	 *            The user ID
+	 * @param trustLevel
+	 *            The trust level.
+	 * @param passInfo
+	 *            The <em>encoded</em> password.
+	 */
 	@Immutable
-	private static final class LocalAuthResult {
-		final int userId;
-
-		final TrustLevel trustLevel;
-
-		final String passInfo;
-
-		/**
-		 * Auth succeeded.
-		 *
-		 * @param u
-		 *            The user ID
-		 * @param t
-		 *            The trust level.
-		 * @param ep
-		 *            The <em>encoded</em> password.
-		 */
-		LocalAuthResult(int u, TrustLevel t, String ep) {
-			userId = u;
-			trustLevel = requireNonNull(t);
-			passInfo = requireNonNull(ep);
-		}
+	private record LocalAuthResult(int userId, TrustLevel trustLevel,
+			String passInfo) {
 	}
 
 	/**
@@ -902,9 +891,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					checkPassword(username, password, details, queries);
 					// Succeeded; finalize into external form
 					return queries.transaction(() -> {
-						queries.noteLoginSuccessForUser(details.userId);
+						queries.noteLoginSuccessForUser(details.userId());
 						// Convert tiered trust level to grant form
-						details.trustLevel.getGrants()
+						details.trustLevel().getGrants()
 								.forEach(authorities::add);
 						return true;
 					});
@@ -982,16 +971,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            The username (now validated as existing).
 	 * @param password
 	 *            The user-provided password that we're checking.
-	 * @param queries
-	 *            How to access the DB.
 	 * @param details
 	 *            The results of looking up the user
+	 * @param queries
+	 *            How to access the DB.
 	 */
 	private void checkPassword(String username, String password,
 			LocalAuthResult details, AuthQueries queries) {
-		if (!passServices.matchPassword(password, details.passInfo)) {
+		if (!passServices.matchPassword(password, details.passInfo())) {
 			queries.transaction(() -> {
-				queries.noteLoginFailureForUser(details.userId, username);
+				queries.noteLoginFailureForUser(details.userId(), username);
 				log.info("login failure for {}: bad password", username);
 				throw new BadCredentialsException("bad password");
 			});
@@ -1112,16 +1101,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private void inflateGroup(GrantedAuthority ga, List<String> collabs,
 			List<String> orgs, AuthQueries queries) {
-		if (ga instanceof CollabratoryAuthority) {
-			var collab = (CollabratoryAuthority) ga;
+		if (ga instanceof CollabratoryAuthority collab) {
 			var collab1 = collab.getCollabratory();
 			if (queries.createGroup(collab1, COLLABRATORY,
 					quotaProps.getDefaultCollabQuota())) {
 				log.info("created collabratory '{}'", collab1);
 			}
 			collabs.add(collab.getCollabratory());
-		} else if (ga instanceof OrganisationAuthority) {
-			var org = (OrganisationAuthority) ga;
+		} else if (ga instanceof OrganisationAuthority org) {
 			var org1 = org.getOrganisation();
 			if (queries.createGroup(org1, ORGANISATION,
 					quotaProps.getDefaultOrgQuota())) {

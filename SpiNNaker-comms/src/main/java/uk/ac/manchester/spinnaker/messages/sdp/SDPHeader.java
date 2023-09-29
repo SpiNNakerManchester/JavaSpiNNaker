@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
@@ -80,8 +80,7 @@ public final class SDPHeader implements SerializableMessage {
 	 * @throws IllegalArgumentException
 	 *             if a bad SDP port is given
 	 */
-	public SDPHeader(Flag flags, SDPLocation destination,
-			int destinationPort) {
+	public SDPHeader(Flag flags, SDPLocation destination, int destinationPort) {
 		this.flags = flags;
 		this.destination = destination;
 		if (destinationPort < 0 || destinationPort > MAX_PORT) {
@@ -116,10 +115,8 @@ public final class SDPHeader implements SerializableMessage {
 	 *
 	 * @param buffer
 	 *            The buffer to read from.
-	 * @param isBMP
-	 *            Whether we're really talking to a BMP.
 	 */
-	public SDPHeader(ByteBuffer buffer, boolean isBMP) {
+	public SDPHeader(ByteBuffer buffer) {
 		// Caller MUST have stripped the leading padding
 		assert buffer.position() == 2 : "leading padding must be skipped";
 		flags = Flag.get(buffer.get());
