@@ -544,6 +544,8 @@ public class FirmwareLoader {
 	 */
 	public void setupBitfile(String handle, int slot, FPGA chip)
 			throws IOException, ProcessException, InterruptedException {
+		log.info("Loading bit file {} to slot {}, FPGA {} of board {}",
+				handle, slot, chip, board);
 		var resource = firmware.resource(handle);
 		int mtime = firmware.mtime(handle);
 		var name = resource.getFilename();
@@ -595,7 +597,7 @@ public class FirmwareLoader {
 			throws InterruptedException, ProcessException, IOException {
 		// Bleah
 		int idx = 0;
-
+		log.info("Setup registers on board {}...", board);
 		setupRegisters(new RegisterSet(FPGA_ALL, SCRM, CLEAR),
 				new RegisterSet(FPGA_ALL, SLEN, SET),
 				new RegisterSet(FPGA_ALL, LEDO, CLEAR));
@@ -606,7 +608,6 @@ public class FirmwareLoader {
 		idx++;
 
 		sleep(SMALL_SLEEP);
-
 		setupBitfile(firmware.bitfileNames.get(idx), idx, FPGA_E_S);
 		idx++;
 		setupBitfile(firmware.bitfileNames.get(idx), idx, FPGA_SW_W);
@@ -614,6 +615,7 @@ public class FirmwareLoader {
 		setupBitfile(firmware.bitfileNames.get(idx), idx, FPGA_N_NE);
 
 		// TODO these read the configuration... but are they necessary?
+		log.info("Reading back firmware data");
 		listFPGABootChunks();
 		logBMPVersion();
 
