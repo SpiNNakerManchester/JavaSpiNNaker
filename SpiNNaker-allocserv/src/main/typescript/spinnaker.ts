@@ -940,15 +940,22 @@ function loadBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	const r = new XMLHttpRequest();
 	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmp_id=" + bmpId);
 	r.onload = () => {
-		const result = JSON.parse(r.response) as object;
-		if (result?.hasOwnProperty("blacklist")) {
-			const blacklist = result["blacklist"] as string;
-			element.value = blacklist;
+		if (r.status == 200) {
+			const result = JSON.parse(r.response) as object;
+			if (result?.hasOwnProperty("blacklist")) {
+				const blacklist = result["blacklist"] as string;
+				element.value = blacklist;
+			}
+			status.innerHTML = "Blacklist loaded";
+			element.disabled = false;
+			saveButton.disabled = false;
+			loadButton.disabled = false;
+		} else {
+			status.innerHTML = "Failed load blacklist: " + r.status + " - " + r.statusText + ": " + r.response;
+			element.disabled = true;
+			saveButton.disabled = true;
+			loadButton.disabled = false;
 		}
-		status.innerHTML = "Blacklist loaded";
-		element.disabled = false;
-		saveButton.disabled = false;
-		loadButton.disabled = false;
 	};
 	r.onerror = () => {
 		status.innerHTML = "Error reading blacklist!";
@@ -998,7 +1005,12 @@ function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	r.setRequestHeader(header.content, token.content);
 	r.send(JSON.stringify({ "boardId": boardId, "bmpId": bmpId, "present": true, "synched": true, "blacklist": element.value}));
 	r.onload = () => {
-		status.innerHTML = "Blacklist saved";
+		if (r.status == 200) {
+			status.innerHTML = "Blacklist saved";
+		} else {
+			status.innerHTML = "Failed save blacklist: " + r.status + " - " + r.statusText + ": " + r.response;
+		}
+
 		element.disabled = false;
 		saveButton.disabled = false;
 		loadButton.disabled = false;
@@ -1038,7 +1050,11 @@ function reloadFirmware(sourceUri: string, boardId: number, bmpId: number, statu
 	r.open("GET", sourceUri + "?board_id=" + boardId + "&bmp_id=" + bmpId);
 
 	r.onload = () => {
-		status.innerHTML = "Firmware reloaded";
+		if (r.status == 200) {
+			status.innerHTML = "Firmware reloaded";
+		} else {
+			status.innerHTML = "Failed to load firmware: " + r.status + " - " + r.statusText + ": " + r.response;
+		}
 	};
 	r.onerror = () => {
 		status.innerHTML = "Error reloading firmware!";
