@@ -19,7 +19,7 @@ limitations under the License.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.1.0-SNAPSHOT</version>
+		<version>7.1.0</version>
 	</parent>
 	<artifactId>SpiNNaker-nmpimodel</artifactId>
 	<name>SpiNNaker NMPI Service Shared Model</name>
