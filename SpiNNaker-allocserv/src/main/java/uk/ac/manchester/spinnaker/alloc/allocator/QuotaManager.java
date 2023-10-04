@@ -337,6 +337,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	private QuotaInfo parseQuotaData(List<Project> projects) {
 		log.debug("Parsing {} projects", projects.size());
+		String units = null;
 		long total = 0;
 		for (var project : projects) {
 			log.debug("Project {} has {} quotas", project.getCollab(),
@@ -345,8 +346,13 @@ public class QuotaManager extends DatabaseAwareBean {
 				if (!quota.getPlatform().equals(quotaProps.getNMPIPlaform())) {
 					continue;
 				}
-				log.debug("Quota for {} = {}{} ({} used)", quota.getPlatform(),
+				log.debug("Quota for {} = {} {} ({} used)", quota.getPlatform(),
 						quota.getLimit(), quota.getUnits(), quota.getUsage());
+				if (units == null) {
+					units = quota.getUnits();
+				} else if (!units.equals(quota.getUnits())) {
+					throw new RuntimeException("Quotas have multiple units!");
+				}
 
 				switch (quota.getUnits()) {
 				case BOARD_SECONDS:
@@ -362,7 +368,7 @@ public class QuotaManager extends DatabaseAwareBean {
 				}
 			}
 		}
-		return new QuotaInfo(total, BOARD_SECONDS);
+		return new QuotaInfo(total, units);
 	}
 
 	final Optional<String> mayCreateNMPISession(String collab) {
