@@ -432,53 +432,33 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			 * @throws IOException
 			 *             If anything goes wrong with writing.
 			 */
-			void report(HasCoreLocation core, long time, int size,
+			void report(HasCoreLocation core, long time, List<ByteBuffer> data,
 					MemoryLocation addr) throws IOException {
 				if (writeReports) {
+					var size = data.stream().reduce(
+							0, (r, b) -> r + b.limit(), Integer::sum);
 					writeReport(core, time, size, addr, this);
 				}
 			}
 		}
 
-		/**
-		 * Writes the contents of a region. Caller is responsible for ensuring
-		 * this method has work to do.
-		 *
-		 * @param core
-		 *            Which core to write to. Does not need to refer to a
-		 *            monitor core.
-		 * @param region
-		 *            The region to write.
-		 * @param baseAddress
-		 *            Where to write the region.
-		 * @param gather
-		 *            The information about where messages are routed via.
-		 * @return How many bytes were actually written.
-		 * @throws IOException
-		 *             If anything goes wrong with I/O.
-		 * @throws ProcessException
-		 *             If SCAMP rejects the request.
-		 * @throws InterruptedException
-		 *             If communications are interrupted.
-		 */
 		@Override
-		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
-				MemoryLocation baseAddress)
+		protected void writeRegion(HasCoreLocation core,
+				List<ByteBuffer> content, MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
-			int written = content.remaining();
 			try (var recorder = new MissingRecorder()) {
 				long start = nanoTime();
 				fastWrite(core, baseAddress, content);
 				long end = nanoTime();
-				recorder.report(
-						core, end - start, content.limit(), baseAddress);
+				recorder.report(core, end - start, content, baseAddress);
 			}
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
-				var readBack = txrx.readMemory(
-						core, baseAddress, content.remaining());
-				compareBuffers(content, readBack);
+				for (var buf : content) {
+					var readBack = txrx.readMemory(
+							core, baseAddress, buf.remaining());
+					compareBuffers(buf, readBack);
+				}
 			}
-			return written;
 		}
 
 		/**
@@ -537,7 +517,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *            If communications are interrupted.
 		 */
 		private void fastWrite(HasCoreLocation core, MemoryLocation baseAddress,
-				ByteBuffer data)
+				List<ByteBuffer> data)
 						throws IOException, InterruptedException {
 			int timeoutCount = 0;
 			int numPackets = computeNumPackets(data);
@@ -687,10 +667,10 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		private int sendInitialPackets(MemoryLocation baseAddress,
-				ByteBuffer data, GathererProtocol protocol, int transactionId,
-				int numPackets) throws IOException {
-			log.info("streaming {} bytes in {} packets using transaction {}",
-					data.remaining(), numPackets, transactionId);
+				List<ByteBuffer> data, GathererProtocol protocol,
+				int transactionId,	int numPackets) throws IOException {
+			log.debug("streaming {} packets using transaction {}",
+					numPackets, transactionId);
 			log.debug("sending packet #{}", 0);
 			connection.send(protocol.dataToLocation(baseAddress, numPackets,
 					transactionId));
@@ -704,8 +684,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
-				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId)
-				throws IOException {
+				List<ByteBuffer> dataToSend, BitSet missingSeqNums,
+				int transactionId) throws IOException {
 			log.info("retransmitting {} packets", missingSeqNums.cardinality());
 
 			missingSeqNums.stream().forEach(seqNum -> {

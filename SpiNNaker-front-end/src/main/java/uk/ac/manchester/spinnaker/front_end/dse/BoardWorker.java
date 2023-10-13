@@ -23,7 +23,10 @@ import java.nio.ByteBuffer;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -166,17 +169,32 @@ abstract class BoardWorker {
 		pointerTable.putInt(DSE_VERSION);
 
 		var regionInfos = storage.getRegionPointersAndContent(xyp);
+		var buffersToWrite = new ArrayList<ByteBuffer>();
+		MemoryLocation address = null;
+		var nextAddress = -1;
 		for (int region = 0; region < MAX_MEM_REGIONS; region++) {
 			if (regionInfos.containsKey(region)) {
 				var regionInfo = regionInfos.get(region);
 				pointerTable.putInt(regionInfo.pointer.address);
 				if (regionInfo.content != null) {
-					var written = writeRegion(
-							xyp, regionInfo.content, regionInfo.pointer);
+
+					// If the next region doesn't start where the last one
+					// ended, send the regions gathered
+					if (regionInfo.pointer.address != nextAddress &&
+							!buffersToWrite.isEmpty()) {
+						writeRegion(xyp, buffersToWrite, address);
+						address = null;
+					}
+					buffersToWrite.add(regionInfo.content);
+					if (address == null) {
+						address = regionInfo.pointer;
+					}
+					nextAddress = regionInfo.pointer.address +
+							regionInfo.content.remaining();
 					// Work out the checksum
-					int nWords = ceildiv(written, INT_SIZE);
 					var buf = regionInfo.content.duplicate()
 							.order(LITTLE_ENDIAN).rewind().asIntBuffer();
+					int nWords = ceildiv(buf.remaining(), INT_SIZE);
 					long sum = 0;
 					for (int i = 0; i < nWords; i++) {
 						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
@@ -212,7 +230,6 @@ abstract class BoardWorker {
 	 *            Data to write
 	 * @param baseAddress
 	 *            Where to write the region.
-	 * @return How many bytes were actually written.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
 	 * @throws ProcessException
@@ -220,7 +237,7 @@ abstract class BoardWorker {
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	protected abstract int writeRegion(HasCoreLocation core,
-			ByteBuffer content, MemoryLocation baseAddress)
+	protected abstract void writeRegion(HasCoreLocation core,
+			List<ByteBuffer> content, MemoryLocation baseAddress)
 			throws IOException, ProcessException, InterruptedException;
 }
