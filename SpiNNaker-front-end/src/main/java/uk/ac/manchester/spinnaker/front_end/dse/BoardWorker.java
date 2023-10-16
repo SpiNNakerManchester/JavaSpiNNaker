@@ -21,16 +21,13 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BAS
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -42,8 +39,6 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 abstract class BoardWorker {
-	private static final Logger log =
-			getLogger(BoardWorker.class);
 
 	/** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
@@ -183,17 +178,11 @@ abstract class BoardWorker {
 				var regionInfo = regionInfos.get(region);
 				pointerTable.putInt(regionInfo.pointer.address);
 				if (regionInfo.content != null) {
-					log.info("Region {} address {} size {}, next {}", region,
-							regionInfo.pointer,
-							regionInfo.content.remaining(),
-							format("%#010x", nextAddress));
 
 					// If the next region doesn't start where the last one
 					// ended, send the regions gathered
 					if (regionInfo.pointer.address != nextAddress
 							&& !buffersToWrite.isEmpty()) {
-						log.info("Writing {} regions to {}",
-								buffersToWrite.size(), address);
 						writeBuffers(xyp, buffersToWrite, address);
 						buffersToWrite.clear();
 						address = null;
@@ -202,8 +191,8 @@ abstract class BoardWorker {
 					if (address == null) {
 						address = regionInfo.pointer;
 					}
-					nextAddress = regionInfo.pointer.address +
-							regionInfo.content.remaining();
+					nextAddress = regionInfo.pointer.address
+							+ regionInfo.content.remaining();
 					// Work out the checksum
 					var buf = regionInfo.content.duplicate()
 							.order(LITTLE_ENDIAN).rewind().asIntBuffer();
@@ -230,8 +219,6 @@ abstract class BoardWorker {
 		}
 
 		if (!buffersToWrite.isEmpty()) {
-			log.info("Writing remaining {} regions to {}",
-					buffersToWrite.size(), address);
 			writeBuffers(xyp, buffersToWrite, address);
 		}
 
