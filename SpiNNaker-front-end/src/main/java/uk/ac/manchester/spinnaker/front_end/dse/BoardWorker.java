@@ -190,8 +190,8 @@ abstract class BoardWorker {
 
 					// If the next region doesn't start where the last one
 					// ended, send the regions gathered
-					if (/*regionInfo.pointer.address != nextAddress
-							&& */ !buffersToWrite.isEmpty()) {
+					if (regionInfo.pointer.address != nextAddress
+							&& !buffersToWrite.isEmpty()) {
 						log.info("Writing {} regions to {}",
 								buffersToWrite.size(), address);
 						writeBuffers(xyp, buffersToWrite, address);
