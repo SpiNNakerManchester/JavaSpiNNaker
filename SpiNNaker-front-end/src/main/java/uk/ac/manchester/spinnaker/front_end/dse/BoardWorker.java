@@ -183,6 +183,7 @@ abstract class BoardWorker {
 					if (regionInfo.pointer.address != nextAddress &&
 							!buffersToWrite.isEmpty()) {
 						writeRegion(xyp, buffersToWrite, address);
+						buffersToWrite.clear();
 						address = null;
 					}
 					buffersToWrite.add(regionInfo.content);
@@ -213,6 +214,10 @@ abstract class BoardWorker {
 				pointerTable.putInt(0);
 				pointerTable.putInt(0);
 			}
+		}
+
+		if (!buffersToWrite.isEmpty()) {
+			writeRegion(xyp, buffersToWrite, address);
 		}
 
 		var startAddress = storage.getStartAddress(xyp);
