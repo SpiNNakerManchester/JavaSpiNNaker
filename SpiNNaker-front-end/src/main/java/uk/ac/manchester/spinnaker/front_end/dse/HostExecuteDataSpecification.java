@@ -122,9 +122,12 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		protected void writeRegion(HasCoreLocation core,
 				List<ByteBuffer> content, MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
+			var address = baseAddress;
 			for (var buf : content) {
 				var data = buf.duplicate();
-				txrx.writeMemory(core.getScampCore(), baseAddress, data);
+				var size = buf.remaining();
+				txrx.writeMemory(core.getScampCore(), address, data);
+				address.add(size);
 			}
 		}
 	}

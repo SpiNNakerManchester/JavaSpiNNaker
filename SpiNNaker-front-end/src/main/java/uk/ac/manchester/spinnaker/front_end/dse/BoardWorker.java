@@ -36,7 +36,6 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 abstract class BoardWorker {
 	/** The transceiver for talking to the SpiNNaker machine. */
@@ -195,7 +194,7 @@ abstract class BoardWorker {
 					// Work out the checksum
 					var buf = regionInfo.content.duplicate()
 							.order(LITTLE_ENDIAN).rewind().asIntBuffer();
-					int nWords = ceildiv(buf.remaining(), INT_SIZE);
+					int nWords = buf.remaining();
 					long sum = 0;
 					for (int i = 0; i < nWords; i++) {
 						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;

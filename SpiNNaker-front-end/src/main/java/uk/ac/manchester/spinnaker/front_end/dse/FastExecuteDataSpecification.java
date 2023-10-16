@@ -432,11 +432,9 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			 * @throws IOException
 			 *             If anything goes wrong with writing.
 			 */
-			void report(HasCoreLocation core, long time, List<ByteBuffer> data,
+			void report(HasCoreLocation core, long time, int size,
 					MemoryLocation addr) throws IOException {
 				if (writeReports) {
-					var size = data.stream().reduce(
-							0, (r, b) -> r + b.limit(), Integer::sum);
 					writeReport(core, time, size, addr, this);
 				}
 			}
@@ -446,18 +444,22 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		protected void writeRegion(HasCoreLocation core,
 				List<ByteBuffer> content, MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
+			var nBytes = content.stream().reduce(
+					0, (r, b) -> r + b.remaining(), Integer::sum);
+			var data = ByteBuffer.allocate(nBytes);
+			for (var buf : content) {
+				data.put(buf);
+			}
 			try (var recorder = new MissingRecorder()) {
 				long start = nanoTime();
-				fastWrite(core, baseAddress, content);
+				fastWrite(core, baseAddress, data);
 				long end = nanoTime();
-				recorder.report(core, end - start, content, baseAddress);
+				recorder.report(core, end - start, data.limit(), baseAddress);
 			}
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
-				for (var buf : content) {
-					var readBack = txrx.readMemory(
-							core, baseAddress, buf.remaining());
-					compareBuffers(buf, readBack);
-				}
+				var readBack = txrx.readMemory(
+						core, baseAddress, data.remaining());
+				compareBuffers(data, readBack);
 			}
 		}
 
@@ -517,8 +519,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *            If communications are interrupted.
 		 */
 		private void fastWrite(HasCoreLocation core, MemoryLocation baseAddress,
-				List<ByteBuffer> data)
-						throws IOException, InterruptedException {
+				ByteBuffer data) throws IOException, InterruptedException {
 			int timeoutCount = 0;
 			int numPackets = computeNumPackets(data);
 			var protocol = new GathererProtocol(core);
@@ -667,7 +668,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		private int sendInitialPackets(MemoryLocation baseAddress,
-				List<ByteBuffer> data, GathererProtocol protocol,
+				ByteBuffer data, GathererProtocol protocol,
 				int transactionId,	int numPackets) throws IOException {
 			log.debug("streaming {} packets using transaction {}",
 					numPackets, transactionId);
@@ -684,7 +685,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
-				List<ByteBuffer> dataToSend, BitSet missingSeqNums,
+				ByteBuffer dataToSend, BitSet missingSeqNums,
 				int transactionId) throws IOException {
 			log.info("retransmitting {} packets", missingSeqNums.cardinality());
 

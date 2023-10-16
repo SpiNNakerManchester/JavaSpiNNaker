@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
@@ -30,9 +31,6 @@ import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.slice;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -148,14 +146,20 @@ class FastDataInProtocol {
 	 * @throws RuntimeException
 	 *             If the sequence number is nonsense.
 	 */
-	SDPMessage seqData(List<ByteBuffer> data, int seqNum, int transactionId) {
+	SDPMessage seqData(ByteBuffer data, int seqNum, int transactionId) {
 		var payload = allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
-		int bytePos = calculatePositionFromSequenceNumber(seqNum);
-		var pos = calculatePostionInList(bytePos, data);
+		int position = calculatePositionFromSequenceNumber(seqNum);
+		if (position >= data.limit()) {
+			throw new RuntimeException(format(
+					"attempt to write off end of buffer due to "
+							+ "over-large sequence number (%d) given "
+							+ "that only %d bytes are to be sent",
+					seqNum, toUnsignedLong(data.limit())));
+		}
 		payload.putInt(SEND_SEQ_DATA.value);
 		payload.putInt(transactionId);
 		payload.putInt(seqNum);
-		putBuffer(data.get(pos.getLeft()), pos.getRight(), payload);
+		putBuffer(data, position, payload);
 		return new SDPMessage(header(), payload);
 	}
 
@@ -168,21 +172,6 @@ class FastDataInProtocol {
 
 	private int calculatePositionFromSequenceNumber(int seqNum) {
 		return DATA_IN_FULL_PACKET_WITH_KEY * seqNum;
-	}
-
-	private Pair<Integer, Integer> calculatePostionInList(int bytePos,
-			List<ByteBuffer> data) {
-		int pos = 0;
-		while (pos < data.size() && bytePos > data.get(pos).limit()) {
-			bytePos -= data.get(pos).limit();
-			pos += 1;
-		}
-		if (pos >= data.size()) {
-			throw new RuntimeException(format(
-					"attempt to read {} bytes goes beyond end of buffers!",
-					bytePos));
-		}
-		return Pair.of(pos, bytePos);
 	}
 
 	/**
@@ -207,10 +196,7 @@ class FastDataInProtocol {
 	 *            The data being sent. (This operation only reads.)
 	 * @return The number of packets (i.e. 1 more than the max sequence number).
 	 */
-	static int computeNumPackets(List<ByteBuffer> data) {
-		return ceildiv(
-				data.stream().reduce(
-						0, (r, b) -> r + b.remaining(), Integer::sum),
-				DATA_IN_FULL_PACKET_WITH_KEY);
+	static int computeNumPackets(ByteBuffer data) {
+		return ceildiv(data.remaining(), DATA_IN_FULL_PACKET_WITH_KEY);
 	}
 }
