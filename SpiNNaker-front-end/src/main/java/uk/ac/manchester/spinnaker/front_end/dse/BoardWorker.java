@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BAS
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -183,8 +184,9 @@ abstract class BoardWorker {
 				pointerTable.putInt(regionInfo.pointer.address);
 				if (regionInfo.content != null) {
 					log.info("Region {} address {} size {}, next {}", region,
-							regionInfo.pointer.address,
-							regionInfo.content.remaining(), nextAddress);
+							regionInfo.pointer,
+							regionInfo.content.remaining(),
+							format("%#010x", nextAddress));
 
 					// If the next region doesn't start where the last one
 					// ended, send the regions gathered
