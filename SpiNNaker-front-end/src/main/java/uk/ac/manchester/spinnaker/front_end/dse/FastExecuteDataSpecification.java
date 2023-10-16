@@ -442,24 +442,19 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 		@Override
 		protected void writeRegion(HasCoreLocation core,
-				List<ByteBuffer> content, MemoryLocation baseAddress)
+				ByteBuffer content, MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
-			var nBytes = content.stream().reduce(
-					0, (r, b) -> r + b.remaining(), Integer::sum);
-			var data = ByteBuffer.allocate(nBytes);
-			for (var buf : content) {
-				data.put(buf);
-			}
 			try (var recorder = new MissingRecorder()) {
 				long start = nanoTime();
-				fastWrite(core, baseAddress, data);
+				fastWrite(core, baseAddress, content);
 				long end = nanoTime();
-				recorder.report(core, end - start, data.limit(), baseAddress);
+				recorder.report(
+						core, end - start, content.limit(), baseAddress);
 			}
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
 				var readBack = txrx.readMemory(
-						core, baseAddress, data.remaining());
-				compareBuffers(data, readBack);
+						core, baseAddress, content.remaining());
+				compareBuffers(content, readBack);
 			}
 		}
 

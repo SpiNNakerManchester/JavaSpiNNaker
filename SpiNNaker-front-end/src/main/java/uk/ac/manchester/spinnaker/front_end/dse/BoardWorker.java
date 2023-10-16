@@ -179,9 +179,10 @@ abstract class BoardWorker {
 
 					// If the next region doesn't start where the last one
 					// ended, send the regions gathered
-					if (regionInfo.pointer.address != nextAddress &&
-							!buffersToWrite.isEmpty()) {
-						writeRegion(xyp, buffersToWrite, address);
+					if (regionInfo.pointer.address != nextAddress
+							&& !buffersToWrite.isEmpty()) {
+
+						writeBuffers(xyp, buffersToWrite, address);
 						buffersToWrite.clear();
 						address = null;
 					}
@@ -216,12 +217,24 @@ abstract class BoardWorker {
 		}
 
 		if (!buffersToWrite.isEmpty()) {
-			writeRegion(xyp, buffersToWrite, address);
+			writeBuffers(xyp, buffersToWrite, address);
 		}
 
 		var startAddress = storage.getStartAddress(xyp);
 		pointerTable.flip();
 		txrx.writeMemory(xyp.getScampCore(), startAddress, pointerTable);
+	}
+
+	private void writeBuffers(CoreLocation xyp, List<ByteBuffer> buffers,
+			MemoryLocation address)
+					throws IOException, ProcessException, InterruptedException {
+		var nBytes = buffers.stream().reduce(
+				0, (r, b) -> r + b.remaining(), Integer::sum);
+		var data = ByteBuffer.allocate(nBytes);
+		for (var buf : buffers) {
+			data.put(buf);
+		}
+		writeRegion(xyp, data, address);
 	}
 
 	/**
@@ -242,6 +255,6 @@ abstract class BoardWorker {
 	 *             If communications are interrupted.
 	 */
 	protected abstract void writeRegion(HasCoreLocation core,
-			List<ByteBuffer> content, MemoryLocation baseAddress)
+			ByteBuffer content, MemoryLocation baseAddress)
 			throws IOException, ProcessException, InterruptedException;
 }

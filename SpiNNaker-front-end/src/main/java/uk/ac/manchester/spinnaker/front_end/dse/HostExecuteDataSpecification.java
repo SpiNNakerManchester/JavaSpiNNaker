@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
@@ -119,16 +118,11 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 
 		@Override
-		protected void writeRegion(HasCoreLocation core,
-				List<ByteBuffer> content, MemoryLocation baseAddress)
+		protected void writeRegion(HasCoreLocation core, ByteBuffer content,
+				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
-			var address = baseAddress;
-			for (var buf : content) {
-				var data = buf.duplicate();
-				var size = data.remaining();
-				txrx.writeMemory(core.getScampCore(), address, data);
-				address.add(size);
-			}
+			var data = content.duplicate();
+			txrx.writeMemory(core.getScampCore(), baseAddress, data);
 		}
 	}
 }
