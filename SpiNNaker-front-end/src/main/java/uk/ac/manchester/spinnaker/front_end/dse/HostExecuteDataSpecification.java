@@ -125,7 +125,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			var address = baseAddress;
 			for (var buf : content) {
 				var data = buf.duplicate();
-				var size = buf.remaining();
+				var size = data.remaining();
 				txrx.writeMemory(core.getScampCore(), address, data);
 				address.add(size);
 			}
