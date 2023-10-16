@@ -245,10 +245,11 @@ abstract class BoardWorker {
 					throws IOException, ProcessException, InterruptedException {
 		var nBytes = buffers.stream().reduce(
 				0, (r, b) -> r + b.remaining(), Integer::sum);
-		var data = ByteBuffer.allocate(nBytes);
+		var data = ByteBuffer.allocate(nBytes).order(LITTLE_ENDIAN);
 		for (var buf : buffers) {
 			data.put(buf);
 		}
+		data.rewind();
 		writeRegion(xyp, data, address);
 	}
 
