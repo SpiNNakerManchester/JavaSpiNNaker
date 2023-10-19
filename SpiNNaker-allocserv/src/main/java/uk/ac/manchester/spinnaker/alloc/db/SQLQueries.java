@@ -809,7 +809,8 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("change_id")
 	protected static final String ERROR_PENDING =
-			"UPDATE pending_changes SET is_error=1 WHERE change_id = :change_id";
+			"UPDATE pending_changes SET is_error=1 "
+			+ "WHERE change_id = :change_id";
 
 	/**
 	 * Get descriptions of how to move from a board to its neighbours.
@@ -862,7 +863,7 @@ public abstract class SQLQueries {
 	@ResultColumn("n_errors")
 	protected static final String COUNT_CHANGES_FOR_JOB =
 			"SELECT COUNT(change_id) as n_changes, "
-					+ "COALESCE(SUM(is_error), 0) as n_errors "
+					+ "SUM(is_error) as n_errors "
 					+ "FROM pending_changes "
 					+ "WHERE job_id = :job_id AND from_state = :from_state "
 					+ "AND to_state = :to_state";
