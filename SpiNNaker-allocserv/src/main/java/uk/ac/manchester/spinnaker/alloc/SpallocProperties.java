@@ -1598,6 +1598,9 @@ public class SpallocProperties {
 		 * @param dummy
 		 *            Whether to use a dummy transceiver. Useful for testing
 		 *            only.
+		 * @param offWaitTime
+		 *            How long to wait between powering off and powering on
+		 *            a board.
 		 */
 		public TxrxProperties(@DefaultValue("10s") Duration period,
 				@DefaultValue("15s") Duration probeInterval,

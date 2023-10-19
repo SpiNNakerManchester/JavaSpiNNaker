@@ -553,7 +553,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("change_id", "job_id", "board_id", "power",
 						"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_se",
 						"fpga_nw", "from_state", "to_state",
-						"board_num", "bmp_id"),
+						"board_num", "bmp_id", "power_off_timestamp"),
 						q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, NO_JOB));
 			});

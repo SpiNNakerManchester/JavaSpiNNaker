@@ -326,7 +326,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		private final int nErrors;
 
-		public ChangeStatus(Row row) {
+		ChangeStatus(Row row) {
 			nChanges = row.getInt("n_changes");
 			nErrors = row.getInt("n_errors");
 		}
