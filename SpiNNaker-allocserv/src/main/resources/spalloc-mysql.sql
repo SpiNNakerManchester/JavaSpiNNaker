@@ -398,8 +398,8 @@ CREATE TABLE IF NOT EXISTS pending_changes (
 		CONSTRAINT pending_changes_fpga_nw CHECK (fpga_nw IN (0, 1)),
 	fpga_se INTEGER NOT NULL	-- Whether to switch the southeast FPGA on
 		CONSTRAINT pending_changes_fpga_se CHECK (fpga_se IN (0, 1)),
-	error INTEGER NOT NULL DEFAULT (0)
-		CONSTRAINT pending_changes_error CHECK (error IN (0, 1)),
+	is_error INTEGER NOT NULL DEFAULT (0)
+		CONSTRAINT pending_changes_error CHECK (is_error IN (0, 1)),
 	from_state INTEGER NOT NULL DEFAULT (0),
 		FOREIGN KEY (from_state)
 		REFERENCES job_states(id) ON DELETE RESTRICT,
