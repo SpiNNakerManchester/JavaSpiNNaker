@@ -809,7 +809,8 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("change_id")
 	protected static final String ERROR_PENDING =
-			"UPDATE pending_changes SET is_error=1 WHERE change_id = :change_id";
+			"UPDATE pending_changes SET is_error=1 "
+			+ "WHERE change_id = :change_id";
 
 	/**
 	 * Get descriptions of how to move from a board to its neighbours.
