@@ -1020,7 +1020,11 @@ public class BMPController extends DatabaseAwareBean {
 			offLinks = List.of(Direction.values()).stream().filter(
 					link -> !row.getBoolean(link.columnName)).collect(
 							Collectors.toList());
-			powerOffTime = row.getInstant("power_off_timestamp");
+			Instant powerOff = row.getInstant("power_off_timestamp");
+			if (powerOff == null) {
+				powerOff = Instant.EPOCH;
+			}
+			powerOffTime = powerOff;
 		}
 
 		boolean isSameJob(PowerChange p) {
