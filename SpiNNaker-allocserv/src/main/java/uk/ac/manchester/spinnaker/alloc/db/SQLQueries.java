@@ -678,7 +678,6 @@ public abstract class SQLQueries {
 	/**
 	 * Tell a job that it is allocated. Doesn't set the state.
 	 *
-	 * @see #SET_STATE_PENDING
 	 * @see AllocatorTask
 	 */
 	@Parameter("width")
@@ -690,7 +689,7 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	protected static final String ALLOCATE_BOARDS_JOB = "UPDATE jobs SET "
 			+ "width = :width, height = :height, depth = :depth, "
-			+ "num_pending = 0, root_id = :board_id, "
+			+ "root_id = :board_id, "
 			+ "allocation_size = :num_boards, "
 			+ "allocation_timestamp = UNIX_TIMESTAMP(), "
 			+ "allocated_root = :allocated_board_id "
@@ -761,27 +760,23 @@ public abstract class SQLQueries {
 					+ "UNIX_TIMESTAMP()";
 
 	/**
-	 * Set the state and number of pending changes for a job.
+	 * Set the state for a job.
 	 *
 	 * @see AllocatorTask
 	 */
 	@Parameter("job_state")
-	@Parameter("num_pending")
 	@Parameter("job_id")
 	protected static final String SET_STATE_PENDING =
-			"UPDATE jobs SET job_state = :job_state, "
-					+ "num_pending = :num_pending WHERE job_id = :job_id";
+			"UPDATE jobs SET job_state = :job_state WHERE job_id = :job_id";
 
 	/**
 	 * Set the state destroyed and number of pending changes for a job.
 	 *
 	 * @see AllocatorTask
 	 */
-	@Parameter("num_pending")
 	@Parameter("job_id")
 	protected static final String SET_STATE_DESTROYED =
 			"UPDATE jobs SET job_state = 4, "
-					+ "num_pending = :num_pending, "
 					+ "death_timestamp = UNIX_TIMESTAMP() "
 					+ "WHERE job_id = :job_id";
 
@@ -797,6 +792,24 @@ public abstract class SQLQueries {
 	@Parameter("change_id")
 	protected static final String FINISHED_PENDING =
 			"DELETE FROM pending_changes WHERE change_id = :change_id";
+
+	/**
+	 * Delete a requests to change the power of a board. Used once the errors
+	 * have been handled.
+	 */
+	@Parameter("job_id")
+	@Parameter("from_state")
+	@Parameter("to_state")
+	protected static final String DELETE_PENDING =
+			"DELETE FROM pending_changes WHERE job_id = :job_id "
+			+ "AND from_state = :from_state AND to_state = :to_state";
+
+	/**
+	 * Set a request to change the power of a board to an error.
+	 */
+	@Parameter("change_id")
+	protected static final String ERROR_PENDING =
+			"UPDATE pending_changes SET error=1 WHERE change_id = :change_id";
 
 	/**
 	 * Get descriptions of how to move from a board to its neighbours.
@@ -829,10 +842,12 @@ public abstract class SQLQueries {
 	@ResultColumn("to_state")
 	@ResultColumn("board_num")
 	@ResultColumn("bmp_id")
+	@ResultColumn("power_off_timestamp")
 	protected static final String GET_CHANGES =
 			"SELECT change_id, job_id, pending_changes.board_id, power, "
 					+ "fpga_n, fpga_s, fpga_e, fpga_w, fpga_se, fpga_nw, "
-					+ "from_state, to_state, board_num, bmp_id "
+					+ "from_state, to_state, board_num, bmp_id, "
+					+ "power_off_timestamp "
 					+ "FROM pending_changes JOIN boards USING (board_id) "
 					+ "WHERE bmp_id = :bmp_id "
 					+ "ORDER BY change_id";
@@ -844,8 +859,11 @@ public abstract class SQLQueries {
 	@Parameter("from_state")
 	@Parameter("to_state")
 	@ResultColumn("n_changes")
+	@ResultColumn("n_errors")
 	protected static final String COUNT_CHANGES_FOR_JOB =
-			"SELECT COUNT(change_id) as n_changes from pending_changes "
+			"SELECT COUNT(change_id) as n_changes, "
+					+ "COALESCE(SUM(error), 0) as n_errors "
+					+ "FROM pending_changes "
 					+ "WHERE job_id = :job_id AND from_state = :from_state "
 					+ "AND to_state = :to_state";
 

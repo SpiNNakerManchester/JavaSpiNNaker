@@ -1276,7 +1276,7 @@ class DQLTest extends SimpleDBTestBase {
 				assertEquals(List.of("job_id", "from_state", "to_state"),
 						q.getParameters());
 				assertEquals(
-						List.of("n_changes"),
+						List.of("n_changes", "n_errors"),
 						q.getColumns());
 				assertEquals(0, q.call1(integer("n_changes"), -1, 0, 0)
 						.orElseThrow());

@@ -26,7 +26,6 @@ import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.READ_TEMP;
 import static uk.ac.manchester.spinnaker.alloc.bmp.NonBootOperation.WRITE_BL;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
-import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -560,12 +559,10 @@ public class BMPController extends DatabaseAwareBean {
 		 * @return Whether the state of boards or jobs has changed.
 		 */
 		private void failed() {
-			var resetJobAlloc = false;
 			try (var c = getConnection();
-					var deallocateBoards = c.update(DEALLOCATE_BMP_BOARDS_JOB);
-					var deleteChange = c.update(FINISHED_PENDING);
+					var errorChange = c.update(ERROR_PENDING);
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
-				resetJobAlloc = c.transaction(() -> {
+				c.transaction(() -> {
 					// We should mark the boards as off
 					int turnedOff =
 							powerOffBoards.stream().map(this::getBoardId)
@@ -576,27 +573,18 @@ public class BMPController extends DatabaseAwareBean {
 							powerOnBoards.stream().map(this::getBoardId)
 									.mapToInt(setBoardPowerOff::call).sum();
 
-					// Deallocate the boards on this bmp from the job;
-					// other boards can be deallocated elsewhere.
-					deallocateBoards.call(jobId, bmpId);
-
-					// Delete change ids as they are done even if failed.
+					// Mark changes as failed.
 					var completed = changeIds.stream().mapToInt(
-							deleteChange::call).sum();
+							errorChange::call).sum();
 
 					log.debug(
 							"BMP ACTION FAILED on {} ({}:{}->{}) off:{} "
 							+ "completed:{}",
 							bmpId, jobId, from, to, turnedOff, completed);
-
-					// If we were meant to be powering up, reset the allocation
-					// once done here.
-					return (to == READY && powerOffBoards.isEmpty());
 				});
 			}
-			if (resetJobAlloc) {
-				allocator.resetPowerOnFailure(jobId);
-			}
+			// Tell the allocator something has happened
+			allocator.updateJob(jobId, from, to);
 		}
 
 		/**
@@ -1011,6 +999,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		final Integer boardNum;
 
+		final Instant powerOffTime;
+
 		final boolean power;
 
 		final JobState from;
@@ -1030,6 +1020,7 @@ public class BMPController extends DatabaseAwareBean {
 			offLinks = List.of(Direction.values()).stream().filter(
 					link -> !row.getBoolean(link.columnName)).collect(
 							Collectors.toList());
+			powerOffTime = row.getInstant("power_off_timestamp");
 		}
 
 		boolean isSameJob(PowerChange p) {
@@ -1072,6 +1063,18 @@ public class BMPController extends DatabaseAwareBean {
 			}
 		}
 
+		private boolean waitedLongEnough(PowerChange change) {
+			// Power off can be done any time
+			if (!change.power) {
+				return true;
+			}
+
+			// Power on should wait until a time after last off
+			Instant powerOnTime = change.powerOffTime.plus(
+					props.getOffWaitTime());
+			return powerOnTime.isBefore(Instant.now());
+		}
+
 		/**
 		 * Get the things that we want the worker to do. <em>Be very
 		 * careful!</em> Because this necessarily involves the database, this
@@ -1095,11 +1098,13 @@ public class BMPController extends DatabaseAwareBean {
 					while (!powerChanges.isEmpty()) {
 						var change = powerChanges.poll();
 						var jobChanges = new ArrayList<>(List.of(change));
+						var canDoNow = waitedLongEnough(change);
 						while (!powerChanges.isEmpty()
 								&& change.isSameJob(powerChanges.peek())) {
+							canDoNow |= waitedLongEnough(powerChanges.peek());
 							jobChanges.add(powerChanges.poll());
 						}
-						if (!jobChanges.isEmpty()) {
+						if (!jobChanges.isEmpty() && canDoNow) {
 							log.debug("Running job changes {}", jobChanges);
 							requests.add(new PowerRequest(bmpId, change.jobId,
 									change.from, change.to, jobChanges));
