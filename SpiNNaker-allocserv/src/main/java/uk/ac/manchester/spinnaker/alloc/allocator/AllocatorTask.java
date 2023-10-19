@@ -328,12 +328,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		ChangeStatus(Row row) {
 			nChanges = row.getInt("n_changes");
-			Integer errors = row.getInteger("n_errors");
-			if (errors == null) {
-				nErrors = 0;
-			} else {
-				nErrors = errors;
-			}
+			nErrors = row.getInt("n_errors");
 		}
 	}
 
