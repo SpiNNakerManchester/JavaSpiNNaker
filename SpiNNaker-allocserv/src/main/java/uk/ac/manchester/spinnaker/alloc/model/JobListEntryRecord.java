@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.isNull;
 
 import java.net.URI;
@@ -280,5 +281,13 @@ public class JobListEntryRecord {
 	/** @return the original request to create the job */
 	public Optional<byte[]> getOriginalRequest() {
 		return Optional.ofNullable(originalRequest);
+	}
+
+	/** @return the original request as a string */
+	public String getRequest() {
+		if (originalRequest == null) {
+			return "";
+		}
+		return new String(originalRequest, UTF_8);
 	}
 }
