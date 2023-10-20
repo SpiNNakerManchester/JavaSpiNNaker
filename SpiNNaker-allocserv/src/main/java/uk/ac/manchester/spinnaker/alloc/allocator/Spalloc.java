@@ -1399,7 +1399,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		@Override
 		public void setPower(boolean power) {
-			powerController.setPower(id, power?ON:OFF, READY);
+			powerController.setPower(id, power ? ON : OFF, READY);
 		}
 
 		@Override
