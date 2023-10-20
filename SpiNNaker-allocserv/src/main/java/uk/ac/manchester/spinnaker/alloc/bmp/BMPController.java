@@ -560,6 +560,8 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		private void failed() {
 			try (var c = getConnection();
+					var deallocateBoards = c.update(DEALLOCATE_BMP_BOARDS_JOB);
+					var deleteChange = c.update(FINISHED_PENDING);
 					var errorChange = c.update(ERROR_PENDING);
 					var setBoardPowerOff = c.update(SET_BOARD_POWER_OFF)) {
 				c.transaction(() -> {
@@ -573,13 +575,27 @@ public class BMPController extends DatabaseAwareBean {
 							powerOnBoards.stream().map(this::getBoardId)
 									.mapToInt(setBoardPowerOff::call).sum();
 
-					// Mark changes as failed.
-					var completed = changeIds.stream().mapToInt(
-							errorChange::call).sum();
+					// If we are going to queued or destroyed, we can just
+					// ignore the error as we will reallocate anyway
+					int completed = 0;
+					if (to == DESTROYED || to == QUEUED) {
+						// Need to mark the boards as not allocated; slightly
+						// dodgy since they might still be on, but not a lot
+						// we can do about it!
+						deallocateBoards.call(jobId, bmpId);
+						completed = changeIds.stream().mapToInt(
+								deleteChange::call).sum();
+					} else {
+
+						// If we are going to READY, we must mark changes as
+						// failed to make sure we don't think we are done!
+						completed = changeIds.stream().mapToInt(
+								errorChange::call).sum();
+					}
 
 					log.debug(
 							"BMP ACTION FAILED on {} ({}:{}->{}) off:{} "
-							+ "completed:{}",
+							+ " completed {}",
 							bmpId, jobId, from, to, turnedOff, completed);
 				});
 			}
