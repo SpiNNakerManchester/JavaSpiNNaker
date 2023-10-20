@@ -142,10 +142,10 @@ limitations under the License.
 	<td>
 		<c:choose>
 			<c:when test="${ not empty job.boards }">
-				${ job.powered ? 'on' : 'off' }
 				<form method="POST" action="${ powerUri }">
+					<sec:csrfInput />
 					<input type="hidden" name="power" value="${ !job.powered }" />
-					<input type="submit" value="Toggle Power" />
+					${ job.powered ? 'on' : 'off' } <input type="submit" value="Toggle Power" />
 				</form>
 			</c:when>
 			<c:otherwise>Not currently allocated</c:otherwise>
