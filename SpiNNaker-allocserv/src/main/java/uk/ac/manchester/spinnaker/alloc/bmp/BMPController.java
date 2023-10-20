@@ -1105,7 +1105,7 @@ public class BMPController extends DatabaseAwareBean {
 						var canDoNow = waitedLongEnough(change);
 						while (!powerChanges.isEmpty()
 								&& change.isSameJob(powerChanges.peek())) {
-							canDoNow |= waitedLongEnough(powerChanges.peek());
+							canDoNow &= waitedLongEnough(powerChanges.peek());
 							jobChanges.add(powerChanges.poll());
 						}
 						if (!jobChanges.isEmpty() && canDoNow) {
