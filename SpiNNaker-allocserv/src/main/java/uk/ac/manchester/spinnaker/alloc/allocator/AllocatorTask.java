@@ -185,12 +185,12 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private boolean update(int jobId, JobState sourceState,
 			JobState targetState, Connection c) {
-		try (var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
+		try (var getChangeStatus = c.query(COUNT_CHANGES_FOR_JOB);
 				var setJobState = c.update(SET_STATE_PENDING);
 				var setJobDestroyed = c.update(SET_STATE_DESTROYED);
 				var deleteChanges = c.update(DELETE_PENDING)) {
 			// Count pending changes for this state change
-			var status = getNTasks.call1(ChangeStatus::new,
+			var status = getChangeStatus.call1(ChangeStatus::new,
 					jobId, sourceState, targetState).orElseThrow(
 							() -> new RuntimeException(
 									"Error counting job tasks"));
@@ -207,7 +207,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				deleteChanges.call(jobId, sourceState, targetState);
 
 				// If we are going to destroyed, we can mostly ignore errors,
-				// and similary if we are going to queue it again anyway
+				// and similarly if we are going to queue it again anyway
 				if (targetState == DESTROYED || targetState == QUEUED) {
 					return true;
 				}
