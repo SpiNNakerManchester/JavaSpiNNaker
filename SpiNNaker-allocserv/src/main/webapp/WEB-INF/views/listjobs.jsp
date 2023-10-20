@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,16 +75,22 @@ limitations under the License.
 							</script>
 							<code id="alive-${ job.id }">${ job.keepaliveInterval }</code>
 						</td>
-						<td class="textColumn">
+						<td class="textColumn" id="owner-${ job.id }">
 							<c:if test="${ job.owner.present }">
 								<spring:eval htmlEscape="true"
 										expression="job.owner.get()" />
 							</c:if>
-							<c:if test="${ job.host.present }">
+							<c:if test="${ job.host.present and job.host != '127.0.0.1'}">
 								(<spring:eval htmlEscape="true"
 										expression="job.host.get()" />)
 							</c:if>
 						</td>
+						<td class="textColumn" hidden id="request-${ job.id }">
+							${ job.request }
+						</td>
+						<script defer="defer">
+							getJobOwner("request-${ job.id }", "owner-${ job.id });
+						</script>
 					</tr>
 				</c:forEach>
 			</tbody>
