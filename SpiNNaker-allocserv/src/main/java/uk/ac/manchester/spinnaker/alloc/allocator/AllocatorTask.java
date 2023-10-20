@@ -618,7 +618,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		void updateBMPs() {
-			if (!bmps.isEmpty()) {
+			if (!bmps.isEmpty() && bmpController != null) {
 				// Poke the BMP controller to start looking!
 				log.debug("Triggering BMPs {}", bmps);
 				bmpController.triggerSearch(bmps);
