@@ -1041,6 +1041,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Delete all tags for a machine.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#DELETE_PENDING">DELETE_PENDING</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Delete a requests to change the power of a board.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#DELETE_TASK">DELETE_TASK</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Delete an allocation task.</div>
@@ -1308,6 +1312,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A message, only ever sent in response to <a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyOp.html#OPEN"><code>ProxyOp.OPEN</code></a>, <a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyOp.html#CLOSE"><code>ProxyOp.CLOSE</code></a>,
  or <a href="uk/ac/manchester/spinnaker/alloc/proxy/ProxyOp.html#OPEN_UNCONNECTED"><code>ProxyOp.OPEN_UNCONNECTED</code></a>, that says that an operation failed.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#ERROR_PENDING">ERROR_PENDING</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Set a request to change the power of a board to an error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/ControllerUtils.html#errorMessage(org.springframework.validation.ObjectError)">errorMessage(ObjectError)</a></span> - Static method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/ControllerUtils.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils</a></dt>
 <dd>
@@ -2489,6 +2497,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the contents of the named column.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.TxrxProperties.html#getOffWaitTime()">getOffWaitTime()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.TxrxProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.TxrxProperties</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/PasswordChangeRecord.html#getOldPassword()">getOldPassword()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/PasswordChangeRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">PasswordChangeRecord</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AuthProperties.html#getOpenid()">getOpenid()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AuthProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.AuthProperties</a></dt>
@@ -2635,6 +2645,8 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html#getReports()">getReports()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html#getRequest()">getRequest()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobDescription</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html#getRequest()">getRequest()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobListEntryRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobListEntryRecord</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html#getRequestBytes()">getRequestBytes()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">JobDescription</a></dt>
 <dd>&nbsp;</dd>
@@ -4261,6 +4273,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A service that knows how to initiate the setting of the power state of a job.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SystemController.html#powerJob(int,boolean)">powerJob(int, boolean)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></dt>
+<dd>
+<div class="block">Set the power of a job.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SystemControllerImpl.html#powerJob(int,boolean)">powerJob(int, boolean)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SystemControllerImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SystemControllerImpl</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/compat/V1CompatTask.html#powerJobBoards(int,uk.ac.manchester.spinnaker.alloc.model.PowerState)">powerJobBoards(int, PowerState)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.compat.<a href="uk/ac/manchester/spinnaker/alloc/compat/V1CompatTask.html" title="class in uk.ac.manchester.spinnaker.alloc.compat">V1CompatTask</a></dt>
 <dd>
 <div class="block">Switch on or off a job's boards.</div>
@@ -4558,10 +4576,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A resource cannot be located.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html#resetPowerOnFailure(int)">resetPowerOnFailure(int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">AllocatorTask</a></dt>
-<dd>
-<div class="block">Reset a job after a failure on a BMP.</div>
-</dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/nmpi/ResourceUsage.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi"><span class="typeNameLink">ResourceUsage</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/nmpi/package-summary.html">uk.ac.manchester.spinnaker.alloc.nmpi</a></dt>
 <dd>
 <div class="block">An NMPI Resource Usage object.</div>
@@ -4774,7 +4788,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_STATE_PENDING">SET_STATE_PENDING</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
-<div class="block">Set the state and number of pending changes for a job.</div>
+<div class="block">Set the state for a job.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_USER_DISABLED">SET_USER_DISABLED</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
@@ -5012,6 +5026,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/nmpi/Quota.html#setPlatform(java.lang.String)">setPlatform(String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.nmpi.<a href="uk/ac/manchester/spinnaker/alloc/nmpi/Quota.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">Quota</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.Job.html#setPower(boolean)">setPower(boolean)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a></dt>
+<dd>
+<div class="block">Power a job on or off.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html#setPower(int,uk.ac.manchester.spinnaker.alloc.model.PowerState,uk.ac.manchester.spinnaker.alloc.model.JobState)">setPower(int, PowerState, JobState)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">AllocatorTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/PowerController.html#setPower(int,uk.ac.manchester.spinnaker.alloc.model.PowerState,uk.ac.manchester.spinnaker.alloc.model.JobState)">setPower(int, PowerState, JobState)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/PowerController.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">PowerController</a></dt>
@@ -5527,7 +5545,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Load a trust store into a trust manager.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.TxrxProperties.html#%3Cinit%3E(java.time.Duration,java.time.Duration,int,int,boolean,int,boolean)">TxrxProperties(Duration, Duration, int, int, boolean, int, boolean)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.TxrxProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.TxrxProperties</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.TxrxProperties.html#%3Cinit%3E(java.time.Duration,java.time.Duration,int,int,boolean,int,boolean,java.time.Duration)">TxrxProperties(Duration, Duration, int, int, boolean, int, boolean, Duration)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.TxrxProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.TxrxProperties</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a id="I:U">

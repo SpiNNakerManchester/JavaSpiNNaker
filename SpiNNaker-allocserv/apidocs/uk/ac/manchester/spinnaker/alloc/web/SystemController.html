@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -238,6 +238,14 @@ public interface <span class="typeNameLabel">SystemController</span></pre>
 <div class="block">Carry out a password change.</div>
 </td>
 </tr>
+<tr class="altColor" id="i10">
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerJob(int,boolean)">powerJob</a></span>&#8203;(int&nbsp;id,
+boolean&nbsp;power)</code></th>
+<td class="colLast">
+<div class="block">Set the power of a job.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -400,6 +408,26 @@ int&nbsp;id,
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - Which job is being deleted</dd>
 <dd><code>reason</code> - Why the job is being deleted</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>View (<code>jobdetails.jsp</code>) and model (based on
+         <a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>JobDescription</code></a>)</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="powerJob(int,boolean)">powerJob</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@PostMapping</a>("/power_job/{id}")
+<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PreAuthorize</a>("#permit.admin or  #permit.nmpiexec or  #permit.name == filterObject.owner.orElse(null)")
+</span><span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">powerJob</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@PathVariable</a>("id")
+int&nbsp;id,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html?is-external=true" title="class or interface in org.springframework.web.bind.annotation" class="externalLink">@RequestParam</a>("power")
+boolean&nbsp;power)</span></div>
+<div class="block">Set the power of a job.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>id</code> - Which job is being deleted</dd>
+<dd><code>power</code> - Whether to power on or off</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>View (<code>jobdetails.jsp</code>) and model (based on
          <a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>JobDescription</code></a>)</dd>

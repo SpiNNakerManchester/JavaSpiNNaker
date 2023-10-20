@@ -348,23 +348,37 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_PENDING">DELETE_PENDING</a></span></code></th>
+<td class="colLast">
+<div class="block">Delete a requests to change the power of a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_TASK">DELETE_TASK</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete an allocation task.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_USER">DELETE_USER</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete a user.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DESTROY_JOB">DESTROY_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Mark a job as dead.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ERROR_PENDING">ERROR_PENDING</a></span></code></th>
+<td class="colLast">
+<div class="block">Set a request to change the power of a board to an error.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -1304,7 +1318,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SET_STATE_PENDING">SET_STATE_PENDING</a></span></code></th>
 <td class="colLast">
-<div class="block">Set the state and number of pending changes for a job.</div>
+<div class="block">Set the state for a job.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -2066,8 +2080,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Tell a job that it is allocated. Doesn't set the state.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="#SET_STATE_PENDING"><code>SET_STATE_PENDING</code></a>, 
-<a href="../allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a>, 
+<dd><a href="../allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a>, 
 <a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.ALLOCATE_BOARDS_JOB">Constant Field Values</a></dd>
 </dl>
 </section>
@@ -2152,9 +2165,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="SET_STATE_PENDING">SET_STATE_PENDING</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_state") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("num_pending") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_id")
+<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_state") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">SET_STATE_PENDING</span></div>
-<div class="block">Set the state and number of pending changes for a job.</div>
+<div class="block">Set the state for a job.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a>, 
@@ -2165,7 +2178,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="SET_STATE_DESTROYED">SET_STATE_DESTROYED</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("num_pending") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_id")
+<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">SET_STATE_DESTROYED</span></div>
 <div class="block">Set the state destroyed and number of pending changes for a job.</div>
 <dl>
@@ -2202,6 +2215,31 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="DELETE_PENDING">DELETE_PENDING</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_id") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("from_state") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("to_state")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">DELETE_PENDING</span></div>
+<div class="block">Delete a requests to change the power of a board. Used once the errors
+ have been handled.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.DELETE_PENDING">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="ERROR_PENDING">ERROR_PENDING</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("change_id")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">ERROR_PENDING</span></div>
+<div class="block">Set a request to change the power of a board to an error.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.ERROR_PENDING">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="LOAD_DIR_INFO">LOAD_DIR_INFO</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("z") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("direction") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("dx") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("dy") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("dz")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">LOAD_DIR_INFO</span></div>
@@ -2217,7 +2255,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="GET_CHANGES">GET_CHANGES</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("bmp_id")
-<a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("change_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("job_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("board_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("power") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_n") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_s") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_ne") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_nw") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_se") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_sw") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("from_state") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("to_state") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("board_num") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("bmp_id")
+<a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("change_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("job_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("board_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("power") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_n") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_s") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_ne") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_nw") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_se") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("fpga_sw") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("from_state") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("to_state") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("board_num") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("bmp_id") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("power_off_timestamp")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GET_CHANGES</span></div>
 <div class="block">Get the requests to change the power of boards on a BMP.</div>
 <dl>
@@ -2230,7 +2268,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="COUNT_CHANGES_FOR_JOB">COUNT_CHANGES_FOR_JOB</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("job_id") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("from_state") <a href="../../storage/Parameter.html" title="annotation in uk.ac.manchester.spinnaker.storage">@Parameter</a>("to_state")
-<a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("n_changes")
+<a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("n_changes") <a href="../../storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">@ResultColumn</a>("n_errors")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">COUNT_CHANGES_FOR_JOB</span></div>
 <div class="block">Get the number of changes that are not completed for a job.</div>
 <dl>

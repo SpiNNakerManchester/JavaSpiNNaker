@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -237,6 +237,14 @@ implements <a href="SystemController.html" title="interface in uk.ac.manchester.
 <div class="block">Carry out a password change.</div>
 </td>
 </tr>
+<tr class="altColor" id="i10">
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerJob(int,boolean)">powerJob</a></span>&#8203;(int&nbsp;id,
+boolean&nbsp;power)</code></th>
+<td class="colLast">
+<div class="block">Set the power of a job.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -445,6 +453,26 @@ implements <a href="SystemController.html" title="interface in uk.ac.manchester.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - Which job is being deleted</dd>
 <dd><code>reason</code> - Why the job is being deleted</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>View (<code>jobdetails.jsp</code>) and model (based on
+         <a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>JobDescription</code></a>)</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="powerJob(int,boolean)">powerJob</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PreAuthorize</a>("hasRole(\'READER\')")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">powerJob</span>&#8203;(<span class="arguments">int&nbsp;id,
+boolean&nbsp;power)</span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SystemController.html#powerJob(int,boolean)">SystemController</a></code></span></div>
+<div class="block">Set the power of a job.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="SystemController.html#powerJob(int,boolean)">powerJob</a></code>&nbsp;in interface&nbsp;<code><a href="SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>id</code> - Which job is being deleted</dd>
+<dd><code>power</code> - Whether to power on or off</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>View (<code>jobdetails.jsp</code>) and model (based on
          <a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>JobDescription</code></a>)</dd>
