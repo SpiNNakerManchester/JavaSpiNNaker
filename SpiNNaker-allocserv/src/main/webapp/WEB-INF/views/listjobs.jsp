@@ -37,7 +37,7 @@ limitations under the License.
 					<th>Machine</th>
 					<th>Created at</th>
 					<th>Keepalive</th>
-					<th>Owner (Host)</th>
+					<th>Owner</th>
 				</tr>
 			</thead>
 			<tbody>
