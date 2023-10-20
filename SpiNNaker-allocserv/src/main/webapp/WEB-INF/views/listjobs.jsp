@@ -80,10 +80,6 @@ limitations under the License.
 								<spring:eval htmlEscape="true"
 										expression="job.owner.get()" />
 							</c:if>
-							<c:if test="${ job.host.present and job.host != '127.0.0.1'}">
-								(<spring:eval htmlEscape="true"
-										expression="job.host.get()" />)
-							</c:if>
 						</td>
 						<td class="textColumn" hidden id="request-${ job.id }">
 							${ job.request }

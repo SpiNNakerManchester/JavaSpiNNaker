@@ -37,7 +37,7 @@ limitations under the License.
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
-	<td>
+	<td id="owner">
 		<spring:eval htmlEscape="true"
 				expression="job.owner.orElse('[SHROUDED]')" />
 	</td>
@@ -68,19 +68,13 @@ limitations under the License.
 	<td id="keepAlive">${ job.keepAlive }</td>
 </tr>
 <tr>
-	<th class="lineTitle">Owner host:</th>
-	<td>
-		<spring:eval expression="job.ownerHost.orElse('[SHROUDED]')"
-				htmlEscape="true" />
-	</td>
-</tr>
-<tr>
 	<th class="lineTitle">Raw request:</th>
 	<td><details><summary><em>Click to show</em></summary>
 	<c:if test="${ not empty job.request }">
 		<pre id="rawRequest"><c:out escapeXml="true"
 				value="${ job.request }" /></pre>
 		<script defer="defer">
+			getJobOwner("rawRequest", "owner");
 			prettyJson("rawRequest");
 		</script>
 	</c:if>
