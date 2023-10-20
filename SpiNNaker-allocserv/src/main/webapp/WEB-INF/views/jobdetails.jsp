@@ -138,10 +138,10 @@ limitations under the License.
 			<c:when test="${ not empty job.boards }">
 				<form method="POST" action="${ powerUri }">
 					<sec:csrfInput />
-					<c:when test="${ job.state == 'READY'}">
+					<c:if test="${ job.state == 'READY'}">
 						<input type="hidden" name="power" value="${ !job.powered }" />
 						${ job.powered ? 'on' : 'off' } <input type="submit" value="Toggle Power" />
-					</c:when>
+					</c:if>
 				</form>
 			</c:when>
 			<c:otherwise>Not currently allocated</c:otherwise>
