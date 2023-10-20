@@ -1398,6 +1398,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
+		public void setPower(boolean power) {
+			powerController.setPower(id, power? ON: OFF, READY);
+		}
+
+		@Override
 		public boolean waitForChange(Duration timeout) {
 			if (isNull(epoch)) {
 				return true;
