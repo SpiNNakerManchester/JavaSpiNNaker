@@ -89,7 +89,7 @@ limitations under the License.
 							${ job.request }
 						</td>
 						<script defer="defer">
-							getJobOwner("request-${ job.id }", "owner-${ job.id });
+							getJobOwner("request-${ job.id }", "owner-${ job.id }");
 						</script>
 					</tr>
 				</c:forEach>
