@@ -197,6 +197,8 @@ spalloc:
     build-attempts: 5
     # Whether to use dummy BMPs; GREAT for testing!
     dummy: false
+    # Time between powering off and powering on boards
+    off-wait-time: 30s
   sqlite:
     # How long to wait to get a DB lock
     timeout: 1s

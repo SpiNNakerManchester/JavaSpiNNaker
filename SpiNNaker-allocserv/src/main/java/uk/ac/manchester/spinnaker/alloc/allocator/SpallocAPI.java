@@ -843,6 +843,13 @@ public interface SpallocAPI {
 		void destroy(String reason);
 
 		/**
+		 * Power a job on or off.
+		 *
+		 * @param power True for on, False for off
+		 */
+		void setPower(boolean power);
+
+		/**
 		 * @return The state of the job.
 		 */
 		JobState getState();

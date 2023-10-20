@@ -1574,6 +1574,9 @@ public class SpallocProperties {
 		/** Whether to use a dummy transceiver. Useful for testing only. */
 		private boolean dummy;
 
+		/** The time a board has to be off before it can be powered on. */
+		private Duration offWaitTime;
+
 		/**
 		 * @param period
 		 *            How long between when we send requests to the BMP control
@@ -1595,6 +1598,9 @@ public class SpallocProperties {
 		 * @param dummy
 		 *            Whether to use a dummy transceiver. Useful for testing
 		 *            only.
+		 * @param offWaitTime
+		 *            How long to wait between powering off and powering on
+		 *            a board.
 		 */
 		public TxrxProperties(@DefaultValue("10s") Duration period,
 				@DefaultValue("15s") Duration probeInterval,
@@ -1602,7 +1608,8 @@ public class SpallocProperties {
 				@DefaultValue("3") int fpgaAttempts,
 				@DefaultValue("false") boolean fpgaReload,
 				@DefaultValue("5") int buildAttempts,
-				@DefaultValue("false") boolean dummy) {
+				@DefaultValue("false") boolean dummy,
+				@DefaultValue("30s") Duration offWaitTime) {
 			this.period = period;
 			this.probeInterval = probeInterval;
 			this.powerAttempts = powerAttempts;
@@ -1610,6 +1617,7 @@ public class SpallocProperties {
 			this.fpgaReload = fpgaReload;
 			this.buildAttempts = buildAttempts;
 			this.dummy = dummy;
+			this.offWaitTime = offWaitTime;
 		}
 
 		/**
@@ -1631,6 +1639,11 @@ public class SpallocProperties {
 		@NotNull
 		public Duration getProbeInterval() {
 			return probeInterval;
+		}
+
+		@NotNull
+		public Duration getOffWaitTime() {
+			return offWaitTime;
 		}
 
 		void setProbeInterval(Duration probeInterval) {

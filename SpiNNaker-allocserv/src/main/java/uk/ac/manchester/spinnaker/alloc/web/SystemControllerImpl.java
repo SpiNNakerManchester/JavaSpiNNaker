@@ -41,6 +41,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_P
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PATH;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -117,6 +118,8 @@ public class SystemControllerImpl implements SystemController {
 	private static final String ONE_MACHINE_OBJ = "machine";
 
 	private static final String BASE_URI = "baseuri";
+
+	private static final long WAIT_FOR_POWER_SECONDS = 60;
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -368,6 +371,7 @@ public class SystemControllerImpl implements SystemController {
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
 		var mav = view(JOB_VIEW, ONE_JOB_OBJ, mach);
 		mav.addObject("deleteUri", uri(self().destroyJob(id, null)));
+		mav.addObject("powerUri", uri(self().powerJob(id, false)));
 		return mav;
 	}
 
@@ -379,6 +383,24 @@ public class SystemControllerImpl implements SystemController {
 		var job = spallocCore.getJob(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 		job.destroy(reason);
+		var mach = spallocCore.getJobInfo(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		if (nonNull(mach.getRequestBytes())) {
+			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
+		}
+		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
+		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
+	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("power job")
+	public ModelAndView powerJob(int id, boolean power) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJob(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		job.setPower(power);
+		job.waitForChange(Duration.ofSeconds(WAIT_FOR_POWER_SECONDS));
 		var mach = spallocCore.getJobInfo(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 		if (nonNull(mach.getRequestBytes())) {
