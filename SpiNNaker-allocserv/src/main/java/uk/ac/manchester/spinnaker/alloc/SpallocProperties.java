@@ -1397,7 +1397,6 @@ public class SpallocProperties {
 			return auth;
 		}
 
-		@NotNull
 		void setAuth(String auth) {
 			this.auth = auth;
 		}
