@@ -1211,6 +1211,7 @@ public class SpallocProperties {
 		 * @param truststorePassword
 		 *            How to unlock the truststore.
 		 */
+		@SuppressWarnings("checkstyle:ParameterNumber")
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
 				Set<String> scopes,
 				@DefaultValue("") String registrationId,
@@ -1457,14 +1458,14 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @param the OIDC introspection URL.
+		 * @param introspection the OIDC introspection URL.
 		 */
 		void setIntrospection(String introspection) {
 			this.introspection = introspection;
 		}
 
 		/**
-		 * @param the OIDC user info URL.
+		 * @param userinfo the OIDC user info URL.
 		 */
 		void setUserinfo(String userinfo) {
 			this.userinfo = userinfo;

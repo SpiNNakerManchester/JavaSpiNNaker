@@ -275,7 +275,6 @@ public class SecurityConfig {
 		return new InMemoryClientRegistrationRepository(registrations);
 	}
 
-
 	@Bean
 	public OAuth2AuthorizedClientService authorizedClientService() {
 
