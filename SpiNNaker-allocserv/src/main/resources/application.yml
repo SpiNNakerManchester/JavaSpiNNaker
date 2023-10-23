@@ -160,11 +160,17 @@ spalloc:
     unlock-period: 60s
     openid:
       # Support OIDC
+      registration-id: hbp-ebrains
       enable: true
-      domain: https://iam.ebrains.eu/auth/realms/hbp
-      introspection: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
+      auth-grant-type: authorization_code
+      auth: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
+      token: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
       userinfo: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
+      jwk-set: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/certs
+      issuer: https://iam.ebrains.eu/auth/realms/hbp
+      introspection: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
       scopes: [ openid, profile, roles, email, team, group ]
+      redirect: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
       # The credentials for HBP/EBRAINS go here
       id: spalloc
       secret: XYZZY_OVERRIDE_THIS
@@ -265,18 +271,18 @@ spring:
   config:
     activate:
       on-profile: default
-  security:
-    oauth2:
-      client:
-        registration:
-          hbp-ebrains:
-            client-id: ${spalloc.auth.openid.id}
-            client-secret: ${spalloc.auth.openid.secret}
-            # Repeated from spalloc.auth.openid.scopes, but can't share!
-            scope: [ openid, profile, roles, email, team, group ]
-            authorization-grant-type: authorization_code
-            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
-        provider:
-          hbp-ebrains:
-            issuer-uri: ${spalloc.auth.openid.domain}
-            user-name-attribute: preferred_username
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          hbp-ebrains:
+#            client-id: ${spalloc.auth.openid.id}
+#            client-secret: ${spalloc.auth.openid.secret}
+#            # Repeated from spalloc.auth.openid.scopes, but can't share!
+#            scope: [ openid, profile, roles, email, team, group ]
+#            authorization-grant-type: authorization_code
+#            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
+#        provider:
+#          hbp-ebrains:
+#            issuer-uri: ${spalloc.auth.openid.issuer}
+#            user-name-attribute: preferred_username
