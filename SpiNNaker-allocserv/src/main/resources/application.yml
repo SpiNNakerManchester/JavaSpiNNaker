@@ -163,10 +163,10 @@ spalloc:
       registration-id: hbp-ebrains
       enable: true
       auth-grant-type: authorization_code
-      auth: https://iam-int.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
-      token: https://iam-int.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
+      auth: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
+      token: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
       userinfo: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
-      jwk-set: https://iam-int.ebrains.eu/auth/realms/hbp/protocol/openid-connect/certs
+      jwk-set: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/certs
       issuer: https://iam.ebrains.eu/auth/realms/hbp
       introspection: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
       scopes: [ openid, profile, roles, email, team, group ]
