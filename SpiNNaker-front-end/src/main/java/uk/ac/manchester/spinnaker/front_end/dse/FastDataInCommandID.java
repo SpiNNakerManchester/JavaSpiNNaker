@@ -34,7 +34,11 @@ public enum FastDataInCommandID {
 	/** Gatherer to host: there are missing sequence numbers. */
 	RECEIVE_MISSING_SEQ_DATA_IN(2002),
 	/** Gatherer to host: all present and correct. */
-	RECEIVE_FINISHED_DATA_IN(2003);
+	RECEIVE_FINISHED_DATA_IN(2003),
+	/** Copy data from SDRAM. */
+	SEND_COPY_DATA(2004),
+	/** Check for completion of copy data from SDRAM. */
+	SEND_COPY_DATA_CHECK(2005);
 
 	private static final Map<Integer, FastDataInCommandID> MAP =
 			makeEnumBackingMap(values(), v -> v.value);

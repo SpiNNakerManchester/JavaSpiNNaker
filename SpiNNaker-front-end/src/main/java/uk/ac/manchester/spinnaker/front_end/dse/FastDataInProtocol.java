@@ -23,6 +23,8 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_DATA_TO_LOCATION;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_SEQ_DATA;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_TELL_DATA_IN;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_COPY_DATA;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_COPY_DATA_CHECK;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
@@ -74,6 +76,16 @@ class FastDataInProtocol {
 	 * id).
 	 */
 	static final int BYTES_FOR_TELL_PACKET = 2 * WORD_SIZE;
+
+	/**
+	 * size for data to store when sending copy packet (command id,
+	 * source address, target address, target x and y coordinates,
+	 * number of words)
+	 */
+	static final int BYTES_FOR_COPY_PACKET = 5 * WORD_SIZE;
+
+	/** size for data to store when sending a copy check packet (command id) */
+	static final int BYTES_FOR_COPY_CHECK_PACKET = 1 * WORD_SIZE;
 
 	private final HasCoreLocation gathererCore;
 
@@ -198,5 +210,37 @@ class FastDataInProtocol {
 	 */
 	static int computeNumPackets(ByteBuffer data) {
 		return ceildiv(data.remaining(), DATA_IN_FULL_PACKET_WITH_KEY);
+	}
+
+	/**
+	 * generates a copy message.
+	 *
+	 * @param sourceAddress Address to copy from.
+	 * @param targetAddress Address to copy to.
+	 * @param nWords Number of words to copy.
+	 *
+	 * @return The generated message.
+	 */
+	SDPMessage copyFromSDRAM(int sourceAddress, int targetAddress, int nWords) {
+		var payload = allocate(BYTES_FOR_COPY_PACKET).order(LITTLE_ENDIAN);
+		payload.putInt(SEND_COPY_DATA.value);
+		payload.putInt(sourceAddress);
+		payload.putInt(targetAddress);
+		payload.putInt(boardLocalDestination.getX());
+		payload.putInt(boardLocalDestination.getY());
+		payload.putInt(nWords);
+		return new SDPMessage(header(), payload);
+	}
+
+	/**
+	 * generates a copy check message.
+	 *
+	 * @return The generated message.
+	 */
+	SDPMessage copyFromSDRAMCheck() {
+		var payload = allocate(BYTES_FOR_COPY_CHECK_PACKET)
+				.order(LITTLE_ENDIAN);
+		payload.putInt(SEND_COPY_DATA_CHECK.value);
+		return new SDPMessage(header(), payload);
 	}
 }

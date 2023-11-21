@@ -73,6 +73,7 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
+import uk.ac.manchester.spinnaker.front_end.dse.FastCopyExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -209,6 +210,22 @@ public final class CommandLineInterface {
 	 */
 	static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
 
+	@FunctionalInterface
+	interface FastCopyDSEFactory {
+		FastCopyExecuteDataSpecification create(TransceiverInterface txrx,
+				Machine machine, List<Gather> gatherers, File reportDir,
+				DSEDatabaseEngine db)
+				throws IOException, SpinnmanException, StorageException,
+				ExecutionException, InterruptedException, URISyntaxException;
+	}
+
+	/**
+	 * Makes {@link FastCopyExecuteDataSpecification} instances. Allows for
+	 * injection of debugging tooling.
+	 */
+	static FastCopyDSEFactory fastCopyFactory =
+			FastCopyExecuteDataSpecification::new;
+
 	/**
 	 * Run the data specifications in parallel.
 	 *
@@ -299,6 +316,54 @@ public final class CommandLineInterface {
 
 		try (var txrx = getTransceiver(machine.get(), job);
 				var dseExec = fastFactory.create(txrx, machine.get(),
+						gatherers.get(), reportFolder.orElse(null), db)) {
+			dseExec.loadCores();
+		}
+	}
+
+	/**
+	 * Run the data specifications in parallel using the copy method.
+	 *
+	 * @param gatherers
+	 *            List of descriptions of gatherers.
+	 * @param machine
+	 *            Description of overall machine.
+	 * @param dsFile
+	 *            Path to the dataspec database
+	 * @param runFolder
+	 *            Directory containing per-run information.
+	 * @param reportFolder
+	 *            Directory containing reports. If {@link Optional#empty()}, no
+	 *            report will be written.
+	 * @throws IOException
+	 *             If the communications fail.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database is in an illegal state.
+	 * @throws ExecutionException
+	 *             If there was a problem in the parallel queue.
+	 * @throws InterruptedException
+	 *             If the wait for everything to complete is interrupted.
+	 * @throws URISyntaxException
+	 *             If a proxy URI is provided but invalid.
+	 */
+	@Command(name = "dse_copy_app_mon", description = DSE_MON_DESC)
+	public void runDSEForAppCoresUploadingViaCopyMonitorStreaming(
+			@Mixin GatherersParam gatherers,
+			@Mixin MachineParam machine,
+			@Mixin DsFileParam dsFile,
+			@Mixin RunFolderParam runFolder,
+			@Parameters(description = REPORT, arity = "0..1", index = "3")
+			Optional<File> reportFolder)
+			throws IOException, SpinnmanException, StorageException,
+			ExecutionException, InterruptedException, URISyntaxException {
+		setLoggerDir(runFolder.get());
+		var db = getDataSpecDB(dsFile.get());
+		var job = getJob(db);
+
+		try (var txrx = getTransceiver(machine.get(), job);
+				var dseExec = fastCopyFactory.create(txrx, machine.get(),
 						gatherers.get(), reportFolder.orElse(null), db)) {
 			dseExec.loadCores();
 		}
