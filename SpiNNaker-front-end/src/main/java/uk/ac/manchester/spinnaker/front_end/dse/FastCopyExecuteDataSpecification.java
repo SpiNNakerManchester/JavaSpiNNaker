@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.net.InetAddress.getByName;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -31,6 +32,7 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.RECEIVE_FINISHED_DATA_IN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_BUSY;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -366,6 +368,7 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 			this.logContext = new BoardLocal(board.location);
 			this.connection = txrx.createScpConnection(board.location,
 					getByName(board.ethernetAddress));
+			txrx.setIPTag(gather.getIptag(), connection);
 		}
 
 		@Override
@@ -532,13 +535,24 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 			    connection.send(protocol.copyFromSDRAM(addr.address,
 				    	baseAddress.address, nBytes / 4));
 			    try {
-			        var response = connection.receiveMessage(1000);
-			        var responseCommand = response.getData().getInt();
-			        if (nRetries == 3 && responseCommand == RC_P2P_BUSY.value) {
-			        	throw new IOException("Copy already in progress!");
-			        }
-			        if (responseCommand == RECEIVE_FINISHED_DATA_IN.value) {
+			        var buf = connection.receive(1000);
+			        var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
+			        var responseCommand = received.get();
+			        if (responseCommand == RC_P2P_BUSY.value) {
+				        if (nRetries == 3) {
+				        	throw new IOException("Copy already in progress!");
+				        }
+				        sent = true;
+			        } else if (responseCommand == RC_OK.value) {
+			        	sent = true;
+			        } else if (responseCommand
+			        		== RECEIVE_FINISHED_DATA_IN.value) {
 			        	copyDone = true;
+			        	sent = true;
+			        } else {
+			        	throw new IOException(
+			        			"Unrecognized response code "
+			        	        + responseCommand);
 			        }
 			    } catch (SocketTimeoutException e) {
 			    	if (nRetries == 0) {
@@ -551,11 +565,15 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 
 			// Wait for the copy to finish
 			while (!copyDone) {
-				var response = connection.receiveMessage(1000);
-				var responseCommand = response.getData().getInt();
-				if (responseCommand == RECEIVE_FINISHED_DATA_IN.value) {
-		        	copyDone = true;
-		        }
+				try {
+					var response = connection.receiveMessage(1000);
+					var responseCommand = response.getData().getInt();
+					if (responseCommand == RECEIVE_FINISHED_DATA_IN.value) {
+			        	copyDone = true;
+			        }
+				} catch (SocketTimeoutException e) {
+					// This can happen, but that is why we keep checking!
+				}
 				connection.send(protocol.copyFromSDRAMCheck());
 			}
 		}

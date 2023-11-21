@@ -226,9 +226,10 @@ class FastDataInProtocol {
 		payload.putInt(SEND_COPY_DATA.value);
 		payload.putInt(sourceAddress);
 		payload.putInt(targetAddress);
-		payload.putInt(boardLocalDestination.getX());
-		payload.putInt(boardLocalDestination.getY());
+		payload.putShort((short) boardLocalDestination.getX());
+		payload.putShort((short) boardLocalDestination.getY());
 		payload.putInt(nWords);
+		payload.flip();
 		return new SDPMessage(header(), payload);
 	}
 
