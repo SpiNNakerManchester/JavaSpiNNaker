@@ -566,8 +566,9 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 			// Wait for the copy to finish
 			while (!copyDone) {
 				try {
-					var response = connection.receiveMessage(1000);
-					var responseCommand = response.getData().getInt();
+					var buf = connection.receive(1000);
+			        var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
+			        var responseCommand = received.get();
 					if (responseCommand == RECEIVE_FINISHED_DATA_IN.value) {
 			        	copyDone = true;
 			        }
