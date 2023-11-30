@@ -35,6 +35,9 @@ import uk.ac.manchester.spinnaker.messages.scp.SendMCDataRequest;
  * Write to memory on SpiNNaker via multicast (data in only).
  */
 class WriteMemoryByMulticastProcess extends TxrxProcess {
+	/** Timeout for a write request; longer as the write can take some time. */
+	private static final int TIMEOUT = 10000;
+
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -62,7 +65,7 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	WriteMemoryByMulticastProcess(
 			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			int numChannels, RetryTracker retryTracker) {
-		super(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, numChannels,
+		super(connectionSelector, SCP_RETRIES, TIMEOUT, numChannels,
 				max(numChannels / 2, 1), retryTracker);
 	}
 
