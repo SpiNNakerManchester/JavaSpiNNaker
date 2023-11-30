@@ -40,7 +40,7 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	private static final int TIMEOUT = 10000;
 
 	/** The number of simultaneous messages that can be in progress. */
-	private static final int N_CHANNELS = 1;
+	private static final int N_CHANNELS = 8;
 
 	/**
 	 * @param connectionSelector
@@ -53,8 +53,8 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	WriteMemoryByMulticastProcess(
 			ConnectionSelector<? extends SCPConnection> connectionSelector,
 			RetryTracker retryTracker) {
-		super(connectionSelector, SCP_RETRIES, TIMEOUT, N_CHANNELS, N_CHANNELS,
-				retryTracker);
+		super(connectionSelector, SCP_RETRIES, TIMEOUT, N_CHANNELS,
+				N_CHANNELS - 1,	retryTracker);
 	}
 
 	/**

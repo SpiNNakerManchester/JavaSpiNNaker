@@ -344,7 +344,6 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 	private class FastBoardWorker extends BoardWorker {
 		private HasCoreLocation ethernet;
 
-
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
@@ -361,7 +360,7 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		 *
 		 * @author Donal Fellows
 		 */
-		private class MissingRecorder {
+		private final class MissingRecorder {
 
 
 			/**
