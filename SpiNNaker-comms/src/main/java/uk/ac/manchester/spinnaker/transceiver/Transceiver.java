@@ -2087,6 +2087,16 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@ParallelSafe
+	public void writeMemoryMulticast(HasCoreLocation core,
+			HasCoreLocation targetCore, MemoryLocation baseAddress,
+			ByteBuffer data)
+			throws IOException, ProcessException, InterruptedException {
+		new WriteMemoryByMulticastProcess(scpSelector, this).writeMemory(
+				core, targetCore, baseAddress, data);
+	};
+
+	@Override
 	@CheckReturnValue
 	@ParallelSafe
 	public ByteBuffer readMemory(HasCoreLocation core,
