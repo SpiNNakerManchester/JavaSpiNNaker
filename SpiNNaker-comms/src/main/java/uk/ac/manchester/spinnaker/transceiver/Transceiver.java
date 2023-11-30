@@ -2094,7 +2094,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException, InterruptedException {
 		new WriteMemoryByMulticastProcess(scpSelector, this).writeMemory(
 				core, targetCore, baseAddress, data);
-	};
+	}
 
 	@Override
 	@CheckReturnValue

@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SendMCDataRequest;
 
 /**
- * Write to memory on SpiNNaker via multicast (data in only)
+ * Write to memory on SpiNNaker via multicast (data in only).
  */
 class WriteMemoryByMulticastProcess extends TxrxProcess {
 	/**
@@ -77,8 +77,6 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	 *            The base address to write.
 	 * @param data
 	 *            The overall block of memory to write
-	 * @param msgProvider
-	 *            The way to create messages to send to do the writing.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -110,10 +108,6 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	 *            The base address to write.
 	 * @param data
 	 *            The stream of data to write.
-	 * @param bytesToWrite
-	 *            The number of bytes to read from the stream and transfer.
-	 * @param msgProvider
-	 *            The way to create messages to send to do the writing.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
 	 * @throws ProcessException

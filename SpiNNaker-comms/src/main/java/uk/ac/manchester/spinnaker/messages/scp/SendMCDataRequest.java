@@ -33,16 +33,23 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
  * A command message to the Data In port to write multicast data.
  */
 public class SendMCDataRequest extends SCPRequest<EmptyResponse> {
+	/** Shift of x in the coordinates for arg2. */
+	private static final int X_SHIFT = 16;
+
 	/**
 	 * @param core
 	 *            Where to send the request.
 	 * @param targetCore
 	 *            The target core of the write.
+	 * @param baseAddress
+	 *            The address to write to on the target core.
+	 * @param data
+	 *            The data to write.
 	 */
 	public SendMCDataRequest(HasCoreLocation core, HasCoreLocation targetCore,
 			MemoryLocation baseAddress, ByteBuffer data) {
 		super(header(core), CMD_WRITE, baseAddress.address,
-				targetCore.getX() << 16 | targetCore.getY(),
+				(targetCore.getX() << X_SHIFT) | targetCore.getY(),
 				data.remaining() / WORD_SIZE, data);
 	}
 
