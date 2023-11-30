@@ -405,7 +405,7 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 		 * @author Donal Fellows
 		 */
 		@SuppressWarnings("serial")
-		private class MissingRecorder extends ArrayDeque<BitSet>
+		private final class MissingRecorder extends ArrayDeque<BitSet>
 				implements AutoCloseable {
 
 			@Override
@@ -616,8 +616,9 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 					var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
 					var responseCommand = received.get();
 					var responseTransaction = received.get();
-					if (responseTransaction == transactionId &&
-							responseCommand == RECEIVE_FINISHED_DATA_IN.value) {
+					if (responseTransaction == transactionId
+							&& responseCommand
+							== RECEIVE_FINISHED_DATA_IN.value) {
 						copyDone = true;
 					} else if (responseTransaction != transactionId) {
 						continue;
