@@ -344,8 +344,6 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 	private class FastBoardWorker extends BoardWorker {
 		private HasCoreLocation ethernet;
 
-		@MustBeClosed
-		@SuppressWarnings("MustBeClosed")
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
 				DSEStorage storage, Gather gather)
 				throws IOException, ProcessException, InterruptedException,
