@@ -79,13 +79,14 @@ class FastDataInProtocol {
 
 	/**
 	 * size for data to store when sending copy packet (command id,
-	 * source address, target address, target x and y coordinates,
-	 * number of words)
+	 * transaction id, source address, target address,
+	 * target x and y coordinates, number of words).
 	 */
-	static final int BYTES_FOR_COPY_PACKET = 5 * WORD_SIZE;
+	static final int BYTES_FOR_COPY_PACKET = 6 * WORD_SIZE;
 
-	/** size for data to store when sending a copy check packet (command id) */
-	static final int BYTES_FOR_COPY_CHECK_PACKET = 1 * WORD_SIZE;
+	/** size for data to store when sending a copy check packet (command id,
+	 *  transaction id). */
+	static final int BYTES_FOR_COPY_CHECK_PACKET = 2 * WORD_SIZE;
 
 	private final HasCoreLocation gathererCore;
 
@@ -215,17 +216,20 @@ class FastDataInProtocol {
 	/**
 	 * generates a copy message.
 	 *
-	 * @param sourceAddress Address to copy from.
-	 * @param targetAddress Address to copy to.
+	 * @param transactionId The transaction in progress.
+	 * @param source Address to copy from.
+	 * @param target Address to copy to.
 	 * @param nWords Number of words to copy.
 	 *
 	 * @return The generated message.
 	 */
-	SDPMessage copyFromSDRAM(int sourceAddress, int targetAddress, int nWords) {
+	SDPMessage copyFromSDRAM(int transactionId, MemoryLocation source,
+			MemoryLocation target, int nWords) {
 		var payload = allocate(BYTES_FOR_COPY_PACKET).order(LITTLE_ENDIAN);
 		payload.putInt(SEND_COPY_DATA.value);
-		payload.putInt(sourceAddress);
-		payload.putInt(targetAddress);
+		payload.putInt(transactionId);
+		payload.putInt(source.address);
+		payload.putInt(target.address);
 		payload.putShort((short) boardLocalDestination.getX());
 		payload.putShort((short) boardLocalDestination.getY());
 		payload.putInt(nWords);
@@ -238,10 +242,11 @@ class FastDataInProtocol {
 	 *
 	 * @return The generated message.
 	 */
-	SDPMessage copyFromSDRAMCheck() {
+	SDPMessage copyFromSDRAMCheck(int transactionId) {
 		var payload = allocate(BYTES_FOR_COPY_CHECK_PACKET)
 				.order(LITTLE_ENDIAN);
 		payload.putInt(SEND_COPY_DATA_CHECK.value);
+		payload.putInt(transactionId);
 		return new SDPMessage(header(), payload);
 	}
 }

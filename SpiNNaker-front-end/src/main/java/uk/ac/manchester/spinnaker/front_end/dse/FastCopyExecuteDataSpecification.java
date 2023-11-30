@@ -49,6 +49,8 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.slf4j.Logger;
 
@@ -79,11 +81,21 @@ import uk.ac.manchester.spinnaker.utils.MathUtils;
 /**
  * Implementation of the Data Specification Executor that uses the Fast Data In
  * protocol to upload the results to a SpiNNaker machine.
- *
- * @author Donal Fellows
- * @author Alan Stokes
  */
 public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
+
+	/** The timeout wait for responses. */
+	private static final int TIMEOUT_MS = 1000;
+
+	/** Number of times to retry. */
+	private static final int N_RETRIES = 3;
+
+	/** Number of bytes per word. */
+	private static final int BYTES_PER_WORD = 4;
+
+	/** The amount of SDRAM to reserve initially. */
+	private static final int LOTS_OF_SDRAM = 8 * 1024 * 1024;
+
 	private static final Logger log =
 			getLogger(FastCopyExecuteDataSpecification.class);
 
@@ -358,6 +370,10 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 
 		private BoardLocal logContext;
 
+		private MemoryLocation copyAddr = null;
+
+		private Gather gather;
+
 		@MustBeClosed
 		@SuppressWarnings("MustBeClosed")
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
@@ -368,12 +384,16 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 			this.logContext = new BoardLocal(board.location);
 			this.connection = txrx.createScpConnection(board.location,
 					getByName(board.ethernetAddress));
+			this.gather = gather;
 			txrx.setIPTag(gather.getIptag(), connection);
 		}
 
 		@Override
 		public void close() throws IOException, ProcessException,
 				InterruptedException {
+			if (copyAddr != null) {
+				this.txrx.freeSDRAM(connection.getChip(), copyAddr);
+			}
 			logContext.close();
 			connection.close();
 		}
@@ -518,64 +538,97 @@ public class FastCopyExecuteDataSpecification extends ExecuteDataSpecification {
 						throws IOException, InterruptedException,
 						ProcessException {
 
-			// Allocate on 0, 0
+			// Allocate if not done; we wait until here as all other allocations
+			// will be done by now, so shouldn't be disruptive...
+			if (copyAddr == null) {
+				copyAddr = txrx.mallocSDRAM(connection.getChip(),
+						LOTS_OF_SDRAM);
+			}
 			var nBytes = data.remaining();
-			var addr = txrx.mallocSDRAM(connection.getChip(), nBytes);
 
 			// Write to 0, 0 in the allocated space
-			txrx.writeMemory(connection.getChip(), addr, data);
+			txrx.writeMemory(connection.getChip(), copyAddr, data);
 
 			var protocol = new Protocol(core);
+			int transactionId = gather.getNextTransactionId();
 
 			// Send message to trigger the copy, repeat until definitely sent
 			boolean sent = false;
 			boolean copyDone = false;
-			int nRetries = 3;
+			int nRetries = N_RETRIES;
 			while (!sent) {
-			    connection.send(protocol.copyFromSDRAM(addr.address,
-				    	baseAddress.address, nBytes / 4));
-			    try {
-			        var buf = connection.receive(1000);
-			        var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
-			        var responseCommand = received.get();
-			        if (responseCommand == RC_P2P_BUSY.value) {
-				        if (nRetries == 3) {
-				        	throw new IOException("Copy already in progress!");
-				        }
-				        sent = true;
-			        } else if (responseCommand == RC_OK.value) {
-			        	sent = true;
-			        } else if (responseCommand
-			        		== RECEIVE_FINISHED_DATA_IN.value) {
-			        	copyDone = true;
-			        	sent = true;
-			        } else {
-			        	throw new IOException(
-			        			"Unrecognized response code "
-			        	        + responseCommand);
-			        }
-			    } catch (SocketTimeoutException e) {
-			    	if (nRetries == 0) {
-			    		throw e;
-			    	}
-			    	nRetries--;
-			    }
-
+				connection.send(protocol.copyFromSDRAM(transactionId, copyAddr,
+						baseAddress, nBytes / BYTES_PER_WORD));
+				try {
+					var buf = connection.receive(TIMEOUT_MS);
+					var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
+					var responseCommand = received.get();
+					var responseTransaction = received.get();
+					if (responseTransaction != transactionId) {
+						continue;
+					}
+					if (responseCommand == RC_P2P_BUSY.value) {
+						if (nRetries == N_RETRIES) {
+							throw new IOException("Copy already in progress!");
+						}
+						sent = true;
+					} else if (responseCommand == RC_OK.value) {
+						sent = true;
+					} else if (responseCommand
+							== RECEIVE_FINISHED_DATA_IN.value) {
+						copyDone = true;
+						sent = true;
+					} else {
+						throw new IOException(
+								"Unrecognized response code "
+								+ responseCommand);
+					}
+				} catch (SocketTimeoutException e) {
+					if (nRetries == 0) {
+						throw e;
+					}
+					nRetries--;
+				}
 			}
+
+			if (!sent) {
+				throw new IOException("Could not start send after 3 retries!");
+			}
+
+			// Start a timer that will ping the system periodically
+			Timer t = new Timer();
+			t.scheduleAtFixedRate(new TimerTask() {
+				@Override
+				public void run() {
+					try {
+						connection.send(protocol.copyFromSDRAMCheck(
+								transactionId));
+					} catch (IOException e) {
+						// Ignore
+					}
+				}
+			}, TIMEOUT_MS, TIMEOUT_MS);
 
 			// Wait for the copy to finish
 			while (!copyDone) {
 				try {
-					var buf = connection.receive(1000);
-			        var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
-			        var responseCommand = received.get();
-					if (responseCommand == RECEIVE_FINISHED_DATA_IN.value) {
-			        	copyDone = true;
-			        }
+					var buf = connection.receive(TIMEOUT_MS);
+					var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
+					var responseCommand = received.get();
+					var responseTransaction = received.get();
+					if (responseTransaction == transactionId &&
+							responseCommand == RECEIVE_FINISHED_DATA_IN.value) {
+						copyDone = true;
+					} else if (responseTransaction != transactionId) {
+						continue;
+					} else if (responseCommand != RC_OK.value
+							&& responseCommand != RC_P2P_BUSY.value) {
+						throw new IOException("Unexpected response "
+							+ responseCommand);
+					}
 				} catch (SocketTimeoutException e) {
 					// This can happen, but that is why we keep checking!
 				}
-				connection.send(protocol.copyFromSDRAMCheck());
 			}
 		}
 	}
