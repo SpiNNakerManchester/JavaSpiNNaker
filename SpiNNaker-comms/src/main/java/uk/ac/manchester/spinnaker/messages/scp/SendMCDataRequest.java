@@ -53,7 +53,6 @@ public class SendMCDataRequest extends SCPRequest<EmptyResponse> {
 				data.remaining() / WORD_SIZE, data);
 	}
 
-
 	/**
 	 * Make a variant of SDP header that talks to the packet reinjector. It
 	 * <i>always</i> wants a reply and always talks to a particular SDP port
