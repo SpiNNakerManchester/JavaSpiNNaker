@@ -491,7 +491,8 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 				}
 				var boardLocal = new CoreLocation(boardLocalX, boardLocalY,
 						core.getP());
-				txrx.writeMemoryMulticast(ethernet, boardLocal, baseAddress, data);
+				txrx.writeMemoryMulticast(ethernet, boardLocal, baseAddress,
+						data);
 			} catch (ProcessException e) {
 				throw new IOException(e);
 			}
