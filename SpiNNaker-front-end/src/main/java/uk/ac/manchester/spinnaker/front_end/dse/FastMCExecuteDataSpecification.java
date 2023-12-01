@@ -481,7 +481,17 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 				ByteBuffer data)
 						throws IOException, InterruptedException {
 			try {
-				txrx.writeMemoryMulticast(ethernet, core, baseAddress, data);
+				int boardLocalX = core.getX() - ethernet.getX();
+				if (boardLocalX < 0) {
+					boardLocalX += machine.maxChipX() + 1;
+				}
+				int boardLocalY = core.getY() - ethernet.getY();
+				if (boardLocalY < 0) {
+					boardLocalY += machine.maxChipY() + 1;
+				}
+				var boardLocal = new CoreLocation(boardLocalX, boardLocalY,
+						core.getP());
+				txrx.writeMemoryMulticast(ethernet, boardLocal, baseAddress, data);
 			} catch (ProcessException e) {
 				throw new IOException(e);
 			}
