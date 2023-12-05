@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -480,7 +482,14 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		private void fastWrite(HasCoreLocation core, MemoryLocation baseAddress,
 				ByteBuffer data)
 						throws IOException, InterruptedException {
-			try {
+
+			try (var input = new PipedInputStream(data.remaining());
+					var output = new PipedOutputStream(input)) {
+				byte[] transfer = new byte[data.remaining()];
+				data.get(transfer);
+				output.write(transfer);
+				output.flush();
+				output.close();
 				int boardLocalX = core.getX() - ethernet.getX();
 				if (boardLocalX < 0) {
 					boardLocalX += machine.maxChipX() + 1;
@@ -492,7 +501,7 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 				var boardLocal = new CoreLocation(boardLocalX, boardLocalY,
 						core.getP());
 				txrx.writeMemoryMulticast(ethernet, boardLocal, baseAddress,
-						data);
+						input);
 			} catch (ProcessException e) {
 				throw new IOException(e);
 			}
