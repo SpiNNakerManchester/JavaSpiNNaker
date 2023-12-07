@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
@@ -39,17 +40,17 @@ public class SendMCDataRequest extends SCPRequest<EmptyResponse> {
 	/**
 	 * @param core
 	 *            Where to send the request.
-	 * @param targetCore
-	 *            The target core of the write.
+	 * @param targetChip
+	 *            The target chip of the write.
 	 * @param baseAddress
 	 *            The address to write to on the target core.
 	 * @param data
 	 *            The data to write.
 	 */
-	public SendMCDataRequest(HasCoreLocation core, HasCoreLocation targetCore,
+	public SendMCDataRequest(HasCoreLocation core, HasChipLocation targetChip,
 			MemoryLocation baseAddress, ByteBuffer data) {
 		super(header(core), CMD_WRITE, baseAddress.address,
-				(targetCore.getX() << X_SHIFT) | targetCore.getY(),
+				(targetChip.getX() << X_SHIFT) | targetChip.getY(),
 				data.remaining() / WORD_SIZE, data);
 	}
 

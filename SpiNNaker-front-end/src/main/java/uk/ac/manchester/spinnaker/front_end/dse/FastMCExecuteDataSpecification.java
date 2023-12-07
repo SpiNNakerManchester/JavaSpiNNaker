@@ -24,11 +24,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -215,19 +218,20 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 		log.info("loading data onto {} cores on board", cores.size());
 		var gather = gathererForChip.get(board.location);
-		var worker =  new FastBoardWorker(txrx, board, storage, gather);
-		for (var xyp : cores) {
-			worker.mallocCore(xyp);
-		}
-		try (var routers = worker.systemRouterTables();
-				var context = worker.dontDropPackets(gather)) {
+		try (var worker =  new FastBoardWorker(txrx, board, storage, gather)) {
 			for (var xyp : cores) {
-				worker.loadCore(xyp);
+				worker.mallocCore(xyp);
 			}
-			log.info("finished sending data in for this board");
-		} catch (Exception e) {
-			log.warn("failure in core loading", e);
-			throw e;
+			try (var routers = worker.systemRouterTables();
+					var context = worker.dontDropPackets(gather)) {
+				for (var xyp : cores) {
+					worker.loadCore(xyp);
+				}
+				log.info("finished sending data in for this board");
+			} catch (Exception e) {
+				log.warn("failure in core loading", e);
+				throw e;
+			}
 		}
 	}
 
@@ -343,15 +347,45 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @author Donal Fellows
 	 * @author Alan Stokes
 	 */
-	private class FastBoardWorker extends BoardWorker {
-		private HasCoreLocation ethernet;
+	private class FastBoardWorker extends BoardWorker implements AutoCloseable {
+
+		private final CoreLocation ethernet;
+
+		private final PipedInputStream input;
+
+		private final DataOutputStream output;
+
+		private final Thread outputThread;
+
 
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
 				DSEStorage storage, Gather gather)
 				throws IOException, ProcessException, InterruptedException,
 				StorageException {
 			super(txrx, board, storage);
-			this.ethernet = new CoreLocation(board.location, gather.getP());
+			System.err.println("Making fast board worker for " + board);
+			ethernet = new CoreLocation(board.location, gather.getP());
+			input = new PipedInputStream();
+			output = new DataOutputStream(new PipedOutputStream(input));
+			outputThread = new Thread(() -> {
+				while (true) {
+					try {
+						System.err.println(this + ": Write multicast stream...");
+						txrx.writeMemoryMulticastStream(ethernet, input);
+						System.err.println(this + ": Finish write multicast stream");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			outputThread.start();
+		}
+
+		@Override
+		public void close() throws IOException, InterruptedException {
+			output.close();
+			outputThread.join();
+			input.close();
 		}
 
 		/**
@@ -480,31 +514,31 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		 *            If communications are interrupted.
 		 */
 		private void fastWrite(HasCoreLocation core, MemoryLocation baseAddress,
-				ByteBuffer data)
-						throws IOException, InterruptedException {
+				ByteBuffer content)
+						throws IOException, InterruptedException, ProcessException {
 
-			try (var input = new PipedInputStream(data.remaining());
-					var output = new PipedOutputStream(input)) {
-				byte[] transfer = new byte[data.remaining()];
-				data.get(transfer);
-				output.write(transfer);
-				output.flush();
-				output.close();
-				int boardLocalX = core.getX() - ethernet.getX();
-				if (boardLocalX < 0) {
-					boardLocalX += machine.maxChipX() + 1;
-				}
-				int boardLocalY = core.getY() - ethernet.getY();
-				if (boardLocalY < 0) {
-					boardLocalY += machine.maxChipY() + 1;
-				}
-				var boardLocal = new CoreLocation(boardLocalX, boardLocalY,
-						core.getP());
-				txrx.writeMemoryMulticast(ethernet, boardLocal, baseAddress,
-						input);
-			} catch (ProcessException e) {
-				throw new IOException(e);
+			int boardLocalX = core.getX() - ethernet.getX();
+			if (boardLocalX < 0) {
+				boardLocalX += machine.maxChipX() + 1;
 			}
+			int boardLocalY = core.getY() - ethernet.getY();
+			if (boardLocalY < 0) {
+				boardLocalY += machine.maxChipY() + 1;
+			}
+			var data = content.duplicate();
+			var nBytes = data.remaining();
+			byte[] transfer = new byte[nBytes];
+			data.get(transfer);
+			output.writeInt(baseAddress.address);
+			output.writeShort(boardLocalX);
+			output.writeShort(boardLocalY);
+			output.writeInt(nBytes / WORD_SIZE);
+			output.flush();
+			System.err.println("Writing " + nBytes + " bytes to " + baseAddress);
+			output.write(transfer);
+			output.flush();
+			System.err.println("Finished write");
+
 		}
 	}
 }
