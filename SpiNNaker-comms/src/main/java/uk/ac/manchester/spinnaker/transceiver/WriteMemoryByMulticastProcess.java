@@ -259,7 +259,7 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 		}
 
 		// We might still have one last send to do...
-		if (nextBuffer.remaining() > 0) {
+		if (nextBuffer.remaining() == 0) {
 			nextBuffer.flip();
 			sendRequest(new SendMCDataRequest(core, nextChip,
 					nextAddress, nextNWords, nextBuffer));
