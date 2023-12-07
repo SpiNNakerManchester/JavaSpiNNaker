@@ -165,25 +165,33 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	 */
 	public void writeMemoryStream(HasCoreLocation core, InputStream data)
 			throws IOException, ProcessException, InterruptedException {
+		System.err.println("Reading information");
 		DataInputStream input = new DataInputStream(data);
 		var baseAddress = new MemoryLocation(input.readInt());
 		var targetChip = new ChipLocation(input.readShort(), input.readShort());
 		var nWords = input.readInt();
 
+		System.err.println("Writing " + nWords + " words to " + baseAddress
+				+ " on " + targetChip);
+
 		var writePosition = baseAddress;
 		var nBytesRemaining = nWords * WORD_SIZE;
 		while (nBytesRemaining > 0) {
 			// One buffer per message; lifetime extends until batch end
+			System.err.println("Reading data; " + nBytesRemaining + " remaining");
 			var tmp = read(input, allocate(UDP_MESSAGE_MAX_SIZE),
 					nBytesRemaining);
 			if (tmp == null) {
 				break;
 			}
+			System.err.println("Sending request");
 			sendRequest(new SendMCDataRequest(core, targetChip, writePosition,
 					tmp));
 			writePosition = writePosition.add(tmp.remaining());
 			nBytesRemaining -= tmp.remaining();
 		}
+		System.err.println("Finishing send");
 		finishBatch();
+		System.err.println("Finished!");
 	}
 }

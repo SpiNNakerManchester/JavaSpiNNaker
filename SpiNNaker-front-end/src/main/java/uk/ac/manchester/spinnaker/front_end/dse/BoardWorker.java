@@ -199,23 +199,6 @@ abstract class BoardWorker {
 
 		var startAddress = storage.getStartAddress(xyp);
 		pointerTable.flip();
-		writePointerTable(xyp, startAddress, pointerTable);
-	}
-
-	/**
-	 * Do the writing of the pointer table.  Separated to allow override e.g.
-	 * if some of the writes above need to finish first!
-	 *
-	 * @param xyp The core to write the table to.
-	 * @param startAddress The address to start the table at.
-	 * @param pointerTable The table to write.
-	 * @throws ProcessException If SCAMP rejects the request.
-	 * @throws IOException If there is an I/O error.
-	 * @throws InterruptedException If the process is interrupted.
-	 */
-	protected void writePointerTable(CoreLocation xyp,
-			MemoryLocation startAddress, ByteBuffer pointerTable)
-			throws ProcessException, IOException, InterruptedException {
 		txrx.writeMemory(xyp.getScampCore(), startAddress, pointerTable);
 	}
 
