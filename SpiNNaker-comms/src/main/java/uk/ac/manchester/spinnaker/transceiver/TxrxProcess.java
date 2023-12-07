@@ -303,16 +303,8 @@ public class TxrxProcess {
 	 * @return The pipeline instance.
 	 */
 	private RequestPipeline pipeline(SCPRequest<?> request) {
-		System.err.println("Finding pipeline for request " + request);
-		var connection = selector.getNextConnection(request);
-		if (!requestPipelines.containsKey(connection)) {
-			System.err.println("Creating pipeline for connection " + connection);
-			var pipeline = new RequestPipeline(connection);
-			requestPipelines.put(connection, pipeline);
-			return pipeline;
-		}
-		System.err.println("Using existing pipeline for connection " + connection);
-		return requestPipelines.get(connection);
+		return requestPipelines.computeIfAbsent(
+				selector.getNextConnection(request), RequestPipeline::new);
 	}
 
 	/**
@@ -337,7 +329,6 @@ public class TxrxProcess {
 	protected final void finishBatch()
 			throws ProcessException, IOException, InterruptedException {
 		for (var pipe : requestPipelines.values()) {
-			System.err.println("Finishing pipe " + pipe);
 			pipe.finish();
 		}
 		if (failure != null) {
@@ -575,7 +566,6 @@ public class TxrxProcess {
 				}
 				log.debug("Sending request {} with connection {}", request,
 						connection);
-				System.err.println("Sending sequence " + seq + " with " + connection);
 				switch (request.sdpHeader.getFlags()) {
 				case REPLY_EXPECTED:
 				case REPLY_EXPECTED_NO_P2P:
@@ -826,7 +816,6 @@ public class TxrxProcess {
 			// While there are still more packets in progress than some
 			// threshold
 			while (numOutstandingRequests() > numPacketsOutstanding) {
-				System.err.println("Waiting for " + numOutstandingRequests() + " requests of " + numPacketsOutstanding);
 				try {
 					// Receive the next response
 					singleRetrieve();
@@ -840,7 +829,6 @@ public class TxrxProcess {
 			// Receive the next response
 			log.debug("{}: Connection {} waiting for message... timeout of {}",
 					this, connection, packetTimeout);
-			System.err.println("Waiting for message from connection " + connection);
 			var msg = connection.receiveSCPResponse(packetTimeout);
 			if (log.isDebugEnabled()) {
 				log.debug(
@@ -848,12 +836,10 @@ public class TxrxProcess {
 						this, connection, msg.getResult(),
 						msg.getSequenceNumber());
 			}
-			System.err.println("Connection " + connection + " received message seq " + msg.getSequenceNumber());
 			var req = getRequestForResult(msg);
 
 			// Only process responses which have matching requests
 			if (req == null) {
-				System.err.println("Connection " + connection + " Unknown sequence!");
 				log.info("discarding message with unknown sequence number: {}",
 						msg.getSequenceNumber());
 				if (log.isDebugEnabled()) {
@@ -868,7 +854,6 @@ public class TxrxProcess {
 			// If the response can be retried, retry it
 			if (msg.isRetriable()) {
 				try {
-					System.err.println("Connection " + connection + " resending...");
 					resend(req, msg.getResult(), msg.getSequenceNumber());
 					numRetryCodeResent++;
 				} catch (SocketTimeoutException e) {

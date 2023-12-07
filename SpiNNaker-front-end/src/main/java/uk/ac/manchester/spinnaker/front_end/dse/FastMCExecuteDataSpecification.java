@@ -25,13 +25,13 @@ import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -218,20 +218,20 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 		log.info("loading data onto {} cores on board", cores.size());
 		var gather = gathererForChip.get(board.location);
-		try (var worker =  new FastBoardWorker(txrx, board, storage, gather)) {
+		var worker =  new FastBoardWorker(txrx, board, storage, gather);
+		for (var xyp : cores) {
+			worker.mallocCore(xyp);
+		}
+		try (var routers = worker.systemRouterTables();
+				var context = worker.dontDropPackets(gather)) {
 			for (var xyp : cores) {
-				worker.mallocCore(xyp);
+				worker.loadCore(xyp);
 			}
-			try (var routers = worker.systemRouterTables();
-					var context = worker.dontDropPackets(gather)) {
-				for (var xyp : cores) {
-					worker.loadCore(xyp);
-				}
-				log.info("finished sending data in for this board");
-			} catch (Exception e) {
-				log.warn("failure in core loading", e);
-				throw e;
-			}
+			worker.finishAll();
+			log.info("finished sending data in for this board");
+		} catch (Exception e) {
+			log.warn("failure in core loading", e);
+			throw e;
 		}
 	}
 
@@ -347,7 +347,7 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @author Donal Fellows
 	 * @author Alan Stokes
 	 */
-	private class FastBoardWorker extends BoardWorker implements AutoCloseable {
+	private class FastBoardWorker extends BoardWorker {
 
 		private final CoreLocation ethernet;
 
@@ -363,16 +363,16 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 				throws IOException, ProcessException, InterruptedException,
 				StorageException {
 			super(txrx, board, storage);
-			System.err.println("Making fast board worker for " + board);
 			ethernet = new CoreLocation(board.location, gather.getP());
 			input = new PipedInputStream();
 			output = new DataOutputStream(new PipedOutputStream(input));
 			outputThread = new Thread(() -> {
-				while (true) {
+				boolean finished = false;
+				while (!finished) {
 					try {
-						System.err.println(this + ": Write multicast stream...");
 						txrx.writeMemoryMulticastStream(ethernet, input);
-						System.err.println(this + ": Finish write multicast stream");
+					} catch (EOFException e) {
+						finished = true;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -381,8 +381,7 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 			outputThread.start();
 		}
 
-		@Override
-		public void close() throws IOException, InterruptedException {
+		public void finishAll() throws IOException, InterruptedException {
 			output.close();
 			outputThread.join();
 			input.close();
@@ -456,6 +455,13 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 				compareBuffers(content, readBack);
 			}
 			return written;
+		}
+
+		@Override
+		protected void writePointerTable(CoreLocation xyp,
+				MemoryLocation startAddress, ByteBuffer pointerTable)
+				throws ProcessException, IOException, InterruptedException {
+			fastWrite(xyp, startAddress, pointerTable);
 		}
 
 		/**
@@ -534,10 +540,8 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 			output.writeShort(boardLocalY);
 			output.writeInt(nBytes / WORD_SIZE);
 			output.flush();
-			System.err.println("Writing " + nBytes + " bytes to " + baseAddress);
 			output.write(transfer);
 			output.flush();
-			System.err.println("Finished write");
 
 		}
 	}
