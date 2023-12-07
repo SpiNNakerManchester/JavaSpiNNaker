@@ -357,6 +357,9 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 
 		private final Thread outputThread;
 
+		private int totalDataWritten = 0;
+
+		private long startTime = 0;
 
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
 				DSEStorage storage, Gather gather)
@@ -367,15 +370,12 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 			input = new PipedInputStream();
 			output = new DataOutputStream(new PipedOutputStream(input));
 			outputThread = new Thread(() -> {
-				boolean finished = false;
-				while (!finished) {
-					try {
-						txrx.writeMemoryMulticastStream(ethernet, input);
-					} catch (EOFException e) {
-						finished = true;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				try {
+					txrx.writeMemoryMulticastStream(ethernet, input);
+				} catch (EOFException e) {
+					// Ignore this
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			});
 			outputThread.start();
@@ -384,7 +384,12 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		public void finishAll() throws IOException, InterruptedException {
 			output.close();
 			outputThread.join();
+			var endTime = nanoTime();
 			input.close();
+
+			var recorder = new MissingRecorder();
+			recorder.report(ethernet, endTime - startTime, totalDataWritten,
+					new MemoryLocation(0));
 		}
 
 		/**
@@ -443,12 +448,12 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
 				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
+			if (startTime == 0) {
+				startTime = nanoTime();
+			}
 			int written = content.remaining();
-			var recorder = new MissingRecorder();
-			long start = nanoTime();
+			totalDataWritten += written;
 			fastWrite(core, baseAddress, content);
-			long end = nanoTime();
-			recorder.report(core, end - start, content.limit(), baseAddress);
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
 				var readBack = txrx.readMemory(
 						core, baseAddress, content.remaining());
@@ -521,7 +526,7 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		 */
 		private void fastWrite(HasCoreLocation core, MemoryLocation baseAddress,
 				ByteBuffer content)
-						throws IOException, InterruptedException, ProcessException {
+				throws IOException, InterruptedException, ProcessException {
 
 			int boardLocalX = core.getX() - ethernet.getX();
 			if (boardLocalX < 0) {
@@ -542,7 +547,6 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 			output.flush();
 			output.write(transfer);
 			output.flush();
-
 		}
 	}
 }

@@ -55,6 +55,23 @@ public class SendMCDataRequest extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * @param core
+	 *            Where to send the request.
+	 * @param targetChip
+	 *            The target chip of the write.
+	 * @param baseAddress
+	 *            The address to write to on the target core.
+	 * @param data
+	 *            The data to write.
+	 */
+	public SendMCDataRequest(HasCoreLocation core, HasChipLocation targetChip,
+			MemoryLocation baseAddress, int nWords, ByteBuffer data) {
+		super(header(core), CMD_WRITE, baseAddress.address,
+				(targetChip.getX() << X_SHIFT) | targetChip.getY(), nWords,
+				data);
+	}
+
+	/**
 	 * Make a variant of SDP header that talks to the packet reinjector. It
 	 * <i>always</i> wants a reply and always talks to a particular SDP port
 	 * (the port for the reinjector).

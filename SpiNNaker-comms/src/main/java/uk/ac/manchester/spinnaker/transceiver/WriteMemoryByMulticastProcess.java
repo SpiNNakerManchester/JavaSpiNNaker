@@ -16,13 +16,16 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -166,24 +169,91 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	public void writeMemoryStream(HasCoreLocation core, InputStream data)
 			throws IOException, ProcessException, InterruptedException {
 		DataInputStream input = new DataInputStream(data);
-		var baseAddress = new MemoryLocation(input.readInt());
-		var targetChip = new ChipLocation(input.readShort(), input.readShort());
-		var nWords = input.readInt();
 
-		var writePosition = baseAddress;
-		var nBytesRemaining = nWords * WORD_SIZE;
-		while (nBytesRemaining > 0) {
-			// One buffer per message; lifetime extends until batch end
-			var tmp = read(input, allocate(UDP_MESSAGE_MAX_SIZE),
-					nBytesRemaining);
-			if (tmp == null) {
+		// Keep a buffer to be sent, along with the initial send details
+		var nextBuffer = allocate(UDP_MESSAGE_MAX_SIZE).order(LITTLE_ENDIAN);
+		MemoryLocation nextAddress = null;
+		ChipLocation nextChip = null;
+		int nextNWords = -1;
+
+		while (true) {
+
+			// Read the next address and location to send to
+			MemoryLocation baseAddress;
+			try {
+				baseAddress = new MemoryLocation(input.readInt());
+			} catch (EOFException e) {
 				break;
 			}
-			sendRequest(new SendMCDataRequest(core, targetChip, writePosition,
-					tmp));
-			writePosition = writePosition.add(tmp.remaining());
-			nBytesRemaining -= tmp.remaining();
+			var targetChip = new ChipLocation(input.readShort(),
+					input.readShort());
+			var nWords = input.readInt();
+
+			// Either we are at the start of the buffer, or there isn't enough
+			// space for the address info and some data (we need at least as
+			// much data as the header size to make it worth it)
+			if (nextBuffer.position() == 0 ||
+					nextBuffer.remaining() < 2 * 3 * WORD_SIZE) {
+
+				// If the buffer has some words in it, send it now
+				if (nextBuffer.position() > 0) {
+					nextBuffer.flip();
+					sendRequest(new SendMCDataRequest(core, nextChip,
+							nextAddress, nextNWords, nextBuffer));
+					nextBuffer = allocate(UDP_MESSAGE_MAX_SIZE)
+							.order(LITTLE_ENDIAN);
+				}
+				nextAddress = baseAddress;
+				nextChip = targetChip;
+
+				// However the size depends on the space available!
+				nextNWords = min(nWords, UDP_MESSAGE_MAX_SIZE);
+			} else {
+				// We have enough space, so write the change of context to the
+				// buffer
+				nextBuffer.putInt(baseAddress.address);
+				nextBuffer.putShort((short) targetChip.getX());
+				nextBuffer.putShort((short) targetChip.getY());
+
+				// Once again, the size depends on the space available!
+				nextBuffer.putInt(min(nWords, UDP_MESSAGE_MAX_SIZE));
+			}
+
+			var writePosition = baseAddress;
+			var nBytesRemaining = nWords * WORD_SIZE;
+			while (nBytesRemaining > 0) {
+
+				// Read data into the buffer
+				var nextReadSize = min(nBytesRemaining, nextBuffer.remaining());
+				input.read(nextBuffer.array(), nextBuffer.arrayOffset(),
+						nextReadSize);
+
+				writePosition = writePosition.add(nextReadSize);
+				nBytesRemaining -= nextReadSize;
+
+				// If the buffer is full, send it and update the header values
+				// for the potential next send
+				if (nextBuffer.remaining() == 0) {
+					nextBuffer.flip();
+					sendRequest(new SendMCDataRequest(core, nextChip,
+							nextAddress, nextNWords, nextBuffer));
+					nextBuffer = allocate(UDP_MESSAGE_MAX_SIZE)
+							.order(LITTLE_ENDIAN);
+					nextChip = targetChip;
+					nextAddress = writePosition;
+					nextNWords = min(nBytesRemaining / WORD_SIZE,
+							UDP_MESSAGE_MAX_SIZE);
+				}
+			}
 		}
+
+		// We might still have one last send to do...
+		if (nextBuffer.remaining() == 0) {
+			nextBuffer.flip();
+			sendRequest(new SendMCDataRequest(core, nextChip,
+					nextAddress, nextNWords, nextBuffer));
+		}
+
 		finishBatch();
 	}
 }
