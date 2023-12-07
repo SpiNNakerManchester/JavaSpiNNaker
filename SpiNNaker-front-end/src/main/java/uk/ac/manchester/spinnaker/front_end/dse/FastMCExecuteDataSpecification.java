@@ -357,6 +357,8 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 
 		private final Thread outputThread;
 
+		private Exception exception = null;
+
 		private int totalDataWritten = 0;
 
 		private long startTime = 0;
@@ -375,7 +377,7 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 				} catch (EOFException e) {
 					// Ignore this
 				} catch (Exception e) {
-					e.printStackTrace();
+					exception = e;
 				}
 			});
 			outputThread.start();
@@ -386,6 +388,10 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 			outputThread.join();
 			var endTime = nanoTime();
 			input.close();
+
+			if (exception != null) {
+				throw new IOException(exception);
+			}
 
 			var recorder = new MissingRecorder();
 			recorder.report(ethernet, endTime - startTime, totalDataWritten,
@@ -399,7 +405,6 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 		 * @author Donal Fellows
 		 */
 		private final class MissingRecorder {
-
 
 			/**
 			 * Issue the report based on what we recorded, if appropriate.
@@ -538,6 +543,10 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 			}
 			var data = content.duplicate();
 			var nBytes = data.remaining();
+			if ((nBytes / WORD_SIZE) * WORD_SIZE != nBytes) {
+				throw new IOException("Data with " + nBytes + " is not a "
+						+ "multiple of " + WORD_SIZE);
+			}
 			byte[] transfer = new byte[nBytes];
 			data.get(transfer);
 			output.writeInt(baseAddress.address);

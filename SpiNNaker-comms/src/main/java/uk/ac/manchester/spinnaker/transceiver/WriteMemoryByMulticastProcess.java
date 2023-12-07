@@ -48,6 +48,9 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 	/** The number of simultaneous messages that can be in progress. */
 	private static final int N_CHANNELS = 8;
 
+	private static final int UDP_MESSAGE_MAX_WORDS =
+			UDP_MESSAGE_MAX_SIZE / WORD_SIZE;
+
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -175,18 +178,21 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 		MemoryLocation nextAddress = null;
 		ChipLocation nextChip = null;
 		int nextNWords = -1;
+		byte[] buffer = new byte[UDP_MESSAGE_MAX_SIZE];
 
 		while (true) {
 
 			// Read the next address and location to send to
 			MemoryLocation baseAddress;
 			try {
-				baseAddress = new MemoryLocation(input.readInt());
+				int addr = input.readInt();
+				baseAddress = new MemoryLocation(addr);
 			} catch (EOFException e) {
 				break;
 			}
-			var targetChip = new ChipLocation(input.readShort(),
-					input.readShort());
+			int x = input.readShort();
+			int y = input.readShort();
+			var targetChip = new ChipLocation(x, y);
 			var nWords = input.readInt();
 
 			// Either we are at the start of the buffer, or there isn't enough
@@ -207,16 +213,17 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 				nextChip = targetChip;
 
 				// However the size depends on the space available!
-				nextNWords = min(nWords, UDP_MESSAGE_MAX_SIZE);
+				nextNWords = min(nWords, UDP_MESSAGE_MAX_WORDS);
 			} else {
 				// We have enough space, so write the change of context to the
 				// buffer
+				var nWordsAvailable = (nextBuffer.remaining() / WORD_SIZE) - 3;
 				nextBuffer.putInt(baseAddress.address);
-				nextBuffer.putShort((short) targetChip.getX());
 				nextBuffer.putShort((short) targetChip.getY());
+				nextBuffer.putShort((short) targetChip.getX());
 
 				// Once again, the size depends on the space available!
-				nextBuffer.putInt(min(nWords, UDP_MESSAGE_MAX_SIZE));
+				nextBuffer.putInt(min(nWords, nWordsAvailable));
 			}
 
 			var writePosition = baseAddress;
@@ -224,9 +231,13 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 			while (nBytesRemaining > 0) {
 
 				// Read data into the buffer
+				if ((nBytesRemaining / WORD_SIZE) * WORD_SIZE != nBytesRemaining) {
+					throw new IOException("Remaining bytes " + nBytesRemaining
+							+ " is not a multiple of word size " + WORD_SIZE);
+				}
 				var nextReadSize = min(nBytesRemaining, nextBuffer.remaining());
-				input.read(nextBuffer.array(), nextBuffer.arrayOffset(),
-						nextReadSize);
+				input.readFully(buffer, 0, nextReadSize);
+				nextBuffer.put(buffer, 0, nextReadSize);
 
 				writePosition = writePosition.add(nextReadSize);
 				nBytesRemaining -= nextReadSize;
@@ -242,7 +253,7 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 					nextChip = targetChip;
 					nextAddress = writePosition;
 					nextNWords = min(nBytesRemaining / WORD_SIZE,
-							UDP_MESSAGE_MAX_SIZE);
+							UDP_MESSAGE_MAX_WORDS);
 				}
 			}
 		}
