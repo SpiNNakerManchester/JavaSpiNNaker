@@ -18,18 +18,15 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.max;
 import static java.nio.ByteBuffer.allocate;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.read;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.SendMCDataRequest;
@@ -143,55 +140,5 @@ class WriteMemoryByMulticastProcess extends TxrxProcess {
 			writePosition = writePosition.add(tmp.remaining());
 		}
 		finishBatch();
-	}
-
-	/**
-	 * Write to memory reading from a stream of data that includes context
-	 * switches.  Each section is a "header" of memory address (integer),
-	 * chip x and y (each a short) and the number of words, followed by the
-	 * words themselves.  The number of words does not have to be short enough
-	 * to fit in a packet; this will be managed by this function.
-	 *
-	 * @param core
-	 *            The location to send the messages to.
-	 * @param data
-	 *            The stream of data to write.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 */
-	public void writeMemoryStream(HasCoreLocation core, InputStream data)
-			throws IOException, ProcessException, InterruptedException {
-		System.err.println("Reading information");
-		DataInputStream input = new DataInputStream(data);
-		var baseAddress = new MemoryLocation(input.readInt());
-		var targetChip = new ChipLocation(input.readShort(), input.readShort());
-		var nWords = input.readInt();
-
-		System.err.println("Writing " + nWords + " words to " + baseAddress
-				+ " on " + targetChip);
-
-		var writePosition = baseAddress;
-		var nBytesRemaining = nWords * WORD_SIZE;
-		while (nBytesRemaining > 0) {
-			// One buffer per message; lifetime extends until batch end
-			System.err.println("Reading data; " + nBytesRemaining + " remaining");
-			var tmp = read(input, allocate(UDP_MESSAGE_MAX_SIZE),
-					nBytesRemaining);
-			if (tmp == null) {
-				break;
-			}
-			System.err.println("Sending request");
-			sendRequest(new SendMCDataRequest(core, targetChip, writePosition,
-					tmp));
-			writePosition = writePosition.add(tmp.remaining());
-			nBytesRemaining -= tmp.remaining();
-		}
-		System.err.println("Finishing send");
-		finishBatch();
-		System.err.println("Finished!");
 	}
 }

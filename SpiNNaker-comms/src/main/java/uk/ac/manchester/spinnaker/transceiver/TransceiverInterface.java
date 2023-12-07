@@ -1922,27 +1922,6 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			throws IOException, ProcessException, InterruptedException;
 
 	/**
-	 * Write to the board via multicast on the Ethernet chip from a stream which
-	 * includes headers to indicate where data is to be streamed.
-	 *
-	 * @param core
-	 *            The coordinates of the Ethernet core containing the advanced
-	 *            monitor support
-	 * @param data
-	 *            The stream of data to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 */
-	@ParallelSafe
-	void writeMemoryMulticastStream(@Valid HasCoreLocation core,
-			@NotNull InputStream data)
-			throws IOException, ProcessException, InterruptedException;
-
-	/**
 	 * Write to the user<sub>0</sub> register of a core.
 	 *
 	 * @param core
