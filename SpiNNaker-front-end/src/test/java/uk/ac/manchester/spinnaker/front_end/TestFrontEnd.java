@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.opentest4j.AssertionFailedError;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
-import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
+import uk.ac.manchester.spinnaker.front_end.dse.FastMCExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -175,11 +175,11 @@ class TestFrontEnd {
 		var runFolder = "target/test/AdvancedDSE";
 		new File(runFolder).mkdirs();
 
-		var saved = CommandLineInterface.fastFactory;
+		var saved = CommandLineInterface.fastMCFactory;
 		var called = new ValueHolder<>("none");
 		try {
-			CommandLineInterface.fastFactory = (t, m, g, r,
-					db) -> new FastExecuteDataSpecification(t, m, g, r, null) {
+			CommandLineInterface.fastMCFactory = (t, m, g, r,
+					db) -> new FastMCExecuteDataSpecification(t, m, g, r, null) {
 						@Override
 						public void loadCores() {
 							called.setValue("mon");
@@ -202,7 +202,7 @@ class TestFrontEnd {
 					runFolder);
 			assertEquals("mon", called.getValue());
 		} finally {
-			CommandLineInterface.fastFactory = saved;
+			CommandLineInterface.fastMCFactory = saved;
 		}
 	}
 
