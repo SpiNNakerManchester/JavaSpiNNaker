@@ -98,7 +98,7 @@ class TestFrontEnd {
 		var msg = tapSystemOutNormalized(() -> {
 			runMainExpecting(0, "help");
 		});
-		var requiredSubcommands = List.of("dse_app_mon", "gather");
+		var requiredSubcommands = List.of("dse_app_mon_mc", "gather");
 		var requiredArgs = List.of("<machineFile>", "<runFolder>");
 		for (var cmd: requiredSubcommands) {
 			assertContainsInOrder(msg, cmd);
@@ -192,7 +192,7 @@ class TestFrontEnd {
 					};
 
 			var msg = tapSystemErrNormalized(() -> {
-				runMainExpecting(2, "dse_app_mon");
+				runMainExpecting(2, "dse_app_mon_mc");
 			});
 			assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
 					"<runFolder>", "[<reportFolder>]");
