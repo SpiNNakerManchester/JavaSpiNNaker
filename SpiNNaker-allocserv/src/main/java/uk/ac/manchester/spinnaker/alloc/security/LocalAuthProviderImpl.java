@@ -66,6 +66,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
@@ -259,6 +260,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 										PREFERRED_USERNAME),
 						bearerAuth.getName(), new OriginatingCredential(token),
 						auth.getAuthorities());
+			} else if (auth instanceof OAuth2LoginAuthenticationToken) {
+				var user = ((OAuth2LoginAuthenticationToken) auth)
+						.getPrincipal();
+				return authorizeOpenId(
+						authProps.getOpenid().getUsernamePrefix()
+								+ user.getAttribute(PREFERRED_USERNAME),
+						user.getAttribute(SUB), new OriginatingCredential(user),
+						auth.getAuthorities());
 			} else {
 				return null;
 			}
@@ -294,7 +303,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthenticationToken.class, BearerTokenAuthentication.class,
-		AlreadyDoneMarker.class
+		AlreadyDoneMarker.class, OAuth2LoginAuthenticationToken.class
 	};
 
 	/** The classes that we <em>know</em> we don't ever want to handle. */
