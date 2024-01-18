@@ -63,6 +63,7 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -300,15 +301,26 @@ public class SecurityConfig {
 			 * tools (especially within the collabratory and the Jupyter
 			 * notebook).
 			 */
-			http.oauth2Login().loginPage(loginUrl)
-					.loginProcessingUrl(oidcPath("login/code/*"))
+			http.oauth2Login()
+				.loginPage(loginUrl)
 					.clientRegistrationRepository(
-							clientRegistrationRepository())
+						clientRegistrationRepository())
 					.authorizedClientService(authorizedClientService())
-					.authorizationEndpoint().baseUri(oidcPath("auth")).and()
+					.loginPage(loginUrl)
 					.defaultSuccessUrl(rootPage, true)
-					.failureUrl(loginUrl + "?error=true").userInfoEndpoint()
-					.userAuthoritiesMapper(userAuthoritiesMapper());
+					.failureUrl(loginUrl + "?error=true")
+					.authorizationEndpoint()
+						.baseUri(oidcPath("auth"))
+						.and()
+					.redirectionEndpoint()
+						.baseUri(oidcPath("login/code/*"))
+						.and()
+					.tokenEndpoint()
+						.accessTokenResponseClient(
+							new DefaultAuthorizationCodeTokenResponseClient())
+						.and()
+					.userInfoEndpoint()
+						.userAuthoritiesMapper(userAuthoritiesMapper());
 			http.oauth2Client();
 		}
 		if (properties.isLocalForm()) {
