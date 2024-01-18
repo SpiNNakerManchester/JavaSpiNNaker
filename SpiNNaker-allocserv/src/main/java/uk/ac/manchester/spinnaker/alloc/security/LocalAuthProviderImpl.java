@@ -311,7 +311,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthenticationToken.class, BearerTokenAuthentication.class,
-		AlreadyDoneMarker.class
+		AlreadyDoneMarker.class, OAuth2LoginAuthenticationToken.class
 	};
 
 	/** The classes that we <em>know</em> we don't ever want to handle. */
