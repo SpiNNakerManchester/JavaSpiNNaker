@@ -22,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminController;
@@ -32,6 +36,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
+@Testcontainers
 class BootTest extends TestSupport {
 
 	@Autowired
@@ -48,6 +53,10 @@ class BootTest extends TestSupport {
 
 	@Autowired
 	private AdminController adminUI;
+
+	@Container
+	static MySQLContainer<?> mySqlContainer = new MySQLContainer<>(
+			DockerImageName.parse("mysql:8.2.0"));
 
 	@Test
 	void testContextBoot() throws InterruptedException {
