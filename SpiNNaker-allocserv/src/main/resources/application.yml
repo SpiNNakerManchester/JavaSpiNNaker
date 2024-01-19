@@ -288,5 +288,5 @@ spring:
             authorization-uri: ${spalloc.auth.openid.auth}
             token-uri: ${spalloc.auth.openid.token}
             user-info-uri: ${spalloc.auth.openid.userinfo}
-            jwk-set-uri: ${${spalloc.auth.openid.jwk-set}
+            jwk-set-uri: ${spalloc.auth.openid.jwk-set}
             user-name-attribute: preferred_username
