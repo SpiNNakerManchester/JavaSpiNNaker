@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -213,23 +213,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/client/OAuth2AuthorizedClientService.html?is-external=true" title="class or interface in org.springframework.security.oauth2.client" class="externalLink">OAuth2AuthorizedClientService</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#authorizedClientService()">authorizedClientService</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/client/registration/ClientRegistrationRepository.html?is-external=true" title="class or interface in org.springframework.security.oauth2.client.registration" class="externalLink">ClientRegistrationRepository</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clientRegistrationRepository()">clientRegistrationRepository</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#configureGlobal(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)">configureGlobal</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/authentication/builders/AuthenticationManagerBuilder.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.authentication.builders" class="externalLink">AuthenticationManagerBuilder</a>&nbsp;auth)</code></th>
 <td class="colLast">
 <div class="block">Configure things we plug into.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/web/SecurityFilterChain.html?is-external=true" title="class or interface in org.springframework.security.web" class="externalLink">SecurityFilterChain</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#securityFilter(org.springframework.security.config.annotation.web.builders.HttpSecurity)">securityFilter</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/builders/HttpSecurity.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.web.builders" class="externalLink">HttpSecurity</a>&nbsp;http)</code></th>
 <td class="colLast">
@@ -354,20 +344,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="clientRegistrationRepository()">clientRegistrationRepository</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/client/registration/ClientRegistrationRepository.html?is-external=true" title="class or interface in org.springframework.security.oauth2.client.registration" class="externalLink">ClientRegistrationRepository</a></span>&nbsp;<span class="memberName">clientRegistrationRepository</span>()</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="authorizedClientService()">authorizedClientService</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/client/OAuth2AuthorizedClientService.html?is-external=true" title="class or interface in org.springframework.security.oauth2.client" class="externalLink">OAuth2AuthorizedClientService</a></span>&nbsp;<span class="memberName">authorizedClientService</span>()</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="securityFilter(org.springframework.security.config.annotation.web.builders.HttpSecurity)">securityFilter</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Role.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Role</a>(1)
@@ -435,7 +411,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </a>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
 </nav>
-<p class="legalCopy"><small>Copyright &#169; 2018&#x2013;2023 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2018&#x2013;2024 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>
