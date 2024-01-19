@@ -49,10 +49,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI;
@@ -66,17 +62,12 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 	"checkstyle:ParameterNumber", "checkstyle:VisibilityModifier"
 })
 @Execution(SAME_THREAD)
-@Testcontainers
 public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	/** Bring in the application Spring configuration that we're testing. */
 	@Configuration
 	@ComponentScan(basePackageClasses = SpallocProperties.class)
 	public static class Config {
 	}
-
-	@Container
-	static MySQLContainer<?> mySqlContainer = new MySQLContainer<>(
-			DockerImageName.parse("mysql:8.2.0"));
 
 	protected static final Logger log = getLogger(TestSupport.class);
 
