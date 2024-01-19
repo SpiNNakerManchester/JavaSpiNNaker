@@ -271,18 +271,22 @@ spring:
   config:
     activate:
       on-profile: default
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          hbp-ebrains:
-#            client-id: ${spalloc.auth.openid.id}
-#            client-secret: ${spalloc.auth.openid.secret}
-#            # Repeated from spalloc.auth.openid.scopes, but can't share!
-#            scope: [ openid, profile, roles, email, team, group ]
-#            authorization-grant-type: authorization_code
-#            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
-#        provider:
-#          hbp-ebrains:
-#            issuer-uri: ${spalloc.auth.openid.issuer}
-#            user-name-attribute: preferred_username
+  security:
+    oauth2:
+      client:
+        registration:
+          hbp-ebrains:
+            client-id: ${spalloc.auth.openid.id}
+            client-secret: ${spalloc.auth.openid.secret}
+            # Repeated from spalloc.auth.openid.scopes, but can't share!
+            scope: [ openid, profile, roles, email, team, group ]
+            authorization-grant-type: ${spalloc.auth.openid.auth-grant-type}
+            redirect-uri: ${spalloc.auth.openid.redirect}
+        provider:
+          hbp-ebrains:
+            # issuer-uri: ${spalloc.auth.openid.issuer}
+            authorization-uri: ${spalloc.auth.openid.auth}
+            token-uri: ${spalloc.auth.openid.token}
+            user-info-uri: ${spalloc.auth.openid.userinfo}
+            jwk-set-uri: ${${spalloc.auth.openid.jwk-set}
+            user-name-attribute: preferred_username

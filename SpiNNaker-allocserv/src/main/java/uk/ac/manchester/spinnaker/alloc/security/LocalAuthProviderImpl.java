@@ -66,9 +66,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
-import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
-import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
@@ -262,20 +259,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 										PREFERRED_USERNAME),
 						bearerAuth.getName(), new OriginatingCredential(token),
 						auth.getAuthorities());
-			} else if (auth instanceof OAuth2LoginAuthenticationToken) {
-				var oauth2Auth = (OAuth2LoginAuthenticationToken) auth;
-				var client = new DefaultAuthorizationCodeTokenResponseClient();
-				var tokenResponse = client.getTokenResponse(
-						new OAuth2AuthorizationCodeGrantRequest(
-								oauth2Auth.getClientRegistration(),
-								oauth2Auth.getAuthorizationExchange()));
-				var token = tokenResponse.getAccessToken();
-				return authorizeOpenId(
-						authProps.getOpenid().getUsernamePrefix()
-								+ tokenResponse.getAdditionalParameters().get(
-										PREFERRED_USERNAME),
-						oauth2Auth.getName(), new OriginatingCredential(token),
-						auth.getAuthorities());
 			} else {
 				return null;
 			}
@@ -311,7 +294,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthenticationToken.class, BearerTokenAuthentication.class,
-		AlreadyDoneMarker.class, OAuth2LoginAuthenticationToken.class
+		AlreadyDoneMarker.class
 	};
 
 	/** The classes that we <em>know</em> we don't ever want to handle. */
