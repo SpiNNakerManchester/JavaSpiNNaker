@@ -372,7 +372,7 @@ public class SecurityConfig {
 		}
 	}
 
-	private class Formatter implements LogFormatter {
+	private final class Formatter implements LogFormatter {
 
 		@Override
 		public String formatResponse(ClientHttpResponse response)
