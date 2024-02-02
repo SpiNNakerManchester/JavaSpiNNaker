@@ -30,7 +30,9 @@ public enum SDPPort {
 	/** Extra monitor core data transfer functionality. */
 	EXTRA_MONITOR_CORE_DATA_SPEED_UP(5),
 	/** Messages directed at the packet gatherer for the speed up protocols. */
-	GATHERER_DATA_SPEED_UP(6);
+	GATHERER_DATA_SPEED_UP(6),
+	/** Messages directed at the data in loader to simply load data. */
+	COPY_DATA_IN_PORT(7);
 
 	/** The port ID. */
 	public final int value;

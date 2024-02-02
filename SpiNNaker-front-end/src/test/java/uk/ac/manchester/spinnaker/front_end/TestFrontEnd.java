@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.opentest4j.AssertionFailedError;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
-import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
+import uk.ac.manchester.spinnaker.front_end.dse.FastMCExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -98,7 +98,7 @@ class TestFrontEnd {
 		var msg = tapSystemOutNormalized(() -> {
 			runMainExpecting(0, "help");
 		});
-		var requiredSubcommands = List.of("dse_app_mon", "gather");
+		var requiredSubcommands = List.of("dse_app_mon_mc", "gather");
 		var requiredArgs = List.of("<machineFile>", "<runFolder>");
 		for (var cmd: requiredSubcommands) {
 			assertContainsInOrder(msg, cmd);
@@ -175,11 +175,11 @@ class TestFrontEnd {
 		var runFolder = "target/test/AdvancedDSE";
 		new File(runFolder).mkdirs();
 
-		var saved = CommandLineInterface.fastFactory;
+		var saved = CommandLineInterface.fastMCFactory;
 		var called = new ValueHolder<>("none");
 		try {
-			CommandLineInterface.fastFactory = (t, m, g, r,
-					db) -> new FastExecuteDataSpecification(t, m, g, r, null) {
+			CommandLineInterface.fastMCFactory = (t, m, g, r,
+					db) -> new FastMCExecuteDataSpecification(t, m, g, r, null) {
 						@Override
 						public void loadCores() {
 							called.setValue("mon");
@@ -192,17 +192,17 @@ class TestFrontEnd {
 					};
 
 			var msg = tapSystemErrNormalized(() -> {
-				runMainExpecting(2, "dse_app_mon");
+				runMainExpecting(2, "dse_app_mon_mc");
 			});
 			assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
 					"<runFolder>", "[<reportFolder>]");
 
 			assertEquals("none", called.getValue());
-			runMainExpecting(0, "dse_app_mon", gatherFile, machineFile, dsFile,
-					runFolder);
+			runMainExpecting(0, "dse_app_mon_mc", gatherFile, machineFile,
+					dsFile,	runFolder);
 			assertEquals("mon", called.getValue());
 		} finally {
-			CommandLineInterface.fastFactory = saved;
+			CommandLineInterface.fastMCFactory = saved;
 		}
 	}
 
