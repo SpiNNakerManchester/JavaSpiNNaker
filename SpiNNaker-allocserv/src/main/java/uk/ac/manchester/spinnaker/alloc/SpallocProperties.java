@@ -590,6 +590,9 @@ public class SpallocProperties {
 		/** Name of user that system-generated reports are done by. */
 		private String systemReportUser;
 
+		/** Whether an allocation that fails should immediately fail a job. */
+		private boolean failJobOnFailAllocation;
+
 		/**
 		 * @param period
 		 *            Time between runs of the main allocation algorithm.
@@ -603,17 +606,22 @@ public class SpallocProperties {
 		 *            taken out of service.
 		 * @param systemReportUser
 		 *            Name of user that system-generated reports are done by.
+		 * @param failJobOnFailAllocation
+		 *            Fail jobs immediately if the allocation fails, rather than
+		 *            queuing the job.  Avoids system locking up.
 		 */
 		public AllocatorProperties(@DefaultValue("5s") Duration period,
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
-				@DefaultValue("") String systemReportUser) {
+				@DefaultValue("") String systemReportUser,
+				@DefaultValue("true") boolean failJobOnFailAllocation) {
 			this.period = period;
 			this.importanceSpan = importanceSpan;
 			this.priorityScale = priorityScale;
 			this.reportActionThreshold = reportActionThreshold;
 			this.systemReportUser = systemReportUser;
+			this.failJobOnFailAllocation = failJobOnFailAllocation;
 		}
 
 		/**
@@ -682,6 +690,15 @@ public class SpallocProperties {
 
 		void setSystemReportUser(String systemReportUser) {
 			this.systemReportUser = systemReportUser;
+		}
+
+		/** @return true if jobs should be failed if allocation fails. */
+		public boolean isFailJobOnFailAllocation() {
+			return failJobOnFailAllocation;
+		}
+
+		void setFailJobOnFailAllocation(boolean failJobOnFailAllocation) {
+			this.failJobOnFailAllocation = failJobOnFailAllocation;
 		}
 	}
 
