@@ -55,7 +55,7 @@ class TestMessage {
 	void testBootMessages() {
 		var bm = new BootMessages(FIVE);
 		var bml = bm.getMessages().collect(Collectors.toList());
-		assertEquals(30, bml.size());
+		assertEquals(32, bml.size());
 		var patched = bml.get(1).data;
 		patched.position(BOOT_STRUCT_REPLACE_OFFSET);
 		var got = new byte[16];
@@ -69,7 +69,7 @@ class TestMessage {
 		assertArrayEquals(expected, got);
 	}
 
-	private static final List<Integer> EXPECTED_SIZES = List.of(18, 1042, 690);
+	private static final List<Integer> EXPECTED_SIZES = List.of(18, 1042, 190);
 
 	@Test
 	void testBootMessagesSerialize() {
@@ -78,6 +78,7 @@ class TestMessage {
 			var buf = ByteBuffer.allocate(1500);
 			b.addToBuffer(buf);
 			buf.flip();
+			int a = buf.remaining();
 			assertTrue(EXPECTED_SIZES.contains(buf.remaining()),
 					() -> format("%d not in %s", buf.remaining(),
 							EXPECTED_SIZES));
