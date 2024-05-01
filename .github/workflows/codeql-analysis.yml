@@ -45,6 +45,8 @@ env:
 
 jobs:
   analyze:
+    permissions:
+      contents: write
     name: Analyze
     runs-on: ubuntu-latest
     timeout-minutes: 15
