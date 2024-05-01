@@ -15,7 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
@@ -61,12 +60,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
-import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -82,7 +76,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -256,32 +249,6 @@ public class SecurityConfig {
 		}
 	}
 
-	@Bean
-	public ClientRegistrationRepository clientRegistrationRepository() {
-		OpenIDProperties props = properties.getOpenid();
-		List<ClientRegistration> registrations = List.of(
-				ClientRegistration.withRegistrationId(props.getRegistrationId())
-				.clientId(props.getId())
-				.clientSecret(props.getSecret())
-				.authorizationGrantType(props.getAuthGrantType())
-				.authorizationUri(props.getAuth())
-				.tokenUri(props.getToken())
-				.userInfoUri(props.getUserinfo())
-				.jwkSetUri(props.getJwkSet())
-				.issuerUri(props.getIssuer())
-				.scope(props.getScopes())
-				.redirectUri(props.getRedirect())
-				.build());
-		return new InMemoryClientRegistrationRepository(registrations);
-	}
-
-	@Bean
-	public OAuth2AuthorizedClientService authorizedClientService() {
-
-		return new InMemoryOAuth2AuthorizedClientService(
-				clientRegistrationRepository());
-	}
-
 	/**
 	 * How we handle the mechanics of login within the web UI.
 	 *
@@ -302,9 +269,6 @@ public class SecurityConfig {
 			 */
 			http.oauth2Login().loginPage(loginUrl)
 					.loginProcessingUrl(oidcPath("login/code/*"))
-					.clientRegistrationRepository(
-							clientRegistrationRepository())
-					.authorizedClientService(authorizedClientService())
 					.authorizationEndpoint().baseUri(oidcPath("auth")).and()
 					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true").userInfoEndpoint()
@@ -408,7 +372,8 @@ public class SecurityConfig {
 		}
 	}
 
-	private static final class Formatter implements LogFormatter {
+	private final class Formatter implements LogFormatter {
+
 		@Override
 		public String formatResponse(ClientHttpResponse response)
 				throws IOException {
@@ -420,9 +385,11 @@ public class SecurityConfig {
 		@Override
 		public String formatRequest(HttpRequest request, byte[] body) {
 			return String.format(
-					"%s Request to %s:\n    Headers: %s\n    Body: %s",
+					"%s Request to %s:\n"
+					+ "    Headers: %s\n"
+					+ "    Body: %s",
 					request.getMethod(), request.getURI(), request.getHeaders(),
-					new String(body, ISO_8859_1)); // A "safe" encoding
+					new String(body));
 		}
 	}
 
