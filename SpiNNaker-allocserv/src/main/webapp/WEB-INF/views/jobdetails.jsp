@@ -9,7 +9,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ limitations under the License.
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
-	<td>
+	<td id="owner">
 		<spring:eval htmlEscape="true"
 				expression="job.owner.orElse('[SHROUDED]')" />
 	</td>
@@ -68,19 +68,13 @@ limitations under the License.
 	<td id="keepAlive">${ job.keepAlive }</td>
 </tr>
 <tr>
-	<th class="lineTitle">Owner host:</th>
-	<td>
-		<spring:eval expression="job.ownerHost.orElse('[SHROUDED]')"
-				htmlEscape="true" />
-	</td>
-</tr>
-<tr>
 	<th class="lineTitle">Raw request:</th>
 	<td><details><summary><em>Click to show</em></summary>
 	<c:if test="${ not empty job.request }">
 		<pre id="rawRequest"><c:out escapeXml="true"
 				value="${ job.request }" /></pre>
 		<script defer="defer">
+			getJobOwner("rawRequest", "owner");
 			prettyJson("rawRequest");
 		</script>
 	</c:if>
@@ -142,7 +136,13 @@ limitations under the License.
 	<td>
 		<c:choose>
 			<c:when test="${ not empty job.boards }">
-				${ job.powered ? 'on' : 'off' }
+				<form method="POST" action="${ powerUri }">
+					<sec:csrfInput />
+					<c:if test="${ job.state == 'READY'}">
+						<input type="hidden" name="power" value="${ !job.powered }" />
+						${ job.powered ? 'on' : 'off' } <input type="submit" value="Toggle Power" />
+					</c:if>
+				</form>
 			</c:when>
 			<c:otherwise>Not currently allocated</c:otherwise>
 		</c:choose>

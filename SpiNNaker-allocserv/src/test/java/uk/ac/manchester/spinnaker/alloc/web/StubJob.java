@@ -55,6 +55,11 @@ public abstract class StubJob implements Job {
 	}
 
 	@Override
+	public void setPower(boolean power) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public JobState getState() {
 		throw new UnsupportedOperationException();
 	}

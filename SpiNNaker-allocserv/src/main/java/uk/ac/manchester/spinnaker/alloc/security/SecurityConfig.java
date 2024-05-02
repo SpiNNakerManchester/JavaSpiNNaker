@@ -15,7 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
@@ -373,7 +372,8 @@ public class SecurityConfig {
 		}
 	}
 
-	private static final class Formatter implements LogFormatter {
+	private final class Formatter implements LogFormatter {
+
 		@Override
 		public String formatResponse(ClientHttpResponse response)
 				throws IOException {
@@ -385,9 +385,11 @@ public class SecurityConfig {
 		@Override
 		public String formatRequest(HttpRequest request, byte[] body) {
 			return String.format(
-					"%s Request to %s:\n    Headers: %s\n    Body: %s",
+					"%s Request to %s:\n"
+					+ "    Headers: %s\n"
+					+ "    Body: %s",
 					request.getMethod(), request.getURI(), request.getHeaders(),
-					new String(body, ISO_8859_1)); // A "safe" encoding
+					new String(body));
 		}
 	}
 

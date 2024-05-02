@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc;
 import static java.util.Objects.nonNull;
 
 import java.io.File;
-import java.net.URI;
 import java.time.Duration;
 import java.util.Set;
 
@@ -38,6 +37,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.errorprone.annotations.Keep;
@@ -1112,15 +1112,12 @@ public class SpallocProperties {
 		private boolean enable;
 
 		/**
-		 * The root path of the OpenID 2 Discovery domain. Referred to elsewhere
-		 * in the configuration file.
-		 */
-		private String domain;
-
-		/**
 		 * The scopes desired. Referred to elsewhere in the configuration file.
 		 */
 		private Set<String> scopes;
+
+		/** The ID of the registration of the client. */
+		private String registrationId;
 
 		/**
 		 * The application installation identity. Required for allowing people
@@ -1140,6 +1137,23 @@ public class SpallocProperties {
 		/** Location of the OpenID User Info service. */
 		private String userinfo;
 
+		/** Location of the authorization end-point. */
+		private String auth;
+
+		/** Location of the token end-point. */
+		private String token;
+
+		/** Location of the JWKS. */
+		private String jwkSet;
+
+		/** Location of the issuer. */
+		private String issuer;
+
+		/** Location of the redirect. */
+		private String redirect;
+
+		private AuthorizationGrantType authGrantType;
+
 		/** Prefix for user names originating from OpenID auto-registration. */
 		private String usernamePrefix;
 
@@ -1156,12 +1170,11 @@ public class SpallocProperties {
 		 * @param enable
 		 *            Whether to enable OIDC authentication. Required for
 		 *            allowing people to use HBP/EBRAINS identities.
-		 * @param domain
-		 *            The root path of the OpenID 2 Discovery domain. Referred
-		 *            to elsewhere in the configuration file.
 		 * @param scopes
 		 *            The scopes desired. Referred to elsewhere in the
 		 *            configuration file.
+		 * @param registrationId
+		 *            The ID of the registration of the client.
 		 * @param id
 		 *            The application installation identity. Required for
 		 *            allowing people to use HBP/EBRAINS identities.
@@ -1176,6 +1189,18 @@ public class SpallocProperties {
 		 *            Location of the OpenID User Info service. Resolved with
 		 *            respect to {@code domain} (if that is given and
 		 *            non-empty).
+		 * @param auth
+		 *            Location of the OpenID Authentication service.
+		 * @param authGrantType
+		 *            The OpenID authorization grant type.
+		 * @param token
+		 *            Location of the OpenID token service.
+		 * @param jwkSet
+		 *            Location of the OpenID JWK Set service.
+		 * @param issuer
+		 *            Location of the OpenID issuer service.
+		 * @param redirect
+		 *            Location to redirect users back to after authentication.
 		 * @param usernamePrefix
 		 *            Prefix for user names originating from OpenID
 		 *            auto-registration.
@@ -1186,36 +1211,42 @@ public class SpallocProperties {
 		 * @param truststorePassword
 		 *            How to unlock the truststore.
 		 */
+		@SuppressWarnings("checkstyle:ParameterNumber")
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
-				@DefaultValue("") String domain, //
-				Set<String> scopes, //
-				@DefaultValue("") String id, //
+				Set<String> scopes,
+				@DefaultValue("") String registrationId,
+				@DefaultValue("") String id,
 				@DefaultValue("") String secret,
 				@DefaultValue("/") String introspection,
 				@DefaultValue("/") String userinfo,
+				@DefaultValue("/") String auth,
+				@DefaultValue("") String authGrantType,
+				@DefaultValue("/") String token,
+				@DefaultValue("/") String jwkSet,
+				@DefaultValue("/") String issuer,
+				@DefaultValue("/") String redirect,
 				@DefaultValue("openid.") String usernamePrefix,
 				@DefaultValue("PKCS12") String truststoreType,
-				@DefaultValue("classpath:/truststore.p12") //
+				@DefaultValue("classpath:/truststore.p12")
 				Resource truststorePath,
 				@DefaultValue("") String truststorePassword) {
 			this.enable = enable;
-			this.domain = domain;
 			this.setScopes(scopes != null ? scopes : Set.of());
+			this.registrationId = registrationId;
 			this.id = id;
 			this.secret = secret;
-			this.introspection = resolve(domain, introspection);
-			this.userinfo = resolve(domain, userinfo);
+			this.introspection = introspection;
+			this.userinfo = userinfo;
+			this.auth = auth;
+			this.authGrantType = new AuthorizationGrantType(authGrantType);
+			this.token = token;
+			this.jwkSet = jwkSet;
+			this.issuer = issuer;
+			this.redirect = redirect;
 			this.usernamePrefix = usernamePrefix;
 			this.truststoreType = truststoreType;
 			this.truststorePath = truststorePath;
 			this.truststorePassword = truststorePassword;
-		}
-
-		private static String resolve(String base, String ref) {
-			if (base == null || base.isEmpty()) {
-				return null;
-			}
-			return URI.create(base).resolve(ref).toString();
 		}
 
 		/**
@@ -1230,6 +1261,14 @@ public class SpallocProperties {
 
 		void setEnable(boolean enable) {
 			this.enable = enable;
+		}
+
+		/**
+		 * The registration ID of the client.
+		 * @return The registration ID.
+		 */
+		public String getRegistrationId() {
+			return registrationId;
 		}
 
 		/**
@@ -1295,21 +1334,6 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * The root path of the OpenID 2 Discovery domain. Referred to elsewhere
-		 * in the configuration file.
-		 *
-		 * @return The root path of the OpenID 2 Discovery domain.
-		 */
-		@NotNull
-		public String getDomain() {
-			return domain;
-		}
-
-		void setDomain(String domain) {
-			this.domain = domain;
-		}
-
-		/**
 		 * The scopes desired. Referred to elsewhere in the configuration file.
 		 *
 		 * @return The OpenID scopes.
@@ -1365,6 +1389,86 @@ public class SpallocProperties {
 
 		void setTruststorePassword(String truststorePassword) {
 			this.truststorePassword = truststorePassword;
+		}
+
+		/**
+		 * @return the OIDC Authorization End-point URL.
+		 */
+		public String getAuth() {
+			return auth;
+		}
+
+		void setAuth(String auth) {
+			this.auth = auth;
+		}
+
+		/**
+		 * @return the OIDC Token End-point URL.
+		 */
+		public String getToken() {
+			return token;
+		}
+
+		void setToken(String token) {
+			this.token = token;
+		}
+
+		/**
+		 * @return the OIDC JWK Set URL.
+		 */
+		public String getJwkSet() {
+			return jwkSet;
+		}
+
+		void setJwkSet(String jwkSet) {
+			this.jwkSet = jwkSet;
+		}
+
+		/**
+		 * @return The OIDC issuer URL.
+		 */
+		public String getIssuer() {
+			return issuer;
+		}
+
+		void setIssuer(String issuer) {
+			this.issuer = issuer;
+		}
+
+		/**
+		 * @return the redirect URL to return to.
+		 */
+		public String getRedirect() {
+			return redirect;
+		}
+
+		void setRedirect(String redirect) {
+			this.redirect = redirect;
+		}
+
+		/**
+		 * @return the OIDC Authorization grant type.
+		 */
+		public AuthorizationGrantType getAuthGrantType() {
+			return authGrantType;
+		}
+
+		void setAuthGrantType(AuthorizationGrantType authGrantType) {
+			this.authGrantType = authGrantType;
+		}
+
+		/**
+		 * @param introspection the OIDC introspection URL.
+		 */
+		void setIntrospection(String introspection) {
+			this.introspection = introspection;
+		}
+
+		/**
+		 * @param userinfo the OIDC user info URL.
+		 */
+		void setUserinfo(String userinfo) {
+			this.userinfo = userinfo;
 		}
 
 		@Keep
@@ -1574,6 +1678,9 @@ public class SpallocProperties {
 		/** Whether to use a dummy transceiver. Useful for testing only. */
 		private boolean dummy;
 
+		/** The time a board has to be off before it can be powered on. */
+		private Duration offWaitTime;
+
 		/**
 		 * @param period
 		 *            How long between when we send requests to the BMP control
@@ -1595,6 +1702,9 @@ public class SpallocProperties {
 		 * @param dummy
 		 *            Whether to use a dummy transceiver. Useful for testing
 		 *            only.
+		 * @param offWaitTime
+		 *            How long to wait between powering off and powering on
+		 *            a board.
 		 */
 		public TxrxProperties(@DefaultValue("10s") Duration period,
 				@DefaultValue("15s") Duration probeInterval,
@@ -1602,7 +1712,8 @@ public class SpallocProperties {
 				@DefaultValue("3") int fpgaAttempts,
 				@DefaultValue("false") boolean fpgaReload,
 				@DefaultValue("5") int buildAttempts,
-				@DefaultValue("false") boolean dummy) {
+				@DefaultValue("false") boolean dummy,
+				@DefaultValue("30s") Duration offWaitTime) {
 			this.period = period;
 			this.probeInterval = probeInterval;
 			this.powerAttempts = powerAttempts;
@@ -1610,6 +1721,7 @@ public class SpallocProperties {
 			this.fpgaReload = fpgaReload;
 			this.buildAttempts = buildAttempts;
 			this.dummy = dummy;
+			this.offWaitTime = offWaitTime;
 		}
 
 		/**
@@ -1631,6 +1743,11 @@ public class SpallocProperties {
 		@NotNull
 		public Duration getProbeInterval() {
 			return probeInterval;
+		}
+
+		@NotNull
+		public Duration getOffWaitTime() {
+			return offWaitTime;
 		}
 
 		void setProbeInterval(Duration probeInterval) {

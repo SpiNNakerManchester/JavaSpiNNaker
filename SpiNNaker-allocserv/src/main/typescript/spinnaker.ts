@@ -886,6 +886,29 @@ function prettyDuration(elementId: string) {
 }
 
 /**
+ * Get the owner of a job that might be a compatible job.
+ *
+ * @param sourceElementId
+ *      The ID of the element containing the RAW original request
+ *      probably hidden)
+ * @param targetElementId
+ *      The ID of the element to append the compatible owner to
+ */
+function getJobOwner(sourceElementId: string, targetElementId: string) {
+	const sourceElement = document.getElementById(sourceElementId);
+	const content = sourceElement?.textContent;
+	if (content === null || content == undefined) {
+		return;
+	}
+	const json = JSON.parse(content);
+	if (json.hasOwnProperty("kwargs")) {
+		const owner = json["kwargs"]["owner"];
+		const targetElement = document.getElementById(targetElementId);
+		targetElement!.textContent += " (" + owner + ")";
+	}
+}
+
+/**
  * Load temperature data from a URL.
  *
  * @param sourceUri

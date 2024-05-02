@@ -142,6 +142,23 @@ public interface SystemController {
 			@RequestParam("reason") String reason);
 
 	/**
+	 * Set the power of a job.
+	 *
+	 * @param id
+	 *            Which job is being deleted
+	 * @param power
+	 *            Whether to power on or off
+	 * @return View ({@code jobdetails.jsp}) and model (based on
+	 *         {@link JobDescription})
+	 */
+	@PostMapping("/power_job/{id}")
+	@PreAuthorize(MAY_SEE_JOB_DETAILS)
+	@UsedInJavadocOnly(JobDescription.class)
+	ModelAndView powerJob(@PathVariable("id") int id,
+			@RequestParam("power") boolean power);
+
+
+	/**
 	 * Get the view and model for the password change form.
 	 *
 	 * @param principal

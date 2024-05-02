@@ -103,6 +103,9 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private static final Integer NUMBER_OF_JOBS_TO_QUOTA_CHECK = 100000;
 
+	private static final String DESTROY_ON_POWER_ERROR =
+			"Error changing power state!  Please contact an administrator.";
+
 	@Autowired
 	private Epochs epochs;
 
@@ -182,32 +185,65 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private boolean update(int jobId, JobState sourceState,
 			JobState targetState, Connection c) {
-		try (var getNTasks = c.query(COUNT_CHANGES_FOR_JOB);
+		try (var getChangeStatus = c.query(COUNT_CHANGES_FOR_JOB);
 				var setJobState = c.update(SET_STATE_PENDING);
-				var setJobDestroyed = c.update(SET_STATE_DESTROYED)) {
+				var setJobDestroyed = c.update(SET_STATE_DESTROYED);
+				var deleteChanges = c.update(DELETE_PENDING)) {
 			// Count pending changes for this state change
-			var n = getNTasks.call1(row -> row.getInteger("n_changes"),
+			var status = getChangeStatus.call1(ChangeStatus::new,
 					jobId, sourceState, targetState).orElseThrow(
 							() -> new RuntimeException(
 									"Error counting job tasks"));
 
-			log.debug("Job {} has {} changes remaining", jobId, n);
+			log.debug("Job {} has {} changes remaining", jobId,
+					status.nChanges);
 
-			// If there are no more pending changes, set the job state to
-			// the target state
-			if (n == 0) {
-				log.debug("Job {} moving to state {}", jobId, targetState);
-				if (targetState == DESTROYED) {
-					int rows = setJobDestroyed.call(0, jobId);
-					if (rows != 1) {
-						log.warn("unexpected number of rows affected by "
-								+ "destroy in state update: {}", rows);
-					}
-					return rows > 0;
+			// If the remaining things are errors, react (if there are errors,
+			// eventually non-errors will be deleted)
+			if (status.nErrors > 0 && (status.nErrors == status.nChanges)) {
+				log.info("Job {} changes resulted in errors.", jobId);
+
+				// We can delete the changes now as we know the issues
+				deleteChanges.call(jobId, sourceState, targetState);
+
+				// If we are going to destroyed, we can mostly ignore errors,
+				// and similarly if we are going to queue it again anyway
+				if (targetState == DESTROYED || targetState == QUEUED) {
+					return true;
 				}
-				return setJobState.call(targetState, 0, jobId) > 0;
+
+				// If the job was ready before we tried to do this, we have to
+				// destroy the job with an error!
+				if (sourceState == READY) {
+					destroyJob(c, jobId, DESTROY_ON_POWER_ERROR);
+					return true;
+				}
+
+				// If the job was not ready, we need to re-queue and reallocate
+				// boards
+				scheduler.schedule(() -> setPower(jobId, OFF, QUEUED),
+						Instant.now());
+				return false;
+			} else if (status.nChanges > 0) {
+				// There are still changes happening - let them finish first
+				// even if there are errors as safer to do once everything
+				// is done.
+				return false;
 			}
-			return false;
+
+			// If there are no more pending changes and no errors,
+			// set the job state to the target state
+			log.debug("Job {} moving to state {}", jobId, targetState);
+			if (targetState == DESTROYED) {
+				int rows = setJobDestroyed.call(jobId);
+				if (rows != 1) {
+					log.warn("unexpected number of rows affected by "
+							+ "destroy in state update: {}", rows);
+				}
+				return rows > 0;
+			}
+
+			return setJobState.call(targetState, jobId) > 0;
 		}
 	}
 
@@ -282,6 +318,17 @@ public class AllocatorTask extends DatabaseAwareBean
 		Perimeter(Row row) {
 			boardId = row.getInt("board_id");
 			direction = row.getEnum("direction", Direction.class);
+		}
+	}
+
+	private class ChangeStatus {
+		private final int nChanges;
+
+		private final int nErrors;
+
+		ChangeStatus(Row row) {
+			nChanges = row.getInt("n_changes");
+			nErrors = row.getInt("n_errors");
 		}
 	}
 
@@ -571,7 +618,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		void updateBMPs() {
-			if (!bmps.isEmpty()) {
+			if (!bmps.isEmpty() && bmpController != null) {
 				// Poke the BMP controller to start looking!
 				log.debug("Triggering BMPs {}", bmps);
 				bmpController.triggerSearch(bmps);
@@ -604,6 +651,10 @@ public class AllocatorTask extends DatabaseAwareBean
 					continue;
 				}
 				var handled = task.allocate(sql);
+				// If we handled it, delete the request
+				if (handled.size() > 0) {
+					sql.delete.call(task.id);
+				}
 				allocations.addAll(task.jobId, handled);
 				log.debug("allocate for {} (job {}): {}", task.id,
 						task.jobId, handled);
@@ -1174,17 +1225,6 @@ public class AllocatorTask extends DatabaseAwareBean
 		return setPower(sql, jobId, ON, READY);
 	}
 
-	/**
-	 * Reset a job after a failure on a BMP.
-	 *
-	 * @param jobId
-	 *            The identifier of the job to reset.
-	 */
-	@SuppressWarnings("FutureReturnValueIgnored")
-	public void resetPowerOnFailure(int jobId) {
-		scheduler.schedule(() -> setPower(jobId, OFF, QUEUED), Instant.now());
-	}
-
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState) {
 		if (targetState == DESTROYED) {
@@ -1273,7 +1313,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		if (targetState == DESTROYED) {
 			log.debug("num changes for {} in destroy: {}", jobId, numPending);
 			log.info("destroying job {} after power change", jobId);
-			int rows = sql.setStateDestroyed.call(numPending, jobId);
+			int rows = sql.setStateDestroyed.call(jobId);
 			if (rows != 1) {
 				log.warn("unexpected number of jobs marked destroyed: {}",
 						rows);
@@ -1281,8 +1321,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		} else {
 			log.debug("Num changes for target {}: {}", targetState, numPending);
 			sql.setStatePending.call(
-				numPending > 0 ? POWER : targetState,
-				numPending, jobId);
+				numPending > 0 ? POWER : targetState, jobId);
 		}
 
 		return bmps;

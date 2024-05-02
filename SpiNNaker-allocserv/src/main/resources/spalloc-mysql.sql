@@ -248,7 +248,6 @@ CREATE TABLE IF NOT EXISTS jobs (
 	death_reason TEXT,
 	death_timestamp INTEGER,	-- timestamp; set by trigger
 	original_request BLOB,		-- Stores it, but doesn't otherwise care
-	num_pending INTEGER NOT NULL DEFAULT (0),
 	allocation_timestamp INTEGER, -- timestamp; set by trigger
 	allocation_size INTEGER,
 	allocated_root INTEGER,		-- set by trigger
@@ -399,8 +398,8 @@ CREATE TABLE IF NOT EXISTS pending_changes (
 		CONSTRAINT pending_changes_fpga_nw CHECK (fpga_nw IN (0, 1)),
 	fpga_se INTEGER NOT NULL	-- Whether to switch the southeast FPGA on
 		CONSTRAINT pending_changes_fpga_se CHECK (fpga_se IN (0, 1)),
-	in_progress INTEGER NOT NULL DEFAULT (0)
-		CONSTRAINT pending_changes_in_progress CHECK (in_progress IN (0, 1)),
+	is_error INTEGER NOT NULL DEFAULT (0)
+		CONSTRAINT pending_changes_error CHECK (is_error IN (0, 1)),
 	from_state INTEGER NOT NULL DEFAULT (0),
 		FOREIGN KEY (from_state)
 		REFERENCES job_states(id) ON DELETE RESTRICT,

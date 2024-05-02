@@ -24,6 +24,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI project.
  */
 public class Project {
+	/** The collab of the project. */
+	private String collab;
+
 	/** The quotas of the project. */
 	private List<Quota> quotas;
 
@@ -40,6 +43,21 @@ public class Project {
 	 */
 	public void setQuotas(List<Quota> quotas) {
 		this.quotas = quotas;
+	}
+
+	/**
+	 * @return The collab of the project.
+	 */
+	public String getCollab() {
+		return collab;
+	}
+
+	/**
+	 * @param collab
+	 *             the collab of the project to set.
+	 */
+	public void setCollab(String collab) {
+		this.collab = collab;
 	}
 
 	/**

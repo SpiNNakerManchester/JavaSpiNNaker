@@ -95,9 +95,9 @@ limitations under the License.
 						<id>make-project-output-directory</id>
 						<phase>initialize</phase>
 						<configuration>
-							<tasks>
+							<target>
 								<mkdir dir="${project.build.directory}/generated-resources"/>
-							</tasks>
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>

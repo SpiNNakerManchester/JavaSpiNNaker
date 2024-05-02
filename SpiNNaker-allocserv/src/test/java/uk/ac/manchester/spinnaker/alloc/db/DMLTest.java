@@ -226,9 +226,9 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(SET_STATE_PENDING)) {
 			c.transaction(() -> {
-				assertEquals(List.of("job_state", "num_pending", "job_id"),
+				assertEquals(List.of("job_state", "job_id"),
 						u.getParameters());
-				assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
+				assertEquals(0, u.call(JobState.UNKNOWN, NO_JOB));
 			});
 		}
 	}
@@ -238,9 +238,8 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(SET_STATE_DESTROYED)) {
 			c.transaction(() -> {
-				assertEquals(List.of("num_pending", "job_id"),
-						u.getParameters());
-				assertEquals(0, u.call(0, NO_JOB));
+				assertEquals(List.of("job_id"),	u.getParameters());
+				assertEquals(0, u.call(NO_JOB));
 			});
 		}
 	}
@@ -314,6 +313,18 @@ class DMLTest extends SimpleDBTestBase {
 			c.transaction(() -> {
 				assertEquals(List.of("change_id"), u.getParameters());
 				assertEquals(0, u.call(NO_CHANGE));
+			});
+		}
+	}
+
+	@Test
+	void deletePending() {
+		assumeWritable(c);
+		try (var u = c.update(DELETE_PENDING)) {
+			c.transaction(() -> {
+				assertEquals(List.of("job_id", "from_state", "to_state"),
+						u.getParameters());
+				assertEquals(0, u.call(NO_JOB, 0, 0));
 			});
 		}
 	}
