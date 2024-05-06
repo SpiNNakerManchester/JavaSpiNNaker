@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Set up node cache"
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v4
         with:
           path: '~/.m2/repository/com/github/eirslett/node'
           key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
@@ -53,7 +53,7 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
       - name: Cache Maven packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
