@@ -387,9 +387,6 @@ public class AllocatorTask extends DatabaseAwareBean
 		/** Get the list of allocation tasks for jobs in a given state. */
 		private final Query getTasks;
 
-		/** Delete an allocation task. */
-		private final Update delete;
-
 		/** Find a single free board. */
 		private final Query findFreeBoard;
 
@@ -439,7 +436,6 @@ public class AllocatorTask extends DatabaseAwareBean
 			super(conn);
 			bumpImportance = conn.update(BUMP_IMPORTANCE);
 			getTasks = conn.query(getAllocationTasks);
-			delete = conn.update(DELETE_TASK);
 			findFreeBoard = conn.query(FIND_FREE_BOARD);
 			getRectangles = conn.query(findRectangle);
 			getRectangleAt = conn.query(findRectangleAt);
@@ -455,7 +451,6 @@ public class AllocatorTask extends DatabaseAwareBean
 			super.close();
 			bumpImportance.close();
 			getTasks.close();
-			delete.close();
 			findFreeBoard.close();
 			getRectangles.close();
 			getRectangleAt.close();
@@ -651,13 +646,18 @@ public class AllocatorTask extends DatabaseAwareBean
 					continue;
 				}
 				var handled = task.allocate(sql);
-				// If we handled it, delete the request
-				if (handled.size() > 0) {
-					sql.delete.call(task.id);
+
+				if (handled.size() == 0
+						&& allocProps.isFailJobOnFailAllocation()) {
+					destroyJob(conn, task.jobId,
+							"Unable to allocate - please try again");
+					log.debug("allocate for {} (job {}) failed",
+							task.id, task.jobId);
+				} else {
+					allocations.addAll(task.jobId, handled);
+					log.debug("allocate for {} (job {}): {}", task.id,
+							task.jobId, handled);
 				}
-				allocations.addAll(task.jobId, handled);
-				log.debug("allocate for {} (job {}): {}", task.id,
-						task.jobId, handled);
 			}
 			/*
 			 * Those tasks which weren't allocated get their importance bumped
