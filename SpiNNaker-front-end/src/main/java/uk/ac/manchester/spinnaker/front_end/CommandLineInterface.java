@@ -23,8 +23,7 @@ import static picocli.CommandLine.ExitCode.USAGE;
 import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DOWNLOAD_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_APP_DESC;
-import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_DESC;
-import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_MON_DESC;
+import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_MON_DESC_MC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_SYS_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.GATHER_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.IOBUF_DESC;
@@ -71,7 +70,7 @@ import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
-import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
+import uk.ac.manchester.spinnaker.front_end.dse.FastMCExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
@@ -195,8 +194,8 @@ public final class CommandLineInterface {
 	static HostDSEFactory hostFactory = HostExecuteDataSpecification::new;
 
 	@FunctionalInterface
-	interface FastDSEFactory {
-		FastExecuteDataSpecification create(TransceiverInterface txrx,
+	interface FastMCDSEFactory {
+		FastMCExecuteDataSpecification create(TransceiverInterface txrx,
 				Machine machine, List<Gather> gatherers, File reportDir,
 				DSEDatabaseEngine db)
 				throws IOException, SpinnmanException, StorageException,
@@ -204,10 +203,10 @@ public final class CommandLineInterface {
 	}
 
 	/**
-	 * Makes {@link FastExecuteDataSpecification} instances. Allows for
+	 * Makes {@link FastMCExecuteDataSpecification} instances. Allows for
 	 * injection of debugging tooling.
 	 */
-	static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
+	static FastMCDSEFactory fastMCFactory = FastMCExecuteDataSpecification::new;
 
 	/**
 	 * Run the data specifications in parallel.
@@ -257,7 +256,7 @@ public final class CommandLineInterface {
 	}
 
 	/**
-	 * Run the data specifications in parallel.
+	 * Run the data specifications in parallel using monitors and multicast.
 	 *
 	 * @param gatherers
 	 *            List of descriptions of gatherers.
@@ -283,8 +282,8 @@ public final class CommandLineInterface {
 	 * @throws URISyntaxException
 	 *             If a proxy URI is provided but invalid.
 	 */
-	@Command(name = "dse_app_mon", description = DSE_MON_DESC)
-	public void runDSEForAppCoresUploadingViaMonitorStreaming(
+	@Command(name = "dse_app_mon_mc", description = DSE_MON_DESC_MC)
+	public void runDSEForAppCoresUploadingViaMulticast(
 			@Mixin GatherersParam gatherers,
 			@Mixin MachineParam machine,
 			@Mixin DsFileParam dsFile,
@@ -298,7 +297,7 @@ public final class CommandLineInterface {
 		var job = getJob(db);
 
 		try (var txrx = getTransceiver(machine.get(), job);
-				var dseExec = fastFactory.create(txrx, machine.get(),
+				var dseExec = fastMCFactory.create(txrx, machine.get(),
 						gatherers.get(), reportFolder.orElse(null), db)) {
 			dseExec.loadCores();
 		}
@@ -767,6 +766,14 @@ interface CommandDescriptions {
 	String DSE_MON_DESC = "Evaluate data specifications for application cores "
 			+ "and upload the results to SpiNNaker using the fast data "
 			+ "streaming protocol. "
+			+ "Requires system cores to be fully configured, so "
+			+ "can't be used to set up system cores.";
+
+	/** Description of {@code dse_app_mon} command. */
+	String DSE_MON_DESC_MC =
+			"Evaluate data specifications for application cores "
+			+ "and upload the results to SpiNNaker using the fast data "
+			+ "streaming protocol directly with multicast. "
 			+ "Requires system cores to be fully configured, so "
 			+ "can't be used to set up system cores.";
 
