@@ -580,7 +580,7 @@ limitations under the License.
 						<links>
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
-							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+							<link>https://docs.spring.io/spring-boot/docs/2.7.17/api/</link>
 							<!-- This isn't modular so javadoc 14 gets snooty
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 							-->
@@ -1152,7 +1152,7 @@ limitations under the License.
 								<!-- Repeat these -->
 								<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 								<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
-								<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+								<link>https://docs.spring.io/spring-boot/docs/2.7.17/api/</link>
 								<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 								<link>https://errorprone.info/api/latest/</link>
