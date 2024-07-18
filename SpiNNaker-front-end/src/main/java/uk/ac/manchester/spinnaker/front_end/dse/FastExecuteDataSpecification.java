@@ -92,7 +92,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private static final int TIMEOUT_RETRY_LIMIT = 100;
 
-	/** Cutoff to switch to fast Writer vs plain one
+	/** Cutoff to switch to fast Writer vs plain one.
 
 	    50 packets of 256 bytes
 	**/
