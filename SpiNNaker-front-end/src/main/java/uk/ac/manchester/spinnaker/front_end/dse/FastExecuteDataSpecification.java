@@ -96,7 +96,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 	    50 packets of 256 bytes
 	**/
-	private static final int MONITOR_CUTOFF = 12800;
+	private static final int MONITOR_CUTOFF = 6400;
 
 	/** flag for saying missing all SEQ numbers. */
 	private static final int FLAG_FOR_MISSING_ALL_SEQUENCES = 0xFFFFFFFE;
