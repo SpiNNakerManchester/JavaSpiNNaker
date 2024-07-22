@@ -81,7 +81,7 @@ public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 			getProperty("spinnaker.compare.upload");
 
 	private static final String IN_REPORT_NAME =
-			"speeds_gained_in_speed_up_process.tsv";
+			"speeds_gained_in_speed_up_process.rpt";
 
 	private final Map<ChipLocation, Gather> gathererForChip;
 
