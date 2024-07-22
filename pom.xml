@@ -6,7 +6,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ limitations under the License.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
-	<version>7.1.0-SNAPSHOT</version>
+	<version>7.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -39,33 +39,33 @@ limitations under the License.
 		<testing.version>3.1.2</testing.version>
 
 		<slf4j.version>2.0.9</slf4j.version>
-		<log4j.version>2.20.0</log4j.version>
+		<log4j.version>2.21.0</log4j.version>
 
 		<spring.version>5.3.30</spring.version>
-		<spring.boot.version>2.7.16</spring.boot.version>
+		<spring.boot.version>2.7.17</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
-		  processor binding in Eclipse for SpiNNaker-allocserv:
+		processor binding in Eclipse for SpiNNaker-allocserv:
 
-		  Properties => Java Compiler => Annotation Processing => Factory Path
+		Properties => Java Compiler => Annotation Processing => Factory Path
 
-		  Failure to do this leads to strange misbehaviour in tooltips when
-		  editing application.yml
+		Failure to do this leads to strange misbehaviour in tooltips when
+		editing application.yml
 		-->
-		<spring.security.version>5.8.7</spring.security.version>
+		<spring.security.version>5.8.11</spring.security.version>
 
 		<cxf.version>3.6.2</cxf.version>
-		<jackson.version>2.15.2</jackson.version>
+		<jackson.version>2.15.3</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.43.0.0</sqlite.version>
-		<keycloak.version>22.0.3</keycloak.version>
-		<swagger.version>5.7.2</swagger.version>
+		<keycloak.version>23.0.3</keycloak.version>
+		<swagger.version>5.10.3</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.5</picocli.version>
 		<mysql.version>8.1.0</mysql.version>
-		<testcontainers.version>1.19.0</testcontainers.version>
+		<testcontainers.version>1.19.3</testcontainers.version>
 		<javax.ws.version>2.1.1</javax.ws.version>
 		<resteasy.version>6.2.5.Final</resteasy.version>
 	</properties>
@@ -94,12 +94,12 @@ limitations under the License.
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-	            <groupId>org.testcontainers</groupId>
-	            <artifactId>testcontainers-bom</artifactId>
-	            <version>${testcontainers.version}</version>
-	            <type>pom</type>
-	            <scope>import</scope>
-        	</dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>${testcontainers.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
@@ -148,15 +148,15 @@ limitations under the License.
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-	            <groupId>uk.ac.manchester.spinnaker</groupId>
-	            <artifactId>SpiNNaker-nmpimodel</artifactId>
-	            <version>${project.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>uk.ac.manchester.spinnaker</groupId>
-	            <artifactId>SpiNNaker-nmpiexec</artifactId>
-	            <version>${project.version}</version>
-	        </dependency>
+				<groupId>uk.ac.manchester.spinnaker</groupId>
+				<artifactId>SpiNNaker-nmpimodel</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.ac.manchester.spinnaker</groupId>
+				<artifactId>SpiNNaker-nmpiexec</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
@@ -235,14 +235,14 @@ limitations under the License.
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>${javax.ws.version}</version>
-            </dependency>
+				<groupId>javax.ws.rs</groupId>
+				<artifactId>javax.ws.rs-api</artifactId>
+				<version>${javax.ws.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20230618</version>
+				<version>20231013</version>
 			</dependency>
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
@@ -252,7 +252,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-configuration2</artifactId>
-				<version>2.9.0</version>
+				<version>2.10.1</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
@@ -262,7 +262,7 @@ limitations under the License.
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.13.0</version>
+				<version>2.15.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -372,14 +372,14 @@ limitations under the License.
 				<version>3.0.0</version>
 			</dependency>
 			<dependency>
-			    <groupId>com.mysql</groupId>
-			    <artifactId>mysql-connector-j</artifactId>
-			    <version>${mysql.version}</version>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-j</artifactId>
+				<version>${mysql.version}</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.hobsoft.spring</groupId>
-			    <artifactId>spring-rest-template-logger</artifactId>
-			    <version>2.0.0</version>
+				<groupId>org.hobsoft.spring</groupId>
+				<artifactId>spring-rest-template-logger</artifactId>
+				<version>2.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.stefanbirkner</groupId>
@@ -388,42 +388,42 @@ limitations under the License.
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-                <groupId>org.rauschig</groupId>
-                <artifactId>jarchivelib</artifactId>
-                <version>1.2.0</version>
-            </dependency>
-             <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-client</artifactId>
-                <version>${resteasy.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.16.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ini4j</groupId>
-                <artifactId>ini4j</artifactId>
-                <version>0.5.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jgit</groupId>
-                <artifactId>org.eclipse.jgit</artifactId>
-                <version>6.7.0.202309050840-r</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.httpcomponents</groupId>
-                        <artifactId>httpclient</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>net.java.dev.vcc.thirdparty</groupId>
-                <artifactId>xen-api</artifactId>
-                <version>6.2.0-3.1</version>
-            </dependency>
-            <dependency>
+				<groupId>org.rauschig</groupId>
+				<artifactId>jarchivelib</artifactId>
+				<version>1.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-client</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>1.16.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ini4j</groupId>
+				<artifactId>ini4j</artifactId>
+				<version>0.5.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jgit</groupId>
+				<artifactId>org.eclipse.jgit</artifactId>
+				<version>6.7.0.202309050840-r</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpclient</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>net.java.dev.vcc.thirdparty</groupId>
+				<artifactId>xen-api</artifactId>
+				<version>6.2.0-3.1</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-rs-client</artifactId>
 				<version>${cxf.version}</version>
@@ -580,7 +580,7 @@ limitations under the License.
 						<links>
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
-							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+							<link>https://docs.spring.io/spring-boot/docs/2.7.17/api/</link>
 							<!-- This isn't modular so javadoc 14 gets snooty
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 							-->
@@ -658,7 +658,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.10</version>
+					<version>0.8.11</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -784,7 +784,7 @@ limitations under the License.
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
 										<artifactId>maven-antrun-plugin</artifactId>
-										<versionRange>[1.0,)</versionRange>
+										<versionRange>[1.3,)</versionRange>
 										<goals>
 											<goal>run</goal>
 										</goals>
@@ -801,6 +801,11 @@ limitations under the License.
 					<groupId>org.skife.maven</groupId>
 					<artifactId>really-executable-jar-maven-plugin</artifactId>
 					<version>2.1.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>3.1.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -1147,7 +1152,7 @@ limitations under the License.
 								<!-- Repeat these -->
 								<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 								<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
-								<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+								<link>https://docs.spring.io/spring-boot/docs/2.7.17/api/</link>
 								<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 								<link>https://errorprone.info/api/latest/</link>
@@ -1177,8 +1182,8 @@ limitations under the License.
 											<arg>
 												-Xplugin:ErrorProne
 												<!-- Disable the MissingSummary check; we use an abbreviated
-													 documentation for getters, and its suggested replacement
-													 is terrible. -->
+													documentation for getters, and its suggested replacement
+													is terrible. -->
 												-Xep:MissingSummary:OFF
 											</arg>
 										</compilerArgs>
@@ -1205,8 +1210,8 @@ limitations under the License.
 											<arg>
 												-Xplugin:ErrorProne
 												<!-- Disable the MissingSummary check; we use an abbreviated
-													 documentation for getters, and its suggested replacement
-													 is terrible. -->
+													documentation for getters, and its suggested replacement
+													is terrible. -->
 												-Xep:MissingSummary:OFF
 											</arg>
 										</compilerArgs>
