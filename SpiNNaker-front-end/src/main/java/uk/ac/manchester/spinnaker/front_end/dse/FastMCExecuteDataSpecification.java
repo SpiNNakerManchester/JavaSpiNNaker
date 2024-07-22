@@ -20,12 +20,9 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.utils.ByteBufferUtils.sliceUp;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGABYTE;
@@ -37,19 +34,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayDeque;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import difflib.ChangeDelta;
@@ -60,6 +52,7 @@ import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -80,23 +73,15 @@ import uk.ac.manchester.spinnaker.utils.MathUtils;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public class FastExecuteDataSpecification extends ExecuteDataSpecification {
+public class FastMCExecuteDataSpecification extends ExecuteDataSpecification {
 	private static final Logger log =
-			getLogger(FastExecuteDataSpecification.class);
+			getLogger(FastMCExecuteDataSpecification.class);
 
 	private static final String SPINNAKER_COMPARE_UPLOAD =
 			getProperty("spinnaker.compare.upload");
 
 	private static final String IN_REPORT_NAME =
-			"speeds_gained_in_speed_up_process.tsv";
-
-	private static final int TIMEOUT_RETRY_LIMIT = 100;
-
-	/** flag for saying missing all SEQ numbers. */
-	private static final int FLAG_FOR_MISSING_ALL_SEQUENCES = 0xFFFFFFFE;
-
-	/** Sequence number that marks the end of a sequence number stream. */
-	private static final int MISSING_SEQS_END = -1;
+			"speeds_gained_in_speed_up_process.rpt";
 
 	private final Map<ChipLocation, Gather> gathererForChip;
 
@@ -137,7 +122,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
-	public FastExecuteDataSpecification(TransceiverInterface txrx,
+	public FastMCExecuteDataSpecification(TransceiverInterface txrx,
 			Machine machine, List<Gather> gatherers, File reportDir,
 			DSEDatabaseEngine db) throws IOException, ProcessException,
 			InterruptedException, StorageException, URISyntaxException {
@@ -228,21 +213,19 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		}
 		log.info("loading data onto {} cores on board", cores.size());
 		var gather = gathererForChip.get(board.location);
-		try (var worker =  new FastBoardWorker(
-				txrx, board, storage, gather)) {
+		var worker =  new FastBoardWorker(txrx, board, storage, gather);
+		for (var xyp : cores) {
+			worker.mallocCore(xyp);
+		}
+		try (var routers = worker.systemRouterTables();
+				var context = worker.dontDropPackets(gather)) {
 			for (var xyp : cores) {
-				worker.mallocCore(xyp);
+				worker.loadCore(xyp);
 			}
-			try (var routers = worker.systemRouterTables();
-					var context = worker.dontDropPackets(gather)) {
-				for (var xyp : cores) {
-					worker.loadCore(xyp);
-				}
-				log.info("finished sending data in for this board");
-			} catch (Exception e) {
-				log.warn("failure in core loading", e);
-				throw e;
-			}
+			log.info("finished sending data in for this board");
+		} catch (Exception e) {
+			log.warn("failure in core loading", e);
+			throw e;
 		}
 	}
 
@@ -358,33 +341,15 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @author Donal Fellows
 	 * @author Alan Stokes
 	 */
-	private class FastBoardWorker extends BoardWorker implements AutoCloseable {
-		private ThrottledConnection connection;
+	private class FastBoardWorker extends BoardWorker {
+		private HasCoreLocation ethernet;
 
-		private MissingRecorder missingSequenceNumbers;
-
-		private BoardLocal logContext;
-
-		private Gather gather;
-
-		@MustBeClosed
-		@SuppressWarnings("MustBeClosed")
 		FastBoardWorker(TransceiverInterface txrx, Ethernet board,
 				DSEStorage storage, Gather gather)
 				throws IOException, ProcessException, InterruptedException,
 				StorageException {
 			super(txrx, board, storage);
-			this.logContext = new BoardLocal(board.location);
-			this.connection = new ThrottledConnection(txrx, board,
-					gather.getIptag());
-			this.gather = gather;
-		}
-
-		@Override
-		public void close() throws IOException, ProcessException,
-				InterruptedException {
-			logContext.close();
-			connection.close();
+			this.ethernet = new CoreLocation(board.location, gather.getP());
 		}
 
 		/**
@@ -393,30 +358,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		 *
 		 * @author Donal Fellows
 		 */
-		@SuppressWarnings("serial")
-		private class MissingRecorder extends ArrayDeque<BitSet>
-				implements AutoCloseable {
-			MissingRecorder() {
-				missingSequenceNumbers = this;
-			}
+		private final class MissingRecorder {
 
-			@Override
-			public void close() {
-				missingSequenceNumbers = null;
-			}
-
-			/**
-			 * Give me a new bitfield, recorded in this class.
-			 *
-			 * @param expectedMax
-			 *            How big should the bitfield be?
-			 * @return The bitfield.
-			 */
-			BitSet issueNew(int expectedMax) {
-				var s = new BitSet(expectedMax);
-				addLast(s);
-				return s;
-			}
 
 			/**
 			 * Issue the report based on what we recorded, if appropriate.
@@ -466,13 +409,11 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
 			int written = content.remaining();
-			try (var recorder = new MissingRecorder()) {
-				long start = nanoTime();
-				fastWrite(core, baseAddress, content);
-				long end = nanoTime();
-				recorder.report(
-						core, end - start, content.limit(), baseAddress);
-			}
+			var recorder = new MissingRecorder();
+			long start = nanoTime();
+			fastWrite(core, baseAddress, content);
+			long end = nanoTime();
+			recorder.report(core, end - start, content.limit(), baseAddress);
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
 				var readBack = txrx.readMemory(
 						core, baseAddress, content.remaining());
@@ -539,255 +480,22 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		private void fastWrite(HasCoreLocation core, MemoryLocation baseAddress,
 				ByteBuffer data)
 						throws IOException, InterruptedException {
-			int timeoutCount = 0;
-			int numPackets = computeNumPackets(data);
-			var protocol = new GathererProtocol(core);
-			int transactionId = gather.getNextTransactionId();
-
-			outerLoop: while (true) {
-				// Do the initial blast of data
-				sendInitialPackets(baseAddress, data, protocol, transactionId,
-						numPackets);
-				/*
-				 * Don't create a missing buffer until at least one packet has
-				 * come back.
-				 */
-				BitSet missing = null;
-
-				// Wait for confirmation and do required retransmits
-				innerLoop: while (true) {
-					try {
-						var buf = connection.receive();
-						var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
-						timeoutCount = 0; // Reset the timeout counter
-						int command = received.get();
-						try {
-							// read transaction id
-							var commandCode =
-									FastDataInCommandID.forValue(command);
-							int thisTransactionId = received.get();
-
-							// if wrong transaction id, ignore packet
-							if (thisTransactionId != transactionId) {
-								continue innerLoop;
-							}
-
-							// Decide what to do with the packet
-							switch (commandCode) {
-							case RECEIVE_FINISHED_DATA_IN:
-								// We're done!
-								break outerLoop;
-
-							case RECEIVE_MISSING_SEQ_DATA_IN:
-								if (!received.hasRemaining()) {
-									throw new BadDataInMessageException(
-											received.get(0), received);
-								}
-								log.debug(
-										"another packet (#{}) of missing "
-												+ "sequence numbers;",
-										received.get(1));
-								break;
-							default:
-								throw new BadDataInMessageException(
-										received.get(0), received);
-							}
-
-							/*
-							 * The currently received packet has missing
-							 * sequence numbers. Accumulate and dispatch
-							 * transactionId when we've got them all.
-							 */
-							if (missing == null) {
-								missing = missingSequenceNumbers.issueNew(
-										numPackets);
-							}
-							var flags = addMissedSeqNums(
-									received, missing, numPackets);
-
-							/*
-							 * Check that you've seen something that implies
-							 * ready to retransmit.
-							 */
-							if (flags.seenAll || flags.seenEnd) {
-								retransmitMissingPackets(protocol, data,
-										missing, transactionId);
-								missing.clear();
-							}
-						} catch (IllegalArgumentException e) {
-							log.error("Unexpected command code " + command
-									+ " received from "
-									+ connection.getLocation());
-						}
-					} catch (SocketTimeoutException e) {
-						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
-							log.error(
-									"ran out of attempts on transaction {}"
-											+ " due to timeouts.",
-									transactionId);
-							throw e;
-						}
-						/*
-						 * If we never received a packet, we will never have
-						 * created the buffer, so send everything again
-						 */
-						if (missing == null) {
-							log.debug("full timeout; resending initial "
-									+ "packets for stream with transaction "
-									+ "id {}", transactionId);
-							continue outerLoop;
-						}
-						log.info(
-								"timeout {} on transaction {} sending to {}"
-										+ " via {}",
-								timeoutCount, transactionId, core,
-								gather.asCoreLocation());
-						retransmitMissingPackets(protocol, data, missing,
-								transactionId);
-						missing.clear();
-					}
+			try {
+				int boardLocalX = core.getX() - ethernet.getX();
+				if (boardLocalX < 0) {
+					boardLocalX += machine.maxChipX() + 1;
 				}
+				int boardLocalY = core.getY() - ethernet.getY();
+				if (boardLocalY < 0) {
+					boardLocalY += machine.maxChipY() + 1;
+				}
+				var boardLocal = new CoreLocation(boardLocalX, boardLocalY,
+						core.getP());
+				txrx.writeMemoryMulticast(ethernet, boardLocal, baseAddress,
+						data);
+			} catch (ProcessException e) {
+				throw new IOException(e);
 			}
-		}
-
-		@CheckReturnValue
-		private SeenFlags addMissedSeqNums(IntBuffer received, BitSet seqNums,
-				int expectedMax) {
-			var flags = new SeenFlags();
-			var addedEnd = "";
-			var addedAll = "";
-			int actuallyAdded = 0;
-			while (received.hasRemaining()) {
-				int num = received.get();
-
-				if (num == MISSING_SEQS_END) {
-					addedEnd = "and saw END marker";
-					flags.seenEnd = true;
-					break;
-				}
-				if (num == FLAG_FOR_MISSING_ALL_SEQUENCES) {
-					addedAll = "by finding ALL missing marker";
-					flags.seenAll = true;
-					for (int seqNum = 0; seqNum < expectedMax; seqNum++) {
-						seqNums.set(seqNum);
-						actuallyAdded++;
-					}
-					break;
-				}
-
-				seqNums.set(num);
-				actuallyAdded++;
-				if (num < 0 || num > expectedMax) {
-					throw new CrazySequenceNumberException(num, received);
-				}
-			}
-			log.debug("added {} missed packets, {}{}", actuallyAdded, addedEnd,
-					addedAll);
-			return flags;
-		}
-
-		private int sendInitialPackets(MemoryLocation baseAddress,
-				ByteBuffer data, GathererProtocol protocol, int transactionId,
-				int numPackets) throws IOException {
-			log.info("streaming {} bytes in {} packets using transaction {}",
-					data.remaining(), numPackets, transactionId);
-			log.debug("sending packet #{}", 0);
-			connection.send(protocol.dataToLocation(baseAddress, numPackets,
-					transactionId));
-			for (int seqNum = 0; seqNum < numPackets; seqNum++) {
-				log.debug("sending packet #{}", seqNum);
-				connection.send(protocol.seqData(data, seqNum, transactionId));
-			}
-			log.debug("sending terminating packet");
-			connection.send(protocol.tellDataIn(transactionId));
-			return numPackets;
-		}
-
-		private void retransmitMissingPackets(GathererProtocol protocol,
-				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId)
-				throws IOException {
-			log.info("retransmitting {} packets", missingSeqNums.cardinality());
-
-			missingSeqNums.stream().forEach(seqNum -> {
-				log.debug("resending packet #{}", seqNum);
-				try {
-					connection.send(protocol.seqData(dataToSend, seqNum,
-							transactionId));
-				} catch (IOException e) {
-					log.error(
-							"missing sequence packet with id {}-{} "
-									+ "failed to transmit",
-							seqNum, transactionId, e);
-				}
-			});
-			log.debug("sending terminating packet");
-			connection.send(protocol.tellDataIn(transactionId));
-		}
-	}
-
-	/**
-	 * Manufactures Fast Data In protocol messages.
-	 *
-	 * @author Donal Fellows
-	 */
-	private class GathererProtocol extends FastDataInProtocol {
-		private GathererProtocol(ChipLocation chip, boolean ignored) {
-			super(machine, gathererForChip.get(chip), monitorForChip.get(chip));
-		}
-
-		/**
-		 * Create an instance of this for pushing data to a given chip's SDRAM.
-		 *
-		 * @param chip
-		 *            The chip where the data is to be pushed. What extra
-		 *            monitor and data gatherer to route it via are determined
-		 *            from the board context.
-		 */
-		GathererProtocol(HasChipLocation chip) {
-			this(chip.asChipLocation(), false);
-		}
-	}
-
-	/**
-	 * Contains flags for seen missing sequence numbers.
-	 *
-	 * @author Alan Stokes
-	 */
-	private static final class SeenFlags {
-		boolean seenEnd;
-
-		boolean seenAll;
-	}
-
-	/**
-	 * Exception thrown when something mad comes back off SpiNNaker.
-	 *
-	 * @author Donal Fellows
-	 */
-	static class BadDataInMessageException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		BadDataInMessageException(int code, IntBuffer message) {
-			super("unexpected response code: " + toUnsignedLong(code));
-			log.warn("bad message payload: {}", range(0, message.limit())
-					.map(i -> message.get(i)).boxed().collect(toList()));
-		}
-	}
-
-	/**
-	 * Exception thrown when something mad comes back off SpiNNaker.
-	 *
-	 * @author Donal Fellows
-	 * @author Alan Stokes
-	 */
-	static class CrazySequenceNumberException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		CrazySequenceNumberException(int remaining, IntBuffer message) {
-			super("crazy number of missing packets: "
-					+ toUnsignedLong(remaining));
-			log.warn("bad message payload: {}", range(0, message.limit())
-					.map(i -> message.get(i)).boxed().collect(toList()));
 		}
 	}
 }
