@@ -659,11 +659,6 @@ public abstract class SQLQueries {
 					+ "FROM board_reports JOIN user_info ON reporter = user_id "
 					+ "WHERE board_id = :board_id";
 
-	/** Delete an allocation task. */
-	@Parameter("request_id")
-	protected static final String DELETE_TASK =
-			"DELETE FROM job_request WHERE req_id = :request_id";
-
 	/** Find a single free board. */
 	@Parameter("machine_id")
 	@ResultColumn("x")

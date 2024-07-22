@@ -174,17 +174,6 @@ class DMLTest extends SimpleDBTestBase {
 	}
 
 	@Test
-	void deleteTask() {
-		assumeWritable(c);
-		try (var u = c.update(DELETE_TASK)) {
-			c.transaction(() -> {
-				assertEquals(List.of("request_id"), u.getParameters());
-				assertEquals(0, u.call(NO_JOB));
-			});
-		}
-	}
-
-	@Test
 	void allocateBoardsJob() {
 		assumeWritable(c);
 		try (var u = c.update(ALLOCATE_BOARDS_JOB)) {
