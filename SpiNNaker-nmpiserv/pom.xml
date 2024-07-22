@@ -19,7 +19,7 @@ limitations under the License.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.1.0-SNAPSHOT</version>
+		<version>7.1.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-nmpiserv</artifactId>
 	<name>SpiNNaker NMPI Service Handler</name>
@@ -95,9 +95,9 @@ limitations under the License.
 						<id>make-project-output-directory</id>
 						<phase>initialize</phase>
 						<configuration>
-							<tasks>
+							<target>
 								<mkdir dir="${project.build.directory}/generated-resources"/>
-							</tasks>
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>

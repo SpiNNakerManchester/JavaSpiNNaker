@@ -651,6 +651,10 @@ public class AllocatorTask extends DatabaseAwareBean
 					continue;
 				}
 				var handled = task.allocate(sql);
+				// If we handled it, delete the request
+				if (handled.size() > 0) {
+					sql.delete.call(task.id);
+				}
 				allocations.addAll(task.jobId, handled);
 				log.debug("allocate for {} (job {}): {}", task.id,
 						task.jobId, handled);
