@@ -92,6 +92,12 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 
 	private static final int TIMEOUT_RETRY_LIMIT = 100;
 
+	/** Cutoff to switch to fast Writer vs plain one.
+
+	    50 packets of 256 bytes
+	**/
+	private static final int MONITOR_CUTOFF = 12800;
+
 	/** flag for saying missing all SEQ numbers. */
 	private static final int FLAG_FOR_MISSING_ALL_SEQUENCES = 0xFFFFFFFE;
 
@@ -466,12 +472,17 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
 			int written = content.remaining();
-			try (var recorder = new MissingRecorder()) {
-				long start = nanoTime();
-				fastWrite(core, baseAddress, content);
-				long end = nanoTime();
-				recorder.report(
+			if (written < MONITOR_CUTOFF) {
+				var data = content.duplicate();
+				txrx.writeMemory(core.getScampCore(), baseAddress, data);
+			} else {
+				try (var recorder = new MissingRecorder()) {
+					long start = nanoTime();
+					fastWrite(core, baseAddress, content);
+					long end = nanoTime();
+					recorder.report(
 						core, end - start, content.limit(), baseAddress);
+				}
 			}
 			if (SPINNAKER_COMPARE_UPLOAD != null) {
 				var readBack = txrx.readMemory(
