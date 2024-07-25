@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.1.1-SNAPSHOT</version>
+		<version>7.2.1</version>
 	</parent>
 	<artifactId>SpiNNaker-nmpiexec</artifactId>
 	<name>SpiNNaker NMPI Service Remote Executor</name>
