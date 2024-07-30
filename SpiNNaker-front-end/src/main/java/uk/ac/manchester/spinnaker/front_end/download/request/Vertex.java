@@ -79,6 +79,8 @@ public class Vertex {
 	 *            execution process.
 	 * @param recordedRegionIds
 	 *            The IDs of the regions doing recording.
+	 * @param downloadRegions
+	 *           The non-recording regions to download.
 	 */
 	public Vertex(@JsonProperty(value = "label", required = true) String label,
 			@JsonProperty(value = "recordingRegionBaseAddress", required = true)
