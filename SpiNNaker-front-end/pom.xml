@@ -20,7 +20,7 @@ limitations under the License.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.1.1-SNAPSHOT</version>
+		<version>7.2.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>SpiNNaker-front-end</artifactId>
 	<properties>
