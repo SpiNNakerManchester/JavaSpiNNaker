@@ -20,7 +20,7 @@ limitations under the License.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.manchester.spinnaker</groupId>
 	<artifactId>SpiNNaker</artifactId>
-	<version>7.1.1-SNAPSHOT</version>
+	<version>7.2.2</version>
 	<packaging>pom</packaging>
 
 	<properties>
