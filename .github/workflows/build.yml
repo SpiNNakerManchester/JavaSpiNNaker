@@ -53,6 +53,13 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
         restore-keys: ${{ runner.os }}-node-
 
+    - name: Set dns server
+      run: |
+        sudo sed -i 's/#DNS=/DNS=8.8.8.8 8.8.4.4/g' /etc/systemd/resolved.conf
+        sudo systemctl daemon-reload
+        sudo systemctl restart systemd-networkd
+        sudo systemctl restart systemd-resolved
+
     - name: Compile
       run: mvn clean install --settings $SETTINGS_FILE -B -DskipTests=true -Dmaven.javadoc.skip=true -P "!jsp-precompile"
     - name: Resolve Remaining Dependencies
