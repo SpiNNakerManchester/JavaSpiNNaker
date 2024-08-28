@@ -16,20 +16,17 @@
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.lang.System.arraycopy;
-import static java.lang.System.currentTimeMillis;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_CONTENT;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_EXTRA_CONTENT;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.FETCH_EXTRA_RECORDING;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_REGION_DATA;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.FETCH_RECORDING;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORES_WITH_STORAGE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_LAST_EXTRACTION_ID;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_LOCATION;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_MAIN_CONTENT_AVAILABLE;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGIONS_WITH_STORAGE;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_LOCATION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_MOCK_EXTRACTION;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_REGION;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PREP_EXTRA_CONTENT;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,9 +41,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
-import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.storage.*;
 
 /**
  * How to actually talk to an SQLite database.
@@ -67,6 +62,20 @@ public class SQLiteBufferStorage
 	 */
 	public SQLiteBufferStorage(BufferManagerDatabaseEngine connectionProvider) {
 		super(connectionProvider);
+	}
+
+	private static int getLastExtractionId(
+		Connection conn) throws SQLException {
+		try (var s = conn.prepareStatement(GET_LAST_EXTRACTION_ID)) {
+			// core_id, local_region_index
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("max_id");
+				}
+			}
+		}
+		throw new IllegalStateException(
+			"could not find last extraction id");
 	}
 
 	private static int getRecordingCore(Connection conn, CoreLocation core)
@@ -106,8 +115,7 @@ public class SQLiteBufferStorage
 		}
 		try (var s = conn.prepareStatement(INSERT_REGION)) {
 			// core_id, local_region_index, address
-			setArguments(s, coreID, region.regionIndex,
-					region.startAddress.address);
+			setArguments(s, coreID, region.regionIndex);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt("region_id");
@@ -118,21 +126,31 @@ public class SQLiteBufferStorage
 				"could not make or find recording region record");
 	}
 
+	private static int insertMockExtraction(Connection conn) throws SQLException {
+		try (var s = conn.prepareStatement(INSERT_MOCK_EXTRACTION)) {
+			// core_id, local_region_index, address
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("extraction_id");
+				}
+			}
+		}
+		throw new IllegalStateException(
+			"could not mock an extraction record");
+	}
+
+	public void insertMockExtraction() throws StorageException {
+		callV(conn -> insertMockExtraction(conn),
+			"Mocking Extraction");
+	}
+
 	private void appendRecordingContents(Connection conn, int regionID,
-			byte[] content) throws SQLException {
+			int lastExtractionId, byte[] content) throws SQLException {
 		int chunkLen = content.length;
 		var chunk = new ByteArrayInputStream(content);
-		long timestamp = currentTimeMillis();
-		if (useMainTable(conn, regionID)) {
-			log.debug("adding chunk of {} bytes to region table for region {}",
-					chunkLen, regionID);
-			addContentToMainRow(conn, regionID, chunkLen, chunk, timestamp);
-		} else {
-			log.debug("adding chunk of {} bytes to extra table for region {}",
-					chunkLen, regionID);
-			prepareExtraContent(conn, regionID, timestamp);
-			addExtraContentRow(conn, regionID, chunkLen, chunk);
-		}
+		log.debug("adding chunk of {} bytes to region data table for region {}",
+				chunkLen, regionID);
+		addRegionData(conn, regionID,  lastExtractionId, chunkLen, chunk);
 	}
 
 	private static byte[] read(ByteArrayInputStream chunk, int chunkLen)
@@ -154,52 +172,18 @@ public class SQLiteBufferStorage
 		return nb;
 	}
 
-	private void addContentToMainRow(Connection conn, int regionID,
-			int chunkLen, ByteArrayInputStream chunk, long timestamp)
-			throws SQLException {
-		try (var s = conn.prepareStatement(ADD_CONTENT)) {
-			// content, append_time, region_id
-			setArguments(s, read(chunk, chunkLen), chunkLen, timestamp,
-					regionID);
-			s.executeUpdate();
-		}
-	}
-
-	private void prepareExtraContent(Connection conn, int regionID,
-			long timestamp) throws SQLException {
-		try (var s = conn.prepareStatement(PREP_EXTRA_CONTENT)) {
-			// append_time, region_id
-			setArguments(s, timestamp, regionID);
-			s.executeUpdate();
-		}
-	}
-
-	private int addExtraContentRow(Connection conn, int regionID, int chunkLen,
-			ByteArrayInputStream chunk) throws SQLException {
-		try (var s = conn.prepareStatement(ADD_EXTRA_CONTENT)) {
-			// region_id, content
-			setArguments(s, regionID, read(chunk, chunkLen), chunkLen);
+	private int addRegionData(Connection conn, int regionID, int extractionId,
+			int chunkLen, ByteArrayInputStream chunk) throws SQLException {
+		try (var s = conn.prepareStatement(ADD_REGION_DATA)) {
+			// region_id, extraction_id, content, content_len,
+			setArguments(s, regionID,  extractionId, read(chunk, chunkLen), chunkLen);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt("extra_id");
+					return rs.getInt("region_data_id");
 				}
 			}
 		}
 		throw new IllegalStateException("no row inserted");
-	}
-
-	private boolean useMainTable(Connection conn, int regionID)
-			throws SQLException {
-		try (var s = conn.prepareStatement(GET_MAIN_CONTENT_AVAILABLE)) {
-			setArguments(s, regionID);
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					int existing = rs.getInt("existing");
-					return existing == 1;
-				}
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -234,7 +218,8 @@ public class SQLiteBufferStorage
 			byte[] contents) throws SQLException {
 		int coreID = getRecordingCore(conn, region.core);
 		int regionID = getRecordingRegion(conn, coreID, region);
-		appendRecordingContents(conn, regionID, contents);
+		int last_extraction_id = getLastExtractionId(conn);
+		appendRecordingContents(conn, regionID, last_extraction_id, contents);
 	}
 
 	@Override
@@ -248,23 +233,9 @@ public class SQLiteBufferStorage
 			Region region) throws SQLException {
 		var accum = new ByteArrayOutputStream();
 		try {
-			int regionID = -1;
+			int coreID = getRecordingCore(conn, region.core);
+			int regionID = getRecordingRegion(conn, coreID, region);
 			try (var s = conn.prepareStatement(FETCH_RECORDING)) {
-				// x, y, processor, local_region_index
-				setArguments(s, region.core.getX(), region.core.getY(),
-						region.core.getP(), region.regionIndex);
-				try (var rs = s.executeQuery()) {
-					while (rs.next()) {
-						accum.write(rs.getBytes("content"));
-						regionID = rs.getInt("region_id");
-					}
-				}
-			}
-			if (regionID < 0) {
-				throw new IllegalArgumentException("core " + region.core
-						+ " has no data for region " + region.regionIndex);
-			}
-			try (var s = conn.prepareStatement(FETCH_EXTRA_RECORDING)) {
 				// region_id
 				setArguments(s, regionID);
 				try (var rs = s.executeQuery()) {
