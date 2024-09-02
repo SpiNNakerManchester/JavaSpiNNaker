@@ -263,16 +263,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 						regions.add(r);
 						count += r.size();
 					}
-					if (!regions.isEmpty()) {
-						workitems.add(new WorkItems(m, regions));
-					}
+					workitems.add(new WorkItems(m, regions));
 				}
 
 			}
 			// Totally empty boards can be ignored
-			if (!workitems.isEmpty()) {
-				work.put(g.asChipLocation(), workitems);
-			}
+			work.put(g.asChipLocation(), workitems);
 		}
 		log.info("found {} regions to download", count);
 		return work;
