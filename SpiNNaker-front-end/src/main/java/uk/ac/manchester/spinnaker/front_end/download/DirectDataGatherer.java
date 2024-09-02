@@ -132,14 +132,14 @@ public class DirectDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	protected List<Region> getRegion(Placement placement, int regionID)
+	protected Region getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, InterruptedException {
 		var b = getCoreRegionTable(placement.asCoreLocation(),
 				placement.getVertex());
 		// TODO This is wrong because of shared regions!
 		int size = b.get(regionID + 1) - b.get(regionID);
-		return List.of(new Region(placement, regionID,
-				new MemoryLocation(b.get(regionID)), size));
+		return new Region(
+			placement, regionID, new MemoryLocation(b.get(regionID)), size);
 	}
 
 	@Override

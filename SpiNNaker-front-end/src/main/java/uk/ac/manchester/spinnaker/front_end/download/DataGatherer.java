@@ -219,9 +219,9 @@ public abstract class DataGatherer extends BoardLocalSupport
 		 * theoretically be done in any order... but needs to be processed
 		 * single-threaded anyway.
 		 */
-		private final List<List<Region>> regions;
+		private final List<Region> regions;
 
-		WorkItems(Monitor m, List<List<Region>> region) {
+		WorkItems(Monitor m, List<Region> region) {
 			this.monitor = m;
 			this.regions = region;
 		}
@@ -257,11 +257,16 @@ public abstract class DataGatherer extends BoardLocalSupport
 				m.updateTransactionIdFromMachine(txrx);
 
 				for (var p : m.getPlacements()) {
-					var regions = new ArrayList<List<Region>>();
+					var regions = new ArrayList<Region>();
 					for (int id : p.getVertex().getRecordedRegionIds()) {
 						var r = getRegion(p, id);
-						regions.add(r);
-						count += r.size();
+						if (r.size > 0) {
+							regions.add(r);
+							count += 1;
+						} else {
+							storeData(r, allocate(0));
+						}
+
 					}
 					workitems.add(new WorkItems(m, regions));
 				}
@@ -363,19 +368,17 @@ public abstract class DataGatherer extends BoardLocalSupport
 			log.info("processing fast downloads for {}", conn.getChip());
 			var dl = new Downloader(conn);
 			for (var item : work) {
-				for (var regionsOnCore : item.regions) {
+				for (var region : item.regions) {
 					/*
 					 * Once there's something too small, all subsequent
 					 * retrieves for that recording region have to be done the
 					 * same way to get the data in the DB in the right order.
 					 */
-					for (var region : regionsOnCore) {
-						var data = dl.doDownload(item.monitor, region);
-						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
-							compareDownloadWithSCP(region, data);
-						}
-						storeData(region, data);
+					var data = dl.doDownload(item.monitor, region);
+					if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+						compareDownloadWithSCP(region, data);
 					}
+					storeData(region, data);
 				}
 			}
 		}
@@ -479,7 +482,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 */
 	@UsedInJavadocOnly(BufferManagerStorage.class)
 	@ForOverride
-	protected abstract List<Region> getRegion(Placement placement, int regionID)
+	protected abstract Region getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, StorageException,
 			InterruptedException;
 
