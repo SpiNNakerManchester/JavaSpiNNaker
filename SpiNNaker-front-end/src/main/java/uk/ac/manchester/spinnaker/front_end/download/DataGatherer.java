@@ -260,9 +260,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 					var regions = new ArrayList<List<Region>>();
 					for (int id : p.getVertex().getRecordedRegionIds()) {
 						var r = getRegion(p, id);
-						if (!r.isEmpty()) {
-							regions.add(r);
-						}
+						regions.add(r);
 						count += r.size();
 					}
 					if (!regions.isEmpty()) {
