@@ -126,7 +126,8 @@ public class SQLiteBufferStorage
 				"could not make or find recording region record");
 	}
 
-	private static int insertMockExtraction(Connection conn) throws SQLException {
+	private static int insertMockExtraction(Connection conn)
+			throws SQLException {
 		try (var s = conn.prepareStatement(INSERT_MOCK_EXTRACTION)) {
 			// core_id, local_region_index, address
 			try (var rs = s.executeQuery()) {
@@ -176,7 +177,8 @@ public class SQLiteBufferStorage
 			int chunkLen, ByteArrayInputStream chunk) throws SQLException {
 		try (var s = conn.prepareStatement(ADD_REGION_DATA)) {
 			// region_id, extraction_id, content, content_len,
-			setArguments(s, regionID,  extractionId, read(chunk, chunkLen), chunkLen);
+			setArguments(
+				s, regionID,  extractionId, read(chunk, chunkLen), chunkLen);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt("region_data_id");
@@ -218,8 +220,8 @@ public class SQLiteBufferStorage
 			byte[] contents) throws SQLException {
 		int coreID = getRecordingCore(conn, region.core);
 		int regionID = getRecordingRegion(conn, coreID, region);
-		int last_extraction_id = getLastExtractionId(conn);
-		appendRecordingContents(conn, regionID, last_extraction_id, contents);
+		int lastExtractionId = getLastExtractionId(conn);
+		appendRecordingContents(conn, regionID, lastExtractionId, contents);
 	}
 
 	@Override

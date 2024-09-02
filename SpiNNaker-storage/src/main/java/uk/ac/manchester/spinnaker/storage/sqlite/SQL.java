@@ -65,7 +65,7 @@ abstract class SQL {
 	@ResultColumn("extraction_id")
 	static final String INSERT_MOCK_EXTRACTION = "INSERT INTO "
 			+ "extraction(run_timestep, n_run, n_loop, extract_time) "
-		    + "VALUES(12345, 1, NULL, 987654) RETURNING extraction_id ";
+			+ "VALUES(12345, 1, NULL, 987654) RETURNING extraction_id ";
 
 	/** Find an existing region record. */
 	@Parameter("core_id")
@@ -76,8 +76,9 @@ abstract class SQL {
 
 	//** Find the current extraction_id. */
 	@ResultColumn("max_id")
-	static final String GET_LAST_EXTRACTION_ID = "SELECT max(extraction_id) as max_id " +
-		"FROM extraction LIMIT 1";
+	static final String GET_LAST_EXTRACTION_ID =
+			"SELECT max(extraction_id) as max_id "
+			+ "FROM extraction LIMIT 1";
 
 	/** Create a region record. */
 	@Parameter("region_id")
@@ -86,15 +87,9 @@ abstract class SQL {
 	@Parameter("content_len")
 	@ResultColumn("region_data_id")
 	static final String ADD_REGION_DATA =
-			"INSERT INTO region_data(region_id, extraction_id, content, content_len, missing_data) "
+			"INSERT INTO region_data(region_id, extraction_id, content, "
+				+ "content_len, missing_data) "
 				+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) RETURNING region_data_id";
-
-	@Parameter("region_id")
-	@ResultColumn("n_extractions")
-	@ResultColumn("region_data_id")
-	static final String COUNT_RECORDING =
-			"SELECT count(*) as n_extractions, SUM(content_len) as total_content_length	"
-				+ "FROM region_data	WHERE region_id = ?	LIMIT 1";
 
 	/** Fetch the current variable state of a region record. */
 	@Parameter("region_id")

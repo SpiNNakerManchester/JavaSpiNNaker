@@ -266,7 +266,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 						} else {
 							storeData(r, allocate(0));
 						}
-
 					}
 					workitems.add(new WorkItems(m, regions));
 				}
