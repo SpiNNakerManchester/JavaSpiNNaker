@@ -41,7 +41,9 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.storage.*;
+import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
  * How to actually talk to an SQLite database.

@@ -74,7 +74,7 @@ abstract class SQL {
 	static final String GET_REGION = "SELECT region_id FROM region WHERE "
 			+ "core_id = ? AND local_region_index = ? LIMIT 1";
 
-	//** Find the current extraction_id. */
+	/** Find the current extraction_id. */
 	@ResultColumn("max_id")
 	static final String GET_LAST_EXTRACTION_ID =
 			"SELECT max(extraction_id) as max_id "
@@ -89,7 +89,8 @@ abstract class SQL {
 	static final String ADD_REGION_DATA =
 			"INSERT INTO region_data(region_id, extraction_id, content, "
 				+ "content_len, missing_data) "
-				+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) RETURNING region_data_id";
+				+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+				+ "RETURNING region_data_id";
 
 	/** Fetch the current variable state of a region record. */
 	@Parameter("region_id")
