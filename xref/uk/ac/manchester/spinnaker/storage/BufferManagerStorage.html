@@ -278,24 +278,26 @@
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> 	<strong class="jxr_keyword">void</strong> appendRecordingContents(Region region, byte[] contents)
 <a class="jxr_linenumber" name="L271" href="#L271">271</a> 			<strong class="jxr_keyword">throws</strong> StorageException;
 <a class="jxr_linenumber" name="L272" href="#L272">272</a> 
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">	 * Adds some bytes to the database. The bytes represent part of the contents</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">	 * of a recording region of a particular SpiNNaker core.</em>
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">	 * @param region</em>
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">	 *            The recording region that is being recorded.</em>
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">	 * @param contents</em>
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">	 *            The contents to append.</em>
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">	 * @throws StorageException</em>
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong.</em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 	<strong class="jxr_keyword">default</strong> <strong class="jxr_keyword">void</strong> appendRecordingContents(Region region, ByteBuffer contents)
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 		<strong class="jxr_keyword">var</strong> ary = <strong class="jxr_keyword">new</strong> byte[contents.remaining()];
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 		contents.slice().get(ary);
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> 		appendRecordingContents(region, ary);
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> 	}
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> }
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 	<strong class="jxr_keyword">void</strong> insertMockExtraction() <strong class="jxr_keyword">throws</strong> StorageException;
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">	 * Adds some bytes to the database. The bytes represent part of the contents</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">	 * of a recording region of a particular SpiNNaker core.</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">	 * @param region</em>
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">	 *            The recording region that is being recorded.</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">	 * @param contents</em>
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">	 *            The contents to append.</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">	 * @throws StorageException</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong.</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> 	<strong class="jxr_keyword">default</strong> <strong class="jxr_keyword">void</strong> appendRecordingContents(Region region, ByteBuffer contents)
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 		<strong class="jxr_keyword">var</strong> ary = <strong class="jxr_keyword">new</strong> byte[contents.remaining()];
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> 		contents.slice().get(ary);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 		appendRecordingContents(region, ary);
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> 	}
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2024 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
