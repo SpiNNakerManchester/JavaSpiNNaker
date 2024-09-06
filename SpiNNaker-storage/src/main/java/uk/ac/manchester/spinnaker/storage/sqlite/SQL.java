@@ -49,14 +49,23 @@ abstract class SQL {
 	static final String GET_LOCATION = "SELECT core_id FROM core"
 			+ " WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
 
-	/** Create an empty region record. */
+	/** Create a region record. */
 	@Parameter("core_id")
 	@Parameter("local_region_index")
-	@Parameter("address")
 	@ResultColumn("region_id")
 	static final String INSERT_REGION = "INSERT INTO "
-			+ "region(core_id, local_region_index, address)"
-			+ " VALUES (?, ?, ?) RETURNING region_id";
+			+ "region(core_id, local_region_index)"
+			+ " VALUES (?, ?) RETURNING region_id";
+
+
+	/** For testing create an extraction record.
+
+	Would normally be done by python.
+	*/
+	@ResultColumn("extraction_id")
+	static final String INSERT_MOCK_EXTRACTION = "INSERT INTO "
+			+ "extraction(run_timestep, n_run, n_loop, extract_time) "
+			+ "VALUES(12345, 1, NULL, 987654) RETURNING extraction_id ";
 
 	/** Find an existing region record. */
 	@Parameter("core_id")
@@ -65,76 +74,31 @@ abstract class SQL {
 	static final String GET_REGION = "SELECT region_id FROM region WHERE "
 			+ "core_id = ? AND local_region_index = ? LIMIT 1";
 
-	/** Append content to a region record. */
+	/** Find the current extraction_id. */
+	@ResultColumn("max_id")
+	static final String GET_LAST_EXTRACTION_ID =
+			"SELECT max(extraction_id) as max_id "
+			+ "FROM extraction LIMIT 1";
+
+	/** Create a region record. */
+	@Parameter("region_id")
+	@Parameter("extraction_id")
 	@Parameter("content_to_add")
 	@Parameter("content_len")
-	@Parameter("append_time")
-	@Parameter("region_id")
-	static final String ADD_CONTENT =
-			"UPDATE region SET content = CAST(? AS BLOB), content_len = ?, "
-					+ "fetches = 1, append_time = ? WHERE region_id = ?";
-
-	/** Prepare a region record for handling content in the extra table. */
-	@Parameter("append_time")
-	@Parameter("region_id")
-	static final String PREP_EXTRA_CONTENT =
-			"UPDATE region SET fetches = fetches + 1, append_time = ? "
-			+ "WHERE region_id = ?";
-
-	/** Add content to a new row in the extra table. */
-	@Parameter("region_id")
-	@Parameter("content_to_add")
-	@Parameter("content_len")
-	@ResultColumn("extra_id")
-	static final String ADD_EXTRA_CONTENT =
-			"INSERT INTO region_extra(region_id, content, content_len) "
-					+ "VALUES (?, CAST(? AS BLOB), ?) RETURNING extra_id";
-
-	/**
-	 * Discover whether region in the main region table is available for storing
-	 * data.
-	 */
-	@Parameter("region_id")
-	@ResultColumn("existing")
-	static final String GET_MAIN_CONTENT_AVAILABLE =
-			"SELECT COUNT(*) AS existing FROM region "
-					+ "WHERE region_id = ? AND fetches = 0";
-
-	/**
-	 * Determine just how much content there is for a row, overall.
-	 */
-	@Parameter("region_id")
-	@ResultColumn("len")
-	static final String GET_CONTENT_TOTAL_LENGTH =
-			"SELECT r.content_len + ("
-					+ "    SELECT SUM(x.content_len) "
-					+ "    FROM region_extra AS x "
-					+ "    WHERE x.region_id = r.region_id"
-					+ ") AS len FROM region AS r WHERE region_id = ?";
+	@ResultColumn("region_data_id")
+	static final String ADD_REGION_DATA =
+			"INSERT INTO region_data(region_id, extraction_id, content, "
+				+ "content_len, missing_data) "
+				+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+				+ "RETURNING region_data_id";
 
 	/** Fetch the current variable state of a region record. */
-	@Parameter("x")
-	@Parameter("y")
-	@Parameter("processor")
-	@Parameter("local_region_index")
+	@Parameter("region_id")
 	@ResultColumn("content")
-	@ResultColumn("content_len")
-	@ResultColumn("fetches")
-	@ResultColumn("append_time")
-	@ResultColumn("region_id")
+	@ResultColumn("missing_data")
 	static final String FETCH_RECORDING =
-			"SELECT content, content_len, fetches, append_time, region_id "
-					+ "FROM region_view"
-					+ " WHERE x = ? AND y = ? AND processor = ?"
-					+ " AND local_region_index = ? LIMIT 1";
-
-	/** Fetch the current variable state of a region record. */
-	@Parameter("region_id")
-	@ResultColumn("content")
-	@ResultColumn("content_len")
-	static final String FETCH_EXTRA_RECORDING =
-			"SELECT content, content_len FROM region_extra"
-					+ " WHERE region_id = ? ORDER BY extra_id ASC";
+			"SELECT content, missing_data FROM region_data "
+				+ "WHERE region_id = ? ORDER BY extraction_id ASC";
 
 	/** List the cores with storage. */
 	@Parameters({})
