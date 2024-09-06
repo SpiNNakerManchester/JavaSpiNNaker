@@ -60,6 +60,7 @@ class TestSQLiteStorage {
 		assertEquals(List.of(), storage.getCoresWithStorage());
 
 		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100);
+		storage.insertMockExtraction();
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
@@ -75,8 +76,11 @@ class TestSQLiteStorage {
 
 		// append creates
 		var rr = new BufferManagerStorage.Region(core, 1, NULL, 100);
+		storage.insertMockExtraction();
 		storage.appendRecordingContents(rr, bytes("ab"));
+		storage.insertMockExtraction();
 		storage.appendRecordingContents(rr, bytes("cd"));
+		storage.insertMockExtraction();
 		storage.appendRecordingContents(rr, bytes("ef"));
 		assertEquals("abcdef", str(storage.getRecordingRegionContents(rr)));
 	}
