@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -119,9 +119,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,long,int%5B%5D)">Vertex</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;label,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,long,int%5B%5D,uk.ac.manchester.spinnaker.front_end.download.request.DownloadRegion%5B%5D)">Vertex</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;label,
 long&nbsp;recordingRegionBaseAddress,
-int[]&nbsp;recordedRegionIds)</code></th>
+int[]&nbsp;recordedRegionIds,
+<a href="DownloadRegion.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">DownloadRegion</a>[]&nbsp;downloadRegions)</code></th>
 <td class="colLast">
 <div class="block">Create a minimal vertex, possibly using an unmarshaller.</div>
 </td>
@@ -164,11 +165,16 @@ int[]&nbsp;recordedRegionIds)</code></th>
 </td>
 </tr>
 <tr class="altColor" id="i2">
+<td class="colFirst"><code><a href="DownloadRegion.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">DownloadRegion</a>[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDownloadRegions()">getDownloadRegions</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLabel()">getLabel</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>int[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRecordedRegionIds()">getRecordedRegionIds</a></span>()</code></th>
 <td class="colLast">
@@ -199,10 +205,11 @@ int[]&nbsp;recordedRegionIds)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,long,int[])">Vertex</a></h3>
+<h3><a id="&lt;init&gt;(java.lang.String,long,int[],uk.ac.manchester.spinnaker.front_end.download.request.DownloadRegion[])">Vertex</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Vertex</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;label,
 long&nbsp;recordingRegionBaseAddress,
-int[]&nbsp;recordedRegionIds)</span></div>
+int[]&nbsp;recordedRegionIds,
+<a href="DownloadRegion.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">DownloadRegion</a>[]&nbsp;downloadRegions)</span></div>
 <div class="block">Create a minimal vertex, possibly using an unmarshaller.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -211,6 +218,7 @@ int[]&nbsp;recordedRegionIds)</span></div>
             have been originally allocated by the data specification
             execution process.</dd>
 <dd><code>recordedRegionIds</code> - The IDs of the regions doing recording.</dd>
+<dd><code>downloadRegions</code> - The non-recording regions to download.</dd>
 </dl>
 </section>
 </li>
@@ -266,6 +274,16 @@ int[]&nbsp;recordedRegionIds)</span></div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The label, as received from Python.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getDownloadRegions()">getDownloadRegions</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DownloadRegion.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">DownloadRegion</a>[]</span>&nbsp;<span class="memberName">getDownloadRegions</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The non-recording regions to download.</dd>
 </dl>
 </section>
 </li>
