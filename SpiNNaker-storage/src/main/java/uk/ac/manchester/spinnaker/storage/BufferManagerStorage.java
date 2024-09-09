@@ -270,6 +270,8 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	void appendRecordingContents(Region region, byte[] contents)
 			throws StorageException;
 
+	void insertMockExtraction() throws StorageException;
+
 	/**
 	 * Adds some bytes to the database. The bytes represent part of the contents
 	 * of a recording region of a particular SpiNNaker core.
