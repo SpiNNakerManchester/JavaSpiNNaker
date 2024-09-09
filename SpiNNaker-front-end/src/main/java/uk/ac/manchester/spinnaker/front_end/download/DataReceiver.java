@@ -142,6 +142,12 @@ public class DataReceiver extends BoardLocalSupport {
 						.getRecordedRegionIds()) {
 					getDataForPlacement(placement, recordingRegionId);
 				}
+				for (var region : placement.getVertex().getDownloadRegions()) {
+					var location = new RegionLocation(placement,
+							region.getIndex());
+					readSomeData(location, region.getAddress(),
+							region.getSize());
+				}
 			}
 		}
 	}

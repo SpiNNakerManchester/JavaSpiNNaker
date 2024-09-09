@@ -267,6 +267,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 							storeData(r, allocate(0));
 						}
 					}
+					for (var dr : p.getVertex().getDownloadRegions()) {
+						regions.add(new Region(p, dr.getIndex(),
+								dr.getAddress(), dr.getSize()));
+						count++;
+					}
 					workitems.add(new WorkItems(m, regions));
 				}
 

@@ -64,6 +64,10 @@ public class Vertex {
 	@NotNull
 	private final int[] recordedRegionIds;
 
+	/** The non-recording regions to download. */
+	@NotNull
+	private final DownloadRegion[] downloadRegions;
+
 	/**
 	 * Create a minimal vertex, possibly using an unmarshaller.
 	 *
@@ -75,16 +79,21 @@ public class Vertex {
 	 *            execution process.
 	 * @param recordedRegionIds
 	 *            The IDs of the regions doing recording.
+	 * @param downloadRegions
+	 *           The non-recording regions to download.
 	 */
 	public Vertex(@JsonProperty(value = "label", required = true) String label,
 			@JsonProperty(value = "recordingRegionBaseAddress", required = true)
 			long recordingRegionBaseAddress,
 			@JsonProperty(value = "recordedRegionIds", required = true)
-			int[] recordedRegionIds) {
+			int[] recordedRegionIds,
+			@JsonProperty(value = "downloadRegions", required = true)
+			DownloadRegion[] downloadRegions) {
 		this.label = label;
 		this.recordingRegionBaseAddress = recordingRegionBaseAddress;
 		this.recordedRegionIds = recordedRegionIds;
 		this.base = new MemoryLocation(recordingRegionBaseAddress);
+		this.downloadRegions = downloadRegions;
 	}
 
 	/**
@@ -122,5 +131,12 @@ public class Vertex {
 	 */
 	public String getLabel() {
 		return label;
+	}
+
+	/**
+	 * @return The non-recording regions to download.
+	 */
+	public DownloadRegion[] getDownloadRegions() {
+		return downloadRegions;
 	}
 }
