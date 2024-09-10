@@ -492,10 +492,9 @@ public abstract class DataGatherer extends BoardLocalSupport
 			InterruptedException;
 
 	/**
-	 * Store the data retrieved from a region. Called (at most) once for each
-	 * element in the list returned by {@link #getRecordingRegion(Placement, int)}
-	 * getRegion(...)}, <i>in order</i>. No guarantee is made about which thread
-	 * will call this method.
+	 * Store the data retrieved from a region
+	 *
+	 * No guarantee is made about which thread will call this method.
 	 *
 	 * @param r
 	 *            Where the data came from.
