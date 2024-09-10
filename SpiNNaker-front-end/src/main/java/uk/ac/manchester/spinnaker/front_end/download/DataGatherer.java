@@ -493,7 +493,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	/**
 	 * Store the data retrieved from a region. Called (at most) once for each
-	 * element in the list returned by {@link #getRegion(Placement,int)
+	 * element in the list returned by {@link #getRecordingRegion(Placement, int)}
 	 * getRegion(...)}, <i>in order</i>. No guarantee is made about which thread
 	 * will call this method.
 	 *
