@@ -182,8 +182,8 @@ public class DataReceiver extends BoardLocalSupport {
 	}
 
 	private void readSomeData(RegionLocation location, MemoryLocation address,
-			long length, boolean isRecording) throws IOException, StorageException, ProcessException,
-			InterruptedException {
+			long length, boolean isRecording) throws IOException,
+			StorageException, ProcessException,	InterruptedException {
 		if (!is32bit(length)) {
 			throw new IllegalArgumentException("non-32-bit argument");
 		}

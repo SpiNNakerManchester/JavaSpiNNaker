@@ -119,7 +119,8 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);
-		return new Region(placement, index, region.data, (int) region.size, true);
+		return new Region(placement, index, region.data, (int) region.size,
+				true);
 	}
 
 	@Override

@@ -166,8 +166,9 @@ class BufferedReceivingData {
 	 * @throws StorageException
 	 *             If there is a problem storing the data.
 	 */
-	public void flushingDataFromRegion(RegionLocation location, ByteBuffer data,
-									   boolean isRecording)	throws StorageException {
+	public void flushingDataFromRegion(
+		RegionLocation location, ByteBuffer data, boolean isRecording)
+			throws StorageException {
 		storeDataInRegionBuffer(location, data, isRecording);
 		isFlushed.put(location, true);
 	}

@@ -138,7 +138,8 @@ public class DirectDataGatherer extends DataGatherer {
 		// TODO This is wrong because of shared regions!
 		int size = b.get(regionID + 1) - b.get(regionID);
 		return new Region(
-			placement, regionID, new MemoryLocation(b.get(regionID)), size, true);
+			placement, regionID, new MemoryLocation(b.get(regionID)), size,
+			true);
 	}
 
 	@Override
