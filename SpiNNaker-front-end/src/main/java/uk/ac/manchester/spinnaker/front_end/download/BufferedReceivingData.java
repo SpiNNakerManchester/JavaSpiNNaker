@@ -136,18 +136,21 @@ class BufferedReceivingData {
 	 *            The X, Y, P and Region
 	 * @param data
 	 *            data to be stored
+	 * @param isRecording
+	 *            If this is a recording region
 	 * @throws StorageException
 	 *             If there is a problem storing the data.
 	 */
 	public void storeDataInRegionBuffer(RegionLocation location,
-			ByteBuffer data) throws StorageException {
+			ByteBuffer data, boolean isRecording) throws StorageException {
 		if (log.isInfoEnabled()) {
 			log.info("retrieved {} bytes from region {} of {}",
 					data.remaining(), location.region,
 					location.asCoreLocation());
 		}
-		storage.appendRecordingContents(
-				new Region(location, location.region, NULL, 0), data);
+		storage.extractRecordingContents(
+				new Region(location, location.region, NULL, 0, isRecording),
+				data);
 	}
 
 	/**
@@ -158,12 +161,14 @@ class BufferedReceivingData {
 	 *            The X, Y, P and Region
 	 * @param data
 	 *            data to be stored
+	 * @param isRecording
+	 * 			  if this is a recording region
 	 * @throws StorageException
 	 *             If there is a problem storing the data.
 	 */
-	public void flushingDataFromRegion(RegionLocation location, ByteBuffer data)
-			throws StorageException {
-		storeDataInRegionBuffer(location, data);
+	public void flushingDataFromRegion(RegionLocation location, ByteBuffer data,
+									   boolean isRecording)	throws StorageException {
+		storeDataInRegionBuffer(location, data, isRecording);
 		isFlushed.put(location, true);
 	}
 }

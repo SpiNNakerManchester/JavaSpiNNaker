@@ -146,7 +146,7 @@ public class DataReceiver extends BoardLocalSupport {
 					var location = new RegionLocation(placement,
 							region.getIndex());
 					readSomeData(location, region.getAddress(),
-							region.getSize());
+							region.getSize(), false);
 				}
 			}
 		}
@@ -172,7 +172,7 @@ public class DataReceiver extends BoardLocalSupport {
 
 		// Read the data
 		var region = receivedData.getRecordingRegion(location);
-		readSomeData(location, region.data, region.size);
+		readSomeData(location, region.data, region.size, true);
 	}
 
 	private static final long MAX_UINT = 0xFFFFFFFFL;
@@ -182,7 +182,7 @@ public class DataReceiver extends BoardLocalSupport {
 	}
 
 	private void readSomeData(RegionLocation location, MemoryLocation address,
-			long length) throws IOException, StorageException, ProcessException,
+			long length, boolean isRecording) throws IOException, StorageException, ProcessException,
 			InterruptedException {
 		if (!is32bit(length)) {
 			throw new IllegalArgumentException("non-32-bit argument");
@@ -192,7 +192,7 @@ public class DataReceiver extends BoardLocalSupport {
 					address);
 		}
 		var data = requestData(location, address, (int) length);
-		receivedData.flushingDataFromRegion(location, data);
+		receivedData.flushingDataFromRegion(location, data, isRecording);
 	}
 
 	/**

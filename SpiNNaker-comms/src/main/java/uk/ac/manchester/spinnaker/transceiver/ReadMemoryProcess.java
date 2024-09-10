@@ -357,6 +357,6 @@ class ReadMemoryProcess extends TxrxProcess {
 		var buffer = new byte[region.size];
 		readMemory(region.core.asChipLocation(), region.startAddress,
 				region.size, new BufferAccumulator(buffer));
-		storage.appendRecordingContents(region, buffer);
+		storage.extractRecordingContents(region, buffer);
 	}
 }

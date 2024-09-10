@@ -52,10 +52,11 @@ abstract class SQL {
 	/** Create a region record. */
 	@Parameter("core_id")
 	@Parameter("local_region_index")
+	@Parameter("is_recording")
 	@ResultColumn("region_id")
 	static final String INSERT_REGION = "INSERT INTO "
-			+ "region(core_id, local_region_index)"
-			+ " VALUES (?, ?) RETURNING region_id";
+			+ "region(core_id, local_region_index, is_recording)"
+			+ " VALUES (?, ?, ?) RETURNING region_id";
 
 
 	/** For testing create an extraction record.

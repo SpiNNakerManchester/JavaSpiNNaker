@@ -117,7 +117,7 @@ public class SQLiteBufferStorage
 		}
 		try (var s = conn.prepareStatement(INSERT_REGION)) {
 			// core_id, local_region_index, address
-			setArguments(s, coreID, region.regionIndex);
+			setArguments(s, coreID, region.regionIndex, region.isRecording);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getInt("region_id");
@@ -126,6 +126,21 @@ public class SQLiteBufferStorage
 		}
 		throw new IllegalStateException(
 				"could not make or find recording region record");
+	}
+
+	private static int getExistingRecordingRegion(
+		Connection conn, int coreID, Region region) throws SQLException {
+		try (var s = conn.prepareStatement(GET_REGION)) {
+			// core_id, local_region_index
+			setArguments(s, coreID, region.regionIndex);
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("region_id");
+				}
+			}
+		}
+		throw new IllegalStateException(
+			"could not find recording region record");
 	}
 
 	private static int insertMockExtraction(Connection conn)
@@ -147,7 +162,7 @@ public class SQLiteBufferStorage
 			"Mocking Extraction");
 	}
 
-	private void appendRecordingContents(Connection conn, int regionID,
+	private void extractRecordingContents(Connection conn, int regionID,
 			int lastExtractionId, byte[] content) throws SQLException {
 		int chunkLen = content.length;
 		var chunk = new ByteArrayInputStream(content);
@@ -191,7 +206,7 @@ public class SQLiteBufferStorage
 	}
 
 	@Override
-	public void appendRecordingContents(Region region, byte[] contents)
+	public void extractRecordingContents(Region region, byte[] contents)
 			throws StorageException {
 		// Strip off any prefix and suffix added to make the read aligned
 		byte[] tmp;
@@ -201,7 +216,7 @@ public class SQLiteBufferStorage
 			tmp = new byte[region.realSize];
 			arraycopy(contents, region.initialIgnore, tmp, 0, region.realSize);
 		}
-		callV(conn -> appendRecordContents(conn, region, tmp),
+		callV(conn -> extractRecordContents(conn, region, tmp),
 				"creating or adding to a recorded region");
 	}
 
@@ -216,14 +231,14 @@ public class SQLiteBufferStorage
 	 *            The bytes to append.
 	 * @throws SQLException
 	 *             If anything goes wrong.
-	 * @see #appendRecordingContents(Region,int,byte[])
+	 * @see #extractRecordingContents(Region,int,byte[])
 	 */
-	private void appendRecordContents(Connection conn, Region region,
+	private void extractRecordContents(Connection conn, Region region,
 			byte[] contents) throws SQLException {
 		int coreID = getRecordingCore(conn, region.core);
 		int regionID = getRecordingRegion(conn, coreID, region);
 		int lastExtractionId = getLastExtractionId(conn);
-		appendRecordingContents(conn, regionID, lastExtractionId, contents);
+		extractRecordingContents(conn, regionID, lastExtractionId, contents);
 	}
 
 	@Override
@@ -238,7 +253,7 @@ public class SQLiteBufferStorage
 		var accum = new ByteArrayOutputStream();
 		try {
 			int coreID = getRecordingCore(conn, region.core);
-			int regionID = getRecordingRegion(conn, coreID, region);
+			int regionID = getExistingRecordingRegion(conn, coreID, region);
 			try (var s = conn.prepareStatement(FETCH_RECORDING)) {
 				// region_id
 				setArguments(s, regionID);

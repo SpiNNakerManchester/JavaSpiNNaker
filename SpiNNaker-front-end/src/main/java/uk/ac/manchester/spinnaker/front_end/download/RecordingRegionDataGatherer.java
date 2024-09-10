@@ -113,12 +113,13 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	protected Region getRegion(Placement placement, int index)
+	protected Region getRecordingRegion(
+			Placement placement, int index)
 			throws IOException, ProcessException, InterruptedException {
 		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);
-		return new Region(placement, index, region.data, (int) region.size);
+		return new Region(placement, index, region.data, (int) region.size, true);
 	}
 
 	@Override
@@ -132,7 +133,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			log.info("storing region data for {} R:{} from {} as {} bytes",
 					r.core, r.regionIndex, r.startAddress, data.remaining());
 			try {
-				database.appendRecordingContents(r, data);
+				database.extractRecordingContents(r, data);
 				numWrites++;
 			} catch (StorageException e) {
 				log.error("failed to write to database", e);
