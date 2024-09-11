@@ -259,7 +259,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 				for (var p : m.getPlacements()) {
 					var regions = new ArrayList<Region>();
 					for (int id : p.getVertex().getRecordedRegionIds()) {
-						var r = getRegion(p, id);
+						var r = getRecordingRegion(p, id);
 						if (r.size > 0) {
 							regions.add(r);
 							count += 1;
@@ -269,7 +269,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 					}
 					for (var dr : p.getVertex().getDownloadRegions()) {
 						regions.add(new Region(p, dr.getIndex(),
-								dr.getAddress(), dr.getSize()));
+								dr.getAddress(), dr.getSize(), false));
 						count++;
 					}
 					workitems.add(new WorkItems(m, regions));
@@ -486,15 +486,15 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 */
 	@UsedInJavadocOnly(BufferManagerStorage.class)
 	@ForOverride
-	protected abstract Region getRegion(Placement placement, int regionID)
+	protected abstract Region getRecordingRegion(
+			Placement placement, int regionID)
 			throws IOException, ProcessException, StorageException,
 			InterruptedException;
 
 	/**
-	 * Store the data retrieved from a region. Called (at most) once for each
-	 * element in the list returned by {@link #getRegion(Placement,int)
-	 * getRegion(...)}, <i>in order</i>. No guarantee is made about which thread
-	 * will call this method.
+	 * Store the data retrieved from a region
+	 *
+	 * No guarantee is made about which thread will call this method.
 	 *
 	 * @param r
 	 *            Where the data came from.
