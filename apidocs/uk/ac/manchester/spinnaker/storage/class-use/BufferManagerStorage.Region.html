@@ -121,7 +121,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract <a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">DataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/DataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion</a></span>&#8203;(<a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
+<th class="colSecond" scope="row"><span class="typeNameLabel">DataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/DataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion</a></span>&#8203;(<a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
 int&nbsp;regionID)</code></th>
 <td class="colLast">
 <div class="block">Work out exactly where is going to be downloaded.</div>
@@ -129,7 +129,7 @@ int&nbsp;regionID)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">DirectDataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/DirectDataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion</a></span>&#8203;(<a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
+<th class="colSecond" scope="row"><span class="typeNameLabel">DirectDataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/DirectDataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion</a></span>&#8203;(<a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
 int&nbsp;regionID)</code></th>
 <td class="colLast">
 <div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
@@ -137,7 +137,7 @@ int&nbsp;regionID)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected <a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">RecordingRegionDataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/RecordingRegionDataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion</a></span>&#8203;(<a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
+<th class="colSecond" scope="row"><span class="typeNameLabel">RecordingRegionDataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/RecordingRegionDataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion</a></span>&#8203;(<a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
 int&nbsp;index)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -160,7 +160,9 @@ int&nbsp;index)</code></th>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/DataGatherer.html#storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;r,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">
-<div class="block">Store the data retrieved from a region.</div>
+<div class="block">Store the data retrieved from a region
+
+ No guarantee is made about which thread will call this method.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -200,18 +202,18 @@ int&nbsp;index)</code></th>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">appendRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">extractRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 byte[]&nbsp;contents)</code></th>
 <td class="colLast">
-<div class="block">Adds some bytes to the database.</div>
+<div class="block">Extract some bytes to the database.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">appendRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">extractRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;contents)</code></th>
 <td class="colLast">
-<div class="block">Adds some bytes to the database.</div>
+<div class="block">Extract some bytes to the database.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -273,7 +275,7 @@ byte[]&nbsp;contents)</code></th>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">appendRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">extractRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 byte[]&nbsp;contents)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>

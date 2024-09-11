@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":18,"i2":50,"i3":6,"i4":6,"i5":50,"i6":6,"i7":6,"i8":50,"i9":50};
+<script type="text/javascript">var data = {"i0":50,"i1":6,"i2":18,"i3":6,"i4":6,"i5":50,"i6":6,"i7":6,"i8":50,"i9":50};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -155,22 +155,6 @@ extends <a href="ProxyAwareStorage.html" title="interface in uk.ac.manchester.sp
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">appendRecordingContents</a></span>&#8203;(<a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
-byte[]&nbsp;contents)</code></th>
-<td class="colLast">
-<div class="block">Adds some bytes to the database.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">appendRecordingContents</a></span>&#8203;(<a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;contents)</code></th>
-<td class="colLast">
-<div class="block">Adds some bytes to the database.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteRegionContents(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int)">deleteRegionContents</a></span>&#8203;(<a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 int&nbsp;region)</code></th>
@@ -178,6 +162,22 @@ int&nbsp;region)</code></th>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>
 <div class="deprecationComment">Currently unsupported; underlying database structure absent</div>
 </div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">extractRecordingContents</a></span>&#8203;(<a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+byte[]&nbsp;contents)</code></th>
+<td class="colLast">
+<div class="block">Extract some bytes to the database.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">extractRecordingContents</a></span>&#8203;(<a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;contents)</code></th>
+<td class="colLast">
+<div class="block">Extract some bytes to the database.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
@@ -402,11 +402,11 @@ byte[]&nbsp;contents)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte[])">appendRecordingContents</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">appendRecordingContents</span>&#8203;(<span class="arguments"><a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<h3><a id="extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte[])">extractRecordingContents</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">extractRecordingContents</span>&#8203;(<span class="arguments"><a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 byte[]&nbsp;contents)</span>
-                      throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
-<div class="block">Adds some bytes to the database. The bytes represent part of the contents
+                       throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Extract some bytes to the database. The bytes represent the contents
  of a recording region of a particular SpiNNaker core.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -430,16 +430,16 @@ byte[]&nbsp;contents)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">appendRecordingContents</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">appendRecordingContents</span>&#8203;(<span class="arguments"><a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<h3><a id="extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">extractRecordingContents</a></h3>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">extractRecordingContents</span>&#8203;(<span class="arguments"><a href="BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;contents)</span>
-                              throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
-<div class="block">Adds some bytes to the database. The bytes represent part of the contents
+                               throws <span class="exceptions"><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<div class="block">Extract some bytes to the database. The bytes represent the contents
  of a recording region of a particular SpiNNaker core.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - The recording region that is being recorded.</dd>
-<dd><code>contents</code> - The contents to append.</dd>
+<dd><code>contents</code> - The contents to extract.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If anything goes wrong.</dd>
 </dl>

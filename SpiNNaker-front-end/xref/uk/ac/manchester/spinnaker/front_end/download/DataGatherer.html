@@ -267,7 +267,7 @@
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> p : m.getPlacements()) {
 <a class="jxr_linenumber" name="L260" href="#L260">260</a> 					<strong class="jxr_keyword">var</strong> regions = <strong class="jxr_keyword">new</strong> ArrayList&lt;Region&gt;();
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 					<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> id : p.getVertex().getRecordedRegionIds()) {
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 						<strong class="jxr_keyword">var</strong> r = getRegion(p, id);
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 						<strong class="jxr_keyword">var</strong> r = getRecordingRegion(p, id);
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> 						<strong class="jxr_keyword">if</strong> (r.size &gt; 0) {
 <a class="jxr_linenumber" name="L264" href="#L264">264</a> 							regions.add(r);
 <a class="jxr_linenumber" name="L265" href="#L265">265</a> 							count += 1;
@@ -277,7 +277,7 @@
 <a class="jxr_linenumber" name="L269" href="#L269">269</a> 					}
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> 					<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> dr : p.getVertex().getDownloadRegions()) {
 <a class="jxr_linenumber" name="L271" href="#L271">271</a> 						regions.add(<strong class="jxr_keyword">new</strong> Region(p, dr.getIndex(),
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 								dr.getAddress(), dr.getSize()));
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 								dr.getAddress(), dr.getSize(), false));
 <a class="jxr_linenumber" name="L273" href="#L273">273</a> 						count++;
 <a class="jxr_linenumber" name="L274" href="#L274">274</a> 					}
 <a class="jxr_linenumber" name="L275" href="#L275">275</a> 					workitems.add(<strong class="jxr_keyword">new</strong> WorkItems(m, regions));
@@ -494,15 +494,15 @@
 <a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L487" href="#L487">487</a> 	@UsedInJavadocOnly(BufferManagerStorage.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L488" href="#L488">488</a> 	@ForOverride
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> Region getRegion(<a name="Placement" href="../../../../../../uk/ac/manchester/spinnaker/front_end/download/request/Placement.html#Placement">Placement</a> placement, <strong class="jxr_keyword">int</strong> regionID)
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, StorageException,
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 			InterruptedException;
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">	 * Store the data retrieved from a region. Called (at most) once for each</em>
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">	 * element in the list returned by {@link #getRegion(Placement,int)</em>
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">	 * getRegion(...)}, &lt;i&gt;in order&lt;/i&gt;. No guarantee is made about which thread</em>
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">	 * will call this method.</em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> Region getRecordingRegion(
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 			Placement placement, <strong class="jxr_keyword">int</strong> regionID)
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, StorageException,
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 			InterruptedException;
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">	 * Store the data retrieved from a region</em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">	 * No guarantee is made about which thread will call this method.</em>
 <a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">	 * @param r</em>
 <a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">	 *            Where the data came from.</em>

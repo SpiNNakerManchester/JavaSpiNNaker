@@ -148,13 +148,21 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>@javax.validation.constraints.NotNull boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isRecording">isRecording</a></span></code></th>
+<td class="colLast">
+<div class="block">States is a recording region
+ True if this region is appended after every run/loop.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#realSize">realSize</a></span></code></th>
 <td class="colLast">
 <div class="block">How much data was originally requested?</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#regionIndex">regionIndex</a></span></code></th>
 <td class="colLast">
@@ -162,7 +170,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  core?</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#size">size</a></span></code></th>
 <td class="colLast">
@@ -170,7 +178,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  size of the region.</em></div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#startAddress">startAddress</a></span></code></th>
 <td class="colLast">
@@ -200,10 +208,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">Region</a></span>&#8203;(<a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,boolean)">Region</a></span>&#8203;(<a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 int&nbsp;regionIndex,
 <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;startLocation,
-int&nbsp;size)</code></th>
+int&nbsp;size,
+boolean&nbsp;isRecording)</code></th>
 <td class="colLast">
 <div class="block">Create a region descriptor.</div>
 </td>
@@ -329,6 +338,16 @@ int&nbsp;size)</code></th>
  to get an aligned read?</div>
 </section>
 </li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="isRecording">isRecording</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.NotNull boolean</span>&nbsp;<span class="memberName">isRecording</span></div>
+<div class="block">States is a recording region
+ True if this region is appended after every run/loop.
+ False is this region is overwritten aevery run.</div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -341,11 +360,12 @@ int&nbsp;size)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">Region</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,boolean)">Region</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Region</span>&#8203;(<span class="arguments"><a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 int&nbsp;regionIndex,
 <a href="../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;startLocation,
-int&nbsp;size)</span></div>
+int&nbsp;size,
+boolean&nbsp;isRecording)</span></div>
 <div class="block">Create a region descriptor.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -357,6 +377,9 @@ int&nbsp;size)</span></div>
             necessarily the start of the region.</em></dd>
 <dd><code>size</code> - How much data should be downloaded? <em>This is not
             necessarily the size of the region.</em></dd>
+<dd><code>isRecording</code> - States is a recording region
+            True if this region is appended after every run/loop.
+            False is this region is overwritten aevery run.</dd>
 </dl>
 </section>
 </li>

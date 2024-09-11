@@ -612,16 +612,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Add to the log of a job.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">appendRecordingContents(BufferManagerStorage.Region, byte[])</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
-<dd>
-<div class="block">Adds some bytes to the database.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">appendRecordingContents(BufferManagerStorage.Region, byte[])</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteBufferStorage</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#appendRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">appendRecordingContents(BufferManagerStorage.Region, ByteBuffer)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
-<dd>
-<div class="block">Adds some bytes to the database.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/AppID.html#appID">appID</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a></dt>
 <dd>
 <div class="block">The application ID.</div>
@@ -4616,6 +4606,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Extra monitor core re injection functionality.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">extractRecordingContents(BufferManagerStorage.Region, byte[])</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
+<dd>
+<div class="block">Extract some bytes to the database.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">extractRecordingContents(BufferManagerStorage.Region, byte[])</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteBufferStorage</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">extractRecordingContents(BufferManagerStorage.Region, ByteBuffer)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
+<dd>
+<div class="block">Extract some bytes to the database.</div>
+</dd>
 </dl>
 <a id="I:F">
 <!--   -->
@@ -7945,6 +7945,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the recording region IDs that have been recorded using buffering.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
+<dd>
+<div class="block">Work out exactly where is going to be downloaded.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
+<dd>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#getRecordingRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getRecordingRegionContents(BufferManagerStorage.Region)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
 <dd>
 <div class="block">Retrieves some bytes from the database.</div>
@@ -7956,16 +7966,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Reads the recording regions from the machine.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.OpenIDProperties.html#getRedirect()">getRedirect()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.OpenIDProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.OpenIDProperties</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
-<dd>
-<div class="block">Work out exactly where is going to be downloaded.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
-&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#getRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getRegionContents(BufferManagerStorage.Region)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></dt>
 <dd>
@@ -10253,6 +10253,11 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html#isReadOnly()">isReadOnly()</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></dt>
 <dd>
 <div class="block">Retrieves whether this connection is in read-only mode.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#isRecording">isRecording</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
+<dd>
+<div class="block">States is a recording region
+ True if this region is appended after every run/loop.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ReinjectionStatus.html#isReinjectingFixedRoute()">isReinjectingFixedRoute()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.model">ReinjectionStatus</a></dt>
 <dd>&nbsp;</dd>
@@ -14612,7 +14617,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The recording region ID.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">Region(HasCoreLocation, int, MemoryLocation, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,boolean)">Region(HasCoreLocation, int, MemoryLocation, int, boolean)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
 <dd>
 <div class="block">Create a region descriptor.</div>
 </dd>
@@ -18051,7 +18056,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData(BufferManagerStorage.Region, ByteBuffer)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
 <dd>
-<div class="block">Store the data retrieved from a region.</div>
+<div class="block">Store the data retrieved from a region
+
+ No guarantee is made about which thread will call this method.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData(BufferManagerStorage.Region, ByteBuffer)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
 <dd>

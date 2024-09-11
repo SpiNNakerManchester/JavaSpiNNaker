@@ -221,7 +221,7 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine)</code></th>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>protected abstract <a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion</a></span>&#8203;(<a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion</a></span>&#8203;(<a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
 int&nbsp;regionID)</code></th>
 <td class="colLast">
 <div class="block">Work out exactly where is going to be downloaded.</div>
@@ -232,7 +232,9 @@ int&nbsp;regionID)</code></th>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&nbsp;r,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">
-<div class="block">Store the data retrieved from a region.</div>
+<div class="block">Store the data retrieved from a region
+
+ No guarantee is made about which thread will call this method.</div>
 </td>
 </tr>
 </tbody>
@@ -346,11 +348,11 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion</a></h3>
+<h3><a id="getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/ForOverride.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@ForOverride</a>
-</span><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a></span>&nbsp;<span class="memberName">getRegion</span>&#8203;(<span class="arguments"><a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
+</span><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a></span>&nbsp;<span class="memberName">getRecordingRegion</span>&#8203;(<span class="arguments"><a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
 int&nbsp;regionID)</span>
-                                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+                                                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a>,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/StorageException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
@@ -384,9 +386,9 @@ int&nbsp;regionID)</span>
 </span><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">storeData</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&nbsp;r,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</span>
                            throws <span class="exceptions"><a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/StorageException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">StorageException</a></span></div>
-<div class="block">Store the data retrieved from a region. Called (at most) once for each
- element in the list returned by <a href="#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)"><code>getRegion(...)</code></a>, <i>in order</i>. No guarantee is made about which thread
- will call this method.</div>
+<div class="block">Store the data retrieved from a region
+
+ No guarantee is made about which thread will call this method.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>r</code> - Where the data came from.</dd>

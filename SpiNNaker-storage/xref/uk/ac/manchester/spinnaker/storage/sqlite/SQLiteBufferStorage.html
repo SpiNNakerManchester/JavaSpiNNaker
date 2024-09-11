@@ -125,7 +125,7 @@
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> 		}
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(INSERT_REGION)) {
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> 			<em class="jxr_comment">// core_id, local_region_index, address</em>
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> 			setArguments(s, coreID, region.regionIndex);
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> 			setArguments(s, coreID, region.regionIndex, region.isRecording);
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 					<strong class="jxr_keyword">return</strong> rs.getInt(<span class="jxr_string">"region_id"</span>);
@@ -136,166 +136,181 @@
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> 				<span class="jxr_string">"could not make or find recording region record"</span>);
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 	}
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> insertMockExtraction(Connection conn)
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> 			<strong class="jxr_keyword">throws</strong> SQLException {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(INSERT_MOCK_EXTRACTION)) {
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> 			<em class="jxr_comment">// core_id, local_region_index, address</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 					<strong class="jxr_keyword">return</strong> rs.getInt(<span class="jxr_string">"extraction_id"</span>);
-<a class="jxr_linenumber" name="L138" href="#L138">138</a> 				}
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 			}
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> 		}
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> 		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> 			<span class="jxr_string">"could not mock an extraction record"</span>);
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> 	}
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> 
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> insertMockExtraction() <strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		callV(conn -&gt; insertMockExtraction(conn),
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 			<span class="jxr_string">"Mocking Extraction"</span>);
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 	}
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> appendRecordingContents(Connection conn, <strong class="jxr_keyword">int</strong> regionID,
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 			<strong class="jxr_keyword">int</strong> lastExtractionId, byte[] content) <strong class="jxr_keyword">throws</strong> SQLException {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 		<strong class="jxr_keyword">int</strong> chunkLen = content.length;
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 		<strong class="jxr_keyword">var</strong> chunk = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(content);
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> 		log.debug(<span class="jxr_string">"adding chunk of {} bytes to region data table for region {}"</span>,
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 				chunkLen, regionID);
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> 		addRegionData(conn, regionID,  lastExtractionId, chunkLen, chunk);
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> 	}
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> byte[] read(ByteArrayInputStream chunk, <strong class="jxr_keyword">int</strong> chunkLen)
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> 			<strong class="jxr_keyword">throws</strong> SQLException {
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 		<strong class="jxr_keyword">var</strong> buffer = <strong class="jxr_keyword">new</strong> byte[chunkLen];
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 		<strong class="jxr_keyword">int</strong> len;
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 			len = IOUtils.read(chunk, buffer, 0, chunkLen);
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> SQLException(<span class="jxr_string">"failed to read buffer"</span>, e);
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		}
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 		<strong class="jxr_keyword">if</strong> (len == chunkLen) {
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 			<strong class="jxr_keyword">return</strong> buffer;
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (len &lt;= 0) {
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> byte[0];
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> 		}
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 		<strong class="jxr_keyword">var</strong> nb = <strong class="jxr_keyword">new</strong> byte[len];
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> 		arraycopy(buffer, 0, nb, 0, len);
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> 		<strong class="jxr_keyword">return</strong> nb;
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> 	}
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> 
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> addRegionData(Connection conn, <strong class="jxr_keyword">int</strong> regionID, <strong class="jxr_keyword">int</strong> extractionId,
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> 			<strong class="jxr_keyword">int</strong> chunkLen, ByteArrayInputStream chunk) <strong class="jxr_keyword">throws</strong> SQLException {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(ADD_REGION_DATA)) {
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 			<em class="jxr_comment">// region_id, extraction_id, content, content_len,</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 			setArguments(
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 				s, regionID,  extractionId, read(chunk, chunkLen), chunkLen);
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 					<strong class="jxr_keyword">return</strong> rs.getInt(<span class="jxr_string">"region_data_id"</span>);
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> 				}
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 			}
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> 		}
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> 		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"no row inserted"</span>);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> getExistingRecordingRegion(
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> 		Connection conn, <strong class="jxr_keyword">int</strong> coreID, Region region) <strong class="jxr_keyword">throws</strong> SQLException {
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(GET_REGION)) {
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> 			<em class="jxr_comment">// core_id, local_region_index</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 			setArguments(s, coreID, region.regionIndex);
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> 					<strong class="jxr_keyword">return</strong> rs.getInt(<span class="jxr_string">"region_id"</span>);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> 				}
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 			}
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> 		}
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> 		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> 			<span class="jxr_string">"could not find recording region record"</span>);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 	}
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> insertMockExtraction(Connection conn)
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 			<strong class="jxr_keyword">throws</strong> SQLException {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(INSERT_MOCK_EXTRACTION)) {
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 			<em class="jxr_comment">// core_id, local_region_index, address</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 					<strong class="jxr_keyword">return</strong> rs.getInt(<span class="jxr_string">"extraction_id"</span>);
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 				}
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 			}
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 		}
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> 			<span class="jxr_string">"could not mock an extraction record"</span>);
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 	}
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> 
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> insertMockExtraction() <strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> 		callV(conn -&gt; insertMockExtraction(conn),
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 			<span class="jxr_string">"Mocking Extraction"</span>);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	}
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> extractRecordingContents(Connection conn, <strong class="jxr_keyword">int</strong> regionID,
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 			<strong class="jxr_keyword">int</strong> lastExtractionId, byte[] content) <strong class="jxr_keyword">throws</strong> SQLException {
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		<strong class="jxr_keyword">int</strong> chunkLen = content.length;
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 		<strong class="jxr_keyword">var</strong> chunk = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(content);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 		log.debug(<span class="jxr_string">"adding chunk of {} bytes to region data table for region {}"</span>,
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 				chunkLen, regionID);
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 		addRegionData(conn, regionID,  lastExtractionId, chunkLen, chunk);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 	}
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> byte[] read(ByteArrayInputStream chunk, <strong class="jxr_keyword">int</strong> chunkLen)
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 			<strong class="jxr_keyword">throws</strong> SQLException {
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 		<strong class="jxr_keyword">var</strong> buffer = <strong class="jxr_keyword">new</strong> byte[chunkLen];
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 		<strong class="jxr_keyword">int</strong> len;
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> 			len = IOUtils.read(chunk, buffer, 0, chunkLen);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> SQLException(<span class="jxr_string">"failed to read buffer"</span>, e);
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 		}
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> 		<strong class="jxr_keyword">if</strong> (len == chunkLen) {
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 			<strong class="jxr_keyword">return</strong> buffer;
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 		} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (len &lt;= 0) {
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> byte[0];
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 		}
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 		<strong class="jxr_keyword">var</strong> nb = <strong class="jxr_keyword">new</strong> byte[len];
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 		arraycopy(buffer, 0, nb, 0, len);
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> 		<strong class="jxr_keyword">return</strong> nb;
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 	}
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> 
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> 	@Override
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> appendRecordingContents(Region region, byte[] contents)
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 		<em class="jxr_comment">// Strip off any prefix and suffix added to make the read aligned</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> 		byte[] tmp;
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 		<strong class="jxr_keyword">if</strong> (region.isAligned()) {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 			tmp = contents;
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> 			tmp = <strong class="jxr_keyword">new</strong> byte[region.realSize];
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 			arraycopy(contents, region.initialIgnore, tmp, 0, region.realSize);
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 		}
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> 		callV(conn -&gt; appendRecordContents(conn, region, tmp),
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> 				<span class="jxr_string">"creating or adding to a recorded region"</span>);
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> addRegionData(Connection conn, <strong class="jxr_keyword">int</strong> regionID, <strong class="jxr_keyword">int</strong> extractionId,
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 			<strong class="jxr_keyword">int</strong> chunkLen, ByteArrayInputStream chunk) <strong class="jxr_keyword">throws</strong> SQLException {
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(ADD_REGION_DATA)) {
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> 			<em class="jxr_comment">// region_id, extraction_id, content, content_len,</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 			setArguments(
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 				s, regionID,  extractionId, read(chunk, chunkLen), chunkLen);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 					<strong class="jxr_keyword">return</strong> rs.getInt(<span class="jxr_string">"region_data_id"</span>);
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 				}
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 			}
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 		}
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"no row inserted"</span>);
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 	}
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> 
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">	 * The core of how to append content to a recording.</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">	 * @param conn</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">	 *            The connection, with a transaction open.</em>
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">	 * @param region</em>
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">	 *            The recording region owning the recording.</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">	 * @param contents</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">	 *            The bytes to append.</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">	 * @throws SQLException</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong.</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">	 * @see #appendRecordingContents(Region,int,byte[])</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> appendRecordContents(Connection conn, Region region,
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> 			byte[] contents) <strong class="jxr_keyword">throws</strong> SQLException {
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 		<strong class="jxr_keyword">int</strong> coreID = getRecordingCore(conn, region.core);
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 		<strong class="jxr_keyword">int</strong> regionID = getRecordingRegion(conn, coreID, region);
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 		<strong class="jxr_keyword">int</strong> lastExtractionId = getLastExtractionId(conn);
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 		appendRecordingContents(conn, regionID, lastExtractionId, contents);
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 	}
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 	@Override
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> 	<strong class="jxr_keyword">public</strong> byte[] getRecordingRegionContents(Region region)
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> 		<strong class="jxr_keyword">return</strong> callR(conn -&gt; getRecordingRegionContents(conn, region),
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 				<span class="jxr_string">"retrieving a recording region"</span>);
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> 	}
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> byte[] getRecordingRegionContents(Connection conn,
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 			Region region) <strong class="jxr_keyword">throws</strong> SQLException {
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 		<strong class="jxr_keyword">var</strong> accum = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			<strong class="jxr_keyword">int</strong> coreID = getRecordingCore(conn, region.core);
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> 			<strong class="jxr_keyword">int</strong> regionID = getRecordingRegion(conn, coreID, region);
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(FETCH_RECORDING)) {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 				<em class="jxr_comment">// region_id</em>
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 				setArguments(s, regionID);
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 					<strong class="jxr_keyword">while</strong> (rs.next()) {
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 						accum.write(rs.getBytes(<span class="jxr_string">"content"</span>));
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 					}
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 				}
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 			}
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 		} <strong class="jxr_keyword">catch</strong> (IOException | OutOfMemoryError e) {
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"BLOB sequence too large for Java"</span>, e);
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> 		}
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 		<strong class="jxr_keyword">return</strong> accum.toByteArray();
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	}
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 	@Override
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 	<strong class="jxr_keyword">public</strong> List&lt;CoreLocation&gt; getCoresWithStorage() <strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 		<strong class="jxr_keyword">return</strong> callR(conn -&gt; {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(GET_CORES_WITH_STORAGE);
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 					<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 				<strong class="jxr_keyword">var</strong> result = <strong class="jxr_keyword">new</strong> ArrayList&lt;CoreLocation&gt;();
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 					<strong class="jxr_keyword">int</strong> x = rs.getInt(<span class="jxr_string">"x"</span>);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 					<strong class="jxr_keyword">int</strong> y = rs.getInt(<span class="jxr_string">"y"</span>);
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 					<strong class="jxr_keyword">int</strong> p = rs.getInt(<span class="jxr_string">"processor"</span>);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 					result.add(<strong class="jxr_keyword">new</strong> CoreLocation(x, y, p));
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 				}
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 				<strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 			}
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 		}, <span class="jxr_string">"listing cores"</span>);
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 	}
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> 	@Override
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> 	<strong class="jxr_keyword">public</strong> List&lt;Integer&gt; getRegionsWithStorage(HasCoreLocation core)
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 		<strong class="jxr_keyword">return</strong> callR(conn -&gt; {
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(GET_REGIONS_WITH_STORAGE)) {
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 				setArguments(s, core.getX(), core.getY(), core.getP());
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 					<strong class="jxr_keyword">var</strong> result = <strong class="jxr_keyword">new</strong> ArrayList&lt;Integer&gt;();
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 					<strong class="jxr_keyword">while</strong> (rs.next()) {
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 						result.add(rs.getInt(<span class="jxr_string">"local_region_index"</span>));
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 					}
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> 					<strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 				}
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 			}
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> 		}, <span class="jxr_string">"listing regions for a core"</span>);
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> 	}
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> }
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 	@Override
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> extractRecordingContents(Region region, byte[] contents)
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<em class="jxr_comment">// Strip off any prefix and suffix added to make the read aligned</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 		byte[] tmp;
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">if</strong> (region.isAligned()) {
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 			tmp = contents;
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 			tmp = <strong class="jxr_keyword">new</strong> byte[region.realSize];
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> 			arraycopy(contents, region.initialIgnore, tmp, 0, region.realSize);
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 		}
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 		callV(conn -&gt; extractRecordContents(conn, region, tmp),
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 				<span class="jxr_string">"creating or adding to a recorded region"</span>);
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 	}
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">	 * The core of how to append content to a recording.</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">	 * @param conn</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">	 *            The connection, with a transaction open.</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">	 * @param region</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">	 *            The recording region owning the recording.</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">	 * @param contents</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">	 *            The bytes to append.</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">	 * @throws SQLException</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong.</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">	 * @see #extractRecordingContents(Region,int,byte[])</em>
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> extractRecordContents(Connection conn, Region region,
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 			byte[] contents) <strong class="jxr_keyword">throws</strong> SQLException {
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> 		<strong class="jxr_keyword">int</strong> coreID = getRecordingCore(conn, region.core);
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 		<strong class="jxr_keyword">int</strong> regionID = getRecordingRegion(conn, coreID, region);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 		<strong class="jxr_keyword">int</strong> lastExtractionId = getLastExtractionId(conn);
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 		extractRecordingContents(conn, regionID, lastExtractionId, contents);
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 	}
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 	@Override
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 	<strong class="jxr_keyword">public</strong> byte[] getRecordingRegionContents(Region region)
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 		<strong class="jxr_keyword">return</strong> callR(conn -&gt; getRecordingRegionContents(conn, region),
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 				<span class="jxr_string">"retrieving a recording region"</span>);
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 	}
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> byte[] getRecordingRegionContents(Connection conn,
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 			Region region) <strong class="jxr_keyword">throws</strong> SQLException {
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 		<strong class="jxr_keyword">var</strong> accum = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 			<strong class="jxr_keyword">int</strong> coreID = getRecordingCore(conn, region.core);
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 			<strong class="jxr_keyword">int</strong> regionID = getExistingRecordingRegion(conn, coreID, region);
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(FETCH_RECORDING)) {
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 				<em class="jxr_comment">// region_id</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 				setArguments(s, regionID);
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 					<strong class="jxr_keyword">while</strong> (rs.next()) {
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 						accum.write(rs.getBytes(<span class="jxr_string">"content"</span>));
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 					}
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 				}
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 			}
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 		} <strong class="jxr_keyword">catch</strong> (IOException | OutOfMemoryError e) {
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"BLOB sequence too large for Java"</span>, e);
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 		}
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		<strong class="jxr_keyword">return</strong> accum.toByteArray();
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 	}
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 	@Override
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 	<strong class="jxr_keyword">public</strong> List&lt;CoreLocation&gt; getCoresWithStorage() <strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 		<strong class="jxr_keyword">return</strong> callR(conn -&gt; {
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(GET_CORES_WITH_STORAGE);
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 					<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 				<strong class="jxr_keyword">var</strong> result = <strong class="jxr_keyword">new</strong> ArrayList&lt;CoreLocation&gt;();
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> 				<strong class="jxr_keyword">while</strong> (rs.next()) {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 					<strong class="jxr_keyword">int</strong> x = rs.getInt(<span class="jxr_string">"x"</span>);
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> 					<strong class="jxr_keyword">int</strong> y = rs.getInt(<span class="jxr_string">"y"</span>);
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> 					<strong class="jxr_keyword">int</strong> p = rs.getInt(<span class="jxr_string">"processor"</span>);
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 					result.add(<strong class="jxr_keyword">new</strong> CoreLocation(x, y, p));
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> 				}
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> 				<strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> 			}
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> 		}, <span class="jxr_string">"listing cores"</span>);
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> 	}
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> 	@Override
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 	<strong class="jxr_keyword">public</strong> List&lt;Integer&gt; getRegionsWithStorage(HasCoreLocation core)
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> 			<strong class="jxr_keyword">throws</strong> <a name="StorageException" href="../../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> 		<strong class="jxr_keyword">return</strong> callR(conn -&gt; {
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 			<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = conn.prepareStatement(GET_REGIONS_WITH_STORAGE)) {
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 				setArguments(s, core.getX(), core.getY(), core.getP());
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> rs = s.executeQuery()) {
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 					<strong class="jxr_keyword">var</strong> result = <strong class="jxr_keyword">new</strong> ArrayList&lt;Integer&gt;();
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 					<strong class="jxr_keyword">while</strong> (rs.next()) {
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 						result.add(rs.getInt(<span class="jxr_string">"local_region_index"</span>));
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 					}
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> 					<strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 				}
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> 			}
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> 		}, <span class="jxr_string">"listing regions for a core"</span>);
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> 	}
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2024 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

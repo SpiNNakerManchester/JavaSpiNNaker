@@ -375,20 +375,20 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the recording region IDs that have been recorded using buffering.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
+<dd>
+<div class="block">Work out exactly where is going to be downloaded.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
+<dd>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#getRecordingRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRecordingRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegion.html#getRecordingRegionDescriptors(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.front_end.download.request.Placement)">getRecordingRegionDescriptors(TransceiverInterface, Placement)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegion.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegion</a></dt>
 <dd>
 <div class="block">Reads the recording regions from the machine.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
-<dd>
-<div class="block">Work out exactly where is going to be downloaded.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
-<dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
-&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion(Placement, int)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRequest.html#getRequestDetails()">getRequestDetails()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.iobuf.<a href="uk/ac/manchester/spinnaker/front_end/iobuf/IobufRequest.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRequest</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/DownloadRegion.html#getSize()">getSize()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/DownloadRegion.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">DownloadRegion</a></dt>
@@ -682,7 +682,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData(BufferManagerStorage.Region, ByteBuffer)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
 <dd>
-<div class="block">Store the data retrieved from a region.</div>
+<div class="block">Store the data retrieved from a region
+
+ No guarantee is made about which thread will call this method.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData(BufferManagerStorage.Region, ByteBuffer)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
 <dd>
