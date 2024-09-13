@@ -17,7 +17,20 @@ package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.lang.System.arraycopy;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.*;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_DOWNLOAD_DATA;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_RECORDING_DATA;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORES_WITH_STORAGE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_DOWNLOAD;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_DOWNLOAD_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_LAST_EXTRACTION_ID;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_LOCATION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_RECORDING_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_RECORDING;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGIONS_WITH_STORAGE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_LOCATION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_DOWNLOAD_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_RECORDING_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_MOCK_EXTRACTION;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
