@@ -120,7 +120,7 @@ public class SQLiteBufferStorage
 	}
 
 	private static int getDownloadRegion(Connection conn, int coreID,
-										 Region region) throws SQLException {
+			Region region) throws SQLException {
 		try (var s = conn.prepareStatement(GET_DOWNLOAD_REGION)) {
 			// core_id, local_region_index
 			setArguments(s, coreID, region.regionIndex);
@@ -211,8 +211,9 @@ public class SQLiteBufferStorage
 		return nb;
 	}
 
-	private int addRecordingData(Connection conn, int regionID, int extractionId,
-			int chunkLen, ByteArrayInputStream chunk) throws SQLException {
+	private int addRecordingData(Connection conn, int regionID,
+			int extractionId, int chunkLen,
+			ByteArrayInputStream chunk) throws SQLException {
 		try (var s = conn.prepareStatement(ADD_RECORDING_DATA)) {
 			// region_id, extraction_id, content, content_len,
 			setArguments(
@@ -227,7 +228,7 @@ public class SQLiteBufferStorage
 	}
 
 	private int addDownloadData(Connection conn, int regionID, int extractionId,
-								 int chunkLen, ByteArrayInputStream chunk) throws SQLException {
+			int chunkLen, ByteArrayInputStream chunk) throws SQLException {
 		try (var s = conn.prepareStatement(ADD_DOWNLOAD_DATA)) {
 			// region_id, extraction_id, content, content_len,
 			setArguments(
@@ -286,7 +287,7 @@ public class SQLiteBufferStorage
 	}
 
 	private void addDownloadContents(Connection conn, Region region,
-									  byte[] contents) throws SQLException {
+			byte[] contents) throws SQLException {
 		int coreID = getRecordingCore(conn, region.core);
 		int regionID = getDownloadRegion(conn, coreID, region);
 		int lastExtractionId = getLastExtractionId(conn);
@@ -299,7 +300,7 @@ public class SQLiteBufferStorage
 
 	@Override
 	public byte[] getContents(Region region) throws StorageException {
-		if (region.isRecording){
+		if (region.isRecording) {
 			return callR(conn -> getRecordingContents(conn, region),
 				"retrieving a recording region");
 		} else {
@@ -329,8 +330,8 @@ public class SQLiteBufferStorage
 		return accum.toByteArray();
 	}
 
-	private static byte[] getDownloadContents(Connection conn,
-													 Region region) throws SQLException {
+	private static byte[] getDownloadContents(
+			Connection conn, Region region) throws SQLException {
 		var accum = new ByteArrayOutputStream();
 		try {
 			int coreID = getRecordingCore(conn, region.core);
