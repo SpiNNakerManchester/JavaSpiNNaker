@@ -134,7 +134,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			log.info("storing region data for {} R:{} from {} as {} bytes",
 					r.core, r.regionIndex, r.startAddress, data.remaining());
 			try {
-				database.extractRecordingContents(r, data);
+				database.addRecordingContents(r, data);
 				numWrites++;
 			} catch (StorageException e) {
 				log.error("failed to write to database", e);

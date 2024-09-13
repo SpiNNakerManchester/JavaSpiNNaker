@@ -148,7 +148,7 @@ class BufferedReceivingData {
 					data.remaining(), location.region,
 					location.asCoreLocation());
 		}
-		storage.extractRecordingContents(
+		storage.addRecordingContents(
 				new Region(location, location.region, NULL, 0, isRecording),
 				data);
 	}

@@ -33,25 +33,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * @author Donal Fellows
  */
 public interface BufferManagerStorage extends ProxyAwareStorage {
-	/**
-	 * Retrieves some bytes from the database. The bytes represent the contents
-	 * of a DSE region of a particular SpiNNaker core.
-	 *
-	 * @param region
-	 *            The region descriptor.
-	 * @return The region contents.
-	 * @throws IllegalArgumentException
-	 *             If there's no such saved region.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 * @throws UnsupportedOperationException
-	 *             This method is unsupported.
-	 * @deprecated Currently unsupported; underlying database structure absent
-	 */
-	@Deprecated
-	default byte[] getRegionContents(Region region) throws StorageException {
-		throw new UnsupportedOperationException();
-	}
 
 	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
@@ -65,7 +46,7 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	byte[] getRecordingRegionContents(Region region) throws StorageException;
+	byte[] getContents(Region region) throws StorageException;
 
 	/**
 	 * Removes some bytes from the database. The bytes represent the contents of
@@ -281,7 +262,7 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	void extractRecordingContents(Region region, byte[] contents)
+	void addRecordingContents(Region region, byte[] contents)
 			throws StorageException;
 
 	void insertMockExtraction() throws StorageException;
@@ -297,10 +278,10 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	default void extractRecordingContents(Region region, ByteBuffer contents)
+	default void addRecordingContents(Region region, ByteBuffer contents)
 			throws StorageException {
 		var ary = new byte[contents.remaining()];
 		contents.slice().get(ary);
-		extractRecordingContents(region, ary);
+		addRecordingContents(region, ary);
 	}
 }
