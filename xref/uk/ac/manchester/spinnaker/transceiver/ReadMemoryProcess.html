@@ -365,7 +365,7 @@
 <a class="jxr_linenumber" name="L357" href="#L357">357</a> 		<strong class="jxr_keyword">var</strong> buffer = <strong class="jxr_keyword">new</strong> byte[region.size];
 <a class="jxr_linenumber" name="L358" href="#L358">358</a> 		readMemory(region.core.asChipLocation(), region.startAddress,
 <a class="jxr_linenumber" name="L359" href="#L359">359</a> 				region.size, <strong class="jxr_keyword">new</strong> BufferAccumulator(buffer));
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> 		storage.extractRecordingContents(region, buffer);
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> 		storage.addRecordingContents(region, buffer);
 <a class="jxr_linenumber" name="L361" href="#L361">361</a> 	}
 <a class="jxr_linenumber" name="L362" href="#L362">362</a> }
 </pre>

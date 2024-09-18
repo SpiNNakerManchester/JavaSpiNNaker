@@ -359,6 +359,22 @@ int&nbsp;regionID)</code></th>
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#addRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">addRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+byte[]&nbsp;contents)</code></th>
+<td class="colLast">
+<div class="block">Extract some bytes to the database.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#addRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">addRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;contents)</code></th>
+<td class="colLast">
+<div class="block">Extract some bytes to the database.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#deleteRegionContents(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int)">deleteRegionContents</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 int&nbsp;region)</code></th>
@@ -369,22 +385,6 @@ int&nbsp;region)</code></th>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">extractRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
-byte[]&nbsp;contents)</code></th>
-<td class="colLast">
-<div class="block">Extract some bytes to the database.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">extractRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;contents)</code></th>
-<td class="colLast">
-<div class="block">Extract some bytes to the database.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#getAppId()">getAppId</a></span>()</code></th>
 <td class="colLast">
@@ -392,36 +392,27 @@ byte[]&nbsp;contents)</code></th>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>byte[]</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#getContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region)</code></th>
+<td class="colLast">
+<div class="block">Retrieves some bytes from the database.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#getCoresWithStorage()">getCoresWithStorage</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a list of all cores that have data stored in the database.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../ProxyInformation.html" title="class in uk.ac.manchester.spinnaker.storage">ProxyInformation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">ProxyAwareStorage.</span><code><span class="memberNameLink"><a href="../ProxyAwareStorage.html#getProxyInformation()">getProxyInformation</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the proxy information from the database.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>byte[]</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#getRecordingRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getRecordingRegionContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region)</code></th>
-<td class="colLast">
-<div class="block">Retrieves some bytes from the database.</div>
-</td>
-</tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default byte[]</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#getRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getRegionContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region)</code></th>
-<td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>
-<div class="deprecationComment">Currently unsupported; underlying database structure absent</div>
-</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="../RegionInfo.html" title="class in uk.ac.manchester.spinnaker.storage">RegionInfo</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#getRegionPointersAndContent(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionPointersAndContent</a></span>&#8203;(<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;xyp)</code></th>
 <td class="colLast">
@@ -430,14 +421,14 @@ byte[]&nbsp;contents)</code></th>
  Maps only regions with a none zero size.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/LinkedHashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">LinkedHashMap</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#getRegionSizes(uk.ac.manchester.spinnaker.machine.CoreLocation)">getRegionSizes</a></span>&#8203;(<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;xyp)</code></th>
 <td class="colLast">
 <div class="block">Get a map of region id to size for regions with a none zero size.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#getRegionsWithStorage(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getRegionsWithStorage</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
@@ -445,19 +436,19 @@ byte[]&nbsp;contents)</code></th>
  the database.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#getStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation)">getStartAddress</a></span>&#8203;(<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;xyp)</code></th>
 <td class="colLast">
 <div class="block">Gets the start address for the metadata on this core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#insertMockExtraction()">insertMockExtraction</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad</a></span>&#8203;(<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet,
 boolean&nbsp;loadSystemCores)</code></th>
@@ -465,14 +456,14 @@ boolean&nbsp;loadSystemCores)</code></th>
 <div class="block">Get a list of all cores that need to be done for a particular ethernet.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#listEthernetsToLoad()">listEthernetsToLoad</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a list of all ethernets that need to have DSE loading done on them.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#setRegionPointer(uk.ac.manchester.spinnaker.machine.CoreLocation,int,int)">setRegionPointer</a></span>&#8203;(<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;xyp,
 int&nbsp;regionNum,
@@ -481,7 +472,7 @@ int&nbsp;pointer)</code></th>
 <div class="block">Set the pointer for where to write the region data to.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">DSEStorage.</span><code><span class="memberNameLink"><a href="../DSEStorage.html#setStartAddress(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">setStartAddress</a></span>&#8203;(<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;xyp,
 <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;start)</code></th>
@@ -489,7 +480,7 @@ int&nbsp;pointer)</code></th>
 <div class="block">Record the start address for the metadata on this core.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#storeDSEContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">storeDSEContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 byte[]&nbsp;contents)</code></th>
@@ -499,7 +490,7 @@ byte[]&nbsp;contents)</code></th>
 </div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BufferManagerStorage.</span><code><span class="memberNameLink"><a href="../BufferManagerStorage.html#storeRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeRegionContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;contents)</code></th>
@@ -532,7 +523,7 @@ byte[]&nbsp;contents)</code></th>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#extractRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">extractRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#addRecordingContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">addRecordingContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region,
 byte[]&nbsp;contents)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -542,13 +533,13 @@ byte[]&nbsp;contents)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#getCoresWithStorage()">getCoresWithStorage</a></span>()</code></th>
+<td class="colFirst"><code>byte[]</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#getContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>byte[]</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#getRecordingRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">getRecordingRegionContents</a></span>&#8203;(<a href="../BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a>&nbsp;region)</code></th>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLiteBufferStorage.</span><code><span class="memberNameLink"><a href="../sqlite/SQLiteBufferStorage.html#getCoresWithStorage()">getCoresWithStorage</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
