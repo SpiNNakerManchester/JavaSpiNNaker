@@ -17,16 +17,20 @@ package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.lang.System.arraycopy;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_REGION_DATA;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.FETCH_RECORDING;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_DOWNLOAD_DATA;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_RECORDING_DATA;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORES_WITH_STORAGE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_DOWNLOAD;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_DOWNLOAD_REGION;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_LAST_EXTRACTION_ID;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_LOCATION;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_RECORDING_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_RECORDING;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGIONS_WITH_STORAGE;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_LOCATION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_DOWNLOAD_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_RECORDING_REGION;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_MOCK_EXTRACTION;
-import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_REGION;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -106,21 +110,21 @@ public class SQLiteBufferStorage
 
 	private static int getRecordingRegion(Connection conn, int coreID,
 			Region region) throws SQLException {
-		try (var s = conn.prepareStatement(GET_REGION)) {
+		try (var s = conn.prepareStatement(GET_RECORDING_REGION)) {
 			// core_id, local_region_index
 			setArguments(s, coreID, region.regionIndex);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt("region_id");
+					return rs.getInt("recording_region_id");
 				}
 			}
 		}
-		try (var s = conn.prepareStatement(INSERT_REGION)) {
+		try (var s = conn.prepareStatement(INSERT_RECORDING_REGION)) {
 			// core_id, local_region_index, address
-			setArguments(s, coreID, region.regionIndex, region.isRecording);
+			setArguments(s, coreID, region.regionIndex);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt("region_id");
+					return rs.getInt("recording_region_id");
 				}
 			}
 		}
@@ -128,14 +132,53 @@ public class SQLiteBufferStorage
 				"could not make or find recording region record");
 	}
 
-	private static int getExistingRecordingRegion(
-		Connection conn, int coreID, Region region) throws SQLException {
-		try (var s = conn.prepareStatement(GET_REGION)) {
+	private static int getDownloadRegion(Connection conn, int coreID,
+			Region region) throws SQLException {
+		try (var s = conn.prepareStatement(GET_DOWNLOAD_REGION)) {
 			// core_id, local_region_index
 			setArguments(s, coreID, region.regionIndex);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt("region_id");
+					return rs.getInt("download_region_id");
+				}
+			}
+		}
+		try (var s = conn.prepareStatement(INSERT_DOWNLOAD_REGION)) {
+			// core_id, local_region_index, address
+			setArguments(s, coreID, region.regionIndex);
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("download_region_id");
+				}
+			}
+		}
+		throw new IllegalStateException(
+			"could not make or find recording region record");
+	}
+
+	private static int getExistingRecordingRegion(
+		Connection conn, int coreID, Region region) throws SQLException {
+		try (var s = conn.prepareStatement(GET_RECORDING_REGION)) {
+			// core_id, local_region_index
+			setArguments(s, coreID, region.regionIndex);
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("recording_region_id");
+				}
+			}
+		}
+		throw new IllegalStateException(
+			"could not find recording region record");
+	}
+
+	private static int getExistingDownloadRegion(
+		Connection conn, int coreID, Region region) throws SQLException {
+		try (var s = conn.prepareStatement(GET_DOWNLOAD_REGION)) {
+			// core_id, local_region_index
+			setArguments(s, coreID, region.regionIndex);
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("download_region_id");
 				}
 			}
 		}
@@ -162,15 +205,6 @@ public class SQLiteBufferStorage
 			"Mocking Extraction");
 	}
 
-	private void extractRecordingContents(Connection conn, int regionID,
-			int lastExtractionId, byte[] content) throws SQLException {
-		int chunkLen = content.length;
-		var chunk = new ByteArrayInputStream(content);
-		log.debug("adding chunk of {} bytes to region data table for region {}",
-				chunkLen, regionID);
-		addRegionData(conn, regionID,  lastExtractionId, chunkLen, chunk);
-	}
-
 	private static byte[] read(ByteArrayInputStream chunk, int chunkLen)
 			throws SQLException {
 		var buffer = new byte[chunkLen];
@@ -190,15 +224,31 @@ public class SQLiteBufferStorage
 		return nb;
 	}
 
-	private int addRegionData(Connection conn, int regionID, int extractionId,
-			int chunkLen, ByteArrayInputStream chunk) throws SQLException {
-		try (var s = conn.prepareStatement(ADD_REGION_DATA)) {
+	private int addRecordingData(Connection conn, int regionID,
+			int extractionId, int chunkLen,
+			ByteArrayInputStream chunk) throws SQLException {
+		try (var s = conn.prepareStatement(ADD_RECORDING_DATA)) {
 			// region_id, extraction_id, content, content_len,
 			setArguments(
 				s, regionID,  extractionId, read(chunk, chunkLen), chunkLen);
 			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
-					return rs.getInt("region_data_id");
+					return rs.getInt("recording_data_id");
+				}
+			}
+		}
+		throw new IllegalStateException("no row inserted");
+	}
+
+	private int addDownloadData(Connection conn, int regionID, int extractionId,
+			int chunkLen, ByteArrayInputStream chunk) throws SQLException {
+		try (var s = conn.prepareStatement(ADD_DOWNLOAD_DATA)) {
+			// region_id, extraction_id, content, content_len,
+			setArguments(
+				s, regionID,  extractionId, read(chunk, chunkLen), chunkLen);
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return rs.getInt("download_data_id");
 				}
 			}
 		}
@@ -206,7 +256,7 @@ public class SQLiteBufferStorage
 	}
 
 	@Override
-	public void extractRecordingContents(Region region, byte[] contents)
+	public void addRecordingContents(Region region, byte[] contents)
 			throws StorageException {
 		// Strip off any prefix and suffix added to make the read aligned
 		byte[] tmp;
@@ -216,8 +266,13 @@ public class SQLiteBufferStorage
 			tmp = new byte[region.realSize];
 			arraycopy(contents, region.initialIgnore, tmp, 0, region.realSize);
 		}
-		callV(conn -> extractRecordContents(conn, region, tmp),
+		if (region.isRecording) {
+			callV(conn -> addRecordingContents(conn, region, tmp),
 				"creating or adding to a recorded region");
+		} else {
+			callV(conn -> addDownloadContents(conn, region, tmp),
+				"creating or adding to a recorded region");
+		}
 	}
 
 	/**
@@ -231,30 +286,70 @@ public class SQLiteBufferStorage
 	 *            The bytes to append.
 	 * @throws SQLException
 	 *             If anything goes wrong.
-	 * @see #extractRecordingContents(Region,int,byte[])
 	 */
-	private void extractRecordContents(Connection conn, Region region,
+	private void addRecordingContents(Connection conn, Region region,
 			byte[] contents) throws SQLException {
 		int coreID = getRecordingCore(conn, region.core);
 		int regionID = getRecordingRegion(conn, coreID, region);
 		int lastExtractionId = getLastExtractionId(conn);
-		extractRecordingContents(conn, regionID, lastExtractionId, contents);
+		int chunkLen = contents.length;
+		var chunk = new ByteArrayInputStream(contents);
+		log.debug("adding chunk of {} bytes to region data table for region {}",
+			chunkLen, regionID);
+		addRecordingData(conn, regionID,  lastExtractionId, chunkLen, chunk);
+	}
+
+	private void addDownloadContents(Connection conn, Region region,
+			byte[] contents) throws SQLException {
+		int coreID = getRecordingCore(conn, region.core);
+		int regionID = getDownloadRegion(conn, coreID, region);
+		int lastExtractionId = getLastExtractionId(conn);
+		int chunkLen = contents.length;
+		var chunk = new ByteArrayInputStream(contents);
+		log.debug("adding chunk of {} bytes to region data table for region {}",
+			chunkLen, regionID);
+		addDownloadData(conn, regionID,  lastExtractionId, chunkLen, chunk);
 	}
 
 	@Override
-	public byte[] getRecordingRegionContents(Region region)
-			throws StorageException {
-		return callR(conn -> getRecordingRegionContents(conn, region),
+	public byte[] getContents(Region region) throws StorageException {
+		if (region.isRecording) {
+			return callR(conn -> getRecordingContents(conn, region),
 				"retrieving a recording region");
+		} else {
+			return callR(conn -> getDownloadContents(conn, region),
+				"retrieving a recording region");
+		}
 	}
 
-	private static byte[] getRecordingRegionContents(Connection conn,
+	private static byte[] getRecordingContents(Connection conn,
 			Region region) throws SQLException {
 		var accum = new ByteArrayOutputStream();
 		try {
 			int coreID = getRecordingCore(conn, region.core);
 			int regionID = getExistingRecordingRegion(conn, coreID, region);
-			try (var s = conn.prepareStatement(FETCH_RECORDING)) {
+			try (var s = conn.prepareStatement(GET_RECORDING)) {
+				// region_id
+				setArguments(s, regionID);
+				try (var rs = s.executeQuery()) {
+					while (rs.next()) {
+						accum.write(rs.getBytes("content"));
+					}
+				}
+			}
+		} catch (IOException | OutOfMemoryError e) {
+			throw new RuntimeException("BLOB sequence too large for Java", e);
+		}
+		return accum.toByteArray();
+	}
+
+	private static byte[] getDownloadContents(
+			Connection conn, Region region) throws SQLException {
+		var accum = new ByteArrayOutputStream();
+		try {
+			int coreID = getRecordingCore(conn, region.core);
+			int regionID = getExistingDownloadRegion(conn, coreID, region);
+			try (var s = conn.prepareStatement(GET_DOWNLOAD)) {
 				// region_id
 				setArguments(s, regionID);
 				try (var rs = s.executeQuery()) {

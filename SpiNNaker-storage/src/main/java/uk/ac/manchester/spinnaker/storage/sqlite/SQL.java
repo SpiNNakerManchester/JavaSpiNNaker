@@ -49,15 +49,21 @@ abstract class SQL {
 	static final String GET_LOCATION = "SELECT core_id FROM core"
 			+ " WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
 
-	/** Create a region record. */
+	/** Create a recording region record. */
 	@Parameter("core_id")
 	@Parameter("local_region_index")
-	@Parameter("is_recording")
-	@ResultColumn("region_id")
-	static final String INSERT_REGION = "INSERT INTO "
-			+ "region(core_id, local_region_index, is_recording)"
-			+ " VALUES (?, ?, ?) RETURNING region_id";
+	@ResultColumn("recording_region_id")
+	static final String INSERT_RECORDING_REGION = "INSERT INTO"
+			+ " recording_region(core_id, local_region_index)"
+			+ " VALUES (?, ?) RETURNING recording_region_id";
 
+	/** Create a download region record. */
+	@Parameter("core_id")
+	@Parameter("local_region_index")
+	@ResultColumn("download_region_id")
+	static final String INSERT_DOWNLOAD_REGION = "INSERT INTO"
+			+ " download_region(core_id, local_region_index)"
+			+ " VALUES (?, ?) RETURNING download_region_id";
 
 	/** For testing create an extraction record.
 
@@ -68,12 +74,21 @@ abstract class SQL {
 			+ "extraction(run_timestep, n_run, n_loop, extract_time) "
 			+ "VALUES(12345, 1, NULL, 987654) RETURNING extraction_id ";
 
-	/** Find an existing region record. */
+	/** Find an existing recording region record. */
 	@Parameter("core_id")
 	@Parameter("local_region_index")
-	@ResultColumn("region_id")
-	static final String GET_REGION = "SELECT region_id FROM region WHERE "
-			+ "core_id = ? AND local_region_index = ? LIMIT 1";
+	@ResultColumn("recoding_region_id")
+	static final String GET_RECORDING_REGION = "SELECT recording_region_id"
+			+ " FROM recording_region "
+			+ " WHERE core_id = ? AND local_region_index = ? LIMIT 1";
+
+	/** Find an existing download region record. */
+	@Parameter("core_id")
+	@Parameter("local_region_index")
+	@ResultColumn("download_region_id")
+	static final String GET_DOWNLOAD_REGION = "SELECT download_region_id "
+			+ " FROM download_region"
+			+ " WHERE core_id = ? AND local_region_index = ? LIMIT 1";
 
 	/** Find the current extraction_id. */
 	@ResultColumn("max_id")
@@ -81,25 +96,46 @@ abstract class SQL {
 			"SELECT max(extraction_id) as max_id "
 			+ "FROM extraction LIMIT 1";
 
-	/** Create a region record. */
-	@Parameter("region_id")
+	/** Create a recoding data record. */
+	@Parameter("recording_region_id")
 	@Parameter("extraction_id")
 	@Parameter("content_to_add")
 	@Parameter("content_len")
-	@ResultColumn("region_data_id")
-	static final String ADD_REGION_DATA =
-			"INSERT INTO region_data(region_id, extraction_id, content, "
-				+ "content_len, missing_data) "
-				+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
-				+ "RETURNING region_data_id";
+	@ResultColumn("recording_data_id")
+	static final String ADD_RECORDING_DATA =
+		"INSERT INTO recording_data(recording_region_id, extraction_id, "
+			+ " content, content_len, missing_data) "
+			+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+			+ "RETURNING recording_data_id";
+
+	/** Create a recoding data record. */
+	@Parameter("download_region_id")
+	@Parameter("extraction_id")
+	@Parameter("content_to_add")
+	@Parameter("content_len")
+	@ResultColumn("download_data_id")
+	static final String ADD_DOWNLOAD_DATA =
+		"INSERT INTO download_data(download_region_id, extraction_id, "
+			+ " content, content_len, missing_data) "
+			+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+			+ "RETURNING download_data_id";
 
 	/** Fetch the current variable state of a region record. */
-	@Parameter("region_id")
+	@Parameter("recording_region_id")
 	@ResultColumn("content")
 	@ResultColumn("missing_data")
-	static final String FETCH_RECORDING =
-			"SELECT content, missing_data FROM region_data "
-				+ "WHERE region_id = ? ORDER BY extraction_id ASC";
+	static final String GET_RECORDING =
+			"SELECT content, missing_data FROM recording_data "
+				+ "WHERE recording_region_id = ? ORDER BY extraction_id ASC";
+
+	/** Fetch the current variable state of a region record. */
+	@Parameter("download_region_id")
+	@ResultColumn("content")
+	@ResultColumn("missing_data")
+	static final String GET_DOWNLOAD =
+		"SELECT content, missing_data FROM download_data "
+			+ "WHERE download_region_id = ? ORDER BY extraction_id DESC "
+			+ "LIMIT 1";
 
 	/** List the cores with storage. */
 	@Parameters({})
@@ -107,8 +143,10 @@ abstract class SQL {
 	@ResultColumn("y")
 	@ResultColumn("processor")
 	static final String GET_CORES_WITH_STORAGE =
-			"SELECT DISTINCT x, y, processor FROM region_view"
-					+ " ORDER BY x, y, processor";
+			"SELECT DISTINCT x, y, processor FROM recording_data_view "
+			+ "UNION "
+			+ "SELECT DISTINCT x, y, processor FROM download_data_view "
+			+ "ORDER BY x, y, processor;";
 
 	/** List the regions of a core with storage. */
 	@Parameter("x")
@@ -116,9 +154,16 @@ abstract class SQL {
 	@Parameter("processor")
 	@ResultColumn("local_region_index")
 	static final String GET_REGIONS_WITH_STORAGE =
-			"SELECT DISTINCT local_region_index FROM region_view"
-					+ " WHERE x = ? AND y = ? AND processor = ?"
-					+ " ORDER BY local_region_index";
+			"SELECT DISTINCT local_region_index FROM "
+			+ "("
+			+ "SELECT local_region_index, x, y, processor "
+			+ "FROM recording_region_view "
+			+ "UNION "
+			+ "SELECT local_region_index, x, y, processor "
+			+ "FROM download_region_view "
+			+ ") "
+			+ "WHERE x = ? AND y = ? AND processor = ? "
+			+ "ORDER BY local_region_index";
 
 	// -----------------------------------------------------------------
 	// Data loading ----------------------------------------------------
