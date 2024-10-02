@@ -55,7 +55,7 @@ limitations under the License.
 		<spring.security.version>6.1.4</spring.security.version>
 
 		<cxf.version>4.0.3</cxf.version>
-		<jackson.version>2.15.2</jackson.version>
+		<jackson.version>2.18.0</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.46.1.0</sqlite.version>
 		<keycloak.version>23.0.3</keycloak.version>
