@@ -25,6 +25,9 @@ public class SessionResponse {
 	/** The ID of the session. */
 	private Integer id;
 
+	/** A count of how much resource has been used by the job. */
+	private ResourceUsage resourceUsage;
+
 	/**
 	 * Get the ID of the session.
 	 *
@@ -42,6 +45,25 @@ public class SessionResponse {
 	 */
 	public void setId(final Integer id) {
 		this.id = id;
+	}
+
+	/**
+	 * Get the count of how much resource has been used by the job.
+	 *
+	 * @return the resourceUsage
+	 */
+	public ResourceUsage getResourceUsage() {
+		return resourceUsage;
+	}
+
+	/**
+	 * Sets the resourceUsage.
+	 *
+	 * @param resourceUsage
+	 *            the resourceUsage to set
+	 */
+	public void setResourceUsage(final ResourceUsage resourceUsage) {
+		this.resourceUsage = resourceUsage;
 	}
 
 	/**

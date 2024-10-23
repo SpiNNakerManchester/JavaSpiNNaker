@@ -53,6 +53,7 @@ import uk.ac.manchester.spinnaker.alloc.nmpi.Project;
 import uk.ac.manchester.spinnaker.alloc.nmpi.ResourceUsage;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest;
 import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate;
+import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResponse;
 
 /**
  * Manages user quotas.
@@ -371,7 +372,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		return new QuotaInfo(total, units);
 	}
 
-	final Optional<String> mayCreateNMPISession(String collab) {
+	final Optional<String> checkQuota(String collab) {
 		// Read collab from NMPI; fail if not there
 		var projects = nmpi.getProjects(STATUS_ACCEPTED, collab);
 		var info = parseQuotaData(projects);
@@ -390,10 +391,13 @@ public class QuotaManager extends DatabaseAwareBean {
 		return Optional.empty();
 	}
 
-	void associateNMPISession(int jobId, String user, String collab,
-			String quotaUnits) {
-		var sessionId = nmpi.createSession(collab, user);
+	final SessionResponse createSession(String collab, String user) {
+		var session = nmpi.createSession(collab, user);
+		checkQuota(collab);
+		return session;
+	}
 
+	void associateNMPISession(int jobId, int sessionId, String quotaUnits) {
 		// Associate NMPI session with Job in the database
 		try (var c = getConnection();
 				var setSession = c.update(SET_JOB_SESSION)) {
@@ -485,7 +489,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		// This is now a collab so check there instead
-		var quotaUnits = mayCreateNMPISession(job.getCollab());
+		var quotaUnits = checkQuota(job.getCollab());
 		if (quotaUnits.isEmpty()) {
 			return Optional.empty();
 		}
@@ -702,12 +706,12 @@ final class NMPI {
 		return proxy.getProjects(apiKey, status, collab);
 	}
 
-	int createSession(String collab, String user) {
+	SessionResponse createSession(String collab, String user) {
 		var request = new SessionRequest();
 		request.setCollab(collab);
 		request.setHardwarePlatform(platform);
 		request.setUserId(user);
-		return proxy.createSession(apiKey, request).getId();
+		return proxy.createSession(apiKey, request);
 	}
 
 	void setSessionStatusAndResources(int sessionId, String status,
