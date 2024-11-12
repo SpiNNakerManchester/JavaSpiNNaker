@@ -1079,7 +1079,8 @@ public class BMPController extends DatabaseAwareBean {
 				try {
 					control = controllerFactory.create(machine, coords, boards);
 				} catch (Exception e) {
-					log.error("Could not create control for BMP '{}'", bmpId, e);
+					log.error("Could not create control for BMP '{}'",
+							bmpId, e);
 				}
 			}
 			return control;
