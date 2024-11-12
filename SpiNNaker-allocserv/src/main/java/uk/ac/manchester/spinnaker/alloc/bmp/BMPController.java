@@ -188,28 +188,43 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
+	private Worker makeWorker(Row row, Connection c) {
+		int bmpId = null;
+		try (var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
+			var m = spallocCore.getMachine(row.getString("machine_name"),
+					true);
+			var coords = new BMPCoords(row.getInt("cabinet"),
+					row.getInt("frame"));
+			bmpId = row.getInt("bmp_id");
+			var boards = new HashMap<BMPBoard, String>();
+			getBoards.call(r -> {
+				boards.put(new BMPBoard(r.getInt("board_num")),
+						r.getString("address"));
+				return null;
+			}, bmpId);
+			var control = controllerFactory.create(m.get(), coords, boards);
+			var worker = new Worker(control, bmpId);
+			workers.put(row.getInt("bmp_id"), worker);
+			return worker;
+		} catch (Exception e) {
+			try (var getBoards = c.query(GET_ALL_BMP_BOARDS);
+					var disableBoard = c.update(SET_FUNCTIONING_FIELD)) {
+				getBoards.call(r -> {
+					log.error("Disabling board " + r.getInt("board_num")
+						+ " as BMP " + bmpId + " is failing");
+					disableBoard.call(false, r.getInt("board_id"));
+					return null;
+				}, bmpId);
+			}
+		}
+	}
+
 	private List<Worker> makeWorkers() {
 		// Make workers
 		try (var c = getConnection();
-				var getBmps = c.query(GET_ALL_BMPS);
-				var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
-			return c.transaction(false, () -> getBmps.call(row -> {
-				var m = spallocCore.getMachine(row.getString("machine_name"),
-						true);
-				var coords = new BMPCoords(row.getInt("cabinet"),
-						row.getInt("frame"));
-				var boards = new HashMap<BMPBoard, String>();
-				var bmpId = row.getInt("bmp_id");
-				getBoards.call(r -> {
-					boards.put(new BMPBoard(r.getInt("board_num")),
-							r.getString("address"));
-					return null;
-				}, bmpId);
-				var control = controllerFactory.create(m.get(), coords, boards);
-				var worker = new Worker(control, bmpId);
-				workers.put(row.getInt("bmp_id"), worker);
-				return worker;
-			}));
+				var getBmps = c.query(GET_ALL_BMPS);) {
+			return c.transaction(true, () -> getBmps.call(
+					row -> makeWorker(row, c)));
 		}
 	}
 
