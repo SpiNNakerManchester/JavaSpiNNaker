@@ -166,8 +166,10 @@ public class BMPController extends DatabaseAwareBean {
 		controllerFactory = controllerFactoryBean::getObject;
 		allocator.setBMPController(this);
 
+		// We do the making of workers later in tests
+		List<Worker> madeWorkers = null;
 		if (!serviceControl.isUseDummyBMP()) {
-			makeWorkers();
+			madeWorkers = makeWorkers();
 		}
 
 		// Set the pool size to match the number of workers
@@ -179,48 +181,34 @@ public class BMPController extends DatabaseAwareBean {
 		sched.initialize();
 
 		// And now use the scheduler
-		for (var worker : workers.values()) {
-			scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
-		}
-	}
-
-	private Integer makeWorker(Row row, Connection c) {
-		int bmpId = 0;
-		try (var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
-			var m = spallocCore.getMachine(row.getString("machine_name"),
-					true);
-			var coords = new BMPCoords(row.getInt("cabinet"),
-					row.getInt("frame"));
-			bmpId = row.getInt("bmp_id");
-			var boards = new HashMap<BMPBoard, String>();
-			getBoards.call(r -> {
-				boards.put(new BMPBoard(r.getInt("board_num")),
-						r.getString("address"));
-				return null;
-			}, bmpId);
-			var control = controllerFactory.create(m.get(), coords, boards);
-			var worker = new Worker(control, bmpId);
-			workers.put(row.getInt("bmp_id"), worker);
-		} catch (Exception e) {
-			try (var getBoards = c.query(GET_ALL_BMP_BOARDS);
-					var disableBoard = c.update(SET_FUNCTIONING_FIELD)) {
-				getBoards.call(r -> {
-					log.error("Disabling board " + r.getInt("board_num")
-						+ " as BMP " + row.getInt("bmp_id") + " is failing");
-					disableBoard.call(false, r.getInt("board_id"));
-					return null;
-				}, bmpId);
+		if (madeWorkers != null) {
+			for (var worker : madeWorkers) {
+				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
 			}
 		}
-		return 0;
 	}
 
-	private void makeWorkers() {
+	private List<Worker> makeWorkers() {
 		// Make workers
 		try (var c = getConnection();
-				var getBmps = c.query(GET_ALL_BMPS);) {
-			c.transaction(true, () -> getBmps.call(
-					row -> makeWorker(row, c)));
+				var getBmps = c.query(GET_ALL_BMPS);
+				var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
+			return c.transaction(false, () -> getBmps.call(row -> {
+				var m = spallocCore.getMachine(row.getString("machine_name"),
+						true);
+				var coords = new BMPCoords(row.getInt("cabinet"),
+						row.getInt("frame"));
+				var boards = new HashMap<BMPBoard, String>();
+				var bmpId = row.getInt("bmp_id");
+				getBoards.call(r -> {
+					boards.put(new BMPBoard(r.getInt("board_num")),
+							r.getString("address"));
+					return null;
+				}, bmpId);
+				var worker = new Worker(m.get(), coords, boards, bmpId);
+				workers.put(row.getInt("bmp_id"), worker);
+				return worker;
+			}));
 		}
 	}
 
@@ -1065,16 +1053,36 @@ public class BMPController extends DatabaseAwareBean {
 	/** A worker of a given BMP. */
 	private final class Worker implements Runnable {
 		/** What are we controlling? */
-		private final SpiNNakerControl control;
+		private SpiNNakerControl control;
+
+		private final SpallocAPI.Machine machine;
+
+		private final BMPCoords coords;
+
+		private final Map<BMPBoard, String> boards;
 
 		/** Which boards are we looking at? */
 		private final int bmpId;
 
-		Worker(SpiNNakerControl control, int bmpId) {
-			this.control = control;
+		Worker(SpallocAPI.Machine machine, BMPCoords coords,
+				Map<BMPBoard, String> boards, int bmpId) {
+			this.machine = machine;
+			this.coords = coords;
+			this.boards = boards;
 			this.bmpId = bmpId;
 
 			log.debug("Created worker for boards {}", bmpId);
+		}
+
+		private SpiNNakerControl getControl() {
+			if (control == null) {
+				try {
+					control = controllerFactory.create(machine, coords, boards);
+				} catch (Exception e) {
+					log.error("Could not create control for BMP '{}'", bmpId, e);
+				}
+			}
+			return control;
 		}
 
 		/**
@@ -1087,7 +1095,7 @@ public class BMPController extends DatabaseAwareBean {
 			try {
 				var changes = getRequestedOperations();
 				for (var change : changes) {
-					change.processRequest(control);
+					change.processRequest(getControl());
 				}
 			} catch (Exception e) {
 				log.error("unhandled exception for BMP '{}'", bmpId, e);
