@@ -530,10 +530,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			String nmpiCollab, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
-		var quotaUnits = quotaManager.mayCreateNMPISession(nmpiCollab);
-		if (quotaUnits.isEmpty()) {
-			return Optional.empty();
-		}
+		var session = quotaManager.createSession(nmpiCollab, owner);
+		var quotaUnits = session.getResourceUsage().getUnits();
 
 		// Use the Collab name as the group, as it should exist
 		var job = execute(conn -> createJobInGroup(
@@ -545,8 +543,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return job;
 		}
 
-		quotaManager.associateNMPISession(
-				job.get().getId(), owner, nmpiCollab, quotaUnits.get());
+		quotaManager.associateNMPISession(job.get().getId(), session.getId(),
+				quotaUnits);
 
 		// Return the job created
 		return job;
