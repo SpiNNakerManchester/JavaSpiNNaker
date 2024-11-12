@@ -81,6 +81,6 @@ public class SessionResponse {
 	 */
 	@JsonAnySetter
 	public void set(final String name, final Object value) {
-		System.err.println("Ignoring unknown property: " + name + " = " + value);
+		// Ignore any other values
 	}
 }
