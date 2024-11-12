@@ -17,10 +17,13 @@
 package uk.ac.manchester.spinnaker.alloc.nmpi;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 /**
  * A NMPI session response.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionResponse {
 	/** The ID of the session. */
 	private Integer id;
@@ -78,6 +81,6 @@ public class SessionResponse {
 	 */
 	@JsonAnySetter
 	public void set(final String name, final Object value) {
-		// Ignore any other values
+		System.err.println("Ignoring unknown property: " + name + " = " + value);
 	}
 }
