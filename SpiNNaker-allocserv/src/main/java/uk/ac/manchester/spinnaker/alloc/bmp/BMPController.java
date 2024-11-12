@@ -166,10 +166,8 @@ public class BMPController extends DatabaseAwareBean {
 		controllerFactory = controllerFactoryBean::getObject;
 		allocator.setBMPController(this);
 
-		// We do the making of workers later in tests
-		List<Worker> madeWorkers = null;
 		if (!serviceControl.isUseDummyBMP()) {
-			madeWorkers = makeWorkers();
+			makeWorkers();
 		}
 
 		// Set the pool size to match the number of workers
@@ -181,15 +179,13 @@ public class BMPController extends DatabaseAwareBean {
 		sched.initialize();
 
 		// And now use the scheduler
-		if (madeWorkers != null) {
-			for (var worker : madeWorkers) {
-				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
-			}
+		for (var worker : workers.values()) {
+			scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
 		}
 	}
 
-	private Worker makeWorker(Row row, Connection c) {
-		int bmpId = null;
+	private Integer makeWorker(Row row, Connection c) {
+		int bmpId = 0;
 		try (var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
 			var m = spallocCore.getMachine(row.getString("machine_name"),
 					true);
@@ -205,25 +201,25 @@ public class BMPController extends DatabaseAwareBean {
 			var control = controllerFactory.create(m.get(), coords, boards);
 			var worker = new Worker(control, bmpId);
 			workers.put(row.getInt("bmp_id"), worker);
-			return worker;
 		} catch (Exception e) {
 			try (var getBoards = c.query(GET_ALL_BMP_BOARDS);
 					var disableBoard = c.update(SET_FUNCTIONING_FIELD)) {
 				getBoards.call(r -> {
 					log.error("Disabling board " + r.getInt("board_num")
-						+ " as BMP " + bmpId + " is failing");
+						+ " as BMP " + row.getInt("bmp_id") + " is failing");
 					disableBoard.call(false, r.getInt("board_id"));
 					return null;
 				}, bmpId);
 			}
 		}
+		return 0;
 	}
 
-	private List<Worker> makeWorkers() {
+	private void makeWorkers() {
 		// Make workers
 		try (var c = getConnection();
 				var getBmps = c.query(GET_ALL_BMPS);) {
-			return c.transaction(true, () -> getBmps.call(
+			c.transaction(true, () -> getBmps.call(
 					row -> makeWorker(row, c)));
 		}
 	}
