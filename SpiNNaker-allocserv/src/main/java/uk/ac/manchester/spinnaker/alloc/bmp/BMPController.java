@@ -205,8 +205,7 @@ public class BMPController extends DatabaseAwareBean {
 							r.getString("address"));
 					return null;
 				}, bmpId);
-				var control = controllerFactory.create(m.get(), coords, boards);
-				var worker = new Worker(control, bmpId);
+				var worker = new Worker(m.get(), coords, boards, bmpId);
 				workers.put(row.getInt("bmp_id"), worker);
 				return worker;
 			}));
@@ -1054,16 +1053,37 @@ public class BMPController extends DatabaseAwareBean {
 	/** A worker of a given BMP. */
 	private final class Worker implements Runnable {
 		/** What are we controlling? */
-		private final SpiNNakerControl control;
+		private SpiNNakerControl control;
+
+		private final SpallocAPI.Machine machine;
+
+		private final BMPCoords coords;
+
+		private final Map<BMPBoard, String> boards;
 
 		/** Which boards are we looking at? */
 		private final int bmpId;
 
-		Worker(SpiNNakerControl control, int bmpId) {
-			this.control = control;
+		Worker(SpallocAPI.Machine machine, BMPCoords coords,
+				Map<BMPBoard, String> boards, int bmpId) {
+			this.machine = machine;
+			this.coords = coords;
+			this.boards = boards;
 			this.bmpId = bmpId;
 
 			log.debug("Created worker for boards {}", bmpId);
+		}
+
+		private SpiNNakerControl getControl() {
+			if (control == null) {
+				try {
+					control = controllerFactory.create(machine, coords, boards);
+				} catch (Exception e) {
+					log.error("Could not create control for BMP '{}'",
+							bmpId, e);
+				}
+			}
+			return control;
 		}
 
 		/**
@@ -1076,7 +1096,7 @@ public class BMPController extends DatabaseAwareBean {
 			try {
 				var changes = getRequestedOperations();
 				for (var change : changes) {
-					change.processRequest(control);
+					change.processRequest(getControl());
 				}
 			} catch (Exception e) {
 				log.error("unhandled exception for BMP '{}'", bmpId, e);
