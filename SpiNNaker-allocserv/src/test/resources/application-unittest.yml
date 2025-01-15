@@ -15,7 +15,7 @@
 # These are just the settings that are changed during testing
 logging:
   level:
-    root: DEBUG
+    root: INFO
 
 spalloc:
   pause: true
