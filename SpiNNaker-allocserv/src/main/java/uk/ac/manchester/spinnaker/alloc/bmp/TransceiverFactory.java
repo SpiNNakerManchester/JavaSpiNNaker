@@ -295,7 +295,9 @@ public class TransceiverFactory
 			@Override
 			public void setFactory(TestTransceiverFactory factory) {
 				testFactory = factory;
-				txrxMap.clear();
+				synchronized (txrxMap) {
+					txrxMap.clear();
+				}
 			}
 		};
 	}

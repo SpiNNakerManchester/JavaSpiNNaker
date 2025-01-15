@@ -140,7 +140,7 @@ public abstract class ControllerUtils {
 		 * @param viewName
 		 *            The name of the view that this class will make.
 		 */
-		public ViewFactory(@CompileTimeConstant String viewName) {
+		public ViewFactory(@CompileTimeConstant final String viewName) {
 			view = viewName;
 		}
 
