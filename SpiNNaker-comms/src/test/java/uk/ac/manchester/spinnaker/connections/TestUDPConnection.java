@@ -47,7 +47,7 @@ public class TestUDPConnection {
 
 	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
-	private static final Integer TIMEOUT = 10000;
+	private static final Integer TIMEOUT = 1000;
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
