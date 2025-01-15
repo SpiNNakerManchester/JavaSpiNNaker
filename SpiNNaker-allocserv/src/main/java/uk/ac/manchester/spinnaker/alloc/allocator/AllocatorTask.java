@@ -185,7 +185,8 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private boolean update(int jobId, JobState sourceState,
 			JobState targetState, Connection c) {
-		log.debug("Updating job {} from {} to {}", jobId, sourceState, targetState);
+		log.debug("Updating job {} from {} to {}", jobId, sourceState,
+				targetState);
 		try (var getChangeStatus = c.query(COUNT_CHANGES_FOR_JOB);
 				var setJobState = c.update(SET_STATE_PENDING);
 				var setJobDestroyed = c.update(SET_STATE_DESTROYED);
