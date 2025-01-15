@@ -660,9 +660,9 @@ public abstract class SQLQueries {
 					+ "WHERE board_id = :board_id";
 
 	/** Delete an allocation task. */
-	@Parameter("request_id")
+	@Parameter("job_id")
 	protected static final String DELETE_TASK =
-			"DELETE FROM job_request WHERE req_id = :request_id";
+			"DELETE FROM job_request WHERE job_id = :job_id";
 
 	/** Find a single free board. */
 	@Parameter("machine_id")

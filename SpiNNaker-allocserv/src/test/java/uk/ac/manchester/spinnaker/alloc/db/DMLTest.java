@@ -178,7 +178,7 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_TASK)) {
 			c.transaction(() -> {
-				assertEquals(List.of("request_id"), u.getParameters());
+				assertEquals(List.of("job_id"), u.getParameters());
 				assertEquals(0, u.call(NO_JOB));
 			});
 		}
