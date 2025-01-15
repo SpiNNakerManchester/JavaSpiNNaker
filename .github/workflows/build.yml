@@ -154,3 +154,5 @@ jobs:
       run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
     - name: "Check: CITATION.cff validity"
       uses: dieghernan/cff-validator@v3
+	  with:
+	    install-r: true
