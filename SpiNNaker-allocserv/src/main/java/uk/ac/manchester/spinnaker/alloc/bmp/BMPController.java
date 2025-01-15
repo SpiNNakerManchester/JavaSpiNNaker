@@ -1190,6 +1190,12 @@ public class BMPController extends DatabaseAwareBean {
 		void prepare();
 
 		/**
+		 * Reset the transceivers stored in the workers after installing a new
+		 * transceiver.
+		 */
+		void resetTransceivers();
+
+		/**
 		 * The core of the scheduler.
 		 *
 		 * @param millis
@@ -1251,6 +1257,13 @@ public class BMPController extends DatabaseAwareBean {
 			@Override
 			public void prepare() {
 				makeWorkers();
+			}
+
+			@Override
+			public void resetTransceivers() {
+				for (var worker : workers.values()) {
+					worker.control = null;
+				}
 			}
 
 			@Override

@@ -63,6 +63,13 @@ public interface SupportQueries {
 			"SELECT COUNT(*) AS cnt FROM job_request "
 					+ "JOIN jobs USING (job_id) WHERE job_state = :job_state";
 
+	/** Count the active requests for a job. */
+	@Parameter("job_id")
+	@ResultColumn("cnt")
+	@SingleRowResult
+	String TEST_COUNT_REQUESTS_FOR_JOB =
+			"SELECT COUNT(*) AS cnt FROM job_request WHERE job_id = :job_id";
+
 	/** Count the active power change requests. */
 	@ResultColumn("cnt")
 	@SingleRowResult
