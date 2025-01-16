@@ -185,10 +185,13 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private boolean update(int jobId, JobState sourceState,
 			JobState targetState, Connection c) {
+		log.debug("Updating job {} from {} to {}", jobId, sourceState,
+				targetState);
 		try (var getChangeStatus = c.query(COUNT_CHANGES_FOR_JOB);
 				var setJobState = c.update(SET_STATE_PENDING);
 				var setJobDestroyed = c.update(SET_STATE_DESTROYED);
-				var deleteChanges = c.update(DELETE_PENDING)) {
+				var deleteChanges = c.update(DELETE_PENDING);
+				var deleteTask = c.update(DELETE_TASK)) {
 			// Count pending changes for this state change
 			var status = getChangeStatus.call1(ChangeStatus::new,
 					jobId, sourceState, targetState).orElseThrow(
@@ -234,6 +237,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			// If there are no more pending changes and no errors,
 			// set the job state to the target state
 			log.debug("Job {} moving to state {}", jobId, targetState);
+
+			// If destroyed, we don't need to set the state as it will be gone
 			if (targetState == DESTROYED) {
 				int rows = setJobDestroyed.call(jobId);
 				if (rows != 1) {
@@ -241,6 +246,14 @@ public class AllocatorTask extends DatabaseAwareBean
 							+ "destroy in state update: {}", rows);
 				}
 				return rows > 0;
+
+			// If ready, we can now delete the job request too
+			} else if (targetState == READY) {
+				int rows = deleteTask.call(jobId);
+				if (rows != 1) {
+					log.warn("unexpected number of rows affected by ready in "
+							+ "state update: {}", rows);
+				}
 			}
 
 			return setJobState.call(targetState, jobId) > 0;
@@ -387,9 +400,6 @@ public class AllocatorTask extends DatabaseAwareBean
 		/** Get the list of allocation tasks for jobs in a given state. */
 		private final Query getTasks;
 
-		/** Delete an allocation task. */
-		private final Update delete;
-
 		/** Find a single free board. */
 		private final Query findFreeBoard;
 
@@ -439,7 +449,6 @@ public class AllocatorTask extends DatabaseAwareBean
 			super(conn);
 			bumpImportance = conn.update(BUMP_IMPORTANCE);
 			getTasks = conn.query(getAllocationTasks);
-			delete = conn.update(DELETE_TASK);
 			findFreeBoard = conn.query(FIND_FREE_BOARD);
 			getRectangles = conn.query(findRectangle);
 			getRectangleAt = conn.query(findRectangleAt);
@@ -455,7 +464,6 @@ public class AllocatorTask extends DatabaseAwareBean
 			super.close();
 			bumpImportance.close();
 			getTasks.close();
-			delete.close();
 			findFreeBoard.close();
 			getRectangles.close();
 			getRectangleAt.close();
@@ -642,7 +650,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			int maxImportance = -1;
 			log.trace("Allocate running");
 			var allocations = new Allocations();
-			for (AllocTask task : sql.getTasks.call(AllocTask::new, QUEUED)) {
+			var tasks = sql.getTasks.call(AllocTask::new, QUEUED);
+			log.debug("allocate for {} tasks", tasks.size());
+			for (AllocTask task : tasks) {
 				if (task.importance > maxImportance) {
 					maxImportance = task.importance;
 				} else if (task.importance < maxImportance
@@ -651,10 +661,6 @@ public class AllocatorTask extends DatabaseAwareBean
 					continue;
 				}
 				var handled = task.allocate(sql);
-				// If we handled it, delete the request
-				if (handled.size() > 0) {
-					sql.delete.call(task.id);
-				}
 				allocations.addAll(task.jobId, handled);
 				log.debug("allocate for {} (job {}): {}", task.id,
 						task.jobId, handled);
