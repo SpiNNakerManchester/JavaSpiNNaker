@@ -210,10 +210,10 @@ public class AdminImpl implements AdminAPI {
 		log.warn("CALLED updateUser({})", providedUser.getUserName());
 		var adminUser = security.getUserPrincipal().getName();
 		providedUser.setUserId(null);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		return userManager
 				.updateUser(id, providedUser, adminUser,
-						m -> ub.build(m.getGroupId()))
+						m -> ub.build(m.getUserId()))
 				.orElseThrow(AdminImpl::noUser).sanitise();
 	}
 
