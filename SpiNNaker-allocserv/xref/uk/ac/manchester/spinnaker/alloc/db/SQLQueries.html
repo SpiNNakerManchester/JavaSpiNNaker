@@ -668,9 +668,9 @@
 <a class="jxr_linenumber" name="L660" href="#L660">660</a> 					+ <span class="jxr_string">"WHERE board_id = :board_id"</span>;
 <a class="jxr_linenumber" name="L661" href="#L661">661</a> 
 <a class="jxr_linenumber" name="L662" href="#L662">662</a> 	<em class="jxr_javadoccomment">/** Delete an allocation task. */</em>
-<a class="jxr_linenumber" name="L663" href="#L663">663</a> 	@Parameter(<span class="jxr_string">"request_id"</span>)
+<a class="jxr_linenumber" name="L663" href="#L663">663</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
 <a class="jxr_linenumber" name="L664" href="#L664">664</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DELETE_TASK =
-<a class="jxr_linenumber" name="L665" href="#L665">665</a> 			<span class="jxr_string">"DELETE FROM job_request WHERE req_id = :request_id"</span>;
+<a class="jxr_linenumber" name="L665" href="#L665">665</a> 			<span class="jxr_string">"DELETE FROM job_request WHERE job_id = :job_id"</span>;
 <a class="jxr_linenumber" name="L666" href="#L666">666</a> 
 <a class="jxr_linenumber" name="L667" href="#L667">667</a> 	<em class="jxr_javadoccomment">/** Find a single free board. */</em>
 <a class="jxr_linenumber" name="L668" href="#L668">668</a> 	@Parameter(<span class="jxr_string">"machine_id"</span>)
@@ -2700,6 +2700,6 @@
 <a class="jxr_linenumber" name="L2692" href="#L2692">2692</a> }
 </pre>
 <hr/>
-<div id="footer">© 2018–2024 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
+<div id="footer">© 2018–2025 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
 </body>
 </html>
