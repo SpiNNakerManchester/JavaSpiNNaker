@@ -178,7 +178,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		}
 	}
 
-	private static void makeUser(Connection c) {
+	protected static void makeUser(Connection c) {
 		try (var u = c.update(INSERT_USER)) {
 			u.call(USER, USER_NAME, BASIC, true);
 		}
