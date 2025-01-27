@@ -353,6 +353,9 @@ public class UserControl extends DatabaseAwareBean {
 	 *
 	 * @param user
 	 *            The description of the user to create.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership in the
+	 *            response. If {@code null}, the memberships will be omitted.
 	 * @return A description of the created user, or {@link Optional#empty()} if
 	 *         the user exists already.
 	 */
