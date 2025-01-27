@@ -108,18 +108,6 @@ public class UserControl extends DatabaseAwareBean {
 			super.close();
 		}
 
-		/**
-		 * Get a user.
-		 *
-		 * @param id
-		 *            User ID
-		 * @return Database row, if user exists.
-		 * @see SQLQueries#GET_USER_DETAILS
-		 */
-		Optional<UserRecord> getUser(int id) {
-			return getUserDetails.call1(UserControl::sketchUser, id);
-		}
-
 		Function<UserRecord, UserRecord>
 				populateMemberships(Function<MemberRecord, URI> urlGen) {
 			if (isNull(urlGen)) {
@@ -368,20 +356,25 @@ public class UserControl extends DatabaseAwareBean {
 	 * @return A description of the created user, or {@link Optional#empty()} if
 	 *         the user exists already.
 	 */
-	public Optional<UserRecord> createUser(UserRecord user) {
+	public Optional<UserRecord> createUser(UserRecord user,
+			Function<MemberRecord, URI> urlGen) {
 		// This is a slow operation; don't hold a database transaction
 		var encPass = passServices.encodePassword(user.getPassword());
 		try (var sql = new CreateSQL()) {
-			return sql.transaction(() -> createUser(user, encPass, sql));
+			return sql.transaction(
+					() -> createUser(user, encPass, urlGen, sql));
 		}
 	}
 
 	private Optional<UserRecord> createUser(UserRecord user, String encPass,
-			CreateSQL sql) {
-		return sql
-				.createUser(user.getUserName(), encPass, user.getTrustLevel(),
-						!user.getEnabled(), user.getOpenIdSubject())
-				.flatMap(sql::getUser);
+			Function<MemberRecord, URI> urlGen, CreateSQL sql) {
+		var result =  sql.createUser(user.getUserName(), encPass,
+				user.getTrustLevel(), !user.getEnabled(),
+				user.getOpenIdSubject());
+		if (result.isEmpty()) {
+			return Optional.empty();
+		}
+		return getUser(result.get(), urlGen);
 	}
 
 	/**
@@ -517,7 +510,7 @@ public class UserControl extends DatabaseAwareBean {
 			}
 		}
 
-		return sql.getUser(id).map(sql.populateMemberships(urlGen));
+		return getUser(id, urlGen);
 	}
 
 	/**

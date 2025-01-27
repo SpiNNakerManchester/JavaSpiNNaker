@@ -57,7 +57,8 @@ public class UserControlTest extends TestSupport {
 			user.setTrustLevel(TrustLevel.USER);
 			user.setPassword("test");
 
-			var userRecord = userControl.createUser(user);
+			var userRecord = userControl.createUser(user,
+					m -> URI.create(""));
 			assertTrue(userRecord.isPresent());
 
 			// The response is just a user sketch...
@@ -72,8 +73,7 @@ public class UserControlTest extends TestSupport {
 	public void testGetUserRecord() {
 		doTransactionalTest(() -> {
 			makeUser(conn);
-			var record = userControl.getUser(USER,
-					(mr) -> {return URI.create("");});
+			var record = userControl.getUser(USER, m -> URI.create(""));
 			assertTrue(record.isPresent());
 			var user = record.get();
 			assertEquals(USER, user.getUserId());
@@ -92,7 +92,7 @@ public class UserControlTest extends TestSupport {
 		user.setTrustLevel(TrustLevel.USER);
 		user.setPassword("test");
 
-		var userRecord = userControl.createUser(user);
+		var userRecord = userControl.createUser(user, m-> URI.create(""));
 		assertTrue(userRecord.isPresent());
 		var id = userRecord.get().getUserId();
 
@@ -104,7 +104,7 @@ public class UserControlTest extends TestSupport {
 		admin.setTrustLevel(TrustLevel.ADMIN);
 		admin.setPassword("admin");
 
-		var adminRecord = userControl.createUser(admin);
+		var adminRecord = userControl.createUser(admin, m -> URI.create(""));
 		assertTrue(adminRecord.isPresent());
 
 		// Update the user password

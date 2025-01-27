@@ -427,7 +427,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView createUser(UserRecord user, ModelMap model,
 			RedirectAttributes attrs) {
 		user.initCreationDefaults();
-		var realUser = userManager.createUser(user)
+		var realUser = userManager.createUser(user, this::showGroupInfoUrl)
 				.orElseThrow(() -> new AdminException(
 						"user creation failed (duplicate username?)"));
 		int id = realUser.getUserId();

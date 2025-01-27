@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
+import java.net.URI;
 import java.util.Base64;
 
 import javax.ws.rs.core.MediaType;
@@ -63,7 +64,8 @@ public class AdminControllerTest extends TestSupport {
 			admin.setTrustLevel(TrustLevel.ADMIN);
 			admin.setPassword("admin");
 
-			var adminRecord = userControl.createUser(admin);
+			var adminRecord = userControl.createUser(admin,
+					m -> URI.create(""));
 			assertTrue(adminRecord.isPresent());
 
 			String userPass = Base64.getEncoder().encodeToString(
@@ -100,8 +102,10 @@ public class AdminControllerTest extends TestSupport {
 			admin.setTrustLevel(TrustLevel.ADMIN);
 			admin.setPassword("admin");
 
-			var adminRecord = userControl.createUser(admin);
+			var adminRecord = userControl.createUser(admin,
+					m -> URI.create(""));
 			assertTrue(adminRecord.isPresent());
+			log.info("Admin created: {}", adminRecord.get());
 
 			String userPass = Base64.getEncoder().encodeToString(
 					"admin:admin".getBytes());
@@ -114,7 +118,8 @@ public class AdminControllerTest extends TestSupport {
 			test.setTrustLevel(TrustLevel.USER);
 			test.setPassword("test");
 
-			var testRecord = userControl.createUser(test);
+			var testRecord = userControl.createUser(test,
+					m -> URI.create(""));
 			assertTrue(testRecord.isPresent());
 			UserRecord testUser = testRecord.get();
 
