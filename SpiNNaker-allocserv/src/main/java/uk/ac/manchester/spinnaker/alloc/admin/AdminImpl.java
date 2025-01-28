@@ -186,11 +186,12 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Response createUser(UserRecord providedUser, UriInfo ui) {
 		log.warn("CALLED createUser({})", providedUser.getUserName());
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		providedUser.initCreationDefaults();
-		var realUser = userManager.createUser(providedUser)
+		var realUser = userManager.createUser(providedUser,
+				m -> ub.build(m.getUserId()))
 				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
 						"user already exists"));
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		int id = realUser.getUserId();
 		return created(ub.build(id)).type(APPLICATION_JSON)
 				.entity(realUser.sanitise()).build();
@@ -210,10 +211,10 @@ public class AdminImpl implements AdminAPI {
 		log.warn("CALLED updateUser({})", providedUser.getUserName());
 		var adminUser = security.getUserPrincipal().getName();
 		providedUser.setUserId(null);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		return userManager
 				.updateUser(id, providedUser, adminUser,
-						m -> ub.build(m.getGroupId()))
+						m -> ub.build(m.getUserId()))
 				.orElseThrow(AdminImpl::noUser).sanitise();
 	}
 

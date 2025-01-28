@@ -288,7 +288,6 @@ public final class UserRecord {
 	}
 
 	/** @return Whether this is an internal user. */
-	@JsonIgnore
 	public boolean isInternal() {
 		return isInternal;
 	}

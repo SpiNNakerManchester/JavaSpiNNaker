@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
-import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 
 import java.io.IOException;
 import java.util.List;
