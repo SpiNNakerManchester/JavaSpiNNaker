@@ -58,7 +58,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 // @formatter:on
 public abstract class SQLQueries {
 
-	private static final ResourceLoader ctx = new DefaultResourceLoader();
+	private static final ResourceLoader CTX = new DefaultResourceLoader();
 
 	/** Get basic information about all machines. */
 	@Parameter("allow_out_of_service")
@@ -2432,7 +2432,7 @@ public abstract class SQLQueries {
 	@ResultColumn("z")
 	@ResultColumn("available")
 	protected SQL findRectangle = new SQL(
-			ctx.getResource("classpath:queries/find_rectangle.sql"),
+			CTX.getResource("classpath:queries/find_rectangle.sql"),
 			List.of("%usable"), List.of("boards.may_be_allocated"));
 
 	/**
@@ -2452,7 +2452,7 @@ public abstract class SQLQueries {
 	@ResultColumn("z")
 	@ResultColumn("available")
 	protected SQL checkRectangle = new SQL(
-			ctx.getResource("classpath:queries/find_rectangle.sql"),
+			CTX.getResource("classpath:queries/find_rectangle.sql"),
 			List.of("%usable"),
 			List.of("(boards.functioning is NULL or boards.functioning != 0)"));
 
@@ -2475,7 +2475,7 @@ public abstract class SQLQueries {
 	@ResultColumn("available")
 	@SingleRowResult
 	protected SQL findRectangleAt = new SQL(
-			ctx.getResource("classpath:queries/find_rectangle_at.sql"),
+			CTX.getResource("classpath:queries/find_rectangle_at.sql"),
 			List.of("%usable", "%root_usable"),
 			List.of("bs.may_be_allocated",
 					"selected_root.may_be_allocated > 0"));
@@ -2499,7 +2499,7 @@ public abstract class SQLQueries {
 	@ResultColumn("available")
 	@SingleRowResult
 	protected SQL checkRectangleAt = new SQL(
-			ctx.getResource("classpath:queries/find_rectangle_at.sql"),
+			CTX.getResource("classpath:queries/find_rectangle_at.sql"),
 			List.of("%usable", "%root_usable"),
 			List.of("(bs.functioning is NULL or bs.functioning != 0)",
 					"(selected_root.functioning is NULL or "

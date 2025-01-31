@@ -695,8 +695,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		if (!tags.isEmpty()) {
 			for (var m : getMachines(conn, false).values()) {
 				var mi = (MachineImpl) m;
-				if (mi.tags.containsAll(tags) &&
-						isAllocPossible(conn, descriptor, mi)) {
+				if (mi.tags.containsAll(tags)
+						&& isAllocPossible(conn, descriptor, mi)) {
 					return Optional.of(mi);
 				}
 			}
