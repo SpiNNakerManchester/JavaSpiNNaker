@@ -510,6 +510,18 @@ class DQLTest extends SimpleDBTestBase {
 	}
 
 	@Test
+	void countFunctioningBoards() {
+		try (var q = c.query(COUNT_FUNCTIONING_BOARDS)) {
+			c.transaction(() -> {
+				assertEquals(List.of("machine_id"), q.getParameters());
+				assertEquals(List.of("c"), q.getColumns());
+				assertEquals(0, q.call1(integer("c"), NO_MACHINE)
+						.orElseThrow());
+			});
+		}
+	}
+
+	@Test
 	void getBoardByCoords() {
 		try (var q = c.query(GET_BOARD_BY_COORDS)) {
 			c.transaction(() -> {
@@ -575,8 +587,36 @@ class DQLTest extends SimpleDBTestBase {
 	}
 
 	@Test
+	void checkRectangle() {
+		try (var q = c.query(checkRectangle)) {
+			c.transaction(() -> {
+				assertEquals(List.of("width", "height", "machine_id",
+						"max_dead_boards"), q.getParameters());
+				assertEquals(List.of("id", "x", "y", "z", "available"),
+						q.getColumns());
+				assertEquals(empty(),
+						q.call1(Row::toString, -1, -1, NO_MACHINE, 0));
+			});
+		}
+	}
+
+	@Test
 	void findRectangleAt() {
 		try (var q = c.query(findRectangleAt)) {
+			c.transaction(() -> {
+				assertEquals(List.of("board_id", "width", "height",
+						"machine_id", "max_dead_boards"), q.getParameters());
+				assertEquals(List.of("id", "x", "y", "z", "available"),
+						q.getColumns());
+				assertEquals(empty(), q.call1(Row::toString, NO_BOARD, -1, -1,
+						NO_MACHINE, 0));
+			});
+		}
+	}
+
+	@Test
+	void checkRectangleAt() {
+		try (var q = c.query(checkRectangleAt)) {
 			c.transaction(() -> {
 				assertEquals(List.of("board_id", "width", "height",
 						"machine_id", "max_dead_boards"), q.getParameters());
