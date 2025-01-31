@@ -23,8 +23,6 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.Resource;
 
-import com.google.errorprone.annotations.CompileTimeConstant;
-
 /**
  * Some sort of SQL that can be executed as part of a query or an update.
  */
@@ -37,7 +35,7 @@ public class SQL {
 	 *
 	 * @param sql The String containing SQL
 	 */
-	public SQL(@CompileTimeConstant String sql) {
+	public SQL(String sql) {
 		this.sql = sql;
 	}
 
