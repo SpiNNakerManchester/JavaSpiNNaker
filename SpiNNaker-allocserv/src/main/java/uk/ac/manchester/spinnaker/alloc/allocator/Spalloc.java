@@ -741,7 +741,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			public Boolean board(CreateBoard b) {
 				try (var check = conn.query(CHECK_LOCATION)) {
 					int board = locateBoard(conn, m.name, b, false);
-					return check.call1((r) -> true, board, m.id).isPresent();
+					return check.call1((r) -> true, m.id, board).isPresent();
 				} catch (IllegalArgumentException e) {
 					// This means the board doesn't exist on the given machine
 					return false;
