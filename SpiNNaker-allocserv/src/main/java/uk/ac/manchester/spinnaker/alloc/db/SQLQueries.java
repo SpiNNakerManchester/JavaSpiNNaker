@@ -2377,6 +2377,42 @@ public abstract class SQLQueries {
 			"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "
 			+ "WHERE job_id=:job_id";
 
+
+	/**
+	 * Find an allocatable board with a specific board ID. (This will have been
+	 * previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String FIND_LOCATION =
+			"SELECT x, y, z FROM boards "
+			+ "WHERE boards.machine_id = :machine_id "
+			+ "AND boards.board_id = :board_id AND boards.may_be_allocated";
+
+	/**
+	 * Check a board with a specific board ID is allocatable. (This will have
+	 * been previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String CHECK_LOCATION =
+			"SELECT x, y, z FROM boards "
+			+ "WHERE boards.machine_id = :machine_id "
+			+ "AND boards.board_id = :board_id "
+			+ "AND (boards.functioning is NULL or boards.functioning != 0)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2468,21 +2504,6 @@ public abstract class SQLQueries {
 			List.of("(bs.functioning is NULL or bs.functioning != 0)",
 					"(selected_root.functioning is NULL or "
 					+ "selected_root.functioning != 0)"));
-
-	/**
-	 * Find an allocatable board with a specific board ID. (This will have been
-	 * previously converted from some other form of board coordinates.)
-	 *
-	 * @see AllocatorTask
-	 */
-	@Parameter("machine_id")
-	@Parameter("board_id")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
-	@SingleRowResult
-	@Value("classpath:queries/find_location.sql")
-	protected Resource findLocation;
 
 	/** Create a request to change the power status of a board. */
 	@Parameter("job_id")

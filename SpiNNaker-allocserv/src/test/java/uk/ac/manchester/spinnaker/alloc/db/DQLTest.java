@@ -630,7 +630,20 @@ class DQLTest extends SimpleDBTestBase {
 
 	@Test
 	void findLocation() {
-		try (var q = c.query(findLocation)) {
+		try (var q = c.query(FIND_LOCATION)) {
+			c.transaction(() -> {
+				assertEquals(List.of("machine_id", "board_id"),
+						q.getParameters());
+				assertEquals(List.of("x", "y", "z"), q.getColumns());
+				assertEquals(empty(),
+						q.call1(Row::toString, NO_MACHINE, NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void checkLocation() {
+		try (var q = c.query(CHECK_LOCATION)) {
 			c.transaction(() -> {
 				assertEquals(List.of("machine_id", "board_id"),
 						q.getParameters());
