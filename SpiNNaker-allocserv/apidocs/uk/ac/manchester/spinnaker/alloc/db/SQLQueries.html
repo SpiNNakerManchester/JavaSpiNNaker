@@ -178,51 +178,80 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CHECK_LOCATION">CHECK_LOCATION</a></span></code></th>
+<td class="colLast">
+<div class="block">Check a board with a specific board ID is allocatable.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkRectangle">checkRectangle</a></span></code></th>
+<td class="colLast">
+<div class="block">Check that a rectangle of triads of boards that may be allocated.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkRectangleAt">checkRectangleAt</a></span></code></th>
+<td class="colLast">
+<div class="block">Find a rectangle of triads of boards rooted at a specific board that may
+ be allocated.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CLEAR_BLACKLISTED_CHIPS">CLEAR_BLACKLISTED_CHIPS</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete all blacklist entries for chips on a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CLEAR_BLACKLISTED_CORES">CLEAR_BLACKLISTED_CORES</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete all blacklist entries for cores on a board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CLEAR_BLACKLISTED_LINKS">CLEAR_BLACKLISTED_LINKS</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete all blacklist entries for links on a board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COMPLETED_BLACKLIST_WRITE">COMPLETED_BLACKLIST_WRITE</a></span></code></th>
 <td class="colLast">
 <div class="block">Mark a write of a blacklist as completed.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COMPLETED_BOARD_INFO_READ">COMPLETED_BOARD_INFO_READ</a></span></code></th>
 <td class="colLast">
 <div class="block">Mark a read of a blacklist or ADC data as completed.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COMPLETED_GET_SERIAL_REQ">COMPLETED_GET_SERIAL_REQ</a></span></code></th>
 <td class="colLast">
 <div class="block">Mark a read of serial data as completed.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COUNT_CHANGES_FOR_JOB">COUNT_CHANGES_FOR_JOB</a></span></code></th>
 <td class="colLast">
 <div class="block">Get the number of changes that are not completed for a job.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COUNT_FUNCTIONING_BOARDS">COUNT_FUNCTIONING_BOARDS</a></span></code></th>
+<td class="colLast">
+<div class="block">Check there is a single free board.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -431,6 +460,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FIND_LOCATION">FIND_LOCATION</a></span></code></th>
+<td class="colLast">
+<div class="block">Find an allocatable board with a specific board ID.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByGlobalChip">findBoardByGlobalChip</a></span></code></th>
 <td class="colLast">
@@ -438,7 +474,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  coordinates.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByIPAddress">findBoardByIPAddress</a></span></code></th>
 <td class="colLast">
@@ -446,7 +482,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  of its ethernet chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByJobChip">findBoardByJobChip</a></span></code></th>
 <td class="colLast">
@@ -454,7 +490,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  allocation-local chip coordinates.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByLogicalCoords">findBoardByLogicalCoords</a></span></code></th>
 <td class="colLast">
@@ -462,7 +498,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  coordinates.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findBoardByPhysicalCoords">findBoardByPhysicalCoords</a></span></code></th>
 <td class="colLast">
@@ -470,22 +506,15 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  cabinet-frame-board coordinates.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findLocation">findLocation</a></span></code></th>
-<td class="colLast">
-<div class="block">Find an allocatable board with a specific board ID.</div>
-</td>
-</tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
+<td class="colFirst"><code>protected <a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findRectangle">findRectangle</a></span></code></th>
 <td class="colLast">
 <div class="block">Find a rectangle of triads of boards that may be allocated.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></code></td>
+<td class="colFirst"><code>protected <a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#findRectangleAt">findRectangleAt</a></span></code></th>
 <td class="colLast">
 <div class="block">Find a rectangle of triads of boards rooted at a specific board that may
@@ -2069,6 +2098,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FIND_FREE_BOARD">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="COUNT_FUNCTIONING_BOARDS">COUNT_FUNCTIONING_BOARDS</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("machine_id")
+@ResultColumn("c")
+@SingleRowResult
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">COUNT_FUNCTIONING_BOARDS</span></div>
+<div class="block">Check there is a single free board.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.COUNT_FUNCTIONING_BOARDS">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>
@@ -3690,12 +3733,58 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="FIND_LOCATION">FIND_LOCATION</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("machine_id") @Parameter("board_id")
+@ResultColumn("x") @ResultColumn("y") @ResultColumn("z")
+@SingleRowResult
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">FIND_LOCATION</span></div>
+<div class="block">Find an allocatable board with a specific board ID. (This will have been
+ previously converted from some other form of board coordinates.)</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a>, 
+<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.FIND_LOCATION">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="CHECK_LOCATION">CHECK_LOCATION</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("machine_id") @Parameter("board_id")
+@ResultColumn("x") @ResultColumn("y") @ResultColumn("z")
+@SingleRowResult
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">CHECK_LOCATION</span></div>
+<div class="block">Check a board with a specific board ID is allocatable. (This will have
+ been previously converted from some other form of board coordinates.)</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a>, 
+<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.CHECK_LOCATION">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="findRectangle">findRectangle</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("width") @Parameter("height") @Parameter("machine_id") @Parameter("max_dead_boards")
 @ResultColumn("id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("available")
-<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("classpath:queries/find_rectangle.sql")
-</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></span>&nbsp;<span class="memberName">findRectangle</span></div>
+</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></span>&nbsp;<span class="memberName">findRectangle</span></div>
 <div class="block">Find a rectangle of triads of boards that may be allocated. The
+ <code>max_dead_boards</code> gives the amount of allowance for non-allocatable
+ resources to be made within the rectangle.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="checkRectangle">checkRectangle</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("width") @Parameter("height") @Parameter("machine_id") @Parameter("max_dead_boards")
+@ResultColumn("id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("available")
+</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></span>&nbsp;<span class="memberName">checkRectangle</span></div>
+<div class="block">Check that a rectangle of triads of boards that may be allocated. The
  <code>max_dead_boards</code> gives the amount of allowance for non-allocatable
  resources to be made within the rectangle.</div>
 <dl>
@@ -3710,8 +3799,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="memberSignature"><span class="annotations">@Parameter("board_id") @Parameter("width") @Parameter("height") @Parameter("machine_id") @Parameter("max_dead_boards")
 @ResultColumn("id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("available")
 @SingleRowResult
-<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("classpath:queries/find_rectangle_at.sql")
-</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></span>&nbsp;<span class="memberName">findRectangleAt</span></div>
+</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></span>&nbsp;<span class="memberName">findRectangleAt</span></div>
 <div class="block">Find a rectangle of triads of boards rooted at a specific board that may
  be allocated. The <code>max_dead_boards</code> gives the amount of allowance
  for non-allocatable resources to be made within the rectangle.</div>
@@ -3723,14 +3811,14 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="findLocation">findLocation</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("machine_id") @Parameter("board_id")
-@ResultColumn("x") @ResultColumn("y") @ResultColumn("z")
+<h3><a id="checkRectangleAt">checkRectangleAt</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("board_id") @Parameter("width") @Parameter("height") @Parameter("machine_id") @Parameter("max_dead_boards")
+@ResultColumn("id") @ResultColumn("x") @ResultColumn("y") @ResultColumn("z") @ResultColumn("available")
 @SingleRowResult
-<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("classpath:queries/find_location.sql")
-</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a></span>&nbsp;<span class="memberName">findLocation</span></div>
-<div class="block">Find an allocatable board with a specific board ID. (This will have been
- previously converted from some other form of board coordinates.)</div>
+</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></span>&nbsp;<span class="memberName">checkRectangleAt</span></div>
+<div class="block">Find a rectangle of triads of boards rooted at a specific board that may
+ be allocated. The <code>max_dead_boards</code> gives the amount of allowance
+ for non-allocatable resources to be made within the rectangle.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><code>AllocatorTask</code></a></dd>

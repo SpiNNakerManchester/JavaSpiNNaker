@@ -1671,6 +1671,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The change password URI variable for JSP pages.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#CHECK_LOCATION">CHECK_LOCATION</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Check a board with a specific board ID is allocatable.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/ForTestingOnly.Utils.html#checkForTestClassOnStack()">checkForTestClassOnStack()</a></span> - Static method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/ForTestingOnly.Utils.html" title="class in uk.ac.manchester.spinnaker.alloc">ForTestingOnly.Utils</a></dt>
 <dd>
 <div class="block">A simple test for whether there are classes annotated with
@@ -1685,6 +1689,15 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/CheckOKResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">CheckOKResponse</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
 <div class="block">An SCP response to a request which returns nothing other than OK or an error.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#checkRectangle">checkRectangle</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Check that a rectangle of triads of boards that may be allocated.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#checkRectangleAt">checkRectangleAt</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Find a rectangle of triads of boards rooted at a specific board that may
+ be allocated.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/IssueReportRequest.ReportedBoard.html#chip">chip</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/IssueReportRequest.ReportedBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">IssueReportRequest.ReportedBoard</a></dt>
 <dd>
@@ -2636,6 +2649,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#COUNT_CHANGES_FOR_JOB">COUNT_CHANGES_FOR_JOB</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Get the number of changes that are not completed for a job.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#COUNT_FUNCTIONING_BOARDS">COUNT_FUNCTIONING_BOARDS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Check there is a single free board.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#COUNT_MACHINE_THINGS">COUNT_MACHINE_THINGS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
@@ -4736,6 +4753,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Find a single free board.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#FIND_LOCATION">FIND_LOCATION</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Find an allocatable board with a specific board ID.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#findAbnormalChips()">findAbnormalChips()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
 <div class="block">Returns a list of the abnormal chips that are recommended for removal.</div>
@@ -4784,10 +4805,6 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#findIP(java.lang.String,java.lang.String)">findIP(String, String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Look up a board for management.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#findLocation">findLocation</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
-<dd>
-<div class="block">Find an allocatable board with a specific board ID.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#findPhysical(java.lang.String,uk.ac.manchester.spinnaker.machine.board.PhysicalCoords)">findPhysical(String, PhysicalCoords)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
@@ -8441,6 +8458,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#getSpinnakerLink(int,java.net.InetAddress)">getSpinnakerLink(int, InetAddress)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
 <div class="block">Get a SpiNNaker link with a given ID.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html#getSQL()">getSQL()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></dt>
+<dd>
+<div class="block">Get the SQL to be executed.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#getSqlite()">getSqlite()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties</a></dt>
 <dd>&nbsp;</dd>
@@ -13899,6 +13920,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a new query.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html#query(uk.ac.manchester.spinnaker.alloc.db.SQL)">query(SQL)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></dt>
+<dd>
+<div class="block">Create a new query.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html#query(uk.ac.manchester.spinnaker.alloc.db.SQL,boolean)">query(SQL, boolean)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></dt>
+<dd>
+<div class="block">Create a new query.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/client/State.html#QUEUED">QUEUED</a></span> - uk.ac.manchester.spinnaker.alloc.client.<a href="uk/ac/manchester/spinnaker/alloc/client/State.html" title="enum in uk.ac.manchester.spinnaker.alloc.client">State</a></dt>
 <dd>
 <div class="block">The job is waiting in a queue for a suitable machine.</div>
@@ -17855,6 +17884,26 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Initial handler for web sockets.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><span class="typeNameLink">SQL</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/db/package-summary.html">uk.ac.manchester.spinnaker.alloc.db</a></dt>
+<dd>
+<div class="block">Some sort of SQL that can be executed as part of a query or an update.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html#%3Cinit%3E(java.lang.String)">SQL(String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></dt>
+<dd>
+<div class="block">Create a new SQL string.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html#%3Cinit%3E(java.lang.String,java.util.List,java.util.List)">SQL(String, List&lt;String&gt;, List&lt;String&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></dt>
+<dd>
+<div class="block">Create a new SQL string with parameters that can be replaced.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html#%3Cinit%3E(org.springframework.core.io.Resource)">SQL(Resource)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></dt>
+<dd>
+<div class="block">Create a new SQL string from a resource.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html#%3Cinit%3E(org.springframework.core.io.Resource,java.util.List,java.util.List)">SQL(Resource, List&lt;String&gt;, List&lt;String&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a></dt>
+<dd>
+<div class="block">Create a new SQL string with parameters that can be replaced.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteBufferStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite"><span class="typeNameLink">SQLiteBufferStorage</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/sqlite/package-summary.html">uk.ac.manchester.spinnaker.storage.sqlite</a></dt>
 <dd>
 <div class="block">How to actually talk to an SQLite database.</div>
@@ -19340,6 +19389,10 @@ loadScripts(document, 'script');</script>
  old value.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html#update(org.springframework.core.io.Resource)">update(Resource)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></dt>
+<dd>
+<div class="block">Create a new update.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html#update(uk.ac.manchester.spinnaker.alloc.db.SQL)">update(SQL)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseAPI.Connection.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Connection</a></dt>
 <dd>
 <div class="block">Create a new update.</div>
 </dd>

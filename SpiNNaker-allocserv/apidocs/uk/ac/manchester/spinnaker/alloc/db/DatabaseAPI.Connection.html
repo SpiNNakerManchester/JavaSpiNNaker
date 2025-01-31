@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -168,6 +168,21 @@ boolean&nbsp;lockType)</code></th>
 </td>
 </tr>
 <tr class="altColor" id="i6">
+<td class="colFirst"><code><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#query(uk.ac.manchester.spinnaker.alloc.db.SQL)">query</a></span>&#8203;(<a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql)</code></th>
+<td class="colLast">
+<div class="block">Create a new query.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i7">
+<td class="colFirst"><code><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#query(uk.ac.manchester.spinnaker.alloc.db.SQL,boolean)">query</a></span>&#8203;(<a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql,
+boolean&nbsp;lockType)</code></th>
+<td class="colLast">
+<div class="block">Create a new query.</div>
+</td>
+</tr>
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rollback()">rollback</a></span>()</code></th>
 <td class="colLast">
@@ -175,7 +190,7 @@ boolean&nbsp;lockType)</code></th>
  database locks currently held by this connection.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted)">transaction</a></span>&#8203;(boolean&nbsp;lockForWriting,
 <a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a>&nbsp;operation)</code></th>
@@ -183,7 +198,7 @@ boolean&nbsp;lockType)</code></th>
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(boolean,uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(boolean&nbsp;lockForWriting,
 <a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
@@ -191,30 +206,37 @@ boolean&nbsp;lockType)</code></th>
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Transacted)">transaction</a></span>&#8203;(<a href="DatabaseAPI.Transacted.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Transacted</a>&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code>&lt;T&gt;&nbsp;T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#transaction(uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult)">transaction</a></span>&#8203;(<a href="DatabaseAPI.TransactedWithResult.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.TransactedWithResult</a>&lt;T&gt;&nbsp;operation)</code></th>
 <td class="colLast">
 <div class="block">A nestable transaction runner.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="rowColor" id="i13">
 <td class="colFirst"><code><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(java.lang.String)">update</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;sql)</code></th>
 <td class="colLast">
 <div class="block">Create a new update.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="altColor" id="i14">
 <td class="colFirst"><code><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(org.springframework.core.io.Resource)">update</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html?is-external=true" title="class or interface in org.springframework.core.io" class="externalLink">Resource</a>&nbsp;sqlResource)</code></th>
+<td class="colLast">
+<div class="block">Create a new update.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i15">
+<td class="colFirst"><code><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(uk.ac.manchester.spinnaker.alloc.db.SQL)">update</a></span>&#8203;(<a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql)</code></th>
 <td class="colLast">
 <div class="block">Create a new update.</div>
 </td>
@@ -400,6 +422,7 @@ boolean&nbsp;lockType)</code></th>
 <dd>The query object.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="#query(org.springframework.core.io.Resource)"><code>query(Resource)</code></a>, 
+<a href="#query(uk.ac.manchester.spinnaker.alloc.db.SQL)"><code>query(SQL)</code></a>, 
 <a href="#update(java.lang.String)"><code>update(String)</code></a>, 
 <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
 </dl>
@@ -443,6 +466,7 @@ boolean&nbsp;lockType)</span></div>
 <dd>The query object.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="#query(org.springframework.core.io.Resource)"><code>query(Resource)</code></a>, 
+<a href="#query(uk.ac.manchester.spinnaker.alloc.db.SQL)"><code>query(SQL)</code></a>, 
 <a href="#update(java.lang.String)"><code>update(String)</code></a>, 
 <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
 </dl>
@@ -483,6 +507,7 @@ boolean&nbsp;lockType)</span></div>
 <dd>The query object.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="#query(java.lang.String)"><code>query(String)</code></a>, 
+<a href="#query(uk.ac.manchester.spinnaker.alloc.db.SQL)"><code>query(SQL)</code></a>, 
 <a href="#update(org.springframework.core.io.Resource)"><code>update(Resource)</code></a>, 
 <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
 </dl>
@@ -526,7 +551,92 @@ boolean&nbsp;lockType)</span></div>
 <dd>The query object.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="#query(java.lang.String)"><code>query(String)</code></a>, 
+<a href="#query(uk.ac.manchester.spinnaker.alloc.db.SQL)"><code>query(SQL)</code></a>, 
 <a href="#update(org.springframework.core.io.Resource)"><code>update(Resource)</code></a>, 
+<a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="query(uk.ac.manchester.spinnaker.alloc.db.SQL)">query</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></span>&nbsp;<span class="memberName">query</span>&#8203;(<span class="arguments"><a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql)</span></div>
+<div class="block">Create a new query. Usage pattern:
+ <pre>
+ try (var q = conn.query(new SQL(SQL_SELECT))) {
+     for (var value : q.call(mapper, argument1, argument2)) {
+         // Do something with the mapped row
+     }
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(new SQL(SQL_SELECT))) {
+     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(new SQL(SQL_SELECT))) {
+     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>sql</code> - The SQL of the query.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The query object.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="#query(java.lang.String)"><code>query(String)</code></a>, 
+<a href="#query(org.springframework.core.io.Resource)"><code>query(Resource)</code></a>, 
+<a href="#update(java.lang.String)"><code>update(String)</code></a>, 
+<a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="query(uk.ac.manchester.spinnaker.alloc.db.SQL,boolean)">query</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></span>&nbsp;<span class="memberName">query</span>&#8203;(<span class="arguments"><a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql,
+boolean&nbsp;lockType)</span></div>
+<div class="block">Create a new query. Usage pattern:
+ <pre>
+ try (var q = conn.query(SQL_SELECT, false)) {
+     for (var value : q.call(mapper, argument1, argument2)) {
+         // Do something with the mapped row
+     }
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(SQL_SELECT, false)) {
+     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre>
+ or:
+ <pre>
+ try (var q = conn.query(SQL_SELECT, false)) {
+     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+         // Do something with the mapped row
+     });
+ }
+ </pre></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>sql</code> - The SQL of the query.</dd>
+<dd><code>lockType</code> - Whether we expect to have a write lock. This is vital</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The query object.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="#query(java.lang.String)"><code>query(String)</code></a>, 
+<a href="#query(org.springframework.core.io.Resource)"><code>query(Resource)</code></a>, 
+<a href="#update(java.lang.String)"><code>update(String)</code></a>, 
 <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
 </dl>
 </section>
@@ -570,6 +680,7 @@ boolean&nbsp;lockType)</span></div>
 <dd>The update object.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="#update(org.springframework.core.io.Resource)"><code>update(Resource)</code></a>, 
+<a href="#update(uk.ac.manchester.spinnaker.alloc.db.SQL)"><code>update(SQL)</code></a>, 
 <a href="#query(java.lang.String)"><code>query(String)</code></a>, 
 <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
 </dl>
@@ -613,7 +724,52 @@ boolean&nbsp;lockType)</span></div>
 <dd>The update object.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="#update(java.lang.String)"><code>update(String)</code></a>, 
+<a href="#update(uk.ac.manchester.spinnaker.alloc.db.SQL)"><code>update(SQL)</code></a>, 
 <a href="#query(org.springframework.core.io.Resource)"><code>query(Resource)</code></a>, 
+<a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="update(uk.ac.manchester.spinnaker.alloc.db.SQL)">update</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></span>&nbsp;<span class="memberName">update</span>&#8203;(<span class="arguments"><a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql)</span></div>
+<div class="block">Create a new update. Usage pattern:
+ <pre>
+ try (var u = conn.update(new SQL(SQL_UPDATE))) {
+     int numRows = u.call(argument1, argument2);
+ }
+ </pre>
+ or:
+ <pre>
+ try (var u = conn.update(new SQL(SQL_INSERT))) {
+     for (var key : u.keys(argument1, argument2)) {
+         // Do something with the key
+     }
+ }
+ </pre>
+ or even:
+ <pre>
+ try (var u = conn.update(new SQL(SQL_INSERT))) {
+     u.key(argument1, argument2).ifPresent(key -&gt; {
+         // Do something with the key
+     });
+ }
+ </pre>
+ <p>
+ <strong>Note:</strong> If you use a <code>RETURNING</code> clause then
+ you should use a <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> with the <code>lockType</code> set to
+ <code>true</code>.
+ <em><code>RETURNING</code> clauses are not supported by MySQL.</em></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>sql</code> - The SQL of the update.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The update object.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="#update(java.lang.String)"><code>update(String)</code></a>, 
+<a href="#update(org.springframework.core.io.Resource)"><code>update(Resource)</code></a>, 
+<a href="#query(java.lang.String)"><code>query(String)</code></a>, 
 <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db"><code>SQLQueries</code></a></dd>
 </dl>
 </section>
