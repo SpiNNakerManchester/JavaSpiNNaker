@@ -566,6 +566,7 @@ public interface SpallocServiceAPI {
 		@Produces(APPLICATION_JSON)
 		void reportBoardIssue(IssueReportRequest report,
 				@Suspended AsyncResponse response);
+
 	}
 }
 

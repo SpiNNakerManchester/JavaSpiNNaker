@@ -36,6 +36,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_J
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -83,11 +85,15 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * The core implementation of the Spalloc service.
@@ -1704,6 +1710,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 			private List<Integer> boardIds;
 
+			private TransceiverInterface transceiver;
+
 			private SubMachineImpl(Connection conn) {
 				machine = getJobMachine(conn);
 				try (var getRootXY = conn.query(GET_ROOT_COORDS);
@@ -1812,6 +1820,17 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					throw new PartialJobException();
 				}
 				powerController.setPower(id, ps, READY);
+			}
+
+			@Override
+			public TransceiverInterface getTransceiver() throws IOException,
+					InterruptedException, SpinnmanException {
+				if (transceiver == null) {
+					transceiver = new Transceiver(InetAddress.getByName(
+							connections.get(0).getHostname()),
+							MachineVersion.FIVE);
+				}
+				return transceiver;
 			}
 		}
 	}

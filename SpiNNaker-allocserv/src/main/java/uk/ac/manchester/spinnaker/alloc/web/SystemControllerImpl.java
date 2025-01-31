@@ -19,6 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
@@ -42,6 +43,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PA
 
 import java.security.Principal;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,6 +77,7 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
+import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -104,6 +107,9 @@ public class SystemControllerImpl implements SystemController {
 
 	private static final ViewFactory JOB_VIEW = new ViewFactory("jobdetails");
 
+	private static final ViewFactory JOB_PROCESS_LIST_VIEW =
+			new ViewFactory("listjobprocesses");
+
 	// Must match what views expect
 	private static final String VERSION_OBJ = "version";
 
@@ -116,6 +122,8 @@ public class SystemControllerImpl implements SystemController {
 	private static final String MACHINES_OBJ = "machineList";
 
 	private static final String ONE_MACHINE_OBJ = "machine";
+
+	private static final String JOB_PROCESSES_LIST_OBJ = "processList";
 
 	private static final String BASE_URI = "baseuri";
 
@@ -372,6 +380,7 @@ public class SystemControllerImpl implements SystemController {
 		var mav = view(JOB_VIEW, ONE_JOB_OBJ, mach);
 		mav.addObject("deleteUri", uri(self().destroyJob(id, null)));
 		mav.addObject("powerUri", uri(self().powerJob(id, false)));
+		mav.addObject("processUri", uri(self().listProcesses(id, 0, 0)));
 		return mav;
 	}
 
@@ -409,4 +418,31 @@ public class SystemControllerImpl implements SystemController {
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
 		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
 	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("getting job process listing")
+	public ModelAndView listProcesses(int id, int x, int y) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJob(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		try {
+			var txrx = job.getMachine().get().getTransceiver();
+			CoreSubsets cores = new CoreSubsets();
+			for (int i = 0; i < 18; i++) {
+				cores.addCore(x, y, i);
+			}
+			var info = txrx.getCPUInformation(cores);
+			var response = new ArrayList<Process>();
+			for (var inf : info) {
+				response.add(new Process(inf));
+			}
+			return view(JOB_PROCESS_LIST_VIEW, JOB_PROCESSES_LIST_OBJ,
+					response);
+		} catch (Exception e) {
+			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+					"Error receiving process details", e);
+		}
+	}
+
 }

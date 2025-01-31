@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_NMPI_EXEC;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -67,6 +68,8 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -1227,5 +1230,18 @@ public interface SpallocAPI {
 		 *            What to set the power state to.
 		 */
 		void setPower(@NotNull PowerState powerState);
+
+		/**
+		 * Get a way to talk to the machine directly.  Note that it might not be
+		 * booted...
+		 *
+		 * @return The transceiver interface.
+		 * @throws IOException if there is an issue creating the transceiver.
+		 * @throws InterruptedException if the operation is interrupted.
+		 * @throws SpinnmanException
+		 *         if there is an issue speaking to the machine.
+		 */
+		TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException;
 	}
 }

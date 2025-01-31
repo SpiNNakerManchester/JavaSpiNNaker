@@ -23,6 +23,7 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.QueryParam;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -198,4 +199,22 @@ public interface SystemController {
 	@UsedInJavadocOnly(LogoutHandler.class)
 	String performLogout(HttpServletRequest request,
 			HttpServletResponse response);
+
+	/**
+	 * Get the view for the job processes on a chip
+	 *
+	 * @param id
+	 *            Which job is being asked for
+	 * @param x
+	 * 	          The x coordinate of the chip
+	 * @param y
+	 *            The y coordinate of the chip
+	 * @return View ({@code jobprocesses.jsp}) and model (based on
+	 *         {@link List<ProcessResponse>})
+	 */
+	@GetMapping("/job_processes/{id}")
+	@PreAuthorize(IS_READER)
+	@UsedInJavadocOnly(JobDescription.class)
+	ModelAndView listProcesses(@PathVariable("id") int id,
+			@QueryParam("x") int x, @QueryParam("y") int y);
 }
