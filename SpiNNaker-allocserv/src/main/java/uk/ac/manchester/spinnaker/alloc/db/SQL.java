@@ -66,7 +66,6 @@ public class SQL {
 		for (int i = 0; i < parameters.size(); i++) {
 			sqlString = sqlString.replace(parameters.get(i), values.get(i));
 		}
-		System.err.println(sqlString);
 		this.sql = sqlString;
 	}
 
