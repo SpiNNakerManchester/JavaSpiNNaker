@@ -416,30 +416,31 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobInGroup(String owner, String groupName,
+	public Job createJobInGroup(String owner, String groupName,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
-			Duration keepaliveInterval, byte[] req) {
+			Duration keepaliveInterval, byte[] req)
+					throws IllegalArgumentException {
 		return execute(conn -> {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new RuntimeException("no such user: " + owner));
 			int group = selectGroup(conn, owner, groupName);
 			if (!quotaManager.mayCreateJob(group)) {
 				// No quota left
-				return Optional.empty();
+				throw new IllegalArgumentException("quota exceeded in group " + group);
 			}
 
 			var m = selectMachine(conn, descriptor, machineName, tags);
 			if (!m.isPresent()) {
-				// Cannot find machine!
-				return Optional.empty();
+				throw new IllegalArgumentException(
+						"no machine available which matches allocation "
+						+ "request");
 			}
 			var machine = m.orElseThrow();
 
 			var id = insertJob(conn, machine, user, group, keepaliveInterval,
 					req);
 			if (!id.isPresent()) {
-				// Insert failed
-				return Optional.empty();
+				throw new RuntimeException("failed to create job");
 			}
 			int jobId = id.orElseThrow();
 
@@ -512,12 +513,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					machine.name, owner, numBoards);
 
 			allocator.scheduleAllocateNow();
-			return getJob(jobId, conn).map(ji -> (Job) ji);
+			return getJob(jobId, conn).map(ji -> (Job) ji).orElseThrow(
+					() -> new RuntimeException("Error creating job!"));
 		});
 	}
 
 	@Override
-	public Optional<Job> createJob(String owner, CreateDescriptor descriptor,
+	public Job createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
 		return execute(conn -> createJobInGroup(
@@ -526,7 +528,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobInCollabSession(String owner,
+	public Job createJobInCollabSession(String owner,
 			String nmpiCollab, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
@@ -537,13 +539,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		var job = execute(conn -> createJobInGroup(
 				owner, nmpiCollab, descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
-		// On failure to get job, just return; shouldn't happen as quota checked
-		// earlier, but just in case!
-		if (job.isEmpty()) {
-			return job;
-		}
 
-		quotaManager.associateNMPISession(job.get().getId(), session.getId(),
+		quotaManager.associateNMPISession(job.getId(), session.getId(),
 				quotaUnits);
 
 		// Return the job created
@@ -551,25 +548,21 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobForNMPIJob(String owner, int nmpiJobId,
+	public Job createJobForNMPIJob(String owner, int nmpiJobId,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
 			Duration keepaliveInterval,	byte[] originalRequest) {
 		var collab = quotaManager.mayUseNMPIJob(owner, nmpiJobId);
 		if (collab.isEmpty()) {
-			return Optional.empty();
+			throw new IllegalArgumentException("User cannot create session in "
+					+ "NMPI job" + nmpiJobId);
 		}
 		var quotaDetails = collab.get();
 
 		var job = execute(conn -> createJobInGroup(
 				owner, quotaDetails.collabId, descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
-		// On failure to get job, just return; shouldn't happen as quota checked
-		// earlier, but just in case!
-		if (job.isEmpty()) {
-			return job;
-		}
 
-		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId,
+		quotaManager.associateNMPIJob(job.getId(), nmpiJobId,
 				quotaDetails.quotaUnits);
 
 		// Return the job created
