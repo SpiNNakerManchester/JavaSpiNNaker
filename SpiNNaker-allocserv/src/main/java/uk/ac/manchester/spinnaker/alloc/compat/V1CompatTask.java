@@ -444,17 +444,16 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			byte[] serialCmd = getJsonMapper().writeValueAsBytes(cmd);
 			switch (args.size()) {
 			case 0:
-				return createJobNumBoards(1, kwargs, serialCmd).orElse(null);
+				return createJobNumBoards(1, kwargs, serialCmd);
 			case 1:
-				return createJobNumBoards(parseDec(args, 0), kwargs, serialCmd)
-						.orElse(null);
+				return createJobNumBoards(parseDec(args, 0), kwargs, serialCmd);
 			case 2:
 				return createJobRectangle(parseDec(args, 0), parseDec(args, 1),
-						kwargs, serialCmd).orElse(null);
+						kwargs, serialCmd);
 			case TRIAD_COORD_COUNT:
 				return createJobSpecificBoard(new TriadCoords(parseDec(args, 0),
 						parseDec(args, 1), parseDec(args, 2)), kwargs,
-						serialCmd).orElse(null);
+						serialCmd);
 			default:
 				throw new Oops(
 						"unsupported number of arguments: " + args.size());
@@ -563,7 +562,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Optional<Integer> createJobNumBoards(
+	protected abstract int createJobNumBoards(
 			@Positive int numBoards,
 			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
 			throws TaskException;
@@ -583,7 +582,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Optional<Integer> createJobRectangle(
+	protected abstract int createJobRectangle(
 			@ValidTriadWidth int width, @ValidTriadHeight int height,
 			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
 			throws TaskException;
@@ -601,7 +600,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Optional<Integer> createJobSpecificBoard(
+	protected abstract int createJobSpecificBoard(
 			@Valid TriadCoords coords,
 			Map<@NotBlank String, @NotNull Object> kwargs, byte[] cmd)
 			throws TaskException;

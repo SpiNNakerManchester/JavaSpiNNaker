@@ -192,12 +192,13 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
-	Optional<Job> createJob(@NotNull String owner,
+	Job createJob(@NotNull String owner,
 			@Valid CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/**
 	 * Create a job for a user in a specific local group.
@@ -224,12 +225,13 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
-	Optional<Job> createJobInGroup(@NotNull String owner, @NotNull String group,
+	Job createJobInGroup(@NotNull String owner, @NotNull String group,
 			@Valid CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/**
 	 * Create a job for interactive use in an NMPI Collab Session.
@@ -256,13 +258,14 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
-	Optional<Job> createJobInCollabSession(@NotNull String owner,
+	Job createJobInCollabSession(@NotNull String owner,
 			@NotNull String nmpiCollab,
 			@Valid CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/**
 	 * Create a job for interactive use in an NMPI Collab Session.
@@ -289,13 +292,14 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
 	@PreAuthorize(IS_NMPI_EXEC)
-	Optional<Job> createJobForNMPIJob(@NotNull String owner, int nmpiJobId,
+	Job createJobForNMPIJob(@NotNull String owner, int nmpiJobId,
 			@Valid CreateDescriptor descriptor,	String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/** Purge the cache of what boards are down. */
 	void purgeDownCache();

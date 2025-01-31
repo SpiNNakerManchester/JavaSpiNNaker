@@ -15,8 +15,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
@@ -53,6 +57,9 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 })
 // @formatter:on
 public abstract class SQLQueries {
+
+	private static final ResourceLoader CTX = new DefaultResourceLoader();
+
 	/** Get basic information about all machines. */
 	@Parameter("allow_out_of_service")
 	@ResultColumn("machine_id")
@@ -673,6 +680,16 @@ public abstract class SQLQueries {
 	protected static final String FIND_FREE_BOARD =
 			"SELECT x, y, z FROM boards "
 					+ "WHERE machine_id = :machine_id AND may_be_allocated "
+					+ "ORDER BY power_off_timestamp ASC LIMIT 1";
+
+	/** Check there is a single free board. */
+	@Parameter("machine_id")
+	@ResultColumn("c")
+	@SingleRowResult
+	protected static final String COUNT_FUNCTIONING_BOARDS =
+			"SELECT COUNT(*) as c FROM boards "
+					+ "WHERE machine_id = :machine_id AND "
+					+ "(functioning IS NULL or functioning != 0) "
 					+ "ORDER BY power_off_timestamp ASC LIMIT 1";
 
 	/**
@@ -2360,6 +2377,42 @@ public abstract class SQLQueries {
 			"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "
 			+ "WHERE job_id=:job_id";
 
+
+	/**
+	 * Find an allocatable board with a specific board ID. (This will have been
+	 * previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String FIND_LOCATION =
+			"SELECT x, y, z FROM boards "
+			+ "WHERE boards.machine_id = :machine_id "
+			+ "AND boards.board_id = :board_id AND boards.may_be_allocated";
+
+	/**
+	 * Check a board with a specific board ID is allocatable. (This will have
+	 * been previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String CHECK_LOCATION =
+			"SELECT x, y, z FROM boards "
+			+ "WHERE boards.machine_id = :machine_id "
+			+ "AND boards.board_id = :board_id "
+			+ "AND (boards.functioning is NULL or boards.functioning != 0)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2378,8 +2431,30 @@ public abstract class SQLQueries {
 	@ResultColumn("y")
 	@ResultColumn("z")
 	@ResultColumn("available")
-	@Value("classpath:queries/find_rectangle.sql")
-	protected Resource findRectangle;
+	protected SQL findRectangle = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle.sql"),
+			List.of("%usable"), List.of("boards.may_be_allocated"));
+
+	/**
+	 * Check that a rectangle of triads of boards that may be allocated. The
+	 * {@code max_dead_boards} gives the amount of allowance for non-allocatable
+	 * resources to be made within the rectangle.
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("machine_id")
+	@Parameter("max_dead_boards")
+	@ResultColumn("id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("available")
+	protected SQL checkRectangle = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle.sql"),
+			List.of("%usable"),
+			List.of("(boards.functioning is NULL or boards.functioning != 0)"));
 
 	/**
 	 * Find a rectangle of triads of boards rooted at a specific board that may
@@ -2399,23 +2474,36 @@ public abstract class SQLQueries {
 	@ResultColumn("z")
 	@ResultColumn("available")
 	@SingleRowResult
-	@Value("classpath:queries/find_rectangle_at.sql")
-	protected Resource findRectangleAt;
+	protected SQL findRectangleAt = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle_at.sql"),
+			List.of("%usable", "%root_usable"),
+			List.of("bs.may_be_allocated",
+					"selected_root.may_be_allocated > 0"));
 
 	/**
-	 * Find an allocatable board with a specific board ID. (This will have been
-	 * previously converted from some other form of board coordinates.)
+	 * Find a rectangle of triads of boards rooted at a specific board that may
+	 * be allocated. The {@code max_dead_boards} gives the amount of allowance
+	 * for non-allocatable resources to be made within the rectangle.
 	 *
 	 * @see AllocatorTask
 	 */
-	@Parameter("machine_id")
 	@Parameter("board_id")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("machine_id")
+	@Parameter("max_dead_boards")
+	@ResultColumn("id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
+	@ResultColumn("available")
 	@SingleRowResult
-	@Value("classpath:queries/find_location.sql")
-	protected Resource findLocation;
+	protected SQL checkRectangleAt = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle_at.sql"),
+			List.of("%usable", "%root_usable"),
+			List.of("(bs.functioning is NULL or bs.functioning != 0)",
+					"(selected_root.functioning is NULL or "
+					+ "selected_root.functioning != 0)"));
 
 	/** Create a request to change the power status of a board. */
 	@Parameter("job_id")

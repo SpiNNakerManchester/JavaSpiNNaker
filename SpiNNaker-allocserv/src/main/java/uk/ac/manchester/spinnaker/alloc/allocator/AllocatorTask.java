@@ -453,7 +453,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			getRectangles = conn.query(findRectangle);
 			getRectangleAt = conn.query(findRectangleAt);
 			countConnectedBoards = conn.query(countConnected);
-			findSpecificBoard = conn.query(findLocation);
+			findSpecificBoard = conn.query(FIND_LOCATION);
 			getConnectedBoardIDs = conn.query(getConnectedBoards);
 			allocBoard = conn.update(ALLOCATE_BOARDS_BOARD);
 			allocJob = conn.update(ALLOCATE_BOARDS_JOB);

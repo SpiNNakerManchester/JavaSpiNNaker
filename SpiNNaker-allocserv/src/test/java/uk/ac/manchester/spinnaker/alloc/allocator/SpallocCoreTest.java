@@ -794,8 +794,7 @@ class SpallocCoreTest extends TestSupport {
 		var job = spalloc
 				.createJobInGroup(USER_NAME, GROUP_NAME,
 						CreateBoard.triad(0, 0, 0),	MACHINE_NAME, List.of(),
-						Duration.ofSeconds(1), null)
-				.orElseThrow();
+						Duration.ofSeconds(1), null);
 		try {
 			job.access("0.0.0.0");
 			assertEquals(QUEUED, job.getState());
@@ -806,8 +805,7 @@ class SpallocCoreTest extends TestSupport {
 		job = spalloc
 				.createJobInGroup(USER_NAME, GROUP_NAME,
 						new CreateDimensions(1, 1, 1), MACHINE_NAME, List.of(),
-						Duration.ofSeconds(1), null)
-				.orElseThrow();
+						Duration.ofSeconds(1), null);
 		try {
 			assertEquals(QUEUED, job.getState());
 		} finally {
@@ -816,7 +814,7 @@ class SpallocCoreTest extends TestSupport {
 
 		job = spalloc.createJobInGroup(USER_NAME, GROUP_NAME,
 				new CreateDimensionsAt(1, 1, BOARD_ADDR, null), MACHINE_NAME,
-				List.of(), Duration.ofSeconds(1), null).orElseThrow();
+				List.of(), Duration.ofSeconds(1), null);
 		try {
 			assertEquals(QUEUED, job.getState());
 		} finally {
@@ -826,8 +824,7 @@ class SpallocCoreTest extends TestSupport {
 		job = spalloc
 				.createJobInGroup(USER_NAME, GROUP_NAME,
 						new CreateNumBoards(1, 0),	MACHINE_NAME, List.of(),
-						Duration.ofSeconds(1), null)
-				.orElseThrow();
+						Duration.ofSeconds(1), null);
 		try {
 			assertEquals(QUEUED, job.getState());
 		} finally {
@@ -837,8 +834,7 @@ class SpallocCoreTest extends TestSupport {
 		// Should be able to guess what group when only one...
 		job = spalloc
 				.createJob(USER_NAME, new CreateNumBoards(1, 0),
-						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
-				.orElseThrow();
+						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null);
 		try {
 			assertEquals(QUEUED, job.getState());
 			// TODO check that the right group was selected
