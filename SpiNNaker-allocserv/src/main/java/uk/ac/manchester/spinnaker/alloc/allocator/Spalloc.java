@@ -426,7 +426,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			int group = selectGroup(conn, owner, groupName);
 			if (!quotaManager.mayCreateJob(group)) {
 				// No quota left
-				throw new IllegalArgumentException("quota exceeded in group " + group);
+				throw new IllegalArgumentException(
+						"quota exceeded in group " + group);
 			}
 
 			var m = selectMachine(conn, descriptor, machineName, tags);
