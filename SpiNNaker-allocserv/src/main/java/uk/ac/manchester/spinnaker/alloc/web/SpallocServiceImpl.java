@@ -31,12 +31,10 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.physical;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
-import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -226,7 +224,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 * @throws JsonProcessingException
 	 *             If there is an error converting the request into bytes.
 	 */
-	private Optional<SpallocAPI.Job> createJob(CreateJobRequest req,
+	private SpallocAPI.Job createJob(CreateJobRequest req,
 			CreateDescriptor crds) throws JsonProcessingException {
 		if (!isNull(req.group)) {
 			return core.createJobInGroup(trim(req.owner), trim(req.group), crds,
@@ -270,14 +268,17 @@ public class SpallocServiceImpl extends BackgroundSupport
 					"At most one of group, nmpiCollabId or nmpiJobId"
 					+ " can be specified").build());
 		}
-		bgAction(response, () -> ifElse(
-				createJob(req, crds),
-				job -> created(ui.getRequestUriBuilder().path("{id}")
+		bgAction(response, () -> {
+			try {
+				var job = createJob(req, crds);
+				return created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
-						.entity(new CreateJobResponse(job, ui)).build(),
-				() -> status(BAD_REQUEST).type(TEXT_PLAIN)
-						// Most likely reason for failure
-						.entity("out of quota").build()));
+						.entity(new CreateJobResponse(job, ui)).build();
+			} catch (IllegalArgumentException e) {
+				return status(BAD_REQUEST).type(TEXT_PLAIN)
+						.entity(e.getMessage()).build();
+			}
+		});
 	}
 
 	private CreateDescriptor validateAndApplyDefaultsToJobRequest(

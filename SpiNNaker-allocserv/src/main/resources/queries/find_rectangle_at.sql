@@ -35,7 +35,7 @@ WITH RECURSIVE
 	c(x,y,z) AS (SELECT x, y, z FROM cx, cy, cz),
 	-- Count boards in rectangle based at specified root
 	root_count(available) AS (
-		SELECT SUM(bs.may_be_allocated) AS available
+		SELECT SUM(%usable) AS available
 		FROM selected_root, m, c, bs
 		WHERE bs.x = (c.x + selected_root.x) % m.width
 			AND bs.y = (c.y + selected_root.y) % m.height
@@ -48,5 +48,5 @@ SELECT
 	root_count.available AS available
 FROM args, selected_root, root_count
 WHERE root_count.available >= args.width * args.height - args.max_dead_boards
-	AND selected_root.may_be_allocated > 0
+	AND %root_usable
 LIMIT 1;

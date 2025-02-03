@@ -422,30 +422,32 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobInGroup(String owner, String groupName,
+	public Job createJobInGroup(String owner, String groupName,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
-			Duration keepaliveInterval, byte[] req) {
+			Duration keepaliveInterval, byte[] req)
+					throws IllegalArgumentException {
 		return execute(conn -> {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new RuntimeException("no such user: " + owner));
 			int group = selectGroup(conn, owner, groupName);
 			if (!quotaManager.mayCreateJob(group)) {
 				// No quota left
-				return Optional.empty();
+				throw new IllegalArgumentException(
+						"quota exceeded in group " + group);
 			}
 
-			var m = selectMachine(conn, machineName, tags);
+			var m = selectMachine(conn, descriptor, machineName, tags);
 			if (!m.isPresent()) {
-				// Cannot find machine!
-				return Optional.empty();
+				throw new IllegalArgumentException(
+						"no machine available which matches allocation "
+						+ "request");
 			}
 			var machine = m.orElseThrow();
 
 			var id = insertJob(conn, machine, user, group, keepaliveInterval,
 					req);
 			if (!id.isPresent()) {
-				// Insert failed
-				return Optional.empty();
+				throw new RuntimeException("failed to create job");
 			}
 			int jobId = id.orElseThrow();
 
@@ -518,12 +520,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					machine.name, owner, numBoards);
 
 			allocator.scheduleAllocateNow();
-			return getJob(jobId, conn).map(ji -> (Job) ji);
+			return getJob(jobId, conn).map(ji -> (Job) ji).orElseThrow(
+					() -> new RuntimeException("Error creating job!"));
 		});
 	}
 
 	@Override
-	public Optional<Job> createJob(String owner, CreateDescriptor descriptor,
+	public Job createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
 		return execute(conn -> createJobInGroup(
@@ -532,7 +535,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobInCollabSession(String owner,
+	public Job createJobInCollabSession(String owner,
 			String nmpiCollab, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
@@ -543,13 +546,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		var job = execute(conn -> createJobInGroup(
 				owner, nmpiCollab, descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
-		// On failure to get job, just return; shouldn't happen as quota checked
-		// earlier, but just in case!
-		if (job.isEmpty()) {
-			return job;
-		}
 
-		quotaManager.associateNMPISession(job.get().getId(), session.getId(),
+		quotaManager.associateNMPISession(job.getId(), session.getId(),
 				quotaUnits);
 
 		// Return the job created
@@ -557,25 +555,21 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobForNMPIJob(String owner, int nmpiJobId,
+	public Job createJobForNMPIJob(String owner, int nmpiJobId,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
 			Duration keepaliveInterval,	byte[] originalRequest) {
 		var collab = quotaManager.mayUseNMPIJob(owner, nmpiJobId);
 		if (collab.isEmpty()) {
-			return Optional.empty();
+			throw new IllegalArgumentException("User cannot create session in "
+					+ "NMPI job" + nmpiJobId);
 		}
 		var quotaDetails = collab.get();
 
 		var job = execute(conn -> createJobInGroup(
 				owner, quotaDetails.collabId, descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
-		// On failure to get job, just return; shouldn't happen as quota checked
-		// earlier, but just in case!
-		if (job.isEmpty()) {
-			return job;
-		}
 
-		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId,
+		quotaManager.associateNMPIJob(job.getId(), nmpiJobId,
 				quotaDetails.quotaUnits);
 
 		// Return the job created
@@ -695,23 +689,72 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private Optional<MachineImpl> selectMachine(Connection conn,
-			String machineName, List<String> tags) {
+			CreateDescriptor descriptor, String machineName,
+			List<String> tags) {
 		if (nonNull(machineName)) {
-			return getMachine(machineName, false, conn);
-		} else if (!tags.isEmpty()) {
+			var m = getMachine(machineName, false, conn);
+			if (m.isPresent() && isAllocPossible(conn, descriptor, m.get())) {
+				return m;
+			}
+			return Optional.empty();
+		}
+
+		if (!tags.isEmpty()) {
 			for (var m : getMachines(conn, false).values()) {
 				var mi = (MachineImpl) m;
-				if (mi.tags.containsAll(tags)) {
-					/*
-					 * Originally, spalloc checked if allocation was possible;
-					 * we just assume that it is because there really isn't ever
-					 * going to be that many different machines on one service.
-					 */
+				if (mi.tags.containsAll(tags)
+						&& isAllocPossible(conn, descriptor, mi)) {
 					return Optional.of(mi);
 				}
 			}
 		}
 		return Optional.empty();
+	}
+
+	private boolean isAllocPossible(final Connection conn,
+			final CreateDescriptor descriptor,
+			final MachineImpl m) {
+		return descriptor.visit(new CreateVisitor<Boolean>() {
+			@Override
+			public Boolean numBoards(CreateNumBoards nb) {
+				try (var getNBoards = conn.query(COUNT_FUNCTIONING_BOARDS)) {
+					var numBoards = getNBoards.call1(integer("c"), m.id)
+							.orElseThrow();
+					return numBoards >= nb.numBoards;
+				}
+			}
+
+			@Override
+			public Boolean dimensions(CreateDimensions d) {
+				try (var checkPossible = conn.query(checkRectangle)) {
+					return checkPossible.call1((r) -> true, d.width, d.height,
+							m.id, d.maxDead).isPresent();
+				}
+			}
+
+			@Override
+			public Boolean dimensionsAt(CreateDimensionsAt da) {
+				try (var checkPossible = conn.query(checkRectangleAt)) {
+					int board = locateBoard(conn, m.name, da, true);
+					return checkPossible.call1((r) -> true, board,
+							da.width, da.height, m.id, da.maxDead).isPresent();
+				} catch (IllegalArgumentException e) {
+					// This means the board doesn't exist on the given machine
+					return false;
+				}
+			}
+
+			@Override
+			public Boolean board(CreateBoard b) {
+				try (var check = conn.query(CHECK_LOCATION)) {
+					int board = locateBoard(conn, m.name, b, false);
+					return check.call1((r) -> true, m.id, board).isPresent();
+				} catch (IllegalArgumentException e) {
+					// This means the board doesn't exist on the given machine
+					return false;
+				}
+			}
+		});
 	}
 
 	@Override
