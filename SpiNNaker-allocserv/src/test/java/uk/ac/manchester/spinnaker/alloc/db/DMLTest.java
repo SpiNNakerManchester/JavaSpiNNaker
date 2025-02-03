@@ -758,7 +758,8 @@ class DMLTest extends SimpleDBTestBase {
 						"keepalive_host", "death_reason", "death_timestamp",
 						"original_request", "allocation_timestamp",
 						"allocation_size", "machine_name", "user_name",
-						"group_id", "group_name"), q.getColumns());
+						"group_id", "group_name", "nmpi_job_id",
+						"nmpi_session_id"), q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, A_LONG_TIME));
 			});
 		}
@@ -789,11 +790,12 @@ class DMLTest extends SimpleDBTestBase {
 						"keepalive_host", "death_reason", "death_timestamp",
 						"original_request", "allocation_timestamp",
 						"allocation_size", "machine_name", "owner_name",
-						"group_id", "group_name"), q.getParameters());
+						"group_id", "group_name", "nmpi_job_id",
+						"nmpi_session_id"), q.getParameters());
 				assertEquals(1,
 						q.call(0, 0, "", A_LONG_TIME, 0, 0, 0, 0, A_LONG_TIME,
 								"", "", A_LONG_TIME, new byte[] {}, A_LONG_TIME,
-								0, "", "", 0, ""));
+								0, "", "", 0, "", null, null));
 			});
 		}
 	}

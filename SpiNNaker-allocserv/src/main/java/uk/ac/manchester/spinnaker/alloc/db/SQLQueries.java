@@ -1844,6 +1844,21 @@ public abstract class SQLQueries {
 			"DELETE FROM old_board_allocations WHERE alloc_id = :alloc_id";
 
 	/**
+	 * Actually delete an NMPI job record. Only called by the data tombstone-r.
+	 */
+	@Parameter("job_id")
+	protected static final String DELETE_NMPI_JOB =
+			"DELETE FROM job_nmpi_job WHERE job_id = :job_id";
+
+	/**
+	 * Actually delete an NMPI session record.
+	 * Only called by the data tombstone-r.
+	 */
+	@Parameter("job_id")
+	protected static final String DELETE_NMPI_SESSION =
+			"DELETE FROM job_nmpi_session WHERE job_id = :job_id";
+
+	/**
 	 * Read the blacklisted chips for a board.
 	 *
 	 * @see BlacklistStore
@@ -2273,17 +2288,23 @@ public abstract class SQLQueries {
 	@ResultColumn("user_name")
 	@ResultColumn("group_id")
 	@ResultColumn("group_name")
+	@ResultColumn("nmpi_job_id")
+	@ResultColumn("nmpi_session_id")
 	protected static final String READ_HISTORICAL_JOBS =
 			"SELECT job_id, machine_id, owner, create_timestamp, "
 			+ "jobs.width as width, jobs.height as height, jobs.depth as depth,"
 			+ "allocated_root, keepalive_interval, keepalive_host, "
 			+ "death_reason, death_timestamp, original_request, "
 			+ "allocation_timestamp, allocation_size, "
-			+ "machine_name, user_name, group_id, group_name "
+			+ "machine_name, user_name, group_id, group_name, "
+			+ "job_nmpi_job.nmpi_job_id as nmpi_job_id, "
+			+ "job_nmpi_session.session_id as nmpi_session_id "
 			+ "FROM jobs "
 			+ "JOIN user_groups USING (group_id) "
 			+ "JOIN machines USING (machine_id) "
 			+ "JOIN user_info ON jobs.owner = user_info.user_id "
+			+ "LEFT JOIN job_nmpi_job USING (job_id) "
+			+ "LEFT JOIN job_nmpi_session USING (job_id) "
 			+ "WHERE death_timestamp + :grace_period < UNIX_TIMESTAMP()";
 
 	/**
@@ -2320,6 +2341,8 @@ public abstract class SQLQueries {
 	@Parameter("owner_name")
 	@Parameter("group_id")
 	@Parameter("group_name")
+	@Parameter("nmpi_job_id")
+	@Parameter("nmpi_session_id")
 	protected static final String WRITE_HISTORICAL_JOBS =
 			"INSERT IGNORE INTO jobs( "
 			+ "job_id, machine_id, owner, create_timestamp, "
@@ -2327,13 +2350,15 @@ public abstract class SQLQueries {
 			+ "keepalive_interval, keepalive_host, "
 			+ "death_reason, death_timestamp, "
 			+ "original_request, allocation_timestamp, allocation_size, "
-			+ "machine_name, owner_name, group_id, group_name) "
+			+ "machine_name, owner_name, group_id, group_name, "
+			+ "nmpi_job_id, nmpi_session_id) "
 			+ "VALUES(:job_id, :machine_id, :owner, :create_timestamp, "
 			+ ":width, :height, :depth, :root_id, "
 			+ ":keepalive_interval, :keepalive_host, "
 			+ ":death_reason, :death_timestamp, "
 			+ ":original_request, :allocation_timestamp, :allocation_size, "
-			+ ":machine_name, :owner_name, :group_id, :group_name)";
+			+ ":machine_name, :owner_name, :group_id, :group_name, "
+			+ ":nmpi_job_id, :nmpi_session_id)";
 
 	/**
 	 * Set the NMPI session for a Job.
