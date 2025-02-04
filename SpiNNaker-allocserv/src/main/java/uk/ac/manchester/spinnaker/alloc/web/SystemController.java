@@ -202,7 +202,7 @@ public interface SystemController {
 			HttpServletResponse response);
 
 	/**
-	 * Get the view for the job processes on a chip
+	 * Get job processes on a chip.
 	 *
 	 * @param id
 	 *            Which job is being asked for
@@ -210,8 +210,8 @@ public interface SystemController {
 	 * 	          The x coordinate of the chip
 	 * @param y
 	 *            The y coordinate of the chip
-	 * @return View ({@code jobprocesses.jsp}) and model (based on
-	 *         {@link List<Process>})
+	 * @return List of Processes.  Note all cores are returned though there
+	 *        may be no process on some of them and some may be dead cores.
 	 */
 	@GetMapping("/job_processes/{id}")
 	@PreAuthorize(MAY_SEE_JOB_DETAILS)
