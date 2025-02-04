@@ -34,6 +34,26 @@ limitations under the License.
 <tr>
 	<th class="lineTitle">Job ID:</th>
 	<td>${ job.id }</td>
+
+	<!-- Column for the Process listings -->
+	<td rowspan="12">
+		<h2>Processes</h2>
+		<p>Select a chip:
+			X: <select id="process_x">
+			<c:forEach var="x" begin="0" end="${ job.width }">
+				<option value="${ x }">${ x }</option>
+			</c:forEach>
+			</select>
+			Y: <select id="process_y">
+			<c:forEach var="y" begin="0" end="${ job.height }">
+				<option value="${ y }">${ y }</option>
+			</c:forEach>
+			</select>
+
+			<button onclick="loadProcessList('${ processUri }', 'process_list', 'process_x', 'process_y')">Get Processes</button>
+		</p>
+		<div id="process_list"></div>
+	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>

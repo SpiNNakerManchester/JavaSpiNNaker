@@ -19,6 +19,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.security.Principal;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
@@ -210,11 +212,11 @@ public interface SystemController {
 	 * @param y
 	 *            The y coordinate of the chip
 	 * @return View ({@code jobprocesses.jsp}) and model (based on
-	 *         {@link List<ProcessResponse>})
+	 *         {@link List<Process>})
 	 */
 	@GetMapping("/job_processes/{id}")
-	@PreAuthorize(IS_READER)
-	@UsedInJavadocOnly(JobDescription.class)
-	ModelAndView listProcesses(@PathVariable("id") int id,
+	@PreAuthorize(MAY_SEE_JOB_DETAILS)
+	@ResponseBody
+	List<Process> listProcesses(@PathVariable("id") int id,
 			@QueryParam("x") int x, @QueryParam("y") int y);
 }

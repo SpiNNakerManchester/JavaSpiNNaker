@@ -44,6 +44,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PA
 import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,9 +108,6 @@ public class SystemControllerImpl implements SystemController {
 
 	private static final ViewFactory JOB_VIEW = new ViewFactory("jobdetails");
 
-	private static final ViewFactory JOB_PROCESS_LIST_VIEW =
-			new ViewFactory("listjobprocesses");
-
 	// Must match what views expect
 	private static final String VERSION_OBJ = "version";
 
@@ -123,11 +121,11 @@ public class SystemControllerImpl implements SystemController {
 
 	private static final String ONE_MACHINE_OBJ = "machine";
 
-	private static final String JOB_PROCESSES_LIST_OBJ = "processList";
-
 	private static final String BASE_URI = "baseuri";
 
 	private static final long WAIT_FOR_POWER_SECONDS = 60;
+
+	private static final int N_CORES = 18;
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -420,16 +418,15 @@ public class SystemControllerImpl implements SystemController {
 	}
 
 	@Override
-	@PreAuthorize(IS_READER)
 	@Action("getting job process listing")
-	public ModelAndView listProcesses(int id, int x, int y) {
+	public List<Process> listProcesses(int id, int x, int y) {
 		var permit = new Permit(getContext());
 		var job = spallocCore.getJob(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 		try {
 			var txrx = job.getMachine().get().getTransceiver();
 			CoreSubsets cores = new CoreSubsets();
-			for (int i = 0; i < 18; i++) {
+			for (int i = 0; i < N_CORES; i++) {
 				cores.addCore(x, y, i);
 			}
 			var info = txrx.getCPUInformation(cores);
@@ -437,8 +434,7 @@ public class SystemControllerImpl implements SystemController {
 			for (var inf : info) {
 				response.add(new Process(inf));
 			}
-			return view(JOB_PROCESS_LIST_VIEW, JOB_PROCESSES_LIST_OBJ,
-					response);
+			return response;
 		} catch (Exception e) {
 			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
 					"Error receiving process details", e);
