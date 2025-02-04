@@ -771,6 +771,14 @@ public class AllocatorTask extends DatabaseAwareBean
 			return jobs.stream().filter(Objects::nonNull);
 		}
 
+		private Stream<Integer> nmpiJobs() {
+			return jobs().map(j -> j.nmpiJobId).filter(Objects::nonNull);
+		}
+
+		private Stream<Integer> nmpiSessions() {
+			return jobs().map(j -> j.nmpiSessionId).filter(Objects::nonNull);
+		}
+
 		/**
 		 * @return The number of job records to copy over to the historical
 		 *         database.
@@ -850,6 +858,10 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		String groupName;
 
+		Integer nmpiJobId;
+
+		Integer nmpiSessionId;
+
 		HistoricalJob(Row row) {
 			jobId = row.getInt("job_id");
 			machineId = row.getInt("machine_id");
@@ -870,6 +882,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			userName = row.getString("user_name");
 			groupId = row.getInt("group_id");
 			groupName = row.getString("group_name");
+			nmpiJobId = row.getInteger("nmpi_job_id");
+			nmpiSessionId = row.getInteger("nmpi_session_id");
 		}
 
 		Object[] args() {
@@ -878,7 +892,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				width, height, depth, allocatedRoot, keepaliveInterval,
 				keepaliveHost, deathReason, deathTimestamp, originalRequest,
 				allocationTimestamp, allocationSize, machineName, userName,
-				groupId, groupName
+				groupId, groupName, nmpiJobId, nmpiSessionId
 			};
 		}
 	}
@@ -903,6 +917,8 @@ public class AllocatorTask extends DatabaseAwareBean
 				var readAllocs = conn.query(READ_HISTORICAL_ALLOCS);
 				var deleteJobs = conn.update(DELETE_JOB_RECORD);
 				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD);
+				var deleteNMPIJob = conn.update(DELETE_NMPI_JOB);
+				var deleteNMPISession = conn.update(DELETE_NMPI_SESSION);
 				var writeJobs = histConn.update(WRITE_HISTORICAL_JOBS);
 				var writeAllocs = histConn.update(WRITE_HISTORICAL_ALLOCS)) {
 			var grace = historyProps.getGracePeriod();
@@ -914,6 +930,8 @@ public class AllocatorTask extends DatabaseAwareBean
 				copied.jobs().forEach((j) -> writeJobs.call(j.args()));
 			});
 			conn.transaction(() -> {
+				copied.nmpiJobs().forEach(deleteNMPIJob::call);
+				copied.nmpiSessions().forEach(deleteNMPISession::call);
 				copied.allocs().forEach((a) -> deleteAllocs.call(a.allocId));
 				copied.jobs().forEach((j) -> deleteJobs.call(j.jobId));
 			});
