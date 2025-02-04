@@ -24,7 +24,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.ws.rs.QueryParam;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -218,5 +217,5 @@ public interface SystemController {
 	@PreAuthorize(MAY_SEE_JOB_DETAILS)
 	@ResponseBody
 	List<Process> listProcesses(@PathVariable("id") int id,
-			@QueryParam("x") int x, @QueryParam("y") int y);
+			@Valid @RequestParam("x") int x, @Valid @RequestParam("y") int y);
 }
