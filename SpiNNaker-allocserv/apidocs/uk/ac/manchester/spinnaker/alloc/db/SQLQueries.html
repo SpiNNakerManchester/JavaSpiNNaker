@@ -377,6 +377,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_NMPI_JOB">DELETE_NMPI_JOB</a></span></code></th>
+<td class="colLast">
+<div class="block">Actually delete an NMPI job record.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_NMPI_SESSION">DELETE_NMPI_SESSION</a></span></code></th>
+<td class="colLast">
+<div class="block">Actually delete an NMPI session record.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELETE_PENDING">DELETE_PENDING</a></span></code></th>
 <td class="colLast">
 <div class="block">Delete a requests to change the power of a board.</div>
@@ -3252,6 +3266,31 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="DELETE_NMPI_JOB">DELETE_NMPI_JOB</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("job_id")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">DELETE_NMPI_JOB</span></div>
+<div class="block">Actually delete an NMPI job record. Only called by the data tombstone-r.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.DELETE_NMPI_JOB">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="DELETE_NMPI_SESSION">DELETE_NMPI_SESSION</a></h3>
+<div class="memberSignature"><span class="annotations">@Parameter("job_id")
+</span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">DELETE_NMPI_SESSION</span></div>
+<div class="block">Actually delete an NMPI session record.
+ Only called by the data tombstone-r.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.db.SQLQueries.DELETE_NMPI_SESSION">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="GET_BLACKLISTED_CHIPS">GET_BLACKLISTED_CHIPS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("board_id")
 @ResultColumn("x") @ResultColumn("y") @ResultColumn("notes")
@@ -3647,7 +3686,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="READ_HISTORICAL_JOBS">READ_HISTORICAL_JOBS</a></h3>
 <div class="memberSignature"><span class="annotations">@Parameter("grace_period")
-@ResultColumn("job_id") @ResultColumn("machine_id") @ResultColumn("owner") @ResultColumn("create_timestamp") @ResultColumn("width") @ResultColumn("height") @ResultColumn("depth") @ResultColumn("allocated_root") @ResultColumn("keepalive_interval") @ResultColumn("keepalive_host") @ResultColumn("death_reason") @ResultColumn("death_timestamp") @ResultColumn("original_request") @ResultColumn("allocation_timestamp") @ResultColumn("allocation_size") @ResultColumn("machine_name") @ResultColumn("user_name") @ResultColumn("group_id") @ResultColumn("group_name")
+@ResultColumn("job_id") @ResultColumn("machine_id") @ResultColumn("owner") @ResultColumn("create_timestamp") @ResultColumn("width") @ResultColumn("height") @ResultColumn("depth") @ResultColumn("allocated_root") @ResultColumn("keepalive_interval") @ResultColumn("keepalive_host") @ResultColumn("death_reason") @ResultColumn("death_timestamp") @ResultColumn("original_request") @ResultColumn("allocation_timestamp") @ResultColumn("allocation_size") @ResultColumn("machine_name") @ResultColumn("user_name") @ResultColumn("group_id") @ResultColumn("group_name") @ResultColumn("nmpi_job_id") @ResultColumn("nmpi_session_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">READ_HISTORICAL_JOBS</span></div>
 <div class="block">Read historical jobs to be written to the historical data DB.
  Only jobs that are already completed will ever get read here.</div>
@@ -3672,7 +3711,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="WRITE_HISTORICAL_JOBS">WRITE_HISTORICAL_JOBS</a></h3>
-<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("machine_id") @Parameter("owner") @Parameter("create_timestamp") @Parameter("width") @Parameter("height") @Parameter("depth") @Parameter("root_id") @Parameter("keepalive_interval") @Parameter("keepalive_host") @Parameter("death_reason") @Parameter("death_timestamp") @Parameter("original_request") @Parameter("allocation_timestamp") @Parameter("allocation_size") @Parameter("machine_name") @Parameter("owner_name") @Parameter("group_id") @Parameter("group_name")
+<div class="memberSignature"><span class="annotations">@Parameter("job_id") @Parameter("machine_id") @Parameter("owner") @Parameter("create_timestamp") @Parameter("width") @Parameter("height") @Parameter("depth") @Parameter("root_id") @Parameter("keepalive_interval") @Parameter("keepalive_host") @Parameter("death_reason") @Parameter("death_timestamp") @Parameter("original_request") @Parameter("allocation_timestamp") @Parameter("allocation_size") @Parameter("machine_name") @Parameter("owner_name") @Parameter("group_id") @Parameter("group_name") @Parameter("nmpi_job_id") @Parameter("nmpi_session_id")
 </span><span class="modifiers">protected static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">WRITE_HISTORICAL_JOBS</span></div>
 <div class="block">Write to the historical jobs database.</div>
 <dl>
