@@ -55,6 +55,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 class JsonTest {
 	private final ObjectMapper mapper;
@@ -226,6 +228,13 @@ class JsonTest {
 		@Override
 		public List<BoardCoordinates> getBoards() {
 			return List.of(new BoardCoordinates(0, 0, 0));
+		}
+
+		@Override
+		public TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException {
+			// Not testing this here!
+			return null;
 		}
 	}
 
