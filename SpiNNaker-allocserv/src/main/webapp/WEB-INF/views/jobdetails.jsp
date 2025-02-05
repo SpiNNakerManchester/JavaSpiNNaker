@@ -41,12 +41,12 @@ limitations under the License.
 			<h2>Processes</h2>
 			<p>Select a chip:
 				X: <select id="process_x">
-				<c:forEach var="x" begin="0" end="${ job.width.get() }">
+				<c:forEach var="x" begin="0" end="${ job.width.get }">
 					<option value="${ x }">${ x }</option>
 				</c:forEach>
 				</select>
 				Y: <select id="process_y">
-				<c:forEach var="y" begin="0" end="${ job.height.get() }">
+				<c:forEach var="y" begin="0" end="${ job.height.get }">
 					<option value="${ y }">${ y }</option>
 				</c:forEach>
 				</select>
