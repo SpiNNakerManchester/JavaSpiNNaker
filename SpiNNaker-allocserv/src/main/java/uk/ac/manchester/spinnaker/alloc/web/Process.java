@@ -46,7 +46,7 @@ public class Process {
 		return info.getApplicationName();
 	}
 
-	public String getTime() {
+	public String getStart() {
 		var instance = Instant.ofEpochSecond(info.getTime());
 		var formatter = DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm:ss");
 		return formatter.format(instance);

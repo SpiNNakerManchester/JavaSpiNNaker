@@ -1101,7 +1101,7 @@ function addProcessRow(table: HTMLTableElement, process: Process) {
 		addProcessCell(row, process.state);
 	}
 	addProcessCell(row, process.application);
-	addProcessCell(row, process.time);
+	addProcessCell(row, process.start);
 	table.appendChild(row);
 	if (process.rte) {
 		const rteRow = document.createElement('tr') as HTMLTableRowElement;
