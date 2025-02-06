@@ -16,6 +16,8 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
@@ -46,11 +48,9 @@ public class Process {
 	}
 
 	public String getTime() {
-		var duration = Duration.ofMillis(info.getTime());
-		long HH = duration.toHours();
-		long MM = duration.toMinutesPart();
-		long SS = duration.toSecondsPart();
-		return String.format("%d:%02d:%02d", HH, MM, SS);
+		var instance = Instant.ofEpochSecond(info.getTime());
+		var formatter = DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm:ss");
+		return formatter.format(instance);
 	}
 
 	public boolean isRte() {

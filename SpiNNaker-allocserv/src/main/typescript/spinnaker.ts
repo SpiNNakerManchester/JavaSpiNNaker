@@ -1083,7 +1083,7 @@ function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	r.send();
 }
 
-const PROCESS_HEADINGS: string[] = ["Core", "Phys. Core", "State", "Application", "Duration"];
+const PROCESS_HEADINGS: string[] = ["Core", "Phys. Core", "State", "Application", "Started"];
 
 function addProcessCell(row: HTMLTableRowElement, value: string) {
 	const cell = document.createElement('td') as HTMLTableCellElement;
