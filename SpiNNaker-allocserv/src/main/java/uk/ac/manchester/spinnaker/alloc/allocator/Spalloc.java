@@ -1691,18 +1691,18 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
-		public Optional<Integer> getWidth() {
-			return Optional.ofNullable(width);
+		public Integer getWidth() {
+			return width;
 		}
 
 		@Override
-		public Optional<Integer> getHeight() {
-			return Optional.ofNullable(height);
+		public Integer getHeight() {
+			return height;
 		}
 
 		@Override
-		public Optional<Integer> getDepth() {
-			return Optional.ofNullable(depth);
+		public Integer getDepth() {
+			return depth;
 		}
 
 		@Override

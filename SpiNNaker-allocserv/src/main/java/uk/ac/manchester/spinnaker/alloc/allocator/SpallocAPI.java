@@ -929,17 +929,15 @@ public interface SpallocAPI {
 
 		/**
 		 * @return the allocated width of the job's rectangle of triads, or
-		 *         {@link Optional#empty() empty()} if not allocated (or not
-		 *         known).
+		 *         null if not allocated (or not known).
 		 */
-		Optional<Integer> getWidth();
+		Integer getWidth();
 
 		/**
 		 * @return the allocated height of the job's rectangle of triads, or
-		 *         {@link Optional#empty() empty()} if not allocated (or not
-		 *         known).
+		 *         null if not allocated (or not known).
 		 */
-		Optional<Integer> getHeight();
+		Integer getHeight();
 
 		/**
 		 * @return the allocated depth of this sub-machine, or
@@ -947,7 +945,7 @@ public interface SpallocAPI {
 		 *         known). When supplied, will be 1 (single board) or 3 (by
 		 *         triad)
 		 */
-		Optional<Integer> getDepth();
+		Integer getDepth();
 
 		/**
 		 * Report an issue with some boards in the job.
