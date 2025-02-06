@@ -55,7 +55,7 @@ limitations under the License.
 			</p>
 			<div id="process_list"></div>
 		</td>
-	</c:when>
+	</c:if>
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
