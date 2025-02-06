@@ -229,13 +229,6 @@ class JsonTest {
 		public List<BoardCoordinates> getBoards() {
 			return List.of(new BoardCoordinates(0, 0, 0));
 		}
-
-		@Override
-		public TransceiverInterface getTransceiver()
-				throws IOException, InterruptedException, SpinnmanException {
-			// Not testing this here!
-			return null;
-		}
 	}
 
 	@Nested
