@@ -50,6 +50,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
@@ -458,6 +459,12 @@ public class SystemControllerImpl implements SystemController {
 			throw new RequestFailedException(Status.INTERNAL_SERVER_ERROR,
 					"Error receiving process details", e);
 		}
+	}
+
+	@ExceptionHandler(RequestFailedException.class)
+	public Response handleRequestFailed(RequestFailedException e) {
+		log.error("Request failed", e);
+		return e.toResponse();
 	}
 
 }
