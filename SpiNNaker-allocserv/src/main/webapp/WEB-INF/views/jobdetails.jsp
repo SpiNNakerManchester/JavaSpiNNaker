@@ -36,17 +36,17 @@ limitations under the License.
 	<td>${ job.id }</td>
 
 	<!-- Column for the Process listings -->
-	<c:if test="${ not empty job.boards }">
+	<c:when test="${ job.width.present }">
 		<td rowspan="12">
 			<h2>Processes</h2>
 			<p>Select a chip:
 				X: <select id="process_x">
-				<c:forEach var="x" begin="0" end="${ job.width }">
+				<c:forEach var="x" begin="0" end="${ jobWidth }">
 					<option value="${ x }">${ x }</option>
 				</c:forEach>
 				</select>
 				Y: <select id="process_y">
-				<c:forEach var="y" begin="0" end="${ job.height }">
+				<c:forEach var="y" begin="0" end="${ jobHeight }">
 					<option value="${ y }">${ y }</option>
 				</c:forEach>
 				</select>
@@ -55,7 +55,7 @@ limitations under the License.
 			</p>
 			<div id="process_list"></div>
 		</td>
-	</c:if>
+	</c:when>
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
@@ -132,9 +132,11 @@ limitations under the License.
 	<th class="lineTitle">Dimensions (chips):</th>
 	<td>
 		<c:choose>
-			<c:when test="${ not empty job.boards }">
-				<spring:eval expression="job.width" />
-				&times;<spring:eval expression="job.height" />
+			<c:when test="${ job.width.present }">
+				<spring:eval
+						expression="job.width.get()"
+				/>&times;<spring:eval
+						expression="job.height.get()" />
 			</c:when>
 			<c:otherwise>Not currently allocated</c:otherwise>
 		</c:choose>

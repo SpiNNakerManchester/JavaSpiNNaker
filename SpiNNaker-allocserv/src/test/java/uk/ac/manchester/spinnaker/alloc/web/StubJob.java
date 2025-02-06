@@ -115,17 +115,17 @@ public abstract class StubJob implements Job {
 	}
 
 	@Override
-	public Integer getWidth() {
+	public Optional<Integer> getWidth() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Integer getHeight() {
+	public Optional<Integer> getHeight() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Integer getDepth() {
+	public Optional<Integer> getDepth() {
 		throw new UnsupportedOperationException();
 	}
 

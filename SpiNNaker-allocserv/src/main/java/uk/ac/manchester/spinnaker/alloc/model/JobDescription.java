@@ -34,19 +34,19 @@ import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
  * Descriptive detail for a job. Used for HTML generation, something like:
  *
  * <pre>
-	Job ID: 6037654
-	Owner: gorp
-	State: ready
+	 Job ID: 6037654
+	  Owner: gorp
+	  State: ready
 Start time: 11/07/2021 13:04:43
 Keepalive: 60 seconds
 Owner host: 192.168.0.33
 	Request: Job(1)
 Allocation:  ___
-			/ . \
-			\___/
+			 / . \
+			 \___/
 Hostname: 10.11.12.13
-	Width: 8
-	Height: 8
+	  Width: 8
+	 Height: 8
 Num boards: 1
 Board power: on
 Running on: SpiNNaker1M
@@ -179,10 +179,10 @@ public class JobDescription {
 
 	/**
 	 * @return the width of the allocation in <em>chips</em>, or
-	 *         null if the job is not allocated.
+	 *         {@link Optional#empty() empty()} if the job is not allocated.
 	 */
-	public Integer getWidth() {
-		return width;
+	public Optional<Integer> getWidth() {
+		return Optional.ofNullable(width);
 	}
 
 	/**
@@ -195,10 +195,10 @@ public class JobDescription {
 
 	/**
 	 * @return the height of the allocation in <em>chips</em>, or
-	 *         null if the job is not allocated.
+	 *         {@link Optional#empty() empty()} if the job is not allocated.
 	 */
-	public Integer getHeight() {
-		return height;
+	public Optional<Integer> getHeight() {
+		return Optional.ofNullable(height);
 	}
 
 	/**

@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
@@ -171,13 +170,13 @@ class V1TaskImpl extends V1CompatTask {
 		} else {
 			// Everything else is in terms of triads; careful of wraparounds
 			var full = machine.getMachine();
-			int linearTriadSize = Optional.ofNullable(job.getWidth()).orElse(0);
+			int linearTriadSize = job.getWidth().orElse(0);
 			w = linearTriadSize * TRIAD_WIDTH;
 			if (linearTriadSize != full.getWidth()
 					|| !full.isHorizonallyWrapped()) {
 				w += HALF_SIZE;
 			}
-			linearTriadSize = Optional.ofNullable(job.getHeight()).orElse(0);
+			linearTriadSize = job.getHeight().orElse(0);
 			h = linearTriadSize * TRIAD_HEIGHT;
 			if (linearTriadSize != full.getHeight()
 					|| !full.isVerticallyWrapped()) {
