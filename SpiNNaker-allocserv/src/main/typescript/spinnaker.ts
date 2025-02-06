@@ -137,8 +137,8 @@ interface Process {
 	/** The name of the process. */
 	application: string;
 
-	/** The duration of the process. */
-	time: string;
+	/** The start time of the process. */
+	start: string;
 
 	/** If the process is in RTE. */
 	rte: boolean;
