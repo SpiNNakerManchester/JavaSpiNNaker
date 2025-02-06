@@ -40,6 +40,8 @@ limitations under the License.
 		<td rowspan="12">
 			<h2>Processes</h2>
 			<p>Select a chip:
+				<spring:eval var="jobWidth" expression="job.width.get()" />
+				<spring:eval var="jobHeight" expression="job.height.get()" />
 				X: <select id="process_x">
 				<c:forEach var="x" begin="0" end="${ jobWidth }">
 					<option value="${ x }">${ x }</option>
