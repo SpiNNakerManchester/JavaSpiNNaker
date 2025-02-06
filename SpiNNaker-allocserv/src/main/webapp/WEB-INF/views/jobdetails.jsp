@@ -36,7 +36,7 @@ limitations under the License.
 	<td>${ job.id }</td>
 
 	<!-- Column for the Process listings -->
-	<c:when test="${ job.width.present }">
+	<c:if test="${ job.width.present }">
 		<td rowspan="12">
 			<h2>Processes</h2>
 			<p>Select a chip:
