@@ -36,7 +36,7 @@ limitations under the License.
 	<td>${ job.id }</td>
 
 	<!-- Column for the Process listings -->
-	<c:when test="${ job.width.present }">
+	<c:if test="${ job.width.present }">
 		<td rowspan="12">
 			<h2>Processes</h2>
 			<p>Select a chip:
@@ -55,7 +55,7 @@ limitations under the License.
 			</p>
 			<div id="process_list"></div>
 		</td>
-	</c:when>
+	</c:if>
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
