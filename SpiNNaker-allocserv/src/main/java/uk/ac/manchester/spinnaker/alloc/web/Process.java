@@ -15,8 +15,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
@@ -47,9 +48,10 @@ public class Process {
 	}
 
 	public String getStart() {
-		var instance = Instant.ofEpochSecond(info.getTime());
-		var formatter = DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm:ss");
-		return formatter.format(instance);
+		var instant = Instant.ofEpochSecond(info.getTime());
+		var date = Date.from(instant);
+		var formatter = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+		return formatter.format(date);
 	}
 
 	public boolean isRte() {
