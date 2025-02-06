@@ -62,7 +62,7 @@ server:
       # NOTE: Make sure this is longer than spalloc.keepalive.max
       timeout: 30m
   error:
-	include-message: true	  
+    include-message: true	  
 
 cxf:
   path: /spalloc/srv
