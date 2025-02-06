@@ -42,6 +42,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.google.errorprone.annotations.Keep;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -978,6 +979,20 @@ public interface SpallocAPI {
 		 *            The proxy.
 		 */
 		void forgetProxy(ProxyCore proxy);
+
+		/**
+		 * Get a way to talk to the machine directly.  Note that it might not be
+		 * booted...
+		 *
+		 * @return The transceiver interface.
+		 * @throws IOException if there is an issue creating the transceiver.
+		 * @throws InterruptedException if the operation is interrupted.
+		 * @throws SpinnmanException
+		 *         if there is an issue speaking to the machine.
+		 */
+		@MustBeClosed
+		TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException;
 	}
 
 	/**
@@ -1234,18 +1249,5 @@ public interface SpallocAPI {
 		 *            What to set the power state to.
 		 */
 		void setPower(@NotNull PowerState powerState);
-
-		/**
-		 * Get a way to talk to the machine directly.  Note that it might not be
-		 * booted...
-		 *
-		 * @return The transceiver interface.
-		 * @throws IOException if there is an issue creating the transceiver.
-		 * @throws InterruptedException if the operation is interrupted.
-		 * @throws SpinnmanException
-		 *         if there is an issue speaking to the machine.
-		 */
-		TransceiverInterface getTransceiver()
-				throws IOException, InterruptedException, SpinnmanException;
 	}
 }

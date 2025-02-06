@@ -428,8 +428,7 @@ public class SystemControllerImpl implements SystemController {
 		var permit = new Permit(getContext());
 		var job = spallocCore.getJob(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-		try {
-			var txrx = job.getMachine().get().getTransceiver();
+		try (var txrx = job.getTransceiver()) {
 			CoreSubsets cores = new CoreSubsets();
 			for (int i = 0; i < N_CORES; i++) {
 				cores.addCore(x, y, i);
