@@ -55,8 +55,6 @@ import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 class JsonTest {
 	private final ObjectMapper mapper;
