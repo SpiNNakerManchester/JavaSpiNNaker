@@ -137,6 +137,9 @@ interface Process {
 	/** The name of the process. */
 	application: string;
 
+	/** The application id of the process. */
+	appId: number;
+
 	/** The start time of the process. */
 	start: string;
 
@@ -1083,7 +1086,7 @@ function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	r.send();
 }
 
-const PROCESS_HEADINGS: string[] = ["Core", "Phys. Core", "State", "Application", "Started"];
+const PROCESS_HEADINGS: string[] = ["Core", "Phys", "State", "Application", "App Id", "Started"];
 
 function addProcessCell(row: HTMLTableRowElement, value: string) {
 	const cell = document.createElement('td') as HTMLTableCellElement;
@@ -1101,6 +1104,7 @@ function addProcessRow(table: HTMLTableElement, process: Process) {
 		addProcessCell(row, process.state);
 	}
 	addProcessCell(row, process.application);
+	addProcessCell(row, String(process.appId));
 	addProcessCell(row, process.start);
 	table.appendChild(row);
 	if (process.rte) {

@@ -47,6 +47,10 @@ public class Process {
 		return info.getApplicationName();
 	}
 
+	public int getAppId() {
+		return info.getApplicationID();
+	}
+
 	public String getStart() {
 		var instant = Instant.ofEpochSecond(info.getTime());
 		var date = Date.from(instant);
