@@ -418,6 +418,7 @@ public class SystemControllerImpl implements SystemController {
 	}
 
 	@Override
+	@PreAuthorize(IS_READER)
 	@Action("getting job process listing")
 	public List<Process> listProcesses(int id, int x, int y) {
 		var permit = new Permit(getContext());

@@ -214,7 +214,7 @@ public interface SystemController {
 	 *        may be no process on some of them and some may be dead cores.
 	 */
 	@GetMapping("/job_processes/{id}")
-	@PreAuthorize(MAY_SEE_JOB_DETAILS)
+	@PreAuthorize(IS_READER)
 	@ResponseBody
 	List<Process> listProcesses(@PathVariable("id") int id,
 			@Valid @RequestParam("x") int x, @Valid @RequestParam("y") int y);
