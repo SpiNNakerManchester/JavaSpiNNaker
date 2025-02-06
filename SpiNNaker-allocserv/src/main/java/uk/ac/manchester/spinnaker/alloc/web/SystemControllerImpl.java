@@ -369,13 +369,13 @@ public class SystemControllerImpl implements SystemController {
 	@Action("getting job details")
 	public ModelAndView getJobInfo(int id) {
 		var permit = new Permit(getContext());
-		var mach = spallocCore.getJobInfo(permit, id)
+		var job = spallocCore.getJobInfo(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-		if (nonNull(mach.getRequestBytes())) {
-			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
+		if (nonNull(job.getRequestBytes())) {
+			job.setRequest(new String(job.getRequestBytes(), UTF_8));
 		}
-		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
-		var mav = view(JOB_VIEW, ONE_JOB_OBJ, mach);
+		job.setMachineUrl(uri(self().getMachineInfo(job.getMachine())));
+		var mav = view(JOB_VIEW, ONE_JOB_OBJ, job);
 		mav.addObject("deleteUri", uri(self().destroyJob(id, null)));
 		mav.addObject("powerUri", uri(self().powerJob(id, false)));
 		mav.addObject("processUri", uri(self().listProcesses(id, 0, 0)));
