@@ -446,7 +446,8 @@ public class SystemControllerImpl implements SystemController {
 			var cause = e.getCause();
 			if (cause instanceof SocketTimeoutException) {
 				throw new ResponseStatusException(GATEWAY_TIMEOUT,
-						"Timeout waiting for process information",
+						"Timeout waiting for process information; "
+						+ "is the machine booted?",
 						cause);
 			} else {
 				throw new ResponseStatusException(INTERNAL_SERVER_ERROR,

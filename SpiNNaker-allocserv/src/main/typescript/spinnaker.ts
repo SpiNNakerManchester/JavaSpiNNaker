@@ -1147,7 +1147,8 @@ function loadProcessList(sourceUri: string, elementId: string, xId: string, yId:
 			}
 			element.appendChild(table)
 		} else {
-			element.innerHTML = "Failed load process list: " + r.status + " - " + r.statusText + ": " + r.response;
+			element.innerHTML = "Failed load process list: "
+				+ r.message.replace(/\n/g, " ");
 		}
 	};
 	r.onerror = () => {
