@@ -151,7 +151,24 @@ interface Process {
 
 	/** The RTE registers. */
 	rteRegisters: string;
-}
+};
+
+interface SpringError {
+	/** The time of the error as milliseconds since the epoch */
+	timestamp: number;
+
+	/** The HTTP Status */
+	status: number;
+
+	/** The HTTP Error message */
+	error: string;
+
+	/** The error message */
+	message: string;
+
+	/** The error path of the URL */
+	path: string;
+};
 
 /** Type of a function for looking up the location descriptor for a board. */
 type GetBoardInfo = (board: BoardTriad) => BoardLocator | undefined;
@@ -1147,8 +1164,9 @@ function loadProcessList(sourceUri: string, elementId: string, xId: string, yId:
 			}
 			element.appendChild(table)
 		} else {
+			const error = JSON.parse(r.response) as SpringError;
 			element.innerHTML = "Failed load process list: "
-				+ r.message.replace(/\n/g, " ");
+				+ error.message.replace(/\n/g, " ");
 		}
 	};
 	r.onerror = () => {
