@@ -20,6 +20,7 @@ import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
@@ -41,6 +42,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PATH;
 
+import java.net.SocketTimeoutException;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -79,6 +81,8 @@ import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException.NoP2PRoute;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -436,6 +440,18 @@ public class SystemControllerImpl implements SystemController {
 				response.add(new Process(inf));
 			}
 			return response;
+		} catch (NoP2PRoute e) {
+			throw new ResponseStatusException(NOT_FOUND, e.getMessage(), e);
+		} catch (ProcessException e) {
+			var cause = e.getCause();
+			if (cause instanceof SocketTimeoutException) {
+				throw new ResponseStatusException(GATEWAY_TIMEOUT,
+						"Timeout waiting for process information",
+						cause);
+			} else {
+				throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+						"Error receiving process details", e);
+			}
 		} catch (Exception e) {
 			log.error("Error receiving process details", e);
 			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
