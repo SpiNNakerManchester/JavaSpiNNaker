@@ -98,6 +98,7 @@ canvas.overlink {
 }
 .process_heading {
 	font-weight: bold;
+	text-align: left;
 }
 
 .process_cell {

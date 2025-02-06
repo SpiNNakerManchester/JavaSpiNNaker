@@ -1133,6 +1133,7 @@ function loadProcessList(sourceUri: string, elementId: string, xId: string, yId:
 			const headerRow = document.createElement('tr') as HTMLTableRowElement;
 			for (let h = 0; h < PROCESS_HEADINGS.length; h++) {
 				const heading = document.createElement('th') as HTMLTableCellElement;
+				heading.className = "process_heading";
 				heading.innerHTML = PROCESS_HEADINGS[h];
 				headerRow.appendChild(heading);
 			}
