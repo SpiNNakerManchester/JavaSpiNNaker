@@ -15,7 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 

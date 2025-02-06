@@ -19,8 +19,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
@@ -52,6 +50,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -441,20 +440,22 @@ public class SystemControllerImpl implements SystemController {
 			}
 			return response;
 		} catch (NoP2PRoute e) {
-			throw new ResponseStatusException(NOT_FOUND, e.getMessage(), e);
+			throw new RequestFailedException(Status.NOT_FOUND, e.getMessage(),
+					e);
 		} catch (ProcessException e) {
 			var cause = e.getCause();
 			if (cause instanceof SocketTimeoutException) {
-				throw new ResponseStatusException(GATEWAY_TIMEOUT,
-						"Timeout waiting for process information",
+				throw new RequestFailedException(Status.GATEWAY_TIMEOUT,
+						"Timeout waiting for process information; "
+						+ "ensure the machine is booted!",
 						cause);
 			} else {
-				throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+				throw new RequestFailedException(Status.INTERNAL_SERVER_ERROR,
 						"Error receiving process details", e);
 			}
 		} catch (Exception e) {
 			log.error("Error receiving process details", e);
-			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+			throw new RequestFailedException(Status.INTERNAL_SERVER_ERROR,
 					"Error receiving process details", e);
 		}
 	}

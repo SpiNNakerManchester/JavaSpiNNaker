@@ -1869,6 +1869,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			public TransceiverInterface getTransceiver() throws IOException,
 					InterruptedException, SpinnmanException {
 				if (transceiver == null) {
+					if (connections.isEmpty()) {
+						throw new IllegalStateException(
+								"Job is not active!");
+					}
 					transceiver = new Transceiver(InetAddress.getByName(
 							connections.get(0).getHostname()),
 							MachineVersion.FIVE);
