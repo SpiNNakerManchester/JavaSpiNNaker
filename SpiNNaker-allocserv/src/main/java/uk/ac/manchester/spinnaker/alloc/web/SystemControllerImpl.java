@@ -437,6 +437,7 @@ public class SystemControllerImpl implements SystemController {
 			}
 			return response;
 		} catch (Exception e) {
+			log.error("Error receiving process details", e);
 			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
 					"Error receiving process details", e);
 		}

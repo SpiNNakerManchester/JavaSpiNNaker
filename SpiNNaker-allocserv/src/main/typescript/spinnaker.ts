@@ -1140,6 +1140,7 @@ function loadProcessList(sourceUri: string, elementId: string, xId: string, yId:
 			for (let row = 0; row < result.length; row++) {
 				addProcessRow(table, result[row]);
 			}
+			element.appendChild(table)
 		} else {
 			element.innerHTML = "Failed load process list: " + r.status + " - " + r.statusText + ": " + r.response;
 		}

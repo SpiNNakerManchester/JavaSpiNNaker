@@ -37,8 +37,8 @@ limitations under the License.
 
 	<!-- Column for the Process listings -->
 	<c:if test="${ job.width.present }">
-		<td rowspan="12">
-			<h2>Processes</h2>
+		<td rowspan="12" class="process_cell">
+			<p class="process_heading">Processes</p>
 			<p>Select a chip:
 				<spring:eval var="jobWidth" expression="job.width.get()" />
 				<spring:eval var="jobHeight" expression="job.height.get()" />
