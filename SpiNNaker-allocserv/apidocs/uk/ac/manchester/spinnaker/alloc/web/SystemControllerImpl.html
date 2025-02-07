@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -215,13 +215,22 @@ implements <a href="SystemController.html" title="interface in uk.ac.manchester.
 </td>
 </tr>
 <tr class="rowColor" id="i7">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Process.html" title="class in uk.ac.manchester.spinnaker.alloc.web">Process</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listProcesses(int,int,int)">listProcesses</a></span>&#8203;(int&nbsp;id,
+int&nbsp;x,
+int&nbsp;y)</code></th>
+<td class="colLast">
+<div class="block">Get job processes on a chip.</div>
+</td>
+</tr>
+<tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#login()">login</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the login form page.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#performLogout(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)">performLogout</a></span>&#8203;(<a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request,
 <a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/http/HttpServletResponse.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletResponse</a>&nbsp;response)</code></th>
@@ -229,7 +238,7 @@ implements <a href="SystemController.html" title="interface in uk.ac.manchester.
 <div class="block">Log the user out.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#postPasswordChangeForm(uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord,java.security.Principal)">postPasswordChangeForm</a></span>&#8203;(<a href="../model/PasswordChangeRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">PasswordChangeRecord</a>&nbsp;user,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</code></th>
@@ -237,7 +246,7 @@ implements <a href="SystemController.html" title="interface in uk.ac.manchester.
 <div class="block">Carry out a password change.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerJob(int,boolean)">powerJob</a></span>&#8203;(int&nbsp;id,
 boolean&nbsp;power)</code></th>
@@ -476,6 +485,28 @@ boolean&nbsp;power)</span></div>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>View (<code>jobdetails.jsp</code>) and model (based on
          <a href="../model/JobDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>JobDescription</code></a>)</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="listProcesses(int,int,int)">listProcesses</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PreAuthorize</a>("hasRole(\'READER\')")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="Process.html" title="class in uk.ac.manchester.spinnaker.alloc.web">Process</a>&gt;</span>&nbsp;<span class="memberName">listProcesses</span>&#8203;(<span class="arguments">int&nbsp;id,
+int&nbsp;x,
+int&nbsp;y)</span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SystemController.html#listProcesses(int,@javax.validation.Validint,@javax.validation.Validint)">SystemController</a></code></span></div>
+<div class="block">Get job processes on a chip.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="SystemController.html#listProcesses(int,@javax.validation.Validint,@javax.validation.Validint)">listProcesses</a></code>&nbsp;in interface&nbsp;<code><a href="SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>id</code> - Which job is being asked for</dd>
+<dd><code>x</code> - The x coordinate of the chip</dd>
+<dd><code>y</code> - The y coordinate of the chip</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>List of Processes.  Note all cores are returned though there
+        may be no process on some of them and some may be dead cores.</dd>
 </dl>
 </section>
 </li>

@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -213,18 +213,25 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i16">
+<td class="colFirst"><code><a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTransceiver()">getTransceiver</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Get a way to talk to the machine directly.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i17">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getWidth()">getWidth</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i17">
+<tr class="altColor" id="i18">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rememberProxy(uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore)">rememberProxy</a></span>&#8203;(<a href="../proxy/ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">ProxyCore</a>&nbsp;proxy)</code></th>
 <td class="colLast">
 <div class="block">Note that a proxy has been set up for the job.</div>
 </td>
 </tr>
-<tr class="altColor" id="i18">
+<tr class="rowColor" id="i19">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reportIssue(uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest,uk.ac.manchester.spinnaker.alloc.security.Permit)">reportIssue</a></span>&#8203;(<a href="../web/IssueReportRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.web">IssueReportRequest</a>&nbsp;reqBody,
 <a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit)</code></th>
@@ -232,14 +239,14 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="block">Report an issue with some boards in the job.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i19">
+<tr class="altColor" id="i20">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPower(boolean)">setPower</a></span>&#8203;(boolean&nbsp;power)</code></th>
 <td class="colLast">
 <div class="block">Power a job on or off.</div>
 </td>
 </tr>
-<tr class="altColor" id="i20">
+<tr class="rowColor" id="i21">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="SpallocAPI.BoardLocation.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.BoardLocation</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint)">whereIs</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
 @uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</code></th>
@@ -514,6 +521,26 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>proxy</code> - The proxy.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getTransceiver()">getTransceiver</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
+</span><span class="returnType"><a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span>&nbsp;<span class="memberName">getTransceiver</span>()
+                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
+<a href="../../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span></div>
+<div class="block">Get a way to talk to the machine directly.  Note that it might not be
+ booted...</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The transceiver interface.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if there is an issue creating the transceiver.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - if the operation is interrupted.</dd>
+<dd><code><a href="../../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code> - if there is an issue speaking to the machine.</dd>
 </dl>
 </section>
 </li>

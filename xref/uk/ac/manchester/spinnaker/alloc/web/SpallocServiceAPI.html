@@ -574,27 +574,28 @@
 <a class="jxr_linenumber" name="L566" href="#L566">566</a> 		@Produces(APPLICATION_JSON)
 <a class="jxr_linenumber" name="L567" href="#L567">567</a> 		<strong class="jxr_keyword">void</strong> reportBoardIssue(<a name="IssueReportRequest" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/IssueReportRequest.html#IssueReportRequest">IssueReportRequest</a> report,
 <a class="jxr_linenumber" name="L568" href="#L568">568</a> 				@Suspended AsyncResponse response);
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> 	}
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> }
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> 
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment"> * Names of things used on Swagger documentation.</em>
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> DocConstants {
-<a class="jxr_linenumber" name="L578" href="#L578">578</a> 	<strong class="jxr_keyword">private</strong> DocConstants() {
-<a class="jxr_linenumber" name="L579" href="#L579">579</a> 	}
-<a class="jxr_linenumber" name="L580" href="#L580">580</a> 
-<a class="jxr_linenumber" name="L581" href="#L581">581</a> 	<em class="jxr_javadoccomment">/** Summary section tag. */</em>
-<a class="jxr_linenumber" name="L582" href="#L582">582</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String T_TOP = <span class="jxr_string">"Spalloc Service Summary"</span>;
-<a class="jxr_linenumber" name="L583" href="#L583">583</a> 
-<a class="jxr_linenumber" name="L584" href="#L584">584</a> 	<em class="jxr_javadoccomment">/** Jobs section tag. */</em>
-<a class="jxr_linenumber" name="L585" href="#L585">585</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String T_JOB = <span class="jxr_string">"SpiNNaker Jobs"</span>;
-<a class="jxr_linenumber" name="L586" href="#L586">586</a> 
-<a class="jxr_linenumber" name="L587" href="#L587">587</a> 	<em class="jxr_javadoccomment">/** Machines section tag. */</em>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String T_MCH = <span class="jxr_string">"SpiNNaker Machines"</span>;
-<a class="jxr_linenumber" name="L589" href="#L589">589</a> }
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> 
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> 	}
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> }
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> 
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment"> * Names of things used on Swagger documentation.</em>
+<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L578" href="#L578">578</a> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> DocConstants {
+<a class="jxr_linenumber" name="L579" href="#L579">579</a> 	<strong class="jxr_keyword">private</strong> DocConstants() {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a> 	}
+<a class="jxr_linenumber" name="L581" href="#L581">581</a> 
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> 	<em class="jxr_javadoccomment">/** Summary section tag. */</em>
+<a class="jxr_linenumber" name="L583" href="#L583">583</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String T_TOP = <span class="jxr_string">"Spalloc Service Summary"</span>;
+<a class="jxr_linenumber" name="L584" href="#L584">584</a> 
+<a class="jxr_linenumber" name="L585" href="#L585">585</a> 	<em class="jxr_javadoccomment">/** Jobs section tag. */</em>
+<a class="jxr_linenumber" name="L586" href="#L586">586</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String T_JOB = <span class="jxr_string">"SpiNNaker Jobs"</span>;
+<a class="jxr_linenumber" name="L587" href="#L587">587</a> 
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> 	<em class="jxr_javadoccomment">/** Machines section tag. */</em>
+<a class="jxr_linenumber" name="L589" href="#L589">589</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String T_MCH = <span class="jxr_string">"SpiNNaker Machines"</span>;
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2025 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
