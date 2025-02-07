@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_NMPI_EXEC;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.google.errorprone.annotations.Keep;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -67,6 +69,8 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -975,6 +979,20 @@ public interface SpallocAPI {
 		 *            The proxy.
 		 */
 		void forgetProxy(ProxyCore proxy);
+
+		/**
+		 * Get a way to talk to the machine directly.  Note that it might not be
+		 * booted...
+		 *
+		 * @return The transceiver interface.
+		 * @throws IOException if there is an issue creating the transceiver.
+		 * @throws InterruptedException if the operation is interrupted.
+		 * @throws SpinnmanException
+		 *         if there is an issue speaking to the machine.
+		 */
+		@MustBeClosed
+		TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException;
 	}
 
 	/**

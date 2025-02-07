@@ -36,6 +36,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_J
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
@@ -83,11 +86,15 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * The core implementation of the Spalloc service.
@@ -1707,6 +1714,20 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public void forgetProxy(ProxyCore proxy) {
 			rememberer.removeProxyForJob(id, proxy);
+		}
+
+		@Override
+		@MustBeClosed
+		public TransceiverInterface getTransceiver() throws IOException,
+				InterruptedException, SpinnmanException {
+			var mac = getMachine();
+			if (mac.isEmpty()) {
+				throw new IllegalStateException(
+						"Job is not active!");
+			}
+			return new Transceiver(InetAddress.getByName(
+					mac.get().getConnections().get(0).getHostname()),
+					MachineVersion.FIVE);
 		}
 
 		@Override

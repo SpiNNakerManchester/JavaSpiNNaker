@@ -34,6 +34,30 @@ limitations under the License.
 <tr>
 	<th class="lineTitle">Job ID:</th>
 	<td>${ job.id }</td>
+
+	<!-- Column for the Process listings -->
+	<c:if test="${ job.width.present }">
+		<td rowspan="12" class="process_cell">
+			<p class="process_heading">Processes</p>
+			<p>Select a chip:
+				<spring:eval var="jobWidth" expression="job.width.get()" />
+				<spring:eval var="jobHeight" expression="job.height.get()" />
+				X: <select id="process_x">
+				<c:forEach var="x" begin="0" end="${ jobWidth }">
+					<option value="${ x }">${ x }</option>
+				</c:forEach>
+				</select>
+				Y: <select id="process_y">
+				<c:forEach var="y" begin="0" end="${ jobHeight }">
+					<option value="${ y }">${ y }</option>
+				</c:forEach>
+				</select>
+
+				<button onclick="loadProcessList('${ processUri }', 'process_list', 'process_x', 'process_y')">Get Processes</button>
+			</p>
+			<div id="process_list"></div>
+		</td>
+	</c:if>
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
