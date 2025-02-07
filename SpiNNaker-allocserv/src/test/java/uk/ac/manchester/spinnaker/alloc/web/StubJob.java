@@ -26,6 +26,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A job that just throws {@link UnsupportedOperationException} for every
@@ -141,6 +142,12 @@ public abstract class StubJob implements Job {
 
 	@Override
 	public void forgetProxy(ProxyCore proxy) {
+		throw new UnsupportedOperationException();
+	}
+
+
+	@Override
+	public TransceiverInterface getTransceiver() {
 		throw new UnsupportedOperationException();
 	}
 
