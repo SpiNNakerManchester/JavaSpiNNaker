@@ -1854,17 +1854,17 @@
 <a class="jxr_linenumber" name="L1846" href="#L1846">1846</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1847" href="#L1847">1847</a> <em class="jxr_javadoccomment">	 * Actually delete an NMPI job record. Only called by the data tombstone-r.</em>
 <a class="jxr_linenumber" name="L1848" href="#L1848">1848</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1849" href="#L1849">1849</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L1849" href="#L1849">1849</a> 	@Parameter(<span class="jxr_string">"nmpi_job_id"</span>)
 <a class="jxr_linenumber" name="L1850" href="#L1850">1850</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DELETE_NMPI_JOB =
-<a class="jxr_linenumber" name="L1851" href="#L1851">1851</a> 			<span class="jxr_string">"DELETE FROM job_nmpi_job WHERE job_id = :job_id"</span>;
+<a class="jxr_linenumber" name="L1851" href="#L1851">1851</a> 			<span class="jxr_string">"DELETE FROM job_nmpi_job WHERE nmpi_job_id = :nmpi_job_id"</span>;
 <a class="jxr_linenumber" name="L1852" href="#L1852">1852</a> 
 <a class="jxr_linenumber" name="L1853" href="#L1853">1853</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1854" href="#L1854">1854</a> <em class="jxr_javadoccomment">	 * Actually delete an NMPI session record.</em>
 <a class="jxr_linenumber" name="L1855" href="#L1855">1855</a> <em class="jxr_javadoccomment">	 * Only called by the data tombstone-r.</em>
 <a class="jxr_linenumber" name="L1856" href="#L1856">1856</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1857" href="#L1857">1857</a> 	@Parameter(<span class="jxr_string">"job_id"</span>)
+<a class="jxr_linenumber" name="L1857" href="#L1857">1857</a> 	@Parameter(<span class="jxr_string">"session_id"</span>)
 <a class="jxr_linenumber" name="L1858" href="#L1858">1858</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DELETE_NMPI_SESSION =
-<a class="jxr_linenumber" name="L1859" href="#L1859">1859</a> 			<span class="jxr_string">"DELETE FROM job_nmpi_session WHERE job_id = :job_id"</span>;
+<a class="jxr_linenumber" name="L1859" href="#L1859">1859</a> 			<span class="jxr_string">"DELETE FROM job_nmpi_session WHERE session_id = :session_id"</span>;
 <a class="jxr_linenumber" name="L1860" href="#L1860">1860</a> 
 <a class="jxr_linenumber" name="L1861" href="#L1861">1861</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1862" href="#L1862">1862</a> <em class="jxr_javadoccomment">	 * Read the blacklisted chips for a board.</em>
