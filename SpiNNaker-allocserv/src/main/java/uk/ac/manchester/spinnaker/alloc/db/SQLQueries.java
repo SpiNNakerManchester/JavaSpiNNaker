@@ -1848,7 +1848,7 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("nmpi_job_id")
 	protected static final String DELETE_NMPI_JOB =
-			"DELETE FROM job_nmpi_job WHERE nmpi_job_id = :job_id";
+			"DELETE FROM job_nmpi_job WHERE nmpi_job_id = :nmpi_job_id";
 
 	/**
 	 * Actually delete an NMPI session record.
@@ -1856,7 +1856,7 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("session_id")
 	protected static final String DELETE_NMPI_SESSION =
-			"DELETE FROM job_nmpi_session WHERE session_id = :job_id";
+			"DELETE FROM job_nmpi_session WHERE session_id = :session_id";
 
 	/**
 	 * Read the blacklisted chips for a board.
