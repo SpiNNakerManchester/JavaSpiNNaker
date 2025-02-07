@@ -415,4 +415,32 @@ class AllocatorTest extends TestSupport {
 			}
 		});
 	}
+
+	@Test
+	public void tombstoneNMPI() throws Exception {
+		doTransactionalTest(() -> {
+			assumeTrue(db.isHistoricalDBAvailable());
+
+			try (Connection histConn = db.getHistoricalConnection()) {
+
+				int job = makeQueuedJob(1);
+				conn.update(SET_JOB_NMPI_JOB).call(job, 1234, "UNITS");
+				conn.update(SET_JOB_SESSION).call(job, 4321, "UNITS");
+				conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
+				conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
+				int preMain = countJobInTable(conn, job);
+				assertTrue(preMain == 1,
+						() -> "must have created a job we can tombstone");
+				int preTomb = countJobInTable(histConn, job);
+
+				var moved = getHistAllocTester(histConn).tombstone();
+
+				assertEquals(1, moved.numJobs());
+				// No resources were ever allocated, so no moves to do
+				assertEquals(0, moved.numAllocs());
+				assertEquals(preMain - 1, countJobInTable(conn, job));
+				assertEquals(preTomb + 1, countJobInTable(histConn, job));
+			}
+		});
+	}
 }
