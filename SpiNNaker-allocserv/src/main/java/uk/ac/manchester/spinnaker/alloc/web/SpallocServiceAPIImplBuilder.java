@@ -257,14 +257,12 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 
 			@Override
 			public void writeDataToJob(int x, int y, long address,
-					HttpServletRequest httpServletRequest,
+					byte[] bytes,
 					AsyncResponse response) {
 				bgAction(response, () -> {
 					try (var txrx = j.getTransceiver()) {
 						txrx.writeMemory(new ChipLocation(x, y),
-								new MemoryLocation(address),
-								httpServletRequest.getInputStream(),
-								httpServletRequest.getContentLength());
+								new MemoryLocation(address), bytes);
 					}
 					return accepted().build();
 				});

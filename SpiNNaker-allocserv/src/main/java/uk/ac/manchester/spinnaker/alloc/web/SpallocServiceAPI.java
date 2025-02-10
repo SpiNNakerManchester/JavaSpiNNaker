@@ -594,7 +594,7 @@ public interface SpallocServiceAPI {
 				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
 				@Description("The address to write the data to")
 				@QueryParam(ADDRESS) long address,
-				HttpServletRequest httpServletRequest,
+				byte[] bytes,
 				@Suspended AsyncResponse response);
 
 		/**
