@@ -274,7 +274,9 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 					try (var txrx = j.getTransceiver()) {
 						var buffer = txrx.readMemory(new ChipLocation(x, y),
 								new MemoryLocation(address), size);
-						return accepted(buffer.array()).build();
+						var arr = new byte[buffer.remaining()];
+						buffer.get(arr);
+						return accepted(arr).build();
 					}
 				});
 			}
