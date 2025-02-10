@@ -24,7 +24,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPO
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -275,7 +274,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 					try (var txrx = j.getTransceiver()) {
 						var buffer = txrx.readMemory(new ChipLocation(x, y),
 								new MemoryLocation(address), size);
-						return accepted(buffer).build();
+						return accepted(buffer.array()).build();
 					}
 				});
 			}
