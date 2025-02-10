@@ -24,6 +24,7 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPO
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -52,6 +53,7 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.JobAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
@@ -251,6 +253,33 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				}
 				bgAction(response, () -> new IssueReportResponse(
 						j.reportIssue(reqBody, permit)));
+			}
+
+			@Override
+			public void writeDataToJob(int x, int y, long address,
+					HttpServletRequest httpServletRequest,
+					AsyncResponse response) {
+				bgAction(response, () -> {
+					try (var txrx = j.getTransceiver()) {
+						txrx.writeMemory(new ChipLocation(x, y),
+								new MemoryLocation(address),
+								httpServletRequest.getInputStream(),
+								httpServletRequest.getContentLength());
+					}
+					return accepted().build();
+				});
+			}
+
+			@Override
+			public void readDataFromJob(int x, int y, long address, int size,
+					AsyncResponse response) {
+				bgAction(response, () -> {
+					try (var txrx = j.getTransceiver()) {
+						var buffer = txrx.readMemory(new ChipLocation(x, y),
+								new MemoryLocation(address), size);
+						return accepted(buffer).build();
+					}
+				});
 			}
 		};
 	}

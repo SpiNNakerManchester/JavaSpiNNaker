@@ -17,12 +17,14 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_USER;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_MCH;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ADDRESS;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_Y;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ID;
@@ -36,9 +38,11 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_LOGICAL;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MEMORY;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.NAME;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.REPORT_ISSUE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SIZE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
 
 import javax.servlet.http.HttpServletRequest;
@@ -567,6 +571,57 @@ public interface SpallocServiceAPI {
 		void reportBoardIssue(IssueReportRequest report,
 				@Suspended AsyncResponse response);
 
+		/**
+		 * Write data to job boards.
+		 *
+		 * @param x Chip X coordinate
+		 * @param y Chip Y coordinate
+		 * @param address Address to write to
+		 * @param httpServletRequest The request with data to write
+		 */
+		@POST
+		@Description("Write data to job boards.")
+		@Operation(tags = T_JOB, summary = "Write data to job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(MEMORY)
+		@Consumes(APPLICATION_OCTET_STREAM)
+		void writeDataToJob(
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address,
+				HttpServletRequest httpServletRequest,
+				@Suspended AsyncResponse response);
+
+		/**
+		 * Read data from job boards.
+		 *
+		 * @param x Chip X coordinate
+		 * @param y Chip Y coordinate
+		 * @param address Address to read from
+		 * @param size Number of bytes to read
+		 * @param httpServletResponse The response to write data to
+		 */
+		@GET
+		@Description("Read data from job boards.")
+		@Operation(tags = T_JOB, summary = "Read data from job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(MEMORY)
+		@Produces(APPLICATION_OCTET_STREAM)
+		void readDataFromJob(
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address, @QueryParam(SIZE) int size,
+				@Suspended AsyncResponse response);
 	}
 }
 
