@@ -577,7 +577,8 @@ public interface SpallocServiceAPI {
 		 * @param x Chip X coordinate
 		 * @param y Chip Y coordinate
 		 * @param address Address to write to
-		 * @param httpServletRequest The request with data to write
+		 * @param bytes Data to write
+		 * @param response Eventual response once request is complete
 		 */
 		@POST
 		@Description("Write data to job boards.")
@@ -604,7 +605,7 @@ public interface SpallocServiceAPI {
 		 * @param y Chip Y coordinate
 		 * @param address Address to read from
 		 * @param size Number of bytes to read
-		 * @param httpServletResponse The response to write data to
+		 * @param response Filled out with bytes read.
 		 */
 		@GET
 		@Description("Read data from job boards.")
