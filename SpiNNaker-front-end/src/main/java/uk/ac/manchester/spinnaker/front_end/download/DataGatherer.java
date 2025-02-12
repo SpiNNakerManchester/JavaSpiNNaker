@@ -61,6 +61,7 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.dse.SystemRouterTableContext;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -179,7 +180,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 			ProcessException, StorageException, InterruptedException {
 		sanityCheck(gatherers);
 		var work = discoverActualWork(gatherers);
-		var conns = createConnections(gatherers, work);
 		try (var s = new SystemRouterTableContext(txrx,
 				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
 				var p = new NoDropPacketContext(txrx,
@@ -188,14 +188,10 @@ public abstract class DataGatherer extends BoardLocalSupport
 						gatherers.stream())) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
-			parallel(work.keySet().stream().map(key -> {
-				return () -> fastDownload(work.get(key), conns.get(key));
+			parallel(work.keySet().stream().map(gather -> {
+				return () -> fastDownload(work.get(gather),
+						gather.asChipLocation(), gather.getIptag());
 			}));
-		} finally {
-			log.info("shutting down high-speed download connections");
-			for (var c : conns.values()) {
-				c.close();
-			}
 		}
 		return missCount;
 	}
@@ -245,11 +241,11 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	private Map<ChipLocation, List<WorkItems>> discoverActualWork(
+	private Map<Gather, List<WorkItems>> discoverActualWork(
 			List<Gather> gatherers) throws IOException, ProcessException,
 			StorageException, InterruptedException {
 		log.info("discovering regions to download");
-		var work = new HashMap<ChipLocation, List<WorkItems>>();
+		var work = new HashMap<Gather, List<WorkItems>>();
 		int count = 0;
 		for (var g : gatherers) {
 			var workitems = new ArrayList<WorkItems>();
@@ -277,47 +273,10 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 			}
 			// Totally empty boards can be ignored
-			work.put(g.asChipLocation(), workitems);
+			work.put(g, workitems);
 		}
 		log.info("found {} regions to download", count);
 		return work;
-	}
-
-	/**
-	 * Build the connections to the gatherers and reprogram the IP tags on the
-	 * machine to talk to them.
-	 *
-	 * @param gatherers
-	 *            The data speed up gatherer descriptions.
-	 * @param work
-	 *            What work has been found to do. Used to filter out connections
-	 *            to boards with nothing to do.
-	 * @return The map from the location of the gatherer to the connection to
-	 *         talk and listen to it.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	@SuppressWarnings("MustBeClosed")
-	private Map<ChipLocation, GatherDownloadConnection> createConnections(
-			List<Gather> gatherers, Map<ChipLocation, ?> work)
-			throws IOException, ProcessException, InterruptedException {
-		log.info("building high-speed data connections and configuring IPtags");
-		var connections = new HashMap<ChipLocation, GatherDownloadConnection>();
-		for (var g : gatherers) {
-			var gathererChip = g.asChipLocation();
-			if (!work.containsKey(gathererChip)) {
-				continue;
-			}
-			var conn = new GatherDownloadConnection(txrx.createScpConnection(
-					gathererChip, g.getIptag().getBoardAddress()));
-			conn.setIPTag(txrx, g.getIptag());
-			connections.put(gathererChip, conn);
-		}
-		return connections;
 	}
 
 	/**
@@ -365,10 +324,13 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If communications are interrupted.
 	 */
 	private void fastDownload(List<WorkItems> work,
-			GatherDownloadConnection conn)
+			ChipLocation gathererChip, IPTag ipTag)
 			throws IOException, StorageException, TimeoutException,
 			ProcessException, InterruptedException {
-		try (var c = new BoardLocal(conn.getChip())) {
+		try (var conn = new GatherDownloadConnection(txrx.createScpConnection(
+				gathererChip, ipTag.getBoardAddress()));
+				var c = new BoardLocal(conn.getChip())) {
+			conn.setIPTag(txrx, ipTag);
 			log.info("processing fast downloads for {}", conn.getChip());
 			var dl = new Downloader(conn);
 			for (var item : work) {

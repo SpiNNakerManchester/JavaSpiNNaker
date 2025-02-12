@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
-final class GatherDownloadConnection {
+final class GatherDownloadConnection implements AutoCloseable {
 	private long lastSend = 0L;
 
 	private static final Logger log = getLogger(GatherDownloadConnection.class);
@@ -164,13 +164,8 @@ final class GatherDownloadConnection {
 		return connection.getChip();
 	}
 
-	/**
-	 * Close the connection.
-	 *
-	 * @throws IOException
-	 *             If there is an error closing the connection.
-	 */
-	void close() throws IOException {
+	@Override
+	public void close() throws IOException {
 		connection.close();
 	}
 
