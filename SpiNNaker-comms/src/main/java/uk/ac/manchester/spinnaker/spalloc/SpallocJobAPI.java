@@ -15,20 +15,15 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static java.net.InetAddress.getByName;
-import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
-
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.connections.BootConnection;
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
-import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutException;
@@ -37,7 +32,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /** The interface supported by a {@linkplain SpallocJob spalloc job}. */
@@ -194,29 +188,7 @@ public interface SpallocJobAPI {
 	default TransceiverInterface getTransceiver()
 			throws IOException, SpallocServerException, IllegalStateException,
 			InterruptedException, SpinnmanException {
-		var ver = MachineVersion.bySize(getDimensions());
-		var connInfo = getConnections();
-		if (connInfo == null) {
-			return null;
-		}
-		String bootHost = null;
-		for (var c : connInfo) {
-			if (c.getChip().equals(ZERO_ZERO)) {
-				bootHost = c.getHostname();
-			}
-		}
-		if (bootHost == null) {
-			return null;
-		}
-		var connections = new ArrayList<
-				uk.ac.manchester.spinnaker.connections.model.Connection>();
-		connections.add(new BootConnection(getByName(bootHost), null));
-		for (var c : connInfo) {
-			connections.add(
-					new SCPConnection(c.getChip(), getByName(c.getHostname())));
-		}
-
-		return new Transceiver(ver, connections);
+		return new SpallocTransceiver(this);
 	}
 
 	/**
@@ -343,5 +315,40 @@ public interface SpallocJobAPI {
 	 *             If interrupted while waiting.
 	 */
 	BoardPhysicalCoordinates whereIs(HasChipLocation chip)
+			throws IOException, SpallocServerException, InterruptedException;
+
+	/**
+	 * Write memory directly using the Spalloc API.
+	 *
+	 * @param chip The chip to write to
+	 * @param baseAddress The base address to write to
+	 * @param data The data to write
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
+	 */
+	void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			ByteBuffer data)
+			throws IOException, SpallocServerException,	InterruptedException;
+
+	/**
+	 * Read memory directly using the Spalloc API.
+	 *
+	 * @param chip The chip to read from
+	 * @param baseAddress The base address to read from
+	 * @param length The number of bytes to read
+	 * @return The data read
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
+	 */
+	ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			int length)
 			throws IOException, SpallocServerException, InterruptedException;
 }
