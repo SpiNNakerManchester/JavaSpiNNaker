@@ -316,39 +316,4 @@ public interface SpallocJobAPI {
 	 */
 	BoardPhysicalCoordinates whereIs(HasChipLocation chip)
 			throws IOException, SpallocServerException, InterruptedException;
-
-	/**
-	 * Write memory directly using the Spalloc API.
-	 *
-	 * @param chip The chip to write to
-	 * @param baseAddress The base address to write to
-	 * @param data The data to write
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws InterruptedException
-	 *             If interrupted while waiting.
-	 */
-	void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
-			ByteBuffer data)
-			throws IOException, SpallocServerException,	InterruptedException;
-
-	/**
-	 * Read memory directly using the Spalloc API.
-	 *
-	 * @param chip The chip to read from
-	 * @param baseAddress The base address to read from
-	 * @param length The number of bytes to read
-	 * @return The data read
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws InterruptedException
-	 *             If interrupted while waiting.
-	 */
-	ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
-			int length)
-			throws IOException, SpallocServerException, InterruptedException;
 }

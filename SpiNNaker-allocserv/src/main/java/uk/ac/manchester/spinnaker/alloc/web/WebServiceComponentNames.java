@@ -60,6 +60,15 @@ public interface WebServiceComponentNames {
 	/** The job memory to read or write. */
 	String MEMORY = "memory";
 
+	/** The boot path. */
+	String BOOT = "boot";
+
+	/** The fast-data-write path. */
+	String FAST_DATA_WRITE = "fast-data-write";
+
+	/** The fast-data-read path. */
+	String FAST_DATA_READ = "fast-data-read";
+
 	/** The wait-for-change query parameter name. */
 	String WAIT = "wait";
 

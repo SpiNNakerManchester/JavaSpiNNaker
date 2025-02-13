@@ -22,6 +22,7 @@ import static org.apache.commons.io.IOUtils.readLines;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,9 +32,11 @@ import javax.validation.constraints.NotNull;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
@@ -381,6 +384,41 @@ public interface SpallocClient {
 				state = describe(true).getState();
 			}
 		}
+
+		/**
+		 * Write memory directly using the Spalloc API.
+		 *
+		 * @param chip The chip to write to
+		 * @param baseAddress The base address to write to
+		 * @param data The data to write
+		 * @throws IOException
+		 *             If communications fail.
+		 * @throws SpallocServerException
+		 *             If the spalloc server rejects the operation request.
+		 * @throws InterruptedException
+		 *             If interrupted while waiting.
+		 */
+		void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
+				ByteBuffer data)
+				throws IOException, SpallocServerException,	InterruptedException;
+
+		/**
+		 * Read memory directly using the Spalloc API.
+		 *
+		 * @param chip The chip to read from
+		 * @param baseAddress The base address to read from
+		 * @param length The number of bytes to read
+		 * @return The data read
+		 * @throws IOException
+		 *             If communications fail.
+		 * @throws SpallocServerException
+		 *             If the spalloc server rejects the operation request.
+		 * @throws InterruptedException
+		 *             If interrupted while waiting.
+		 */
+		ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+				int length)
+				throws IOException, SpallocServerException, InterruptedException;
 	}
 
 	/**

@@ -53,6 +53,8 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.JobAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
@@ -278,6 +280,22 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 						buffer.get(arr);
 						return accepted(arr).build();
 					}
+				});
+			}
+
+			@Override
+			public void fastDataWrite(@ValidX int x, @ValidY int y,
+					long address, byte[] bytes,	AsyncResponse response) {
+				bgAction(response, () -> {
+					return accepted().build();
+				});
+			}
+
+			@Override
+			public void fastDataRead(@ValidX int x, @ValidY int y, long address,
+					int size, AsyncResponse response) {
+				bgAction(response, () -> {
+					return accepted().build();
 				});
 			}
 		};

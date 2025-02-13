@@ -45,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,9 +67,11 @@ import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -815,6 +818,22 @@ public class SpallocClientFactory {
 		public WhereIs getBoard(String address) throws IOException {
 			return whereis(bmd.uri.resolve(
 					format("board-ip?address=%s", encode(address, UTF_8))));
+		}
+
+		@Override
+		public void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
+				ByteBuffer data)
+				throws IOException, SpallocServerException, InterruptedException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public ByteBuffer readMemory(HasChipLocation chip,
+				MemoryLocation baseAddress, int length)
+				throws IOException, SpallocServerException, InterruptedException {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }

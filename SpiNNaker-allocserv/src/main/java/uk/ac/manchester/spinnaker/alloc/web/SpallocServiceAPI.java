@@ -27,6 +27,8 @@ import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ADDRESS;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_Y;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.FAST_DATA_WRITE;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.FAST_DATA_READ;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ID;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
@@ -623,6 +625,63 @@ public interface SpallocServiceAPI {
 				@Description("The address to write the data to")
 				@QueryParam(ADDRESS) long address, @QueryParam(SIZE) int size,
 				@Suspended AsyncResponse response);
+
+		/**
+		 * Write data to job boards using the fast data protocol.
+		 * Note: it is assumed that the board has been set up before this is
+		 * called.
+		 *
+		 * @param x The X coordinate of the chip within the job's allocation.
+		 * @param y The Y coordinate of the chip within the job's allocation.
+		 * @param address The address to write the data to.
+		 * @param bytes The data to write.
+		 * @param response Eventual response once request is complete
+		 */
+		@POST
+		@Description("Write data to job boards using the fast data protocol.")
+		@Operation(tags = T_JOB,
+				summary = "Write data to job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(FAST_DATA_WRITE)
+		@Consumes(APPLICATION_OCTET_STREAM)
+		void fastDataWrite(
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address, byte[] bytes,
+				@Suspended AsyncResponse response);
+
+		/**
+		 * Read data from job boards using the fast data download protocol.
+		 * Note: it is assumed that the board has been set up before this is
+		 * called.
+		 *
+		 * @param x Chip X coordinate
+		 * @param y Chip Y coordinate
+		 * @param address Address to read from
+		 * @param size Number of bytes to read
+		 * @param response Filled out with bytes read.
+		 */
+		@GET
+		@Description("Read data from job boards using the fast data protocol.")
+		@Operation(tags = T_JOB, summary = "Read data from job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(FAST_DATA_READ)
+		@Produces(APPLICATION_OCTET_STREAM)
+		void fastDataRead(
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address,
+				@QueryParam(SIZE) int size, @Suspended AsyncResponse response);
 	}
 }
 
