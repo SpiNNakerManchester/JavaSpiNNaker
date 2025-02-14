@@ -15,15 +15,20 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.net.InetAddress.getByName;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
+import uk.ac.manchester.spinnaker.connections.BootConnection;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutException;
@@ -32,6 +37,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /** The interface supported by a {@linkplain SpallocJob spalloc job}. */
@@ -188,7 +194,29 @@ public interface SpallocJobAPI {
 	default TransceiverInterface getTransceiver()
 			throws IOException, SpallocServerException, IllegalStateException,
 			InterruptedException, SpinnmanException {
-		return new SpallocTransceiver(this);
+		var ver = MachineVersion.bySize(getDimensions());
+		var connInfo = getConnections();
+		if (connInfo == null) {
+			return null;
+		}
+		String bootHost = null;
+		for (var c : connInfo) {
+			if (c.getChip().equals(ZERO_ZERO)) {
+				bootHost = c.getHostname();
+			}
+		}
+		if (bootHost == null) {
+			return null;
+		}
+		var connections = new ArrayList<
+				uk.ac.manchester.spinnaker.connections.model.Connection>();
+		connections.add(new BootConnection(getByName(bootHost), null));
+		for (var c : connInfo) {
+			connections.add(
+					new SCPConnection(c.getChip(), getByName(c.getHostname())));
+		}
+
+		return new Transceiver(ver, connections);
 	}
 
 	/**
