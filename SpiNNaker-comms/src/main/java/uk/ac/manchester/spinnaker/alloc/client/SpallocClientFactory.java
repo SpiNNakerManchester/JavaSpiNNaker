@@ -717,6 +717,7 @@ public class SpallocClientFactory {
                             new URI(MEMORY + "?x=" + chip.getX()
                                     + "&y=" + chip.getY()
                                     + "&address=" + baseAddress.address));
+                    conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty(
                             "Content-Type", "application/octet-stream");
