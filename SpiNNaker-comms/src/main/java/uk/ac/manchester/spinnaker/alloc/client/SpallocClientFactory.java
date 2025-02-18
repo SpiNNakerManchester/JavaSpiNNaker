@@ -716,7 +716,8 @@ public class SpallocClientFactory {
                     var conn = s.connection(uri,
                             new URI(MEMORY + "?x=" + chip.getX()
                                     + "&y=" + chip.getY()
-                                    + "&address=" + baseAddress.address));
+                                    + "&address=" + baseAddress.address),
+                            true);
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty(
@@ -724,6 +725,9 @@ public class SpallocClientFactory {
                     try (var os = conn.getOutputStream();
                          var channel = Channels.newChannel(os)) {
                         channel.write(data);
+                    }
+                    try (var is = checkForError(conn, "couldn't write memory")) {
+                        // Do Nothing
                     }
                     return null;
                 });

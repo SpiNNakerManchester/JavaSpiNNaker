@@ -260,7 +260,6 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
             public void writeDataToJob(int x, int y, long address,
                     byte[] bytes,
                     AsyncResponse response) {
-                log.info("writing {} bytes to {}:{}@{}", bytes.length, x, y, address);
                 bgAction(response, () -> {
                     try (var txrx = j.getTransceiver()) {
                         txrx.writeMemory(new ChipLocation(x, y),
@@ -273,7 +272,6 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
             @Override
             public void readDataFromJob(int x, int y, long address, int size,
                     AsyncResponse response) {
-                log.info("reading {} bytes from {}:{}@{}", size, x, y, address);
                 bgAction(response, () -> {
                     try (var txrx = j.getTransceiver()) {
                         var buffer = txrx.readMemory(new ChipLocation(x, y),
