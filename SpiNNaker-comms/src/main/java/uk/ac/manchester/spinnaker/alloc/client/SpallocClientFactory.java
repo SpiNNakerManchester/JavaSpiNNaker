@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.alloc.client;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static java.lang.Integer.toUnsignedString;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -716,8 +717,10 @@ public class SpallocClientFactory {
                     var conn = s.connection(uri,
                             new URI(MEMORY + "?x=" + chip.getX()
                                     + "&y=" + chip.getY()
-                                    + "&address=" + baseAddress.address),
+                                    + "&address="
+                                    + toUnsignedString(baseAddress.address)),
                             true);
+                    System.err.println(conn.getURL());
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty(
@@ -746,7 +749,8 @@ public class SpallocClientFactory {
                     var conn = s.connection(uri,
                             new URI(MEMORY + "?x=" + chip.getX()
                                     + "&y=" + chip.getY()
-                                    + "&address=" + baseAddress.address
+                                    + "&address="
+                                    + toUnsignedString(baseAddress.address)
                                     + "&size=" + length));
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty(
