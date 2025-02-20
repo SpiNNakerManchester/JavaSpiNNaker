@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static java.util.Objects.isNull;
 import static javax.ws.rs.core.Response.accepted;
+import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.noContent;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
@@ -276,9 +277,9 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
                     try (var txrx = j.getTransceiver()) {
                         var buffer = txrx.readMemory(new ChipLocation(x, y),
                                 new MemoryLocation(address), size);
-                        var arr = new byte[buffer.remaining()];
+                        var arr = new byte[size];
                         buffer.get(arr);
-                        return accepted(arr).build();
+                        return ok(arr).build();
                     }
                 });
             }
@@ -295,7 +296,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
             public void fastDataRead(@ValidX int x, @ValidY int y, long address,
                     int size, AsyncResponse response) {
                 bgAction(response, () -> {
-                    return accepted().build();
+                    return ok().build();
                 });
             }
         };

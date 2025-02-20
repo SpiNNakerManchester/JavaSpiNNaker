@@ -25,6 +25,7 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -758,7 +759,7 @@ public class SpallocClientFactory {
                     var buffer = ByteBuffer.allocate(length);
                     var channel = Channels.newChannel(conn.getInputStream());
                     IOUtils.readFully(channel, buffer);
-                    return buffer;
+                    return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
                 });
             } catch (URISyntaxException e) {
                 throw new IOException(e);
