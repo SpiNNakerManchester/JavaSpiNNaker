@@ -15,6 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.client;
 
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 
@@ -42,6 +43,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.transceiver.ParallelSafe;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -147,6 +151,10 @@ final class ProxiedTransceiver extends Transceiver {
     public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
             InputStream dataStream, int numBytes)
             throws IOException, ProcessException, InterruptedException {
+        // If this will use a single message, just use SCP
+        if (numBytes <= UDP_MESSAGE_MAX_SIZE) {
+            super.writeMemory(core, baseAddress, dataStream, numBytes);
+        }
         ByteBuffer data = ByteBuffer.allocate(numBytes);
         byte[] buffer = new byte[1024];
         int remaining = numBytes;
@@ -171,6 +179,10 @@ final class ProxiedTransceiver extends Transceiver {
     public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
             File dataFile)
             throws IOException, ProcessException, InterruptedException {
+        // If this will use a single message, just use SCP
+        if (dataFile.length() <= UDP_MESSAGE_MAX_SIZE) {
+            super.writeMemory(core, baseAddress, dataFile);
+        }
         try (var stream = new FileInputStream(dataFile)) {
             writeMemory(core, baseAddress, stream, (int) dataFile.length());
         }
@@ -181,6 +193,10 @@ final class ProxiedTransceiver extends Transceiver {
     public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
             ByteBuffer data)
             throws IOException, ProcessException, InterruptedException {
+        // If this will use a single message, just use SCP
+        if (data.remaining() <= UDP_MESSAGE_MAX_SIZE) {
+            super.writeMemory(core, baseAddress, data);
+        }
         try {
             this.job.writeMemory(core, baseAddress, data);
         } catch (SpallocServerException e) {
@@ -194,8 +210,28 @@ final class ProxiedTransceiver extends Transceiver {
     public ByteBuffer readMemory(HasCoreLocation core,
             MemoryLocation baseAddress, int length)
             throws IOException, ProcessException, InterruptedException {
+        // If this will use a single message, just use SCP
+        if (length <= UDP_MESSAGE_MAX_SIZE) {
+            super.readMemory(core, baseAddress, length);
+        }
         try {
             return job.readMemory(core, baseAddress, length);
+        } catch (SpallocServerException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public void readRegion(Region region, BufferManagerStorage storage)
+            throws IOException, ProcessException, StorageException,
+            InterruptedException {
+        if (region.size < UDP_MESSAGE_MAX_SIZE) {
+            super.readRegion(region, storage);
+        }
+        try {
+            var buffer = job.readMemory(
+                    region.core, region.startAddress, region.size);
+            storage.addRecordingContents(region, buffer);
         } catch (SpallocServerException e) {
             throw new IOException(e);
         }

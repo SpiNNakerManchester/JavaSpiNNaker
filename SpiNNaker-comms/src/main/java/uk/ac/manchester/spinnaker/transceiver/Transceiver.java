@@ -1193,7 +1193,7 @@ public class Transceiver extends UDPTransceiver
      * @throws InterruptedException
      *             If the communications were interrupted.
      */
-    private void call(SCPRequest<EmptyResponse> request)
+    protected void call(SCPRequest<EmptyResponse> request)
             throws ProcessException, IOException, InterruptedException {
         new TxrxProcess(scpSelector, this).call(request);
     }
@@ -1219,7 +1219,7 @@ public class Transceiver extends UDPTransceiver
      * @throws InterruptedException
      *             If the communications were interrupted.
      */
-    private <T, R extends PayloadedResponse<T, ?>> T get(SCPRequest<R> request)
+    protected <T, R extends PayloadedResponse<T, ?>> T get(SCPRequest<R> request)
             throws ProcessException, IOException, InterruptedException {
         return new TxrxProcess(scpSelector, this).retrieve(request);
     }
@@ -2373,8 +2373,8 @@ public class Transceiver extends UDPTransceiver
     public void loadMulticastRoutes(HasChipLocation chip,
             Collection<MulticastRoutingEntry> routes, AppID appID)
             throws IOException, ProcessException, InterruptedException {
-        new MulticastRoutesControlProcess(scpSelector, this).setRoutes(chip,
-                routes, appID);
+        new MulticastRoutesControlProcess(scpSelector, this, this)
+                .setRoutes(chip, routes, appID);
     }
 
     @Override
@@ -2403,7 +2403,7 @@ public class Transceiver extends UDPTransceiver
             throws IOException, ProcessException, InterruptedException {
         var address = (MemoryLocation) getSystemVariable(chip,
                 router_table_copy_address);
-        return new MulticastRoutesControlProcess(scpSelector, this)
+        return new MulticastRoutesControlProcess(scpSelector, this, this)
                 .getRoutes(chip, address, appID);
     }
 
