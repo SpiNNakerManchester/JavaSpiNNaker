@@ -721,7 +721,6 @@ public class SpallocClientFactory {
                                     + "&address="
                                     + toUnsignedString(baseAddress.address)),
                             true);
-                    System.err.println(conn.getURL());
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty(
@@ -756,10 +755,13 @@ public class SpallocClientFactory {
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty(
                             "Accept", "application/octet-stream");
-                    var buffer = ByteBuffer.allocate(length);
-                    var channel = Channels.newChannel(conn.getInputStream());
-                    IOUtils.readFully(channel, buffer);
-                    return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+                    try (var is = checkForError(conn, "couldn't read memory")) {
+                        var buffer = ByteBuffer.allocate(length);
+                        var channel = Channels.newChannel(is);
+                        IOUtils.readFully(channel, buffer);
+                        buffer.rewind();
+                        return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+                    }
                 });
             } catch (URISyntaxException e) {
                 throw new IOException(e);
