@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static java.util.Objects.isNull;
+import static java.nio.ByteBuffer.wrap;
 import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.noContent;
@@ -25,6 +26,7 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPO
 
 import java.util.Optional;
 
+import javax.validation.constraints.Positive;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -53,11 +55,14 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.JobAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Manufactures instances of {@link MachineAPI} and {@link JobAPI}. This
@@ -262,10 +267,9 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
                     byte[] bytes,
                     AsyncResponse response) {
                 bgAction(response, () -> {
-                    try (var txrx = j.getTransceiver()) {
-                        txrx.writeMemory(new ChipLocation(x, y),
-                                new MemoryLocation(address), bytes);
-                    }
+                    var txrx = j.getTransceiver();
+                    txrx.writeMemory(new ChipLocation(x, y),
+                            new MemoryLocation(address), bytes);
                     return accepted().build();
                 });
             }
@@ -274,20 +278,30 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
             public void readDataFromJob(int x, int y, long address, int size,
                     AsyncResponse response) {
                 bgAction(response, () -> {
-                    try (var txrx = j.getTransceiver()) {
-                        var buffer = txrx.readMemory(new ChipLocation(x, y),
-                                new MemoryLocation(address), size);
-                        var arr = new byte[size];
-                        buffer.get(arr);
-                        return ok(arr).build();
-                    }
+                    var txrx = j.getTransceiver();
+                    var buffer = txrx.readMemory(new ChipLocation(x, y),
+                            new MemoryLocation(address), size);
+                    var arr = new byte[size];
+                    buffer.get(arr);
+                    return ok(arr).build();
                 });
             }
 
             @Override
-            public void fastDataWrite(@ValidX int x, @ValidY int y,
-                    long address, byte[] bytes,	AsyncResponse response) {
+            public void fastDataWrite(@ValidX int gatherX, @ValidY int gatherY,
+                    @Positive int gatherP, @ValidX int ethX,
+                    @ValidY int ethY, @IPAddress String ethAddress, int iptag,
+                    @ValidX int x, @ValidY int y, long address, byte[] bytes,
+                    AsyncResponse response) {
                 bgAction(response, () -> {
+                    var txrx = j.getTransceiver();
+                    txrx.writeMemoryFast(
+                            new CoreLocation(gatherX, gatherY, gatherP),
+                            new ChipLocation(ethX, ethY), ethAddress,
+                            new IPTag(ethAddress, iptag, ethX, ethY,
+                                    "localhost", null, true, null),
+                            new ChipLocation(x, y),
+                            new MemoryLocation(address), wrap(bytes));
                     return accepted().build();
                 });
             }

@@ -39,10 +39,12 @@ import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
@@ -154,23 +156,20 @@ final class ProxiedTransceiver extends Transceiver {
         // If this will use a single message, just use SCP
         if (numBytes <= UDP_MESSAGE_MAX_SIZE) {
             super.writeMemory(core, baseAddress, dataStream, numBytes);
-        }
-        ByteBuffer data = ByteBuffer.allocate(numBytes);
-        byte[] buffer = new byte[1024];
-        int remaining = numBytes;
-        while (remaining > 0) {
-            int toRead = Math.min(remaining, buffer.length);
-            int read = dataStream.read(buffer, 0, toRead);
-            if (read < 0) {
-                throw new EOFException();
+        } else {
+            ByteBuffer data = ByteBuffer.allocate(numBytes);
+            byte[] buffer = new byte[1024];
+            int remaining = numBytes;
+            while (remaining > 0) {
+                int toRead = Math.min(remaining, buffer.length);
+                int read = dataStream.read(buffer, 0, toRead);
+                if (read < 0) {
+                    throw new EOFException();
+                }
+                data.put(buffer, 0, read);
+                remaining -= read;
             }
-            data.put(buffer, 0, read);
-            remaining -= read;
-        }
-        try {
             this.job.writeMemory(core, baseAddress, data);
-        } catch (SpallocServerException e) {
-            throw new IOException(e);
         }
     }
 
@@ -182,9 +181,10 @@ final class ProxiedTransceiver extends Transceiver {
         // If this will use a single message, just use SCP
         if (dataFile.length() <= UDP_MESSAGE_MAX_SIZE) {
             super.writeMemory(core, baseAddress, dataFile);
-        }
-        try (var stream = new FileInputStream(dataFile)) {
-            writeMemory(core, baseAddress, stream, (int) dataFile.length());
+        } else {
+            try (var stream = new FileInputStream(dataFile)) {
+                writeMemory(core, baseAddress, stream, (int) dataFile.length());
+            }
         }
     }
 
@@ -196,11 +196,8 @@ final class ProxiedTransceiver extends Transceiver {
         // If this will use a single message, just use SCP
         if (data.remaining() <= UDP_MESSAGE_MAX_SIZE) {
             super.writeMemory(core, baseAddress, data);
-        }
-        try {
+        } else {
             this.job.writeMemory(core, baseAddress, data);
-        } catch (SpallocServerException e) {
-            throw new IOException(e);
         }
     }
 
@@ -212,12 +209,9 @@ final class ProxiedTransceiver extends Transceiver {
             throws IOException, ProcessException, InterruptedException {
         // If this will use a single message, just use SCP
         if (length <= UDP_MESSAGE_MAX_SIZE) {
-            super.readMemory(core, baseAddress, length);
-        }
-        try {
+            return super.readMemory(core, baseAddress, length);
+        } else {
             return job.readMemory(core, baseAddress, length);
-        } catch (SpallocServerException e) {
-            throw new IOException(e);
         }
     }
 
@@ -227,14 +221,26 @@ final class ProxiedTransceiver extends Transceiver {
             InterruptedException {
         if (region.size < UDP_MESSAGE_MAX_SIZE) {
             super.readRegion(region, storage);
-        }
-        try {
+        } else {
             var buffer = job.readMemory(
                     region.core, region.startAddress, region.size);
             storage.addRecordingContents(region, buffer);
-        } catch (SpallocServerException e) {
-            throw new IOException(e);
         }
+    }
+
+    @Override
+    public void writeMemoryFast(CoreLocation gathererCore,
+            ChipLocation ethernetChip, String ethernetAddress,
+            IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
+            ByteBuffer data)
+            throws IOException, ProcessException, InterruptedException {
+        if (data.remaining() <= UDP_MESSAGE_MAX_SIZE) {
+            super.writeMemoryFast(gathererCore, ethernetChip, ethernetAddress,
+                    iptag, chip, baseAddress, data);
+        }
+        job.fastWriteData(gathererCore, ethernetChip, ethernetAddress,
+                iptag, chip, baseAddress, data);
+
     }
 
 }

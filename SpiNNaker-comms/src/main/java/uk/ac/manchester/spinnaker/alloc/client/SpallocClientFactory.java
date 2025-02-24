@@ -64,12 +64,14 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.model.Version;
-import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -107,6 +109,10 @@ public class SpallocClientFactory {
     private static final URI WAIT_FLAG = URI.create("?wait=true");
 
     private static final URI MEMORY = URI.create("memory");
+
+    private static final URI FAST_DATA_WRITE = URI.create("fast-data-write");
+
+    private static final URI FAST_DATA_READ = URI.create("fast-data-read");
 
     // Amount to divide keepalive interval by to get actual keep alive delay
     private static final int KEEPALIVE_DIVIDER = 2;
@@ -711,8 +717,7 @@ public class SpallocClientFactory {
         @Override
         public void writeMemory(HasChipLocation chip,
                 MemoryLocation baseAddress, ByteBuffer data)
-                throws IOException, SpallocServerException,
-                InterruptedException {
+                throws IOException {
             try {
                 s.withRenewal(() -> {
                     var conn = s.connection(uri,
@@ -742,8 +747,7 @@ public class SpallocClientFactory {
         @Override
         public ByteBuffer readMemory(HasChipLocation chip,
                 MemoryLocation baseAddress, int length)
-                throws IOException, SpallocServerException,
-                InterruptedException {
+                throws IOException {
             try {
                 return s.withRenewal(() -> {
                     var conn = s.connection(uri,
@@ -762,6 +766,46 @@ public class SpallocClientFactory {
                         buffer.rewind();
                         return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
                     }
+                });
+            } catch (URISyntaxException e) {
+                throw new IOException(e);
+            }
+        }
+
+        @Override
+        public void fastWriteData(CoreLocation gathererCore,
+                ChipLocation ethernetChip, String ethernetAddress,
+                IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
+                ByteBuffer data) throws IOException {
+            try {
+                s.withRenewal(() -> {
+                    var conn = s.connection(uri,
+                            new URI(FAST_DATA_WRITE
+                                    + "?gather_x=" + gathererCore.getX()
+                                    + "&gather_y=" + gathererCore.getY()
+                                    + "&gather_p=" + gathererCore.getP()
+                                    + "&eth_x=" + ethernetChip.getX()
+                                    + "&eth_y=" + ethernetChip.getY()
+                                    + "&eth_address=" + ethernetAddress
+                                    + "&iptag=" + iptag.getTag()
+                                    + "&x=" + chip.getX()
+                                    + "&y=" + chip.getY()
+                                    + "&address="
+                                    + toUnsignedString(baseAddress.address)),
+                            true);
+                    conn.setDoOutput(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty(
+                            "Content-Type", "application/octet-stream");
+                    try (var os = conn.getOutputStream();
+                         var channel = Channels.newChannel(os)) {
+                        channel.write(data);
+                    }
+                    try (var is = checkForError(conn,
+                            "couldn't fast write memory")) {
+                        // Do Nothing
+                    }
+                    return null;
                 });
             } catch (URISyntaxException e) {
                 throw new IOException(e);
