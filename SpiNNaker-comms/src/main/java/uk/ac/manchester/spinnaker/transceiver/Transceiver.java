@@ -1185,7 +1185,6 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @param request
 	 *            The request to make.
-	 * @return The successful response to the request.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a request.
 	 * @throws IOException
@@ -1219,7 +1218,8 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	protected <T, R extends PayloadedResponse<T, ?>> T get(SCPRequest<R> request)
+	protected <T, R extends PayloadedResponse<T, ?>> T get(
+			SCPRequest<R> request)
 			throws ProcessException, IOException, InterruptedException {
 		return new TxrxProcess(scpSelector, this).retrieve(request);
 	}

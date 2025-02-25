@@ -290,6 +290,33 @@ public class SpallocClientFactory {
 	}
 
 	/**
+	 * Checks for errors in the response without expecting response content.
+	 *
+	 * @param conn
+	 *            The HTTP connection
+	 * @param errorMessage
+	 *            The message to use on error (describes what did not work at a
+	 *            higher level)
+	 * @throws IOException
+	 *             If things go wrong with comms.
+	 * @throws FileNotFoundException
+	 *             on a {@link HttpURLConnection#HTTP_NOT_FOUND}
+	 * @throws SpallocException
+	 *             on other server errors
+	 */
+	static void checkForErrorNoResponse(HttpURLConnection conn,
+			String errorMessage) throws IOException {
+		if (conn.getResponseCode() == HTTP_NOT_FOUND) {
+			// Special case
+			throw new FileNotFoundException(errorMessage);
+		}
+		if (conn.getResponseCode() >= HTTP_BAD_REQUEST) {
+			throw new SpallocException(conn.getErrorStream(),
+					conn.getResponseCode());
+		}
+	}
+
+	/**
 	 * Create a client and log in.
 	 *
 	 * @param username
@@ -731,12 +758,10 @@ public class SpallocClientFactory {
 					conn.setRequestProperty(
 							"Content-Type", "application/octet-stream");
 					try (var os = conn.getOutputStream();
-						 var channel = Channels.newChannel(os)) {
+							var channel = Channels.newChannel(os)) {
 						channel.write(data);
 					}
-					try (var is = checkForError(conn, "couldn't write memory")) {
-						// Do Nothing
-					}
+					checkForErrorNoResponse(conn, "Couldn't write memory");
 					return null;
 				});
 			} catch (URISyntaxException e) {
@@ -798,13 +823,10 @@ public class SpallocClientFactory {
 					conn.setRequestProperty(
 							"Content-Type", "application/octet-stream");
 					try (var os = conn.getOutputStream();
-						 var channel = Channels.newChannel(os)) {
+							var channel = Channels.newChannel(os)) {
 						channel.write(data);
 					}
-					try (var is = checkForError(conn,
-							"couldn't fast write memory")) {
-						// Do Nothing
-					}
+					checkForErrorNoResponse(conn, "Couldn't fast write memory");
 					return null;
 				});
 			} catch (URISyntaxException e) {

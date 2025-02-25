@@ -76,8 +76,10 @@ public class ThrottledConnection implements Closeable {
 	 *
 	 * @param transceiver
 	 *            The SCP transceiver.
-	 * @param board
-	 *            The SpiNNaker board to talk to.
+	 * @param location
+	 *           The location of the chip on the board to talk to.
+	 * @param ethernetAddress
+	 *           The Ethernet address of the board.
 	 * @param iptag
 	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException

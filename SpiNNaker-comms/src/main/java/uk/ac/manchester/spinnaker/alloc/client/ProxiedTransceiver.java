@@ -56,6 +56,9 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 /** A transceiver that routes messages across the proxy. */
 final class ProxiedTransceiver extends Transceiver {
 
+	/** Size of the buffer for moving bytes around. */
+	private static final int BUFFER_SIZE = 1024;
+
 	private final Job job;
 
 	private final ProxyProtocolClient websocket;
@@ -147,7 +150,6 @@ final class ProxiedTransceiver extends Transceiver {
 		}
 	}
 
-
 	@Override
 	@ParallelSafe
 	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
@@ -158,7 +160,7 @@ final class ProxiedTransceiver extends Transceiver {
 			super.writeMemory(core, baseAddress, dataStream, numBytes);
 		} else {
 			ByteBuffer data = ByteBuffer.allocate(numBytes);
-			byte[] buffer = new byte[1024];
+			byte[] buffer = new byte[BUFFER_SIZE];
 			int remaining = numBytes;
 			while (remaining > 0) {
 				int toRead = Math.min(remaining, buffer.length);

@@ -62,7 +62,8 @@ public class FastDataIn implements AutoCloseable {
 	private static final Logger log = getLogger(FastDataIn.class);
 
 	/** Items of data a SDP packet can hold when SCP header removed. */
-	private static final int BYTES_PER_FULL_PACKET = SDP_PAYLOAD_WORDS * WORD_SIZE;
+	private static final int BYTES_PER_FULL_PACKET =
+			SDP_PAYLOAD_WORDS * WORD_SIZE;
 
 	// 272 bytes as removed SCP header
 
@@ -161,6 +162,8 @@ public class FastDataIn implements AutoCloseable {
 	/**
 	 * Write data to a given memory location.
 	 *
+	 * @param destination
+	 *            The target chip of the write.
 	 * @param baseAddress
 	 *            Whether the data will be written.
 	 * @param data

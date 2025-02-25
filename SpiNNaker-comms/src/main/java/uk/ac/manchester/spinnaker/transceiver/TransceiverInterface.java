@@ -4274,7 +4274,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *    The chip through which the data is to be written.
 	 * @param ethernetAddress
 	 *    The IP address of the Ethernet chip.
-	 * @param ipTag
+	 * @param iptag
 	 *     The tag to use to pass data.
 	 * @param chip
 	 *     The coordinates of the chip to write to.
