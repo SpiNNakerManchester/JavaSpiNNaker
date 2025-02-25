@@ -25,42 +25,42 @@ import java.util.Map;
  * @author Donal Fellows
  */
 public enum FastDataInCommandID {
-    /** Host to Gatherer: start accepting data bound for location. */
-    SEND_DATA_TO_LOCATION(200),
-    /** Host to Gatherer: more data with sequence number. */
-    SEND_SEQ_DATA(2000),
-    /** Host to Gatherer: all data transmitted. */
-    SEND_TELL_DATA_IN(2001),
-    /** Gatherer to host: there are missing sequence numbers. */
-    RECEIVE_MISSING_SEQ_DATA_IN(2002),
-    /** Gatherer to host: all present and correct. */
-    RECEIVE_FINISHED_DATA_IN(2003);
+	/** Host to Gatherer: start accepting data bound for location. */
+	SEND_DATA_TO_LOCATION(200),
+	/** Host to Gatherer: more data with sequence number. */
+	SEND_SEQ_DATA(2000),
+	/** Host to Gatherer: all data transmitted. */
+	SEND_TELL_DATA_IN(2001),
+	/** Gatherer to host: there are missing sequence numbers. */
+	RECEIVE_MISSING_SEQ_DATA_IN(2002),
+	/** Gatherer to host: all present and correct. */
+	RECEIVE_FINISHED_DATA_IN(2003);
 
-    private static final Map<Integer, FastDataInCommandID> MAP =
-            makeEnumBackingMap(values(), v -> v.value);
+	private static final Map<Integer, FastDataInCommandID> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
-    /** The protocol ID of this constant. */
-    public final int value;
+	/** The protocol ID of this constant. */
+	public final int value;
 
-    FastDataInCommandID(int value) {
-        this.value = value;
-    }
+	FastDataInCommandID(int value) {
+		this.value = value;
+	}
 
-    /**
-     * Get a constant by its protocol ID.
-     *
-     * @param value
-     *            The protocol ID
-     * @return The matching constant.
-     * @throws IllegalArgumentException
-     *             if the value isn't one of the ones accepted by this class.
-     */
-    public static FastDataInCommandID forValue(int value) {
-        var id = MAP.get(value);
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "unexpected command code: " + value);
-        }
-        return id;
-    }
+	/**
+	 * Get a constant by its protocol ID.
+	 *
+	 * @param value
+	 *            The protocol ID
+	 * @return The matching constant.
+	 * @throws IllegalArgumentException
+	 *             if the value isn't one of the ones accepted by this class.
+	 */
+	public static FastDataInCommandID forValue(int value) {
+		var id = MAP.get(value);
+		if (id == null) {
+			throw new IllegalArgumentException(
+					"unexpected command code: " + value);
+		}
+		return id;
+	}
 }

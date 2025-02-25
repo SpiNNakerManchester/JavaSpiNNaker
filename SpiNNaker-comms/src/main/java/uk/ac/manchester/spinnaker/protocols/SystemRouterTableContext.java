@@ -37,132 +37,132 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @author Donal Fellows
  */
 public class SystemRouterTableContext implements AutoCloseable {
-    private static final Logger log = getLogger(SystemRouterTableContext.class);
+	private static final Logger log = getLogger(SystemRouterTableContext.class);
 
-    private final CoreSubsets monitorCores;
+	private final CoreSubsets monitorCores;
 
-    private final TransceiverInterface txrx;
+	private final TransceiverInterface txrx;
 
-    private final ChipLocation firstChip;
+	private final ChipLocation firstChip;
 
-    /**
-     * Create a no-drop-packets context.
-     *
-     * @param txrx
-     *            The transceiver to use for talking to SpiNNaker.
-     * @param monitorCores
-     *            The extra monitor cores on the SpiNNaker system that control
-     *            the routers.
-     * @throws IOException
-     *             If communications fail.
-     * @throws ProcessException
-     *             If SCAMP or an extra monitor rejects a message.
-     * @throws InterruptedException
-     *             If communications are interrupted.
-     */
-    @MustBeClosed
-    public SystemRouterTableContext(TransceiverInterface txrx,
-            CoreSubsets monitorCores)
-            throws IOException, ProcessException, InterruptedException {
-        this.txrx = txrx;
-        this.monitorCores = monitorCores;
-        var firstCore = monitorCores.first().orElseThrow();
-        firstChip = firstCore.asChipLocation();
+	/**
+	 * Create a no-drop-packets context.
+	 *
+	 * @param txrx
+	 *            The transceiver to use for talking to SpiNNaker.
+	 * @param monitorCores
+	 *            The extra monitor cores on the SpiNNaker system that control
+	 *            the routers.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	@MustBeClosed
+	public SystemRouterTableContext(TransceiverInterface txrx,
+			CoreSubsets monitorCores)
+			throws IOException, ProcessException, InterruptedException {
+		this.txrx = txrx;
+		this.monitorCores = monitorCores;
+		var firstCore = monitorCores.first().orElseThrow();
+		firstChip = firstCore.asChipLocation();
 
-        log.info("switching multicast routing on board at {} to system mode",
-                firstChip);
-        log.info("will switch {} cores", monitorCores.size());
-        try {
-            txrx.saveApplicationRouterTables(monitorCores);
-            txrx.loadSystemRouterTables(monitorCores);
-        } catch (IOException | ProcessException | InterruptedException e) {
-            log.error("failed to switch multicast routing on {} to system",
-                    firstChip, e);
-            throw e;
-        }
-    }
+		log.info("switching multicast routing on board at {} to system mode",
+				firstChip);
+		log.info("will switch {} cores", monitorCores.size());
+		try {
+			txrx.saveApplicationRouterTables(monitorCores);
+			txrx.loadSystemRouterTables(monitorCores);
+		} catch (IOException | ProcessException | InterruptedException e) {
+			log.error("failed to switch multicast routing on {} to system",
+					firstChip, e);
+			throw e;
+		}
+	}
 
-    /**
-     * Create a no-drop-packets context.
-     *
-     * @param txrx
-     *            The transceiver to use for talking to SpiNNaker.
-     * @param monitorCoreLocations
-     *            The extra monitor cores on the SpiNNaker system that control
-     *            the routers.
-     * @throws IOException
-     *             If communications fail.
-     * @throws ProcessException
-     *             If SCAMP or an extra monitor rejects a message.
-     * @throws InterruptedException
-     *             If communications are interrupted.
-     */
-    @MustBeClosed
-    public SystemRouterTableContext(TransceiverInterface txrx,
-            List<? extends HasCoreLocation> monitorCoreLocations)
-            throws IOException, ProcessException, InterruptedException {
-        this(txrx, convertToCoreSubset(monitorCoreLocations));
-    }
+	/**
+	 * Create a no-drop-packets context.
+	 *
+	 * @param txrx
+	 *            The transceiver to use for talking to SpiNNaker.
+	 * @param monitorCoreLocations
+	 *            The extra monitor cores on the SpiNNaker system that control
+	 *            the routers.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	@MustBeClosed
+	public SystemRouterTableContext(TransceiverInterface txrx,
+			List<? extends HasCoreLocation> monitorCoreLocations)
+			throws IOException, ProcessException, InterruptedException {
+		this(txrx, convertToCoreSubset(monitorCoreLocations));
+	}
 
-    /**
-     * Create a no-drop-packets context.
-     *
-     * @param txrx
-     *            The transceiver to use for talking to SpiNNaker.
-     * @param monitorCoreLocations
-     *            The extra monitor cores on the SpiNNaker system that control
-     *            the routers.
-     * @throws IOException
-     *             If communications fail.
-     * @throws ProcessException
-     *             If SCAMP or an extra monitor rejects a message.
-     * @throws InterruptedException
-     *             If communications are interrupted.
-     */
-    @MustBeClosed
-    public SystemRouterTableContext(TransceiverInterface txrx,
-            Stream<? extends HasCoreLocation> monitorCoreLocations)
-            throws IOException, ProcessException, InterruptedException {
-        this(txrx, convertToCoreSubset(monitorCoreLocations));
-    }
+	/**
+	 * Create a no-drop-packets context.
+	 *
+	 * @param txrx
+	 *            The transceiver to use for talking to SpiNNaker.
+	 * @param monitorCoreLocations
+	 *            The extra monitor cores on the SpiNNaker system that control
+	 *            the routers.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	@MustBeClosed
+	public SystemRouterTableContext(TransceiverInterface txrx,
+			Stream<? extends HasCoreLocation> monitorCoreLocations)
+			throws IOException, ProcessException, InterruptedException {
+		this(txrx, convertToCoreSubset(monitorCoreLocations));
+	}
 
-    private static CoreSubsets convertToCoreSubset(
-            List<? extends HasCoreLocation> coreLocationList) {
-        var cores = new CoreSubsets();
-        for (var coreLocation : coreLocationList) {
-            cores.addCore(coreLocation.asCoreLocation());
-        }
-        return cores;
-    }
+	private static CoreSubsets convertToCoreSubset(
+			List<? extends HasCoreLocation> coreLocationList) {
+		var cores = new CoreSubsets();
+		for (var coreLocation : coreLocationList) {
+			cores.addCore(coreLocation.asCoreLocation());
+		}
+		return cores;
+	}
 
-    private static CoreSubsets convertToCoreSubset(
-            Stream<? extends HasCoreLocation> coreLocations) {
-        var cores = new CoreSubsets();
-        coreLocations.forEach(loc -> cores.addCore(loc.asCoreLocation()));
-        return cores;
-    }
+	private static CoreSubsets convertToCoreSubset(
+			Stream<? extends HasCoreLocation> coreLocations) {
+		var cores = new CoreSubsets();
+		coreLocations.forEach(loc -> cores.addCore(loc.asCoreLocation()));
+		return cores;
+	}
 
-    /**
-     * Restore the SpiNNaker board to its normal operating mode.
-     *
-     * @throws IOException
-     *             If communications fail.
-     * @throws ProcessException
-     *             If SCAMP or an extra monitor rejects a message.
-     * @throws InterruptedException
-     *             If communications are interrupted.
-     */
-    @Override
-    public void close()
-            throws IOException, ProcessException, InterruptedException {
-        log.info("switching multicast routing on board at {} to standard mode",
-                firstChip);
+	/**
+	 * Restore the SpiNNaker board to its normal operating mode.
+	 *
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	@Override
+	public void close()
+			throws IOException, ProcessException, InterruptedException {
+		log.info("switching multicast routing on board at {} to standard mode",
+				firstChip);
 
-        try {
-            txrx.loadApplicationRouterTables(monitorCores);
-        } catch (IOException | ProcessException | InterruptedException e) {
-            log.error("error restoring multicast router tables", e);
-            throw e;
-        }
-    }
+		try {
+			txrx.loadApplicationRouterTables(monitorCores);
+		} catch (IOException | ProcessException | InterruptedException e) {
+			log.error("error restoring multicast router tables", e);
+			throw e;
+		}
+	}
 }
