@@ -327,8 +327,9 @@ public abstract class DataGatherer extends BoardLocalSupport
             ChipLocation gathererChip, IPTag ipTag)
             throws IOException, StorageException, TimeoutException,
             ProcessException, InterruptedException {
-        try (var conn = new GatherDownloadConnection(txrx.createScpConnection(
-                gathererChip, ipTag.getBoardAddress()));
+        try (var scpConn = txrx.createScpConnection(
+                    gathererChip, ipTag.getBoardAddress());
+                var conn = new GatherDownloadConnection(scpConn);
                 var c = new BoardLocal(conn.getChip())) {
             conn.setIPTag(txrx, ipTag);
             log.info("processing fast downloads for {}", conn.getChip());
