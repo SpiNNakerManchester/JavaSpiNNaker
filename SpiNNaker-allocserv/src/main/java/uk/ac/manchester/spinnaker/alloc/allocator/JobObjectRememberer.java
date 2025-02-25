@@ -65,7 +65,8 @@ class JobObjectRememberer {
 				txrx.close();
 			} catch (IOException e) {
 				log.error("Error closing Transceiver", e);
-			}});
+			}
+		});
 	}
 
 	/**
@@ -99,6 +100,7 @@ class JobObjectRememberer {
 	 *
 	 * @param jobId The job ID.
 	 * @param txrx The transceiver.
+	 * @throws RuntimeException If the job already has a transceiver
 	 */
 	synchronized void setTransceiverForJob(Integer jobId,
 			TransceiverInterface txrx) {

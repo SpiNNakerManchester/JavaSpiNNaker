@@ -638,6 +638,13 @@ public interface SpallocServiceAPI {
 		 * Note: it is assumed that the board has been set up before this is
 		 * called.
 		 *
+		 * @param gatherX X coordinate of the gather core
+		 * @param gatherY Y coordinate of the gather core
+		 * @param gatherP Processor ID of the gather core
+		 * @param ethX X coordinate of the Ethernet chip of x, y
+		 * @param ethY Y coordinate of the Ethernet chip of x, y
+		 * @param ethAddress The Ethernet address of the Ethernet chip
+		 * @param iptag The IPTag to use for the write
 		 * @param x The X coordinate of the chip within the job's allocation.
 		 * @param y The Y coordinate of the chip within the job's allocation.
 		 * @param address The address to write the data to.
@@ -653,6 +660,7 @@ public interface SpallocServiceAPI {
 				schema = @Schema(implementation = Integer.class)))
 		@Path(FAST_DATA_WRITE)
 		@Consumes(APPLICATION_OCTET_STREAM)
+		@SuppressWarnings("checkstyle:sizes")
 		void fastDataWrite(
 				@Description("X coordinate of the gather core")
 				@QueryParam(GATHER_X) @ValidX int gatherX,
