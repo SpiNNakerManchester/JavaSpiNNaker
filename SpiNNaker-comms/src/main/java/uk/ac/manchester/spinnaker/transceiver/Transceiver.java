@@ -2660,10 +2660,12 @@ public class Transceiver extends UDPTransceiver
     @Override
     public void close() throws IOException {
         try {
-            for (var dataIn : cachedDataIn.values()) {
-                dataIn.close();
+            synchronized (cachedDataIn) {
+                for (var dataIn : cachedDataIn.values()) {
+                    dataIn.close();
+                }
+                cachedDataIn.clear();
             }
-            cachedDataIn.clear();
             close(true, false);
         } catch (InterruptedException e) {
             log.warn("unexpected interruption", e);
