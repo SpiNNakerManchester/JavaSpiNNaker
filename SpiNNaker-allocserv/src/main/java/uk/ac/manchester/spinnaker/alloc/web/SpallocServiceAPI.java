@@ -660,7 +660,7 @@ public interface SpallocServiceAPI {
 				schema = @Schema(implementation = Integer.class)))
 		@Path(FAST_DATA_WRITE)
 		@Consumes(APPLICATION_OCTET_STREAM)
-		@SuppressWarnings("checkstyle:sizes")
+		@SuppressWarnings("checkstyle:ParameterNumber")
 		void fastDataWrite(
 				@Description("X coordinate of the gather core")
 				@QueryParam(GATHER_X) @ValidX int gatherX,
