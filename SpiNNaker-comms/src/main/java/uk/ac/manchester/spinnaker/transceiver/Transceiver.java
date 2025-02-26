@@ -164,6 +164,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
 import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -345,6 +346,9 @@ public class Transceiver extends UDPTransceiver
 
 	@GuardedBy("itself")
 	private Map<ChipLocation, FastDataIn> cachedDataIn = new HashMap<>();
+
+	@GuardedBy("itself")
+	private Map<ChipLocation, Downloader> cachedDownloaders = new HashMap<>();
 
 	/**
 	 * Create a Transceiver by creating a UDPConnection to the given hostname on
@@ -2639,6 +2643,7 @@ public class Transceiver extends UDPTransceiver
 			ChipLocation ethernetChip, String ethernetAddress, IPTag iptag,
 			HasChipLocation chip, MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
+		FastDataIn controller = null;
 		synchronized (cachedDataIn) {
 			if (!cachedDataIn.containsKey(ethernetChip)) {
 				var dims = getMachineDimensions();
@@ -2647,9 +2652,29 @@ public class Transceiver extends UDPTransceiver
 								gathererCore, this, ethernetChip,
 								ethernetAddress, iptag));
 			}
-			cachedDataIn.get(ethernetChip).fastWrite(chip, baseAddress, data);
+			controller = cachedDataIn.get(ethernetChip);
 		}
+		controller.fastWrite(chip, baseAddress, data);
 	}
+
+	@Override
+	@SuppressWarnings("MustBeClosed")
+	public ByteBuffer readMemoryFast(ChipLocation gathererChip, IPTag ipTag,
+			HasCoreLocation monitorCore, MemoryLocation address, int size)
+					throws IOException, ProcessException, InterruptedException {
+		Downloader downloader = null;
+		synchronized (cachedDownloaders) {
+			if (!cachedDownloaders.containsKey(gathererChip)) {
+				var conn = createScpConnection(gathererChip,
+						ipTag.getBoardAddress());
+				setIPTag(ipTag, conn);
+				cachedDownloaders.put(gathererChip,	new Downloader(conn));
+			}
+			downloader = cachedDownloaders.get(gathererChip);
+		}
+		return downloader.doDownload(this, monitorCore, address, size);
+	}
+
 
 	/**
 	 * Close the transceiver and any threads that are running.
@@ -2665,6 +2690,9 @@ public class Transceiver extends UDPTransceiver
 					dataIn.close();
 				}
 				cachedDataIn.clear();
+			}
+			synchronized (cachedDownloaders) {
+				cachedDownloaders.clear();
 			}
 			close(true, false);
 		} catch (InterruptedException e) {

@@ -310,6 +310,8 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 			public void fastDataRead(@ValidX int x, @ValidY int y, long address,
 					int size, AsyncResponse response) {
 				bgAction(response, () -> {
+					var txrx = j.getTransceiver();
+
 					return ok().build();
 				});
 			}

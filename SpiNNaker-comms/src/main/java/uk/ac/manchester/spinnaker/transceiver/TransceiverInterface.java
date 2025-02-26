@@ -4292,4 +4292,27 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			@Valid HasChipLocation chip, @Valid MemoryLocation baseAddress,
 			@NotNull ByteBuffer data)
 					throws IOException, ProcessException, InterruptedException;
+
+	/**
+	 * Read data from memory on a chip using the fast download protocol.  It is
+	 * assumed that the protocol has been set up to run before this is called.
+	 *
+	 * @param gathererChip
+	 *     The chip through which data will be downloaded.
+	 * @param ipTag
+	 *     The IP Tag to use to receive data.
+	 * @param monitorCore
+	 *     The core from which to download data.
+	 * @param address
+	 *     The address to read.
+	 * @param size
+	 *     The size of the data to read.
+	 * @return the data read.
+	 * @throws IOException          If anything goes wrong with networking.
+	 * @throws ProcessException     If SpiNNaker rejects a message.
+	 * @throws InterruptedException If the communications were interrupted.
+	 */
+	ByteBuffer readMemoryFast(ChipLocation gathererChip, IPTag ipTag,
+			HasCoreLocation monitorCore, MemoryLocation address, int size)
+					throws IOException, ProcessException, InterruptedException;
 }
