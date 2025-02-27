@@ -31,10 +31,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A connection for handling the Data Speed Up protocol.
@@ -167,24 +164,5 @@ final class GatherDownloadConnection implements AutoCloseable {
 	@Override
 	public void close() throws IOException {
 		connection.close();
-	}
-
-	/**
-	 * Set the IP tag for this connection.
-	 *
-	 * @param txrx
-	 *            The transceiver to use to set the tag.
-	 * @param iptag
-	 *            The tag to set
-	 * @throws ProcessException
-	 *             If something goes wrong in the protocol.
-	 * @throws IOException
-	 *             If something goes wrong in the comms.
-	 * @throws InterruptedException
-	 *             If the comms are interrupted.
-	 */
-	void setIPTag(TransceiverInterface txrx, IPTag iptag)
-			throws ProcessException, IOException, InterruptedException {
-		txrx.setIPTag(iptag, connection);
 	}
 }
