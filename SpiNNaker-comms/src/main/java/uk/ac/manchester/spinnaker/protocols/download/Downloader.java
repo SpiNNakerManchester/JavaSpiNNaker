@@ -150,12 +150,12 @@ public class Downloader {
 		lastRequested = expectedSeqs();
 		received = false;
 		timeoutcount = 0;
-		var transactionId = (txrx.readUser1(monitorCore) + 1) %
+		var transactionId = (txrx.readUser1(monitorCore) + 1) &
 				TRANSACTION_ID_CAP;
 		log.debug(
 				"extracting data from {} with size {} with "
-						+ "transaction id {}",
-				address, size, transactionId);
+						+ "transaction id {} using {} packets",
+				address, size, transactionId, maxSeqNum);
 		conn.sendStart(monitorCore.asCoreLocation(), address, size,
 				transactionId);
 		try {
@@ -241,16 +241,20 @@ public class Downloader {
 		int responseTransactionId = data.getInt();
 
 		if (responseTransactionId != transactionId) {
+			log.warn("received packet for transaction {} " + "when expecting packet for transaction {}",
+					responseTransactionId, transactionId);
 			return false;
 		}
 
 		var isEndOfStream = ((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
 		seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
+		log.debug("received packet {} from {} for transaction {}, end? {}", seqNum, monitorCore, transactionId, isEndOfStream);
 
 		if (seqNum > maxSeqNum || seqNum < 0) {
 			throw new InsaneSequenceNumberException(maxSeqNum, seqNum);
 		}
 		int len = data.remaining();
+		log.debug("packet length: {}", len);
 		if (len != DATA_WORDS_PER_PACKET * WORD_SIZE && len != 0
 				&& seqNum < maxSeqNum - 1) {
 			log.warn("short packet ({} bytes) in non-terminal position "
@@ -258,6 +262,7 @@ public class Downloader {
 		}
 		if (data.hasRemaining()) {
 			int offset = seqNum * DATA_WORDS_PER_PACKET * WORD_SIZE;
+			log.debug("writing to offset {}", offset);
 			if (offset < 0) {
 				// Off the start!
 				throw new ReceivingBufferOverflowedException(
