@@ -67,6 +67,7 @@ import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
@@ -828,6 +829,43 @@ public class SpallocClientFactory {
 					}
 					checkForErrorNoResponse(conn, "Couldn't fast write memory");
 					return null;
+				});
+			} catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
+		}
+
+		@Override
+		public ByteBuffer fastReadData(ChipLocation gathererChip,
+				ChipLocation ethernetChip, String ethernetAddress,
+				IPTag iptag, HasCoreLocation monitorCore,
+				MemoryLocation baseAddress, int length) throws IOException {
+			try {
+				return s.withRenewal(() -> {
+					var conn = s.connection(uri,
+							new URI(FAST_DATA_READ
+									+ "?gather_x=" + gathererChip.getX()
+									+ "&gather_y=" + gathererChip.getY()
+									+ "&eth_x=" + ethernetChip.getX()
+									+ "&eth_y=" + ethernetChip.getY()
+									+ "&eth_address=" + ethernetAddress
+									+ "&iptag=" + iptag.getTag()
+									+ "&x=" + monitorCore.getX()
+									+ "&y=" + monitorCore.getY()
+									+ "&p=" + monitorCore.getP()
+									+ "&address="
+									+ toUnsignedString(baseAddress.address)
+									+ "&size=" + length));
+					conn.setRequestMethod("GET");
+					conn.setRequestProperty(
+							"Accept", "application/octet-stream");
+					try (var is = checkForError(conn, "couldn't read memory")) {
+						var buffer = ByteBuffer.allocate(length);
+						var channel = Channels.newChannel(is);
+						IOUtils.readFully(channel, buffer);
+						buffer.rewind();
+						return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+					}
 				});
 			} catch (URISyntaxException e) {
 				throw new IOException(e);

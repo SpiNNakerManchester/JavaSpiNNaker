@@ -34,6 +34,7 @@ import com.google.errorprone.annotations.MustBeClosed;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
@@ -427,9 +428,27 @@ public interface SpallocClient {
 		 *             If communications fail.
 		 */
 		void fastWriteData(CoreLocation gathererCore,
-			ChipLocation ethernetChip, String ethernetAddress,
-			IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
-			ByteBuffer data) throws IOException;
+				ChipLocation ethernetChip, String ethernetAddress,
+				IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
+				ByteBuffer data) throws IOException;
+
+		/**
+		 * Fast read data directly with a job.  Assumes it has been set up.
+		 *
+		 * @param gathererChip The chip where the gatherer core is.
+		 * @param ethernetChip The chip where the Ethernet is.
+		 * @param ethernetAddress The address of the Ethernet to talk via.
+		 * @param iptag The Tag ID to use for reading responses.
+		 * @param monitorCore The monitor core to read from.
+		 * @param baseAddress The SDRAM address to read from.
+		 * @param length The number of bytes to read.
+		 * @return The data read.
+		 * @throws IOException If communications fail.
+		 */
+		ByteBuffer fastReadData(ChipLocation gathererChip,
+				ChipLocation ethernetChip, String ethernetAddress,
+				IPTag iptag, HasCoreLocation monitorCore,
+				MemoryLocation baseAddress, int length) throws IOException;
 	}
 
 	/**

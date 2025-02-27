@@ -241,4 +241,13 @@ final class ProxiedTransceiver extends Transceiver {
 
 	}
 
+	@Override
+	public ByteBuffer readMemoryFast(ChipLocation gathererChip, IPTag ipTag,
+			HasCoreLocation monitorCore, MemoryLocation address, int size)
+					throws IOException, ProcessException, InterruptedException {
+		return job.fastReadData(gathererChip, ipTag.getDestination(),
+				ipTag.getBoardAddress().getHostAddress(), ipTag, monitorCore,
+				address, size);
+	}
+
 }
