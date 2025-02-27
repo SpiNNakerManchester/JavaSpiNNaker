@@ -416,7 +416,4 @@ public abstract class DataGatherer extends BoardLocalSupport
 	@ForOverride
 	protected abstract void storeData(Region r, ByteBuffer data)
 			throws StorageException;
-
-
 }
-

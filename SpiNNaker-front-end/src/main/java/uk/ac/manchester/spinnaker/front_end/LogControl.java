@@ -19,7 +19,6 @@ import static java.lang.System.getProperty;
 import static org.apache.logging.log4j.Level.DEBUG;
 import static org.apache.logging.log4j.Level.ERROR;
 import static org.apache.logging.log4j.Level.INFO;
-import static org.apache.logging.log4j.Level.WARN;
 import static org.apache.logging.log4j.core.Filter.Result.ACCEPT;
 import static org.apache.logging.log4j.core.Filter.Result.DENY;
 import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_ERR;
