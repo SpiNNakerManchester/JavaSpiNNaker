@@ -176,7 +176,7 @@ public final class LogControl {
 				.add(builder
 						.newAppender(Loggers.CON, ConsoleAppender.PLUGIN_NAME)
 						.addAttribute(Attrs.TARGET, SYSTEM_ERR)
-						.add(filter(WARN)).add(layout(Patterns.CON)))
+						.add(filter(level)).add(layout(Patterns.CON)))
 				.add(builder.newAppender(Loggers.MAIN, FileAppender.PLUGIN_NAME)
 						.addAttribute(Attrs.FILE, logfile.getAbsolutePath())
 						.add(filter(level)).add(layout(Patterns.MAIN)))
