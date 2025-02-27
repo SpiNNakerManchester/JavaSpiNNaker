@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ADDRESS;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_Y;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_P;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ETH_ADDRESS;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ETH_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ETH_Y;
@@ -88,6 +89,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
@@ -689,6 +691,8 @@ public interface SpallocServiceAPI {
 		 * Note: it is assumed that the board has been set up before this is
 		 * called.
 		 *
+		 * @param gatherX X coordinate of the gather core
+		 * @param gatherY Y coordinate of the gather core
 		 * @param x Chip X coordinate
 		 * @param y Chip Y coordinate
 		 * @param address Address to read from
@@ -704,10 +708,24 @@ public interface SpallocServiceAPI {
 		@Path(FAST_DATA_READ)
 		@Produces(APPLICATION_OCTET_STREAM)
 		void fastDataRead(
+				@Description("X coordinate of the gather core")
+				@QueryParam(GATHER_X) @ValidX int gatherX,
+				@Description("Y coordinate of the gather core")
+				@QueryParam(GATHER_Y) @ValidY int gatherY,
+				@Description("X coordinate of the Ethernet chip of x, y")
+				@QueryParam(ETH_X) @DefaultValue("0") @ValidX int ethX,
+				@Description("Y coordinate of the Ethernet chip of x, y")
+				@QueryParam(ETH_Y) @DefaultValue("0") @ValidY int ethY,
+				@Description("The Ethernet address of the Ethernet chip")
+				@QueryParam(ETH_ADDRESS) @IPAddress String ethAddress,
+				@Description("The IPTag to use for the write")
+				@QueryParam(IPTAG) int iptag,
 				@Description("X coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("Processor id of monitor core on chip.")
+				@QueryParam(CHIP_P) @DefaultValue("0") @ValidP int p,
 				@Description("The address to write the data to")
 				@QueryParam(ADDRESS) long address,
 				@QueryParam(SIZE) int size, @Suspended AsyncResponse response);

@@ -84,6 +84,9 @@ public interface WebServiceComponentNames {
 	/** The Y coordinate query parameter name. */
 	String CHIP_Y = "y";
 
+	/** The P coordinate query parameter name. */
+	String CHIP_P = "p";
+
 	/** The X coordinate of the Ethernet chip of the chip. */
 	String ETH_X = "eth_x";
 

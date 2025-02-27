@@ -57,6 +57,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
@@ -285,6 +286,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 					buffer.get(arr);
 					return ok(arr).build();
 				});
+
 			}
 
 			@Override
@@ -306,13 +308,25 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				});
 			}
 
+
+
 			@Override
-			public void fastDataRead(@ValidX int x, @ValidY int y, long address,
-					int size, AsyncResponse response) {
+			public void fastDataRead(@ValidX int gatherX, @ValidY int gatherY,
+					@ValidX int ethX, @ValidY int ethY,
+					@IPAddress String ethAddress, int iptag,
+					@ValidX int x, @ValidY int y, @ValidP int p,
+					long address, int size,	AsyncResponse response) {
 				bgAction(response, () -> {
 					var txrx = j.getTransceiver();
-
-					return ok().build();
+					var buffer = txrx.readMemoryFast(
+							new ChipLocation(gatherX, gatherY),
+							new IPTag(ethAddress, iptag, ethX, ethY,
+									"localhost", null, true, null),
+							new CoreLocation(x, y, p),
+							new MemoryLocation(address), size);
+					var arr = new byte[size];
+					buffer.get(arr);
+					return ok(arr).build();
 				});
 			}
 		};
