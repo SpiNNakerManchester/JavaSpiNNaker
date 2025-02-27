@@ -47,7 +47,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  */
 public class Downloader {
 
-
 	/** The maximum number of times to retry. */
 	private static final int TIMEOUT_RETRY_LIMIT = 15;
 
@@ -130,10 +129,14 @@ public class Downloader {
 	/**
 	 * Do the downloading.
 	 *
-	 * @param extraMonitor
-	 *            Where to download from.
-	 * @param region
-	 *            What to download.
+	 * @param txrx
+	 *            The transceiver to use to configure IP tags.
+	 * @param monitorCore
+	 *           The core to download from.
+	 * @param address
+	 *           The address to download from.
+	 * @param size
+	 *          The size of the download.
 	 * @return The downloaded data, or {@code null} if an unrecoverable
 	 *         error occurred.
 	 * @throws IOException
@@ -165,8 +168,8 @@ public class Downloader {
 		lastRequested = expectedSeqs();
 		received = false;
 		timeoutcount = 0;
-		var transactionId = (txrx.readUser1(monitorCore) + 1) &
-				TRANSACTION_ID_CAP;
+		var transactionId = (txrx.readUser1(monitorCore) + 1)
+				& TRANSACTION_ID_CAP;
 		log.debug(
 				"extracting data from {} with size {} with "
 						+ "transaction id {} using {} packets",
@@ -256,14 +259,16 @@ public class Downloader {
 		int responseTransactionId = data.getInt();
 
 		if (responseTransactionId != transactionId) {
-			log.warn("received packet for transaction {} " + "when expecting packet for transaction {}",
+			log.warn("received packet for transaction {} "
+					+ "when expecting packet for transaction {}",
 					responseTransactionId, transactionId);
 			return false;
 		}
 
 		var isEndOfStream = ((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
 		seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
-		log.debug("received packet {} from {} for transaction {}, end? {}", seqNum, monitorCore, transactionId, isEndOfStream);
+		log.debug("received packet {} from {} for transaction {}, end? {}",
+				seqNum, monitorCore, transactionId, isEndOfStream);
 
 		if (seqNum > maxSeqNum || seqNum < 0) {
 			throw new InsaneSequenceNumberException(maxSeqNum, seqNum);
