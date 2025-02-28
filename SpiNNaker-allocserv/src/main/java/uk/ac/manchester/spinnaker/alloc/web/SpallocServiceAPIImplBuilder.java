@@ -184,7 +184,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	/**
 	 * Implementation of the JobAPI.
 	 */
-	private class JobAPIImpl implements JobAPI {
+	private final class JobAPIImpl implements JobAPI {
 
 		private final String caller;
 
