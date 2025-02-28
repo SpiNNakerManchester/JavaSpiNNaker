@@ -82,6 +82,7 @@ import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -1727,9 +1728,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (rememberer.isTransceiverForJob(id)) {
 				return rememberer.getTransceiverForJob(id);
 			}
-			var txrx = new Transceiver(InetAddress.getByName(
-					mac.get().getConnections().get(0).getHostname()),
-					MachineVersion.FIVE);
+			List<uk.ac.manchester.spinnaker.connections.model.Connection>
+				connections = new ArrayList<>();
+			for (var conn : mac.get().getConnections()) {
+				connections.add(new SCPConnection(conn.getChip(),
+						InetAddress.getByName(conn.getHostname())));
+			}
+			var txrx = new Transceiver(MachineVersion.FIVE, connections);
 			rememberer.setTransceiverForJob(id, txrx);
 			return txrx;
 		}
