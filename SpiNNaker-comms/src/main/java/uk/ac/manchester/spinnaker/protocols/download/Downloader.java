@@ -120,7 +120,7 @@ public class Downloader {
 	 *
 	 * @param connection
 	 *            The connection used to send messages.
-	 * @throws IOException
+	 * @throws IOException If there is a problem with the connection.
 	 */
 	public Downloader(SCPConnection connection) throws IOException {
 		conn = new GatherDownloadConnection(connection);
@@ -141,8 +141,6 @@ public class Downloader {
 	 *         error occurred.
 	 * @throws IOException
 	 *             If anything unexpected goes wrong.
-	 * @throws TimeoutException
-	 *             If a download times out unrecoverably.
 	 * @throws ProcessException
 	 *             If anything unexpected goes wrong.
 	 * @throws InterruptedException
