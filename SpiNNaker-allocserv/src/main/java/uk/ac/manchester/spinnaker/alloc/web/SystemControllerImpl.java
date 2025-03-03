@@ -83,6 +83,7 @@ import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException.NoP2PRoute;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -428,7 +429,9 @@ public class SystemControllerImpl implements SystemController {
 		var permit = new Permit(getContext());
 		var job = spallocCore.getJob(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-		try (var txrx = job.getTransceiver()) {
+		TransceiverInterface txrx = null;
+		try {
+			txrx = job.getTransceiver();
 			CoreSubsets cores = new CoreSubsets();
 			for (int i = 0; i < N_CORES; i++) {
 				cores.addCore(x, y, i);
@@ -456,6 +459,11 @@ public class SystemControllerImpl implements SystemController {
 			log.error("Error receiving process details", e);
 			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
 					"Error receiving process details", e);
+		}
+		finally {
+			if (txrx != null) {
+				job.releaseTransceiver(txrx);
+			}
 		}
 	}
 

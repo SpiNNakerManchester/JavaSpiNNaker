@@ -1725,8 +1725,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new IllegalStateException(
 						"Job is not active!");
 			}
-			if (rememberer.isTransceiverForJob(id)) {
-				return rememberer.getTransceiverForJob(id);
+			var txrx = rememberer.getTransceiverForJob(id);
+			if (nonNull(txrx)) {
+				return txrx;
 			}
 			List<uk.ac.manchester.spinnaker.connections.model.Connection>
 				connections = new ArrayList<>();
@@ -1734,9 +1735,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				connections.add(new SCPConnection(conn.getChip(),
 						null, null, InetAddress.getByName(conn.getHostname())));
 			}
-			var txrx = new Transceiver(MachineVersion.FIVE, connections);
-			rememberer.setTransceiverForJob(id, txrx);
-			return txrx;
+			return new Transceiver(MachineVersion.FIVE, connections);
+		}
+
+		@Override
+		public void releaseTransceiver(TransceiverInterface transceiver) {
+			// TODO Auto-generated method stub
+
 		}
 
 		@Override

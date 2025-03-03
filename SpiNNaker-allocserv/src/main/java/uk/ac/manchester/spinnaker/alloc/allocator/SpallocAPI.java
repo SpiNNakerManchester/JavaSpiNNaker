@@ -991,6 +991,13 @@ public interface SpallocAPI {
 		 */
 		TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException;
+
+		/**
+		 * Release the transceiver back to the pool.
+		 *
+		 * @param transceiver The transceiver to release.
+		 */
+		void releaseTransceiver(TransceiverInterface transceiver);
 	}
 
 	/**

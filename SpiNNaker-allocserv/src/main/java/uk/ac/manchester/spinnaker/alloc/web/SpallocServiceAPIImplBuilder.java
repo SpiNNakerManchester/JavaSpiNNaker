@@ -295,8 +295,12 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				AsyncResponse response) {
 			bgAction(response, () -> {
 				var txrx = j.getTransceiver();
-				txrx.writeMemory(new ChipLocation(x, y),
+				try {
+					txrx.writeMemory(new ChipLocation(x, y),
 						new MemoryLocation(address), bytes);
+				} finally {
+					j.releaseTransceiver(txrx);
+				}
 				return accepted().build();
 			});
 		}
@@ -306,10 +310,14 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				AsyncResponse response) {
 			bgAction(response, () -> {
 				var txrx = j.getTransceiver();
-				var buffer = txrx.readMemory(new ChipLocation(x, y),
-						new MemoryLocation(address), size);
 				var arr = new byte[size];
-				buffer.get(arr);
+				try {
+					var buffer = txrx.readMemory(new ChipLocation(x, y),
+							new MemoryLocation(address), size);
+					buffer.get(arr);
+				} finally {
+					j.releaseTransceiver(txrx);
+				}
 				return ok(arr).build();
 			});
 
@@ -323,13 +331,17 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				AsyncResponse response) {
 			bgAction(response, () -> {
 				var txrx = j.getTransceiver();
-				txrx.writeMemoryFast(
-						new CoreLocation(gatherX, gatherY, gatherP),
-						new ChipLocation(ethX, ethY), ethAddress,
-						new IPTag(ethAddress, iptag, ethX, ethY,
-								"localhost", null, true, null),
-						new ChipLocation(x, y),
-						new MemoryLocation(address), wrap(bytes));
+				try {
+					txrx.writeMemoryFast(
+							new CoreLocation(gatherX, gatherY, gatherP),
+							new ChipLocation(ethX, ethY), ethAddress,
+							new IPTag(ethAddress, iptag, ethX, ethY,
+									"localhost", null, true, null),
+							new ChipLocation(x, y),
+							new MemoryLocation(address), wrap(bytes));
+				} finally {
+					j.releaseTransceiver(txrx);
+				}
 				return accepted().build();
 			});
 		}
@@ -342,14 +354,18 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				long address, int size,	AsyncResponse response) {
 			bgAction(response, () -> {
 				var txrx = j.getTransceiver();
-				var buffer = txrx.readMemoryFast(
-						new ChipLocation(gatherX, gatherY),
-						new IPTag(ethAddress, iptag, ethX, ethY,
-								"localhost", null, true, null),
-						new CoreLocation(x, y, p),
-						new MemoryLocation(address), size);
 				var arr = new byte[size];
-				buffer.get(arr);
+				try {
+					var buffer = txrx.readMemoryFast(
+							new ChipLocation(gatherX, gatherY),
+							new IPTag(ethAddress, iptag, ethX, ethY,
+									"localhost", null, true, null),
+							new CoreLocation(x, y, p),
+							new MemoryLocation(address), size);
+					buffer.get(arr);
+				} finally {
+					j.releaseTransceiver(txrx);
+				}
 				return ok(arr).build();
 			});
 		}

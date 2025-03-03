@@ -20,8 +20,10 @@ import static java.util.Objects.nonNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import javax.annotation.PreDestroy;
 
@@ -50,7 +52,7 @@ class JobObjectRememberer {
 	private final Map<Integer, List<ProxyCore>> proxies = new HashMap<>();
 
 	@GuardedBy("this")
-	private final Map<Integer, TransceiverInterface> transceivers =
+	private final Map<Integer, Queue<TransceiverInterface>> transceivers =
 			new HashMap<>();
 
 	/**
@@ -60,13 +62,13 @@ class JobObjectRememberer {
 	private synchronized void closeAll() {
 		proxies.values().forEach(list -> list.forEach(ProxyCore::close));
 		proxies.clear(); // Just in case
-		transceivers.values().forEach(txrx -> {
+		transceivers.values().forEach(queue -> queue.forEach(txrx -> {
 			try {
 				txrx.close();
 			} catch (IOException e) {
 				log.error("Error closing Transceiver", e);
 			}
-		});
+		}));
 	}
 
 	/**
@@ -96,21 +98,6 @@ class JobObjectRememberer {
 		}
 	}
 
-	/** Set the transceiver for a job.
-	 *
-	 * @param jobId The job ID.
-	 * @param txrx The transceiver.
-	 * @throws RuntimeException If the job already has a transceiver
-	 */
-	synchronized void setTransceiverForJob(Integer jobId,
-			TransceiverInterface txrx) {
-		if (transceivers.containsKey(jobId)) {
-			throw new RuntimeException(
-					"Job " + jobId + " already has a transciever!");
-		}
-		transceivers.put(jobId, txrx);
-	}
-
 	/*
 	 * Get the transceiver for a job.
 	 *
@@ -118,21 +105,25 @@ class JobObjectRememberer {
 	 *
 	 * @return The transceiver.
 	 */
-	synchronized TransceiverInterface getTransceiverForJob(Integer jobId) {
+	synchronized TransceiverInterface getTransceiverForJob(int jobId) {
 		if (transceivers.containsKey(jobId)) {
-			return transceivers.get(jobId);
+			return transceivers.get(jobId).poll();
 		}
-		throw new RuntimeException(
-				"Job " + jobId + " does not have a transciever!");
+		return null;
 	}
 
-	/** Check if the transceiver for a job is set.
+	/** Set the transceiver for a job.
 	 *
 	 * @param jobId The job ID.
-	 * @return True if the transceiver is set.
+	 * @param txrx The transceiver.
+	 * @throws RuntimeException If the job already has a transceiver
 	 */
-	synchronized boolean isTransceiverForJob(Integer jobId) {
-		return transceivers.containsKey(jobId);
+	synchronized void releaseTransceiverForJob(Integer jobId,
+			TransceiverInterface txrx) {
+		if (!transceivers.containsKey(jobId)) {
+			transceivers.put(jobId,  new LinkedList<>());
+		}
+		transceivers.get(jobId).add(txrx);
 	}
 
 	private synchronized List<ProxyCore> removeProxyListForJob(Integer jobId) {
@@ -153,13 +144,15 @@ class JobObjectRememberer {
 			list.forEach(ProxyCore::close);
 		}
 		synchronized (this) {
-			var txrx = transceivers.remove(jobId);
-			if (txrx != null) {
-				try {
-					txrx.close();
-				} catch (IOException e) {
-					log.error("Error closing Transceiver", e);
-				}
+			var queue = transceivers.remove(jobId);
+			if (queue != null) {
+				queue.forEach(txrx -> {
+					try {
+						txrx.close();
+					} catch (IOException e) {
+						log.error("Error closing Transceiver", e);
+					}
+				});
 			}
 		}
 	}
