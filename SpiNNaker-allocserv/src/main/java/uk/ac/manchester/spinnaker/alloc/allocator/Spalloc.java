@@ -1732,7 +1732,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				connections = new ArrayList<>();
 			for (var conn : mac.get().getConnections()) {
 				connections.add(new SCPConnection(conn.getChip(),
-						InetAddress.getByName(conn.getHostname())));
+						null, null, InetAddress.getByName(conn.getHostname())));
 			}
 			var txrx = new Transceiver(MachineVersion.FIVE, connections);
 			rememberer.setTransceiverForJob(id, txrx);
