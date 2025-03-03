@@ -271,7 +271,7 @@ public class FastDataIn implements AutoCloseable {
 								+ "id {}", transactionId);
 						continue outerLoop;
 					}
-					log.info(
+					log.warn(
 							"timeout {} on transaction {} writing to {}"
 									+ " via {}",
 							timeoutCount, transactionId, baseAddress,
@@ -323,7 +323,7 @@ public class FastDataIn implements AutoCloseable {
 	private int sendInitialPackets(HasChipLocation boardLocalDestination,
 			MemoryLocation baseAddress, ByteBuffer data, int transactionId,
 			int numPackets) throws IOException {
-		log.info("streaming {} bytes in {} packets using transaction {}",
+		log.debug("streaming {} bytes in {} packets using transaction {}",
 				data.remaining(), numPackets, transactionId);
 		log.debug("sending packet #{}", 0);
 		connection.send(dataToLocation(boardLocalDestination, baseAddress,
@@ -340,7 +340,7 @@ public class FastDataIn implements AutoCloseable {
 	private void retransmitMissingPackets(ByteBuffer dataToSend,
 			BitSet missingSeqNums, int transactionId)
 			throws IOException {
-		log.info("retransmitting {} packets", missingSeqNums.cardinality());
+		log.debug("retransmitting {} packets", missingSeqNums.cardinality());
 
 		missingSeqNums.stream().forEach(seqNum -> {
 			log.debug("resending packet #{}", seqNum);
