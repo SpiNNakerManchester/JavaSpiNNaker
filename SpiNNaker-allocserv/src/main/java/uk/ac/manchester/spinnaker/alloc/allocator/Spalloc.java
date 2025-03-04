@@ -1740,8 +1740,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		@Override
 		public void releaseTransceiver(TransceiverInterface transceiver) {
-			// TODO Auto-generated method stub
-
+			rememberer.releaseTransceiverForJob(id, transceiver);
 		}
 
 		@Override
