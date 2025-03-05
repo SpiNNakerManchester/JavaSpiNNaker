@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.download.request.Monitor;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -221,14 +222,27 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			this.gather = gather;
 		}
 
+		private HasChipLocation getBoardLocalDestination(
+				HasChipLocation monitorChip) {
+			int boardLocalX = monitorChip.getX() - gather.getX();
+			if (boardLocalX < 0) {
+				boardLocalX += machineDimensions.width;
+			}
+			int boardLocalY = monitorChip.getY() - gather.getY();
+			if (boardLocalY < 0) {
+				boardLocalY += machineDimensions.height;
+			}
+			return new ChipLocation(boardLocalX, boardLocalY);
+		}
+
 		@Override
 		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
 				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
 			int toWrite = content.remaining();
 			txrx.writeMemoryFast(gather.asCoreLocation(), board.location,
-					board.ethernetAddress, gather.getIptag(), core, baseAddress,
-					content);
+					board.ethernetAddress, gather.getIptag(),
+					getBoardLocalDestination(core), baseAddress, content);
 			return toWrite;
 		}
 	}

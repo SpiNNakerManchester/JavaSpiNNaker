@@ -26,6 +26,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import java.util.LinkedHashMap;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
@@ -47,6 +48,9 @@ abstract class BoardWorker {
 
 	/** The system wide app id.*/
 	private final int appId;
+
+	/** The dimensions of the machine.*/
+	protected final MachineDimensions machineDimensions;
 
 	/** Application data magic number. */
 	private static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
@@ -100,6 +104,7 @@ abstract class BoardWorker {
 		this.board = board;
 		this.storage = storage;
 		this.appId = storage.getAppId();
+		this.machineDimensions = storage.getMachineDimensions();
 		this.txrx = txrx;
 	}
 

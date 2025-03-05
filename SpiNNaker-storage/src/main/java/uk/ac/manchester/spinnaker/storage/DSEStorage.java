@@ -23,6 +23,7 @@ import javax.validation.Valid;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -102,6 +103,14 @@ public interface DSEStorage extends ProxyAwareStorage {
 	 *             If the database access fails.
 	 */
 	int getAppId() throws StorageException;
+
+	/**
+	 * Get the machine dimensions.
+	 *
+	 * @return The machine dimensions.
+	 * @throws StorageException If the database access fails.
+	 */
+	MachineDimensions getMachineDimensions() throws StorageException;
 
 	/**
 	 * Set the pointer for where to write the region data to.

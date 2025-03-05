@@ -25,9 +25,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_APP_ID;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_MACHINE_DIMENSIONS;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_POINTER_AND_CONTEXT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION_SIZES;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_START_ADDRESS;
@@ -237,6 +239,25 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 			}
 		}
 		throw new IllegalStateException("could not ge app id");
+	}
+
+	@Override
+	public MachineDimensions getMachineDimensions() throws StorageException {
+		return callR(conn -> getMachineDimensions(conn),
+				"getting machine dimensions");
+	}
+
+	private MachineDimensions getMachineDimensions(Connection conn)
+			throws SQLException {
+		try (var s = conn.prepareStatement(GET_MACHINE_DIMENSIONS)) {
+			try (var rs = s.executeQuery()) {
+				while (rs.next()) {
+					return new MachineDimensions(rs.getInt("width"),
+							rs.getInt("height"));
+				}
+			}
+		}
+		throw new IllegalStateException("could not get machine dimensions");
 	}
 
 	private static final class EthernetImpl extends Ethernet {

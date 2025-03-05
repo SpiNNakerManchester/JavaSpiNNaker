@@ -2640,16 +2640,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@SuppressWarnings("MustBeClosed")
 	public void writeMemoryFast(CoreLocation gathererCore,
-			ChipLocation ethernetChip, String ethernetAddress, IPTag iptag,
-			HasChipLocation chip, MemoryLocation baseAddress, ByteBuffer data)
+			ChipLocation ethernetChip,
+			String ethernetAddress, IPTag iptag, HasChipLocation chip,
+			MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException, InterruptedException {
 		FastDataIn controller = null;
 		synchronized (cachedDataIn) {
 			if (!cachedDataIn.containsKey(ethernetChip)) {
-				var dims = getMachineDimensions();
 				cachedDataIn.put(ethernetChip,
-						new FastDataIn(dims.width + 1, dims.height + 1,
-								gathererCore, this, ethernetChip,
+						new FastDataIn(gathererCore, this, ethernetChip,
 								ethernetAddress, iptag));
 			}
 			controller = cachedDataIn.get(ethernetChip);

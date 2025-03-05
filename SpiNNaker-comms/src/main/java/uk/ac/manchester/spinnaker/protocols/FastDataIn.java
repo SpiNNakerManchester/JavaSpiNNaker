@@ -97,10 +97,6 @@ public class FastDataIn implements AutoCloseable {
 	/** Sequence number that marks the end of a sequence number stream. */
 	private static final int MISSING_SEQS_END = -1;
 
-	private final int maxChipX;
-
-	private final int maxChipY;
-
 	private final HasCoreLocation gathererCore;
 
 	private final ThrottledConnection connection;
@@ -130,13 +126,11 @@ public class FastDataIn implements AutoCloseable {
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public FastDataIn(int maxChipX, int maxChipY, CoreLocation gathererCore,
+	public FastDataIn(CoreLocation gathererCore,
 			TransceiverInterface transceiver, ChipLocation ethernetChip,
 			String ethernetAddress, IPTag iptag)
 					throws ProcessException, IOException, InterruptedException {
 		this.gathererCore = gathererCore;
-		this.maxChipX = maxChipX;
-		this.maxChipY = maxChipY;
 		this.connection = new ThrottledConnection(transceiver, ethernetChip,
 				ethernetAddress, iptag);
 	}
@@ -144,19 +138,6 @@ public class FastDataIn implements AutoCloseable {
 	@Override
 	public void close() throws IOException {
 		connection.close();
-	}
-
-	private HasChipLocation getBoardLocalDestination(
-			HasChipLocation monitorChip) {
-		int boardLocalX = monitorChip.getX() - gathererCore.getX();
-		if (boardLocalX < 0) {
-			boardLocalX += maxChipX + 1;
-		}
-		int boardLocalY = monitorChip.getY() - gathererCore.getY();
-		if (boardLocalY < 0) {
-			boardLocalY += maxChipY + 1;
-		}
-		return new ChipLocation(boardLocalX, boardLocalY);
 	}
 
 	/**
@@ -173,7 +154,7 @@ public class FastDataIn implements AutoCloseable {
 	 * @throws InterruptedException
 	 *            If communications are interrupted.
 	 */
-	public void fastWrite(HasChipLocation destination,
+	public void fastWrite(HasChipLocation boardLocalDestination,
 			MemoryLocation baseAddress, ByteBuffer data)
 					throws IOException, InterruptedException {
 		int timeoutCount = 0;
@@ -182,7 +163,7 @@ public class FastDataIn implements AutoCloseable {
 
 		outerLoop: while (true) {
 			// Do the initial blast of data
-			sendInitialPackets(getBoardLocalDestination(destination),
+			sendInitialPackets(boardLocalDestination,
 					baseAddress, data, transactionId, numPackets);
 			/*
 			 * Don't create a missing buffer until at least one packet has
