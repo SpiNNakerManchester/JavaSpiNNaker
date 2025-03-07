@@ -2637,44 +2637,6 @@ public class Transceiver extends UDPTransceiver
 				.loadSystemRouterTable(monitorCores);
 	}
 
-	@Override
-	@SuppressWarnings("MustBeClosed")
-	public void writeMemoryFast(CoreLocation gathererCore,
-			ChipLocation ethernetChip,
-			String ethernetAddress, IPTag iptag, HasChipLocation chip,
-			MemoryLocation baseAddress, ByteBuffer data)
-			throws IOException, ProcessException, InterruptedException {
-		FastDataIn controller = null;
-		synchronized (cachedDataIn) {
-			if (!cachedDataIn.containsKey(ethernetChip)) {
-				cachedDataIn.put(ethernetChip,
-						new FastDataIn(gathererCore, this, ethernetChip,
-								ethernetAddress, iptag));
-			}
-			controller = cachedDataIn.get(ethernetChip);
-		}
-		controller.fastWrite(chip, baseAddress, data);
-	}
-
-	@Override
-	@SuppressWarnings("MustBeClosed")
-	public ByteBuffer readMemoryFast(ChipLocation gathererChip, IPTag ipTag,
-			HasCoreLocation monitorCore, MemoryLocation address, int size)
-					throws IOException, ProcessException, InterruptedException {
-		Downloader downloader = null;
-		synchronized (cachedDownloaders) {
-			if (!cachedDownloaders.containsKey(gathererChip)) {
-				var conn = createScpConnection(gathererChip,
-						ipTag.getBoardAddress());
-				setIPTag(ipTag, conn);
-				cachedDownloaders.put(gathererChip,	new Downloader(conn));
-			}
-			downloader = cachedDownloaders.get(gathererChip);
-		}
-		return downloader.doDownload(this, monitorCore, address, size);
-	}
-
-
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *

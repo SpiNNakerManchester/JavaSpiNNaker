@@ -256,7 +256,7 @@ public class TxrxProcess {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	protected <Conn extends SCPConnection> TxrxProcess(
+	public <Conn extends SCPConnection> TxrxProcess(
 			ConnectionSelector<Conn> connectionSelector,
 			RetryTracker retryTracker) {
 		this(connectionSelector, SCP_RETRIES, SCP_TIMEOUT, DEFAULT_NUM_CHANNELS,
@@ -410,7 +410,7 @@ public class TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	protected final void call(SCPRequest<EmptyResponse> request)
+	public final void call(SCPRequest<EmptyResponse> request)
 					throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<EmptyResponse>();
 		resetFailureState();
@@ -438,7 +438,7 @@ public class TxrxProcess {
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	protected final <T,
+	public final <T,
 			R extends PayloadedResponse<T, ?>> T retrieve(SCPRequest<R> request)
 					throws IOException, ProcessException, InterruptedException {
 		var holder = new ValueHolder<T>();

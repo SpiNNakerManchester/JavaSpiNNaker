@@ -158,7 +158,8 @@ public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 								wrap(rs.getBytes("content")).asReadOnlyBuffer();
 					}
 					var info = new RegionInfo(
-							content, new MemoryLocation(rs.getInt("pointer")));
+							xyp, content,
+							new MemoryLocation(rs.getInt("pointer")));
 					results.put(rs.getInt("region_num"), info);
 				}
 			}

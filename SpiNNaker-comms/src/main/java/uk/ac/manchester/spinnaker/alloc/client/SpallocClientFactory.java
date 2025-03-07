@@ -800,7 +800,6 @@ public class SpallocClientFactory {
 
 		@Override
 		public void fastWriteData(CoreLocation gathererCore,
-				ChipLocation ethernetChip, String ethernetAddress,
 				IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
 				ByteBuffer data) throws IOException {
 			try {
@@ -810,9 +809,10 @@ public class SpallocClientFactory {
 									+ "?gather_x=" + gathererCore.getX()
 									+ "&gather_y=" + gathererCore.getY()
 									+ "&gather_p=" + gathererCore.getP()
-									+ "&eth_x=" + ethernetChip.getX()
-									+ "&eth_y=" + ethernetChip.getY()
-									+ "&eth_address=" + ethernetAddress
+									+ "&eth_x=" + iptag.getDestination().getX()
+									+ "&eth_y=" + iptag.getDestination().getY()
+									+ "&eth_address="
+									+ iptag.getBoardAddress().getHostAddress()
 									+ "&iptag=" + iptag.getTag()
 									+ "&x=" + chip.getX()
 									+ "&y=" + chip.getY()
@@ -837,7 +837,6 @@ public class SpallocClientFactory {
 
 		@Override
 		public ByteBuffer fastReadData(ChipLocation gathererChip,
-				ChipLocation ethernetChip, String ethernetAddress,
 				IPTag iptag, HasCoreLocation monitorCore,
 				MemoryLocation baseAddress, int length) throws IOException {
 			try {
@@ -846,9 +845,10 @@ public class SpallocClientFactory {
 							new URI(FAST_DATA_READ
 									+ "?gather_x=" + gathererChip.getX()
 									+ "&gather_y=" + gathererChip.getY()
-									+ "&eth_x=" + ethernetChip.getX()
-									+ "&eth_y=" + ethernetChip.getY()
-									+ "&eth_address=" + ethernetAddress
+									+ "&eth_x=" + iptag.getDestination().getX()
+									+ "&eth_y=" + iptag.getDestination().getY()
+									+ "&eth_address="
+									+ iptag.getBoardAddress().getHostAddress()
 									+ "&iptag=" + iptag.getTag()
 									+ "&x=" + monitorCore.getX()
 									+ "&y=" + monitorCore.getY()

@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.System.nanoTime;
-import static java.net.InetAddress.getByName;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -38,9 +37,10 @@ import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -62,8 +62,6 @@ public class ThrottledConnection implements Closeable {
 				THROTTLE_NS / NSEC_PER_USEC);
 	}
 
-	private final ChipLocation location;
-
 	private final SCPConnection connection;
 
 	private final AtomicBoolean closed = new AtomicBoolean();
@@ -74,12 +72,6 @@ public class ThrottledConnection implements Closeable {
 	 * Create a throttled connection for talking to a board and point an IPTag
 	 * so that messages sent to it arrive on this connection.
 	 *
-	 * @param transceiver
-	 *            The SCP transceiver.
-	 * @param location
-	 *           The location of the chip on the board to talk to.
-	 * @param ethernetAddress
-	 *           The Ethernet address of the board.
 	 * @param iptag
 	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
@@ -91,18 +83,19 @@ public class ThrottledConnection implements Closeable {
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public ThrottledConnection(TransceiverInterface transceiver,
-			ChipLocation location, String ethernetAddress, IPTag iptag)
+	public ThrottledConnection(IPTag iptag)
 			throws IOException, ProcessException, InterruptedException {
-		this.location = location;
-		connection = transceiver.createScpConnection(location,
-				getByName(ethernetAddress));
-		log.info(
-				"created throttled connection to {} ({}) from {}:{}; "
+		connection = new SCPConnection(iptag.getDestination(), null, null,
+				iptag.getBoardAddress());
+		log.info("created throttled connection to {} ({}) from {}:{}; "
 						+ "reprogramming tag #{} to point to this connection",
-				location, ethernetAddress, connection.getLocalIPAddress(),
+				iptag.getDestination(), iptag.getBoardAddress(),
+				connection.getLocalIPAddress(),
 				connection.getLocalPort(), iptag.getTag());
-		transceiver.setIPTag(iptag, connection);
+		var process = new TxrxProcess(new SingletonConnectionSelector<>(
+				connection), null);
+		process.call(new IPTagSet(connection.getChip(), null, 0,
+					iptag.getTag(), iptag.isStripSDP(), true));
 	}
 
 	/**
@@ -156,6 +149,6 @@ public class ThrottledConnection implements Closeable {
 	}
 
 	public ChipLocation getLocation() {
-		return location;
+		return connection.getChip();
 	}
 }

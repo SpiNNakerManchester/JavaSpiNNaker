@@ -53,10 +53,13 @@ import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.protocols.NoDropPacketContext;
 import uk.ac.manchester.spinnaker.protocols.SystemRouterTableContext;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
+import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -79,36 +82,43 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	private final BasicExecutor pool;
 
+	protected final TransceiverInterface txrx;
+
 	private int missCount;
 
 	/**
 	 * Create an instance of the protocol implementation. (Subclasses handle
 	 * where to put it afterwards.)
 	 *
-	 * @param transceiver
-	 *            How to talk to the SpiNNaker system via SCP. Where the system
-	 *            is located.
+	 * @param db
+	 *            Database to use to get proxy information.
 	 * @param machine
 	 *            The description of the SpiNNaker machine being talked to.
-	 * @throws ProcessException
-	 *             If we can't discover the machine details due to SpiNNaker
-	 *             rejecting messages
 	 * @throws IOException
-	 *             If we can't discover the machine details due to I/O problems
+	 *            If we can't discover the machine details due to I/O problems
+	 * @throws InterruptedException
+	 *            If communications are interrupted.
+	 * @throws SpinnmanException
+	 *            If the there is an error creating a transceiver.
+	 * @throws StorageException
+	 *           If the database access fails.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public DataGatherer(TransceiverInterface transceiver, Machine machine)
-			throws IOException, ProcessException {
-		super(transceiver, machine);
+	public DataGatherer(ProxyAwareStorage db, Machine machine)
+			throws IOException, StorageException, SpinnmanException,
+			InterruptedException {
+		super(db, machine);
+		this.txrx = getTransceiver();
 		this.pool = new BasicExecutor(PARALLEL_SIZE);
 		this.missCount = 0;
 	}
 
 	@Override
 	@OverridingMethodsMustInvokeSuper
-	public void close() throws InterruptedException {
+	public void close() throws InterruptedException, IOException {
 		pool.close();
+		txrx.close();
 	}
 
 	/**
@@ -278,6 +288,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 			ChipLocation gathererChip, IPTag ipTag)
 			throws IOException, StorageException,
 			ProcessException, InterruptedException {
+
+		Downloader downloader = null;
+		var job = getJob();
+		if (job == null) {
+			downloader = new Downloader(ipTag);
+		}
 		try (var c = new BoardLocal(gathererChip)) {
 			log.info("processing fast downloads for {}", gathererChip);
 			for (var item : work) {
@@ -287,8 +303,14 @@ public abstract class DataGatherer extends BoardLocalSupport
 					 * retrieves for that recording region have to be done the
 					 * same way to get the data in the DB in the right order.
 					 */
-					var data = txrx.readMemoryFast(gathererChip, ipTag,
-							item.monitor, region.startAddress, region.size);
+					final ByteBuffer data;
+					if (downloader != null) {
+						data = downloader.doDownload(
+								item.monitor, region.startAddress, region.size);
+					} else {
+						data = job.fastReadData(gathererChip, ipTag,
+								item.monitor, region.startAddress, region.size);
+					}
 					if (SPINNAKER_COMPARE_DOWNLOAD != null) {
 						compareDownloadWithSCP(region, data);
 					}

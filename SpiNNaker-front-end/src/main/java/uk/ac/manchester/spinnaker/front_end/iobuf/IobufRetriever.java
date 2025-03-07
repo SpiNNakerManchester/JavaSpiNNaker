@@ -40,7 +40,10 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
+import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -64,22 +67,34 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 
 	private final BasicExecutor executor;
 
+	private final TransceiverInterface txrx;
+
 	/**
 	 * Create a IOBUF retriever.
 	 *
-	 * @param transceiver
-	 *            How to talk to the machine.
+	 * @param db
+	 *            Where to get information about the proxy from.
 	 * @param machine
 	 *            Description of the machine being talked to.
 	 * @param parallelSize
 	 *            How many tasks to do at once (at most).
+	 * @throws IOException
+	 *            If we can't discover the machine details due to I/O problems
+	 * @throws InterruptedException
+	 *            If communications are interrupted.
+	 * @throws SpinnmanException
+	 *            If the there is an error creating a transceiver.
+	 * @throws StorageException
+	 *           If the database access fails.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public IobufRetriever(TransceiverInterface transceiver, Machine machine,
-			int parallelSize) {
-		super(transceiver, machine);
+	public IobufRetriever(ProxyAwareStorage db, Machine machine,
+			int parallelSize) throws IOException, StorageException,
+			SpinnmanException, InterruptedException {
+		super(db, machine);
 		executor = new BasicExecutor(parallelSize);
+		txrx = getTransceiver();
 	}
 
 	@Override

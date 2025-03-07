@@ -132,7 +132,7 @@ class TestFrontEnd {
 		var called = new ValueHolder<>("none");
 		try {
 			CommandLineInterface.hostFactory =
-					(t, m, db) -> new HostExecuteDataSpecification(t, m, null) {
+					(m, db) -> new HostExecuteDataSpecification(m, null) {
 						@Override
 						public void loadCores(boolean system) {
 							if (system) {
@@ -178,8 +178,8 @@ class TestFrontEnd {
 		var saved = CommandLineInterface.fastFactory;
 		var called = new ValueHolder<>("none");
 		try {
-			CommandLineInterface.fastFactory = (t, m, g, r,
-					db) -> new FastExecuteDataSpecification(t, m, g, r, null) {
+			CommandLineInterface.fastFactory = (m, g, r,
+					db) -> new FastExecuteDataSpecification(m, g, r, null) {
 						@Override
 						public void loadCores() {
 							called.setValue("mon");

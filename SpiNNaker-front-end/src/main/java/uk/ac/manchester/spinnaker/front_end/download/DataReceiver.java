@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
@@ -49,26 +50,41 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Christian-B
  */
-public class DataReceiver extends BoardLocalSupport {
+public class DataReceiver extends BoardLocalSupport implements AutoCloseable {
 	private final BufferedReceivingData receivedData;
+
+	private final TransceiverInterface txrx;
 
 	private static final Logger log = getLogger(DataReceiver.class);
 
 	/**
 	 * Creates a new mini Buffer Manager.
 	 *
-	 * @param tranceiver
-	 *            Transceiver to get data via.
 	 * @param machine
 	 *            The SpiNNaker system to get the data from.
 	 * @param storage
 	 *            How to talk to the database.
+	 * @throws IOException
+	 *            If we can't discover the machine details due to I/O problems
+	 * @throws InterruptedException
+	 *            If communications are interrupted.
+	 * @throws SpinnmanException
+	 *            If the there is an error creating a transceiver.
+	 * @throws StorageException
+	 *           If the database access fails.
 	 */
-	public DataReceiver(TransceiverInterface tranceiver, Machine machine,
-			BufferManagerStorage storage) {
-		super(tranceiver, machine);
+	public DataReceiver(Machine machine, BufferManagerStorage storage)
+			throws IOException, StorageException, SpinnmanException,
+			InterruptedException {
+		super(storage, machine);
 		// storage area for received data from cores
 		receivedData = new BufferedReceivingData(storage);
+		txrx = getTransceiver();
+	}
+
+	@Override
+	public void close() throws IOException {
+		txrx.close();
 	}
 
 	private Stream<List<Placement>> partitionByBoard(

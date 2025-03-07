@@ -18,6 +18,9 @@ package uk.ac.manchester.spinnaker.protocols.download;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADDRESS;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
@@ -27,11 +30,20 @@ import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.SingletonConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
+import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
 
 /**
  * A connection for handling the Data Speed Up protocol.
@@ -51,19 +63,56 @@ final class GatherDownloadConnection implements AutoCloseable {
 	/** An empty buffer. Used so we don't try to read zero bytes. */
 	private static final ByteBuffer EMPTY_DATA = allocate(0);
 
+	/** cap of where a transaction id will get to. */
+	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
+
 	private final SCPConnection connection;
 
 	/**
 	 * Create an instance.
 	 *
-	 * @param connection
-	 *            What connection are we using to talk to the board.
+	 * @param iptag
+	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
-	 *             If anything goes wrong with socket setup.
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	GatherDownloadConnection(SCPConnection connection)
-			throws IOException {
-		this.connection = connection;
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
+	GatherDownloadConnection(IPTag iptag)
+			throws IOException, ProcessException, InterruptedException {
+		this.connection = new SCPConnection(iptag.getDestination(), null, null,
+						iptag.getBoardAddress());
+		var process = new TxrxProcess(new SingletonConnectionSelector<>(
+				connection), null);
+		process.call(new IPTagSet(connection.getChip(), null, 0,
+					iptag.getTag(), iptag.isStripSDP(), true));
+	}
+
+	/**
+	 * Get the next transaction ID to use.
+	 *
+	 * @param gatherCore The core being used to download data.
+	 * @return The next transaction ID to use.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	public int getNextTransactionId(HasCoreLocation gatherCore)
+			throws ProcessException, IOException, InterruptedException {
+		var addr = getVcpuAddress(gatherCore).add(CPU_USER_1_START_ADDRESS);
+		var process = new TxrxProcess(
+				new SingletonConnectionSelector<>(connection), null);
+		var transactionId = process.retrieve(
+				new ReadMemory(gatherCore.getScampCore(), addr, WORD_SIZE))
+				.getInt();
+		return (transactionId + 1) & TRANSACTION_ID_CAP;
 	}
 
 	private void sendMsg(SDPMessage msg) throws IOException {

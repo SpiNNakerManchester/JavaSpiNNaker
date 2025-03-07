@@ -417,8 +417,6 @@ public interface SpallocClient {
 		 * Fast write data directly with a job.  Assumes it has been set up.
 		 *
 		 * @param gathererCore The core to use on the Ethernet chip.
-		 * @param ethernetChip The Ethernet chip to use to write data.
-		 * @param ethernetAddress The IP address of the Ethernet chip.
 		 * @param iptag The tag ID to use for reading responses.
 		 * @param chip The chip to write to.
 		 * @param baseAddress The base address to write to.
@@ -428,7 +426,6 @@ public interface SpallocClient {
 		 *             If communications fail.
 		 */
 		void fastWriteData(CoreLocation gathererCore,
-				ChipLocation ethernetChip, String ethernetAddress,
 				IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
 				ByteBuffer data) throws IOException;
 
@@ -436,8 +433,6 @@ public interface SpallocClient {
 		 * Fast read data directly with a job.  Assumes it has been set up.
 		 *
 		 * @param gathererChip The chip where the gatherer core is.
-		 * @param ethernetChip The chip where the Ethernet is.
-		 * @param ethernetAddress The address of the Ethernet to talk via.
 		 * @param iptag The Tag ID to use for reading responses.
 		 * @param monitorCore The monitor core to read from.
 		 * @param baseAddress The SDRAM address to read from.
@@ -446,7 +441,6 @@ public interface SpallocClient {
 		 * @throws IOException If communications fail.
 		 */
 		ByteBuffer fastReadData(ChipLocation gathererChip,
-				ChipLocation ethernetChip, String ethernetAddress,
 				IPTag iptag, HasCoreLocation monitorCore,
 				MemoryLocation baseAddress, int length) throws IOException;
 	}

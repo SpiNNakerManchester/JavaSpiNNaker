@@ -33,11 +33,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Class used to manage a download. Every instance <em>must only</em> ever
@@ -112,18 +113,26 @@ public class Downloader {
 
 	private List<Integer> lastRequested;
 
-	/** cap of where a transaction id will get to. */
-	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
-
 	/**
 	 * Create an instance.
-	 *
-	 * @param connection
-	 *            The connection used to send messages.
-	 * @throws IOException If there is a problem with the connection.
+	 * @param iptag
+	 *            The tag to reprogram to talk to this connection.
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
-	public Downloader(SCPConnection connection) throws IOException {
-		conn = new GatherDownloadConnection(connection);
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
+	public Downloader(IPTag iptag)
+			throws IOException, ProcessException, InterruptedException {
+		conn = new GatherDownloadConnection(iptag);
+	}
+
+	public void close() throws IOException {
+		conn.close();
 	}
 
 	/**
@@ -146,7 +155,7 @@ public class Downloader {
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	public ByteBuffer doDownload(TransceiverInterface txrx,
+	public ByteBuffer doDownload(
 			HasCoreLocation monitorCore, MemoryLocation address,
 			int size) throws IOException, ProcessException,
 			InterruptedException {
@@ -166,8 +175,7 @@ public class Downloader {
 		lastRequested = expectedSeqs();
 		received = false;
 		timeoutcount = 0;
-		var transactionId = (txrx.readUser1(monitorCore) + 1)
-				& TRANSACTION_ID_CAP;
+		var transactionId = conn.getNextTransactionId(monitorCore);
 		log.debug(
 				"extracting data from {} with size {} with "
 						+ "transaction id {} using {} packets",

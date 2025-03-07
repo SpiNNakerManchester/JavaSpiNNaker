@@ -45,7 +45,6 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.connections.ThrottledConnection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -55,7 +54,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 public class FastDataIn implements AutoCloseable {
 
@@ -108,14 +106,9 @@ public class FastDataIn implements AutoCloseable {
 	 * Create an instance of the protocol for talking to a particular extra
 	 * monitor core on a particular board.
 	 *
-	 * @param maxChipX The maximum X coordinate of the machine to speak to.
-	 * @param maxChipY The maximum Y coordinate of the machine to speak to.
 	 * @param gathererCore
 	 *            The gatherer core on the board that messages will be routed
 	 *            via.
-	 * @param transceiver A transceiver to use for communications.
-	 * @param ethernetChip The Ethernet chip to talk to the chip via.
-	 * @param ethernetAddress The Ethernet address of the chip to talk via.
 	 * @param iptag The IPTag to use for communications.
 	 * @throws IOException
 	 *             If IO fails.
@@ -126,13 +119,10 @@ public class FastDataIn implements AutoCloseable {
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	public FastDataIn(CoreLocation gathererCore,
-			TransceiverInterface transceiver, ChipLocation ethernetChip,
-			String ethernetAddress, IPTag iptag)
+	public FastDataIn(CoreLocation gathererCore, IPTag iptag)
 					throws ProcessException, IOException, InterruptedException {
 		this.gathererCore = gathererCore;
-		this.connection = new ThrottledConnection(transceiver, ethernetChip,
-				ethernetAddress, iptag);
+		this.connection = new ThrottledConnection(iptag);
 	}
 
 	@Override

@@ -84,14 +84,19 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -1735,13 +1740,38 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				connections.add(new SCPConnection(conn.getChip(),
 						null, null, InetAddress.getByName(conn.getHostname())));
 			}
-			return new Transceiver(MachineVersion.FIVE, connections);
+			txrx = new Transceiver(MachineVersion.FIVE, connections);
+			rememberer.rememberTransceiverForJob(id, txrx);
+			return txrx;
 		}
 
 		@Override
-		public void releaseTransceiver(TransceiverInterface transceiver) {
-			rememberer.releaseTransceiverForJob(id, transceiver);
+		public FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
+				throws ProcessException, IOException, InterruptedException {
+			var fdi = rememberer.getFastDataIn(id, iptag.getDestination());
+			if (fdi != null) {
+				return fdi;
+			}
+			fdi = new FastDataIn(gathererCore, iptag);
+			rememberer.rememberFastDataIn(id, iptag.getDestination(), fdi);
+			return fdi;
 		}
+
+		@Override
+		public Downloader getDownloader(IPTag iptag)
+				throws ProcessException, IOException, InterruptedException {
+			var downloader = rememberer.getDownloader(id,
+					iptag.getDestination());
+			if (downloader != null) {
+				return downloader;
+			}
+			downloader = new Downloader(iptag);
+			rememberer.rememberDownloader(id, iptag.getDestination(),
+					downloader);
+			return downloader;
+		}
+
+
 
 		@Override
 		public boolean equals(Object other) {

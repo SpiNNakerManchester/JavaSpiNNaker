@@ -19,24 +19,24 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import java.util.LinkedHashMap;
 
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
+import uk.ac.manchester.spinnaker.storage.RegionInfo;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
-abstract class BoardWorker {
+class BoardWorker {
 	/** The transceiver for talking to the SpiNNaker machine. */
 	protected final TransceiverInterface txrx;
 
@@ -151,6 +151,8 @@ abstract class BoardWorker {
 	 *
 	 * @param xyp
 	 *            the coordinates of the core to load.
+	 * @param regionsToWrite
+	 *            a list to add the regions that need to be written to.
 	 * @throws IOException
 	 *             If anything goes wrong with I/O.
 	 * @throws ProcessException
@@ -162,8 +164,10 @@ abstract class BoardWorker {
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
-	protected void loadCore(CoreLocation xyp) throws IOException,
-			ProcessException, StorageException, InterruptedException {
+	protected void loadCoreTable(CoreLocation xyp,
+			List<RegionInfo> regionsToWrite)
+			throws IOException,	ProcessException, StorageException,
+			InterruptedException {
 		var pointerTable =
 				allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
 		//header
@@ -176,8 +180,8 @@ abstract class BoardWorker {
 				var regionInfo = regionInfos.get(region);
 				pointerTable.putInt(regionInfo.pointer.address);
 				if (regionInfo.content != null) {
-					var written = writeRegion(
-							xyp, regionInfo.content, regionInfo.pointer);
+					var written = regionInfo.content.remaining();
+					regionsToWrite.add(regionInfo);
 					// Work out the checksum
 					int nWords = ceildiv(written, INT_SIZE);
 					var buf = regionInfo.content.duplicate()
@@ -206,26 +210,4 @@ abstract class BoardWorker {
 		pointerTable.flip();
 		txrx.writeMemory(xyp.getScampCore(), startAddress, pointerTable);
 	}
-
-	/**
-	 * Writes the contents of a region. Caller is responsible for ensuring
-	 * this method has work to do.
-	 *
-	 * @param core
-	 *            Which core to write to.
-	 * @param content
-	 *            Data to write
-	 * @param baseAddress
-	 *            Where to write the region.
-	 * @return How many bytes were actually written.
-	 * @throws IOException
-	 *             If anything goes wrong with I/O.
-	 * @throws ProcessException
-	 *             If SCAMP rejects the request.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	protected abstract int writeRegion(HasCoreLocation core,
-			ByteBuffer content, MemoryLocation baseAddress)
-			throws IOException, ProcessException, InterruptedException;
 }

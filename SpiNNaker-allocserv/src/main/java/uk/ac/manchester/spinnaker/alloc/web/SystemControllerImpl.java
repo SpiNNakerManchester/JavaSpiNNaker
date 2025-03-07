@@ -459,10 +459,6 @@ public class SystemControllerImpl implements SystemController {
 			log.error("Error receiving process details", e);
 			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
 					"Error receiving process details", e);
-		} finally {
-			if (txrx != null) {
-				job.releaseTransceiver(txrx);
-			}
 		}
 	}
 

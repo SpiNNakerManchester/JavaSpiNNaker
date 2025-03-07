@@ -20,10 +20,8 @@ import static java.util.Objects.nonNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import javax.annotation.PreDestroy;
 
@@ -34,6 +32,9 @@ import org.springframework.stereotype.Component;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
@@ -52,7 +53,13 @@ class JobObjectRememberer {
 	private final Map<Integer, List<ProxyCore>> proxies = new HashMap<>();
 
 	@GuardedBy("this")
-	private final Map<Integer, Queue<TransceiverInterface>> transceivers =
+	private final Map<Integer, TransceiverInterface> transceivers =
+			new HashMap<>();
+
+	private final Map<Integer, Map<ChipLocation, FastDataIn>> fastDataCache =
+			new HashMap<>();
+
+	private final Map<Integer, Map<ChipLocation, Downloader>> downloaders =
 			new HashMap<>();
 
 	/**
@@ -62,11 +69,29 @@ class JobObjectRememberer {
 	private synchronized void closeAll() {
 		proxies.values().forEach(list -> list.forEach(ProxyCore::close));
 		proxies.clear(); // Just in case
-		transceivers.values().forEach(queue -> queue.forEach(txrx -> {
+		transceivers.values().forEach(txrx -> {
 			try {
 				txrx.close();
 			} catch (IOException e) {
 				log.error("Error closing Transceiver", e);
+			}
+		});
+		transceivers.clear(); // Just in case
+		fastDataCache.values().forEach(map -> map.values().forEach(fdi -> {
+			try {
+				fdi.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}));
+		fastDataCache.clear(); // Just in case
+		downloaders.values().forEach(map -> map.values().forEach(dl -> {
+			try {
+				dl.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}));
 	}
@@ -103,31 +128,67 @@ class JobObjectRememberer {
 	 *
 	 * @param jobId The job ID.
 	 *
-	 * @return The transceiver.
+	 * @return The transceiver or null if none.
 	 */
 	synchronized TransceiverInterface getTransceiverForJob(int jobId) {
-		if (transceivers.containsKey(jobId)) {
-			return transceivers.get(jobId).poll();
-		}
-		return null;
+		return transceivers.get(jobId);
 	}
 
 	/** Set the transceiver for a job.
 	 *
 	 * @param jobId The job ID.
 	 * @param txrx The transceiver.
-	 * @throws RuntimeException If the job already has a transceiver
 	 */
-	synchronized void releaseTransceiverForJob(Integer jobId,
+	synchronized void rememberTransceiverForJob(Integer jobId,
 			TransceiverInterface txrx) {
-		if (!transceivers.containsKey(jobId)) {
-			transceivers.put(jobId,  new LinkedList<>());
-		}
-		transceivers.get(jobId).add(txrx);
+		transceivers.put(jobId, txrx);
 	}
 
-	private synchronized List<ProxyCore> removeProxyListForJob(Integer jobId) {
-		return proxies.remove(jobId);
+	/** Get the fast data in for a job.
+	 *
+	 * @param jobId The job ID.
+	 * @param chip  The ethernet chip to get the fast data in for.
+	 * @return The fast data in or null if none.
+	 */
+	synchronized FastDataIn getFastDataIn(Integer jobId, ChipLocation chip) {
+		return fastDataCache.getOrDefault(jobId, Map.of()).get(chip);
+	}
+
+	/**
+	 * Remember the fast data in for a job.
+	 *
+	 * @param jobId The job ID.
+	 * @param chip  The ethernet chip to remember the fast data in for.
+	 * @param fdi   The fast data in.
+	 */
+	synchronized void rememberFastDataIn(Integer jobId, ChipLocation chip,
+			FastDataIn fdi) {
+		fastDataCache.computeIfAbsent(jobId, __ -> new HashMap<>()).put(
+				chip, fdi);
+	}
+
+	/**
+	 * Get the downloader for a job.
+	 *
+	 * @param jobId The job ID.
+	 * @param chip  The ethernet chip to get the downloader for.
+	 * @return The downloader or null if none.
+	 */
+	synchronized Downloader getDownloader(Integer jobId, ChipLocation chip) {
+		return downloaders.getOrDefault(jobId, Map.of()).get(chip);
+	}
+
+	/**
+	 * Remember the downloader for a job.
+	 *
+	 * @param jobId      The job ID.
+	 * @param chip       The ethernet chip to remember the downloader for.
+	 * @param downloader The downloader.
+	 */
+	synchronized void rememberDownloader(Integer jobId, ChipLocation chip,
+			Downloader downloader) {
+		downloaders.computeIfAbsent(jobId, __ -> new HashMap<>()).put(
+				chip, downloader);
 	}
 
 	/**
@@ -139,18 +200,36 @@ class JobObjectRememberer {
 	 *            The job ID.
 	 */
 	void closeJob(Integer jobId) {
-		var list = removeProxyListForJob(jobId);
-		if (nonNull(list)) {
-			list.forEach(ProxyCore::close);
-		}
 		synchronized (this) {
-			var queue = transceivers.remove(jobId);
-			if (queue != null) {
-				queue.forEach(txrx -> {
+			var proxyList = proxies.remove(jobId);
+			if (nonNull(proxyList)) {
+				proxyList.forEach(ProxyCore::close);
+			}
+			var txrx = transceivers.remove(jobId);
+			if (nonNull(txrx)) {
+				try {
+					txrx.close();
+				} catch (IOException e) {
+					log.error("Error closing Transceiver", e);
+				}
+			}
+			var fdc = fastDataCache.remove(jobId);
+			if (nonNull(fdc)) {
+				fdc.values().forEach(fdi -> {
 					try {
-						txrx.close();
+						fdi.close();
 					} catch (IOException e) {
-						log.error("Error closing Transceiver", e);
+						log.error("Error closing FastDataIn", e);
+					}
+				});
+			}
+			var dl = downloaders.remove(jobId);
+			if (nonNull(dl)) {
+				dl.values().forEach(downloader -> {
+					try {
+						downloader.close();
+					} catch (IOException e) {
+						log.error("Error closing Downloader", e);
 					}
 				});
 			}

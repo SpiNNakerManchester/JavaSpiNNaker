@@ -39,12 +39,9 @@ import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
@@ -229,25 +226,4 @@ final class ProxiedTransceiver extends Transceiver {
 			storage.addRecordingContents(region, buffer);
 		}
 	}
-
-	@Override
-	public void writeMemoryFast(CoreLocation gathererCore,
-			ChipLocation ethernetChip, String ethernetAddress,
-			IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
-			ByteBuffer data)
-			throws IOException, ProcessException, InterruptedException {
-		job.fastWriteData(gathererCore, ethernetChip, ethernetAddress,
-				iptag, chip, baseAddress, data);
-
-	}
-
-	@Override
-	public ByteBuffer readMemoryFast(ChipLocation gathererChip, IPTag ipTag,
-			HasCoreLocation monitorCore, MemoryLocation address, int size)
-					throws IOException, ProcessException, InterruptedException {
-		return job.fastReadData(gathererChip, ipTag.getDestination(),
-				ipTag.getBoardAddress().getHostAddress(), ipTag, monitorCore,
-				address, size);
-	}
-
 }
