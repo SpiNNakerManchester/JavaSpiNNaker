@@ -181,13 +181,8 @@ class TestFrontEnd {
 			CommandLineInterface.fastFactory = (m, g, r,
 					db) -> new FastExecuteDataSpecification(m, g, r, null) {
 						@Override
-						public void loadCores() {
+						public void loadCores(List<Gather> gatherers) {
 							called.setValue("mon");
-						}
-
-						@Override
-						protected void buildMaps(List<Gather> gatherers) {
-							assertEquals(g, gatherers);
 						}
 					};
 
