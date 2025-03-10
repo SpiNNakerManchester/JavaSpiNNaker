@@ -47,8 +47,6 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	private final BasicExecutor executor;
 
 	/**
-	 * @param txrx
-	 *            The transceiver for talking to the SpiNNaker machine.
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
 	 * @param db
@@ -72,7 +70,7 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	protected ExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
 			throws IOException, ProcessException, InterruptedException,
 			StorageException, URISyntaxException {
-		super(db == null? null: db.getStorageInterface(), machine);
+		super(db == null ? null : db.getStorageInterface(), machine);
 		this.db = db;
 		this.executor = new BasicExecutor(PARALLEL_SIZE);
 	}

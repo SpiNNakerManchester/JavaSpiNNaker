@@ -140,8 +140,6 @@ public final class Permit {
 	 * @return Whatever the inner code returns
 	 */
 	public <T> T authorize(Supplier<T> inContext) {
-
-
 		var c = SecurityContextHolder.getContext();
 		var old = c.getAuthentication();
 		c.setAuthentication(new TempAuth());

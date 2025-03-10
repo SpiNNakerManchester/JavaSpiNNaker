@@ -123,7 +123,6 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			super(txrx, board, storage);
 		}
 
-
 		/**
 		 * Writes the contents of a region. Caller is responsible for ensuring
 		 * this method has work to do.

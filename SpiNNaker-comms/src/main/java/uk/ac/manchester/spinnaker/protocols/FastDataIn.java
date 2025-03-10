@@ -133,7 +133,7 @@ public class FastDataIn implements AutoCloseable {
 	/**
 	 * Write data to a given memory location.
 	 *
-	 * @param destination
+	 * @param boardLocalDestination
 	 *            The target chip of the write.
 	 * @param baseAddress
 	 *            Whether the data will be written.

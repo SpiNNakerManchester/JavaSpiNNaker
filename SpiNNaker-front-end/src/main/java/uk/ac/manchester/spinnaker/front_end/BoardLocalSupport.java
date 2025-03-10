@@ -48,13 +48,14 @@ public abstract class BoardLocalSupport {
 
 	/** A storage object that is aware of proxies. */
 	protected final ProxyAwareStorage storage;
+
 	/** The description of the SpiNNaker machine. */
 	protected final Machine machine;
 
 	/**
-	 * @param transceiver
-	 *            How to talk to the SpiNNaker system via SCP. Where the system
-	 *            is located.
+	 * @param storage
+	 *            Database containing information about how to speak to the
+	 *            proxy.
 	 * @param machine
 	 *            Which machine is this on? Used for address mapping and
 	 *            provided as a general service to subclasses.

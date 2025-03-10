@@ -67,8 +67,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	/**
 	 * Create an instance of this class.
 	 *
-	 * @param txrx
-	 *            The transceiver for talking to the SpiNNaker machine.
 	 * @param machine
 	 *            The SpiNNaker machine description.
 	 * @param gatherers
@@ -120,6 +118,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 * Cannot load data for system cores; those are used by the implementation
 	 * of this protocol.
 	 *
+	 * @param gatherers
+	 *             The receivers of data from the machine.
 	 * @throws StorageException
 	 *             If the database can't be talked to.
 	 * @throws IOException

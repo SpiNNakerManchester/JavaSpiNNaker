@@ -138,8 +138,6 @@ public class Downloader {
 	/**
 	 * Do the downloading.
 	 *
-	 * @param txrx
-	 *            The transceiver to use to configure IP tags.
 	 * @param monitorCore
 	 *           The core to download from.
 	 * @param address

@@ -73,8 +73,6 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	/**
 	 * Create a data gatherer.
 	 *
-	 * @param transceiver
-	 *            How to talk to the machine.
 	 * @param machine
 	 *            The description of the machine talked to.
 	 * @param database

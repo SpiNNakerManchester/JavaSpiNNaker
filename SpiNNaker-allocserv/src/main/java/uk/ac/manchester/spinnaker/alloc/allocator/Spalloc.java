@@ -1771,8 +1771,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			return downloader;
 		}
 
-
-
 		@Override
 		public boolean equals(Object other) {
 			// Equality is defined exactly by the database ID

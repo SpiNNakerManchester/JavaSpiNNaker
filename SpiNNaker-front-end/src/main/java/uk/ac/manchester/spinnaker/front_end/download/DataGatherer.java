@@ -82,6 +82,9 @@ public abstract class DataGatherer extends BoardLocalSupport
 
 	private final BasicExecutor pool;
 
+	/**
+	 * Transceiver to talk to the machine.
+	 */
 	protected final TransceiverInterface txrx;
 
 	private int missCount;
