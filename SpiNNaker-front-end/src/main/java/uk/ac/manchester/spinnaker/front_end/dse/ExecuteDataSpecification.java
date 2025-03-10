@@ -72,7 +72,7 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	protected ExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
 			throws IOException, ProcessException, InterruptedException,
 			StorageException, URISyntaxException {
-		super(db.getStorageInterface(), machine);
+		super(db == null? null: db.getStorageInterface(), machine);
 		this.db = db;
 		this.executor = new BasicExecutor(PARALLEL_SIZE);
 	}

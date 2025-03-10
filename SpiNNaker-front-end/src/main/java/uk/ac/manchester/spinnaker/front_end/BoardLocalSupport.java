@@ -98,6 +98,9 @@ public abstract class BoardLocalSupport {
 	}
 
 	protected SpallocClient.Job getJob() throws IOException, StorageException {
+		if (storage == null) {
+			return null;
+		}
 		return getJobFromProxyInfo(storage.getProxyInformation());
 	}
 
