@@ -82,8 +82,8 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		var destination = request.sdpHeader.getDestination().asChipLocation();
 		var chip = machine.getChipAt(destination);
 		if (chip == null) {
-			throw new NullPointerException(
-					"Chip " + destination + " does not exist!");
+			// Probably 255, 255
+			return defaultConnection;
 		}
 		var routeVia = machine.getChipAt(destination).nearestEthernet;
 		var conn = connections.get(routeVia);
