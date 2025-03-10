@@ -103,7 +103,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 					+ "this may destabilize the protocol");
 		}
 		txrx = getTransceiver();
-		machineDimensions = txrx.getMachineDimensions();
+		machineDimensions = db.getStorageInterface().getMachineDimensions();
 	}
 
 	@Override
