@@ -91,6 +91,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public FastExecuteDataSpecification(
 			Machine machine, List<Gather> gatherers, File reportDir,
 			DSEDatabaseEngine db) throws IOException, InterruptedException,
@@ -187,6 +188,7 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 		return regionsToWrite;
 	}
 
+	@SuppressWarnings("MustBeClosed")
 	private void loadBoardData(Gather gather, List<RegionInfo> regionsToWrite)
 			throws IOException, StorageException, ProcessException,
 			InterruptedException {
@@ -205,6 +207,9 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 				job.fastWriteData(gather.asCoreLocation(), gather.getIptag(),
 						core, info.pointer, info.content);
 			}
+		}
+		if (fastDataIn != null) {
+			fastDataIn.close();
 		}
 	}
 

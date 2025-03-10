@@ -64,6 +64,7 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public HostExecuteDataSpecification(
 			Machine machine, DSEDatabaseEngine db)
 			throws IOException, InterruptedException,

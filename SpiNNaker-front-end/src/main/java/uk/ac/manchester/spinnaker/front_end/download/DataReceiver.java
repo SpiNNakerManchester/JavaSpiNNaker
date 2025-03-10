@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
@@ -73,6 +75,8 @@ public class DataReceiver extends BoardLocalSupport implements AutoCloseable {
 	 * @throws StorageException
 	 *           If the database access fails.
 	 */
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public DataReceiver(Machine machine, BufferManagerStorage storage)
 			throws IOException, StorageException, SpinnmanException,
 			InterruptedException {

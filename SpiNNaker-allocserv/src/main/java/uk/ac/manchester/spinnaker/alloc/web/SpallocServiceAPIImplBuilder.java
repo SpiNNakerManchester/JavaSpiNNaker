@@ -316,6 +316,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 		}
 
 		@Override
+		@SuppressWarnings("MustBeClosed")
 		public void fastDataWrite(@ValidX int gatherX, @ValidY int gatherY,
 				@Positive int gatherP, @ValidX int ethX,
 				@ValidY int ethY, @IPAddress String ethAddress, int iptag,
@@ -333,6 +334,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 		}
 
 		@Override
+		@SuppressWarnings("MustBeClosed")
 		public void fastDataRead(@ValidX int gatherX, @ValidY int gatherY,
 				@ValidX int ethX, @ValidY int ethY,
 				@IPAddress String ethAddress, int iptag,

@@ -57,6 +57,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
@@ -1746,6 +1747,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
+		@SuppressWarnings("MustBeClosed")
 		public FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
 				throws ProcessException, IOException, InterruptedException {
 			var fdi = rememberer.getFastDataIn(id, iptag.getDestination());
@@ -1758,6 +1760,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
+		@SuppressWarnings("MustBeClosed")
 		public Downloader getDownloader(IPTag iptag)
 				throws ProcessException, IOException, InterruptedException {
 			var downloader = rememberer.getDownloader(id,

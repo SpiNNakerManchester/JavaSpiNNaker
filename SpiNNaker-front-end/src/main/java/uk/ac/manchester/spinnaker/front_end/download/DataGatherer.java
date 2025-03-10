@@ -287,6 +287,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	private void fastDownload(List<WorkItems> work,
 			ChipLocation gathererChip, IPTag ipTag)
 			throws IOException, StorageException,
@@ -320,6 +321,9 @@ public abstract class DataGatherer extends BoardLocalSupport
 					storeData(region, data);
 				}
 			}
+		}
+		if (downloader != null) {
+			downloader.close();
 		}
 	}
 

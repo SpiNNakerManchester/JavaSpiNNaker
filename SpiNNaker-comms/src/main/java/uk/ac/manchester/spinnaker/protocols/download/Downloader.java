@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
  *
  * @author Donal Fellows
  */
-public class Downloader {
+public class Downloader implements AutoCloseable {
 
 	/** The maximum number of times to retry. */
 	private static final int TIMEOUT_RETRY_LIMIT = 15;
@@ -131,6 +131,7 @@ public class Downloader {
 		conn = new GatherDownloadConnection(iptag);
 	}
 
+	@Override
 	public void close() throws IOException {
 		conn.close();
 	}

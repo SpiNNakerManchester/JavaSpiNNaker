@@ -42,6 +42,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.google.errorprone.annotations.Keep;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -1007,6 +1008,7 @@ public interface SpallocAPI {
 		 * @throws IOException if there is an issue communicating.
 		 * @throws InterruptedException if the operation is interrupted.
 		 */
+		@MustBeClosed
 		FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
 				throws ProcessException, IOException, InterruptedException;
 
@@ -1019,6 +1021,7 @@ public interface SpallocAPI {
 		 * @throws IOException if there is an issue communicating.
 		 * @throws InterruptedException if the operation is interrupted.
 		 */
+		@MustBeClosed
 		Downloader getDownloader(IPTag iptag)
 				throws ProcessException, IOException, InterruptedException;
 	}
