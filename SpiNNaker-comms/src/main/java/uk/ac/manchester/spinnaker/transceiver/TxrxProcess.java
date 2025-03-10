@@ -291,7 +291,7 @@ public class TxrxProcess {
 		this.numChannels = numChannels;
 		this.numWaits = intermediateChannelWaits;
 		this.selector = Objects.requireNonNull(connectionSelector);
-		this.retryTracker = Objects.requireNonNull(retryTracker);
+		this.retryTracker = retryTracker;
 	}
 
 	/**
