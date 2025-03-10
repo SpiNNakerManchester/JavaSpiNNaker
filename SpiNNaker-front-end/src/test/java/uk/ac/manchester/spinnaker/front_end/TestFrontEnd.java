@@ -23,6 +23,8 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -30,9 +32,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.opentest4j.AssertionFailedError;
 
+import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
+import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class TestFrontEnd {
@@ -184,6 +193,13 @@ class TestFrontEnd {
 						public void loadCores(List<Gather> gatherers) {
 							called.setValue("mon");
 						}
+
+						@Override
+						protected TransceiverInterface getTransceiver()
+								throws ProcessException, IOException,
+								SpinnmanException, InterruptedException {
+							return new MockGetMachineDimsTransceiver();
+						}
 					};
 
 			var msg = tapSystemErrNormalized(() -> {
@@ -217,5 +233,21 @@ class TestFrontEnd {
 		});
 		assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
 				"<runFolder>");
+	}
+}
+
+@SuppressWarnings("checkstyle:JavadocVariable")
+class MockGetMachineDimsTransceiver extends Transceiver {
+	MockGetMachineDimsTransceiver()
+			throws IOException, SpinnmanException,
+			uk.ac.manchester.spinnaker.transceiver.ProcessException,
+			InterruptedException {
+		super(MachineVersion.FIVE, List.of(), null, null, null, null, null);
+	}
+
+	@Override
+	public MachineDimensions getMachineDimensions()
+			throws IOException, ProcessException, InterruptedException {
+		return new MachineDimensions(8, 8);
 	}
 }
