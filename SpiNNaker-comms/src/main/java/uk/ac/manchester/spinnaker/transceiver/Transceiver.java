@@ -931,9 +931,11 @@ public class Transceiver extends UDPTransceiver
 		// TODO: Actually get the existing APP_IDs in use
 		appIDTracker = new AppIdTracker();
 
-		log.info("Detected a machine on IP address {} which has {}",
-				bootConnection.getRemoteIPAddress(),
-				machine.coresAndLinkOutputString());
+		if (bootConnection != null) {
+			log.info("Detected a machine on IP address {} which has {}",
+					bootConnection.getRemoteIPAddress(),
+					machine.coresAndLinkOutputString());
+		}
 	}
 
 	/**
