@@ -121,6 +121,8 @@ public class FastDataIn implements AutoCloseable {
 	@SuppressWarnings("MustBeClosed")
 	public FastDataIn(CoreLocation gathererCore, IPTag iptag)
 					throws ProcessException, IOException, InterruptedException {
+		log.info("Creating fast data in for " + gathererCore + " with tag "
+					+ iptag);
 		this.gathererCore = gathererCore;
 		this.connection = new ThrottledConnection(iptag);
 	}
@@ -147,6 +149,9 @@ public class FastDataIn implements AutoCloseable {
 	public void fastWrite(HasChipLocation boardLocalDestination,
 			MemoryLocation baseAddress, ByteBuffer data)
 					throws IOException, InterruptedException {
+		log.info("Fast writing to board relative location "
+					+ boardLocalDestination + " address " + baseAddress
+					+ " " + data.remaining() + " bytes");
 		int timeoutCount = 0;
 		int numPackets = computeNumPackets(data);
 		int transactionId = ++this.transactionId;
