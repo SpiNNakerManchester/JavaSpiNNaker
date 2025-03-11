@@ -303,8 +303,13 @@ public class TxrxProcess {
 	 * @return The pipeline instance.
 	 */
 	private RequestPipeline pipeline(SCPRequest<?> request) {
-		return requestPipelines.computeIfAbsent(
-				selector.getNextConnection(request), RequestPipeline::new);
+		var connection = selector.getNextConnection(request);
+		if (!requestPipelines.containsKey(connection)) {
+			var pipeline = new RequestPipeline(connection);
+			requestPipelines.put(connection, pipeline);
+			connection.setInUse();
+		}
+		return requestPipelines.get(connection);
 	}
 
 	/**
@@ -331,6 +336,7 @@ public class TxrxProcess {
 		for (var pipe : requestPipelines.values()) {
 			pipe.finish();
 		}
+		requestPipelines.clear();
 		if (failure != null) {
 			var hdr = failure.req.sdpHeader;
 			throw makeInstance(hdr.getDestination(), failure.exn);
@@ -799,6 +805,7 @@ public class TxrxProcess {
 			}
 			log.debug("Finished called on {} with connection {}", this,
 					connection);
+			this.connection.setNotInUse();
 		}
 
 		/**
