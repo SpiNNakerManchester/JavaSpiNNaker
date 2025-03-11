@@ -194,18 +194,21 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			InterruptedException {
 		FastDataIn fastDataIn = null;
 		var job = getJob();
-		if (job != null) {
+		if (job == null) {
 			fastDataIn = new FastDataIn(gather.asCoreLocation(),
 					gather.getIptag());
 		}
 
 		for (var info : regionsToWrite) {
 			var core = getBoardLocalDestination(info.core, gather);
-			if (fastDataIn != null) {
+			if (job == null) {
 				fastDataIn.fastWrite(core, info.pointer, info.content);
 			} else {
+				log.info("Starting write of {} bytes to {}",
+						info.content.remaining(), gather.asCoreLocation());
 				job.fastWriteData(gather.asCoreLocation(), gather.getIptag(),
 						core, info.pointer, info.content);
+				log.info("Completed write to {}", gather.asCoreLocation());
 			}
 		}
 		if (fastDataIn != null) {

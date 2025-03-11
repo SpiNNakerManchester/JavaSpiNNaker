@@ -308,7 +308,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 					 * same way to get the data in the DB in the right order.
 					 */
 					final ByteBuffer data;
-					if (downloader != null) {
+					if (job == null) {
 						data = downloader.doDownload(
 								item.monitor, region.startAddress, region.size);
 					} else {
