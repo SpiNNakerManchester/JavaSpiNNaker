@@ -63,6 +63,7 @@ import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -323,12 +324,15 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				@ValidX int x, @ValidY int y, long address, byte[] bytes,
 				AsyncResponse response) {
 			bgAction(response, () -> {
-				var fdi = j.getFastDataIn(
-						new CoreLocation(gatherX, gatherY, gatherP),
-						new IPTag(ethAddress, iptag, ethX, ethY, "localhost",
-								null, true, null));
-				fdi.fastWrite(new ChipLocation(x, y),
-						new MemoryLocation(address), wrap(bytes));
+//				var fdi = j.getFastDataIn(
+//						new CoreLocation(gatherX, gatherY, gatherP),
+//						new IPTag(ethAddress, iptag, ethX, ethY, "localhost",
+//								null, true, TrafficIdentifier.BUFFERED.label));
+//				fdi.fastWrite(new ChipLocation(x, y),
+//						new MemoryLocation(address), wrap(bytes));
+				var txrx = j.getTransceiver();
+				txrx.writeMemory(new ChipLocation(gatherX + x, gatherY + y),
+						new MemoryLocation(address), bytes);
 				return accepted().build();
 			});
 		}
