@@ -151,4 +151,9 @@ public class ThrottledConnection implements Closeable {
 	public ChipLocation getLocation() {
 		return connection.getChip();
 	}
+
+	@Override
+	public String toString() {
+		return "Throttled: " + connection.toString();
+	}
 }

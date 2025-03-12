@@ -149,7 +149,8 @@ public class FastDataIn implements AutoCloseable {
 	public void fastWrite(HasChipLocation boardLocalDestination,
 			MemoryLocation baseAddress, ByteBuffer data)
 					throws IOException, InterruptedException {
-		log.info("Fast writing to board relative location "
+		log.info("Fast writing via " + gathererCore + ": " + connection
+					+ " to board relative location "
 					+ boardLocalDestination + " address " + baseAddress
 					+ " " + data.remaining() + " bytes");
 		int timeoutCount = 0;
