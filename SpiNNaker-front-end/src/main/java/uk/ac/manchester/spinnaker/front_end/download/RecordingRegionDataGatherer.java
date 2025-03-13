@@ -132,7 +132,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			return;
 		}
 		dbWorker.execute(() -> {
-			log.info("storing region data for {} R:{} from {} as {} bytes",
+			log.debug("storing region data for {} R:{} from {} as {} bytes",
 					r.core, r.regionIndex, r.startAddress, data.remaining());
 			try {
 				database.addRecordingContents(r, data);
