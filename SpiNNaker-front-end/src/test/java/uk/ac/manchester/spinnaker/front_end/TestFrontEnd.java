@@ -295,5 +295,4 @@ final class MockDSEStorage implements DSEStorage {
 			CoreLocation xyp) throws StorageException {
 		return Map.of();
 	}
-
-};
+}
