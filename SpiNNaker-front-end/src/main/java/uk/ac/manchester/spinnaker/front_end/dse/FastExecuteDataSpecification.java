@@ -204,8 +204,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 			if (job == null) {
 				fastDataIn.fastWrite(core, info.pointer, info.content);
 			} else {
-				log.info("Starting write of {} bytes to {} via {}",
-						info.content.remaining(), core, gather.asCoreLocation());
 				job.fastWriteData(gather.asCoreLocation(), gather.getIptag(),
 						core, info.pointer, info.content);
 			}

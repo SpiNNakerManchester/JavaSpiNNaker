@@ -87,7 +87,7 @@ public class ThrottledConnection implements Closeable {
 			throws IOException, ProcessException, InterruptedException {
 		connection = new SCPConnection(iptag.getDestination(), null, null,
 				iptag.getBoardAddress());
-		log.info("created throttled connection to {} ({}) from {}:{}; "
+		log.debug("created throttled connection to {} ({}) from {}:{}; "
 						+ "reprogramming tag #{} to point to this connection",
 				iptag.getDestination(), iptag.getBoardAddress(),
 				connection.getLocalIPAddress(),
