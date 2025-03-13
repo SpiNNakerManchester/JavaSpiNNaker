@@ -1752,12 +1752,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throws ProcessException, IOException, InterruptedException {
 			var fdi = rememberer.getFastDataIn(id, iptag.getDestination());
 			if (fdi != null) {
-				log.info("Using existing FastDataIn for job {}: {}", id,
-						iptag.getDestination());
 				return fdi;
 			}
-			log.info("Making new FastDataIn for job {}: {}", id,
-					iptag.getDestination());
 			fdi = new FastDataIn(gathererCore, iptag);
 			rememberer.rememberFastDataIn(id, iptag.getDestination(), fdi);
 			return fdi;
