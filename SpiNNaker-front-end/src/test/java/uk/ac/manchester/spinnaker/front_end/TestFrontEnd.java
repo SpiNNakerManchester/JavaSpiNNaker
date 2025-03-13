@@ -44,7 +44,6 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.storage.RegionInfo;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class TestFrontEnd {
