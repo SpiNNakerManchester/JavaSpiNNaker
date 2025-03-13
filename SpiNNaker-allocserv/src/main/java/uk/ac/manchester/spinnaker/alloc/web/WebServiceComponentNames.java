@@ -94,10 +94,10 @@ public interface WebServiceComponentNames {
 	String ETH_Y = "eth_y";
 
 	/** The X coordinate of the gather core. */
-	String GATHER_Y = "gather_x";
+	String GATHER_X = "gather_x";
 
 	/** The Y coordinate of the gather core. */
-	String GATHER_X = "gather_y";
+	String GATHER_Y = "gather_y";
 
 	/** The processor ID of the gather core. */
 	String GATHER_P = "gather_p";
