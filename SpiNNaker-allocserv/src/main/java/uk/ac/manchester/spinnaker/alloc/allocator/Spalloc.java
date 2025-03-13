@@ -1741,7 +1741,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						null, null, InetAddress.getByName(conn.getHostname())));
 			}
 			txrx = new Transceiver(MachineVersion.FIVE, connections);
-			txrx.getMachineDetails();
+			var unused = txrx.getMachineDetails();
 			rememberer.rememberTransceiverForJob(id, txrx);
 			return txrx;
 		}
