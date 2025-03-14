@@ -739,9 +739,13 @@ public interface SpallocServiceAPI {
 				@QueryParam(SIZE) int size, @Suspended AsyncResponse response);
 
 		/**
-		 * Clear routes, reset counters and install counters needed.
+		 * Clear routes, reset counters and install counting filters needed.
 		 *
-		 * @param filters The filters to be set
+		 * @param queryParams
+		 *         The query parameters of the request, to include filters
+		 *         to be set as <n>=<value> where <n> is the index of the
+		 *         filter to be set and <value> is the integer word made of the
+		 *         combined flags of the filter.
 		 * @param response The response to answer with
 		 */
 		@DELETE
