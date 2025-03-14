@@ -82,6 +82,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.model.wadl.Description;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -756,7 +757,7 @@ public interface SpallocServiceAPI {
 				schema = @Schema(implementation = Integer.class)))
 		@Path("/router")
 		@Consumes(APPLICATION_JSON)
-		void prepareRoutingTables(Map<String, String> queryParams,
+		void prepareRoutingTables(@RequestParam Map<String, String> queryParams,
 				@Suspended AsyncResponse response);
 	}
 }
