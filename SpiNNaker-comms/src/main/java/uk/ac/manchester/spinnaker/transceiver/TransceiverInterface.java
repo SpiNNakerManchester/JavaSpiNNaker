@@ -4266,7 +4266,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 
 	/**
 	 * Clear the router tables, reset diagnostic counters and put in optional
-	 * custom filters
+	 * custom filters.
 	 *
 	 * @param customFilters a map of filter position to custom filter, or null
 	 *
