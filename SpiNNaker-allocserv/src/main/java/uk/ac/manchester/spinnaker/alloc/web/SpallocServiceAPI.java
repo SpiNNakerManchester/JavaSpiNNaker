@@ -743,8 +743,8 @@ public interface SpallocServiceAPI {
 		 *
 		 * @param queryParams
 		 *         The query parameters of the request, to include filters
-		 *         to be set as <n>=<value> where <n> is the index of the
-		 *         filter to be set and <value> is the integer word made of the
+		 *         to be set as n=value where n is the index of the
+		 *         filter to be set and value is the integer word made of the
 		 *         combined flags of the filter.
 		 * @param response The response to answer with
 		 */
