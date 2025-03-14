@@ -744,7 +744,7 @@ public interface SpallocServiceAPI {
 		 * @param filters The filters to be set
 		 * @param response The response to answer with
 		 */
-		@POST
+		@DELETE
 		@Description("Clear routes, reset counters and install counters needed")
 		@Operation(tags = T_JOB, summary = "Read data from job boards.",
 				parameters = @Parameter(in = PATH, name = ID,
