@@ -4263,4 +4263,19 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@UsedInJavadocOnly(Constants.class)
 	SCPConnection createScpConnection(ChipLocation chip, InetAddress addr)
 			throws IOException;
+
+	/**
+	 * Clear the router tables, reset diagnostic counters and put in optional
+	 * custom filters
+	 *
+	 * @param customFilters a map of filter position to custom filter, or null
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.	 */
+	void prepareRouters(Map<Integer, DiagnosticFilter> customFilters)
+			throws ProcessException, IOException, InterruptedException;
 }

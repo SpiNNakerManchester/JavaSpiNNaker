@@ -55,6 +55,8 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SIZE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -735,6 +737,23 @@ public interface SpallocServiceAPI {
 				@Description("The address to write the data to")
 				@QueryParam(ADDRESS) long address,
 				@QueryParam(SIZE) int size, @Suspended AsyncResponse response);
+
+		/**
+		 * Clear routes, reset counters and install counters needed.
+		 *
+		 * @param filters The filters to be set
+		 * @param response The response to answer with
+		 */
+		@POST
+		@Description("Clear routes, reset counters and install counters needed")
+		@Operation(tags = T_JOB, summary = "Read data from job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path("/router")
+		@Consumes(APPLICATION_JSON)
+		void prepareRoutingTables(Map<String, String> queryParams,
+				@Suspended AsyncResponse response);
 	}
 }
 

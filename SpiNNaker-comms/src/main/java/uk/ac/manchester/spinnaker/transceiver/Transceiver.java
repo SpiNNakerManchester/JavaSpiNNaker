@@ -2639,6 +2639,22 @@ public class Transceiver extends UDPTransceiver
 				.loadSystemRouterTable(monitorCores);
 	}
 
+	@Override
+	public void prepareRouters(Map<Integer, DiagnosticFilter> customFilters)
+			throws ProcessException, IOException, InterruptedException {
+		var machine = this.getMachineDetails();
+		for (var chip : machine.chipCoordinates()) {
+			this.clearMulticastRoutes(chip);
+			this.clearRouterDiagnosticCounters(chip);
+			if (customFilters != null) {
+				for (var item : customFilters.entrySet()) {
+					this.setRouterDiagnosticFilter(chip, item.getKey(),
+							item.getValue());
+				}
+			}
+		}
+	}
+
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *

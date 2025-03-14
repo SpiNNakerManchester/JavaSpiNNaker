@@ -24,6 +24,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.constraints.Positive;
@@ -63,6 +65,7 @@ import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
@@ -349,6 +352,22 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 				var arr = new byte[size];
 				buffer.get(arr);
 				return ok(arr).build();
+			});
+		}
+
+		@Override
+		public void prepareRoutingTables(Map<String, String> queryParams,
+				AsyncResponse response) {
+			var filters = new HashMap<Integer, DiagnosticFilter>();
+			for (String param : queryParams.keySet()) {
+				int index = Integer.parseInt(param);
+				int value = Integer.parseInt(queryParams.get(param));
+				filters.put(index, new DiagnosticFilter(value));
+			}
+			bgAction(response, () -> {
+				var txrx = j.getTransceiver();
+				txrx.prepareRouters(filters);
+				return accepted().build();
 			});
 		}
 	}
