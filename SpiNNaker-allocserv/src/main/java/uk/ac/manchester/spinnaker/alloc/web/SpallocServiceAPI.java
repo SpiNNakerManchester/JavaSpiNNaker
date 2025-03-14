@@ -55,8 +55,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SIZE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -82,7 +80,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.model.wadl.Description;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
