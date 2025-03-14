@@ -742,11 +742,11 @@ public interface SpallocServiceAPI {
 		/**
 		 * Clear routes, reset counters and install counting filters needed.
 		 *
-		 * @param queryParams
-		 *         The query parameters of the request, to include filters
-		 *         to be set as n=value where n is the index of the
-		 *         filter to be set and value is the integer word made of the
-		 *         combined flags of the filter.
+		 * @param uriInfo
+		 *         The info containing the query parameters of the request,
+		 *         to include filters to be set as n=value where n is the
+		 *         index of the filter to be set and value is the integer word
+		 *         made of the combined flags of the filter.
 		 * @param response The response to answer with
 		 */
 		@DELETE
@@ -756,7 +756,7 @@ public interface SpallocServiceAPI {
 				description = "Job identifier",
 				schema = @Schema(implementation = Integer.class)))
 		@Path("/router")
-		void prepareRoutingTables(@RequestParam Map<String, String> queryParams,
+		void prepareRoutingTables(@Context UriInfo uriInfo,
 				@Suspended AsyncResponse response);
 	}
 }

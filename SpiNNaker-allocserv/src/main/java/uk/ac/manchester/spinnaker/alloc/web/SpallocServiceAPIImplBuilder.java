@@ -25,7 +25,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.constraints.Positive;
@@ -356,12 +355,18 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 		}
 
 		@Override
-		public void prepareRoutingTables(Map<String, String> queryParams,
+		public void prepareRoutingTables(UriInfo uriInfo,
 				AsyncResponse response) {
+			var queryParams = uriInfo.getQueryParameters();
 			var filters = new HashMap<Integer, DiagnosticFilter>();
 			for (String param : queryParams.keySet()) {
 				int index = Integer.parseInt(param);
-				int value = Integer.parseInt(queryParams.get(param));
+				var values = queryParams.get(param);
+				if (values.size() != 1) {
+					throw new RuntimeException(
+							"Multiple values for index " + param);
+				}
+				int value = Integer.parseInt(values.get(0));
 				filters.put(index, new DiagnosticFilter(value));
 			}
 			bgAction(response, () -> {
