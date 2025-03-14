@@ -756,7 +756,6 @@ public interface SpallocServiceAPI {
 				description = "Job identifier",
 				schema = @Schema(implementation = Integer.class)))
 		@Path("/router")
-		@Consumes(APPLICATION_JSON)
 		void prepareRoutingTables(@RequestParam Map<String, String> queryParams,
 				@Suspended AsyncResponse response);
 	}
