@@ -131,6 +131,21 @@ public class Downloader implements AutoCloseable {
 		conn = new GatherDownloadConnection(iptag);
 	}
 
+	/**
+	 * Prepare to reuse the downloader.
+	 *
+	 * @throws IOException
+	 *             If IO fails.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	public void reuse()
+			throws IOException, ProcessException, InterruptedException {
+		conn.setupTag();
+	}
+
 	@Override
 	public void close() throws IOException {
 		conn.close();

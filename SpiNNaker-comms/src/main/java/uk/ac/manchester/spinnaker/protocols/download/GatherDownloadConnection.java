@@ -66,6 +66,8 @@ final class GatherDownloadConnection implements AutoCloseable {
 	/** cap of where a transaction id will get to. */
 	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
 
+	private final IPTag iptag;
+
 	private final SCPConnection connection;
 
 	/**
@@ -84,8 +86,13 @@ final class GatherDownloadConnection implements AutoCloseable {
 	@SuppressWarnings("MustBeClosed")
 	GatherDownloadConnection(IPTag iptag)
 			throws IOException, ProcessException, InterruptedException {
+		this.iptag = iptag;
 		this.connection = new SCPConnection(iptag.getDestination(), null, null,
 						iptag.getBoardAddress());
+		this.setupTag();
+	}
+
+	void setupTag() throws ProcessException, IOException, InterruptedException {
 		var process = new TxrxProcess(new SingletonConnectionSelector<>(
 				connection), null);
 		process.call(new IPTagSet(connection.getChip(), null, 0,

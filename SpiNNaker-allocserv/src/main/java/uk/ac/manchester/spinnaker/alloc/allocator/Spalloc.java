@@ -1766,6 +1766,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			var downloader = rememberer.getDownloader(id,
 					iptag.getDestination());
 			if (downloader != null) {
+				// Ensure the downloader can be reuse
+				downloader.reuse();
 				return downloader;
 			}
 			downloader = new Downloader(iptag);
