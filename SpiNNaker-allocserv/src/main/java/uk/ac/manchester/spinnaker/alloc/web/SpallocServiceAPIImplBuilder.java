@@ -371,7 +371,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 			}
 			bgAction(response, () -> {
 				var txrx = j.getTransceiver();
-				txrx.prepareRouters(filters);
+				txrx.resetRouting(filters);
 				return accepted().build();
 			});
 		}

@@ -2640,7 +2640,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
-	public void prepareRouters(Map<Integer, DiagnosticFilter> customFilters)
+	public void resetRouting(Map<Integer, DiagnosticFilter> customFilters)
 			throws ProcessException, IOException, InterruptedException {
 		var machine = this.getMachineDetails();
 		for (var chip : machine.chipCoordinates()) {

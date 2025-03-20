@@ -260,7 +260,7 @@ abstract class SQL {
 	static final String GET_APP_ID =
 			"SELECT app_id FROM info";
 
-	/** Get he machine dimensions. */
+	/** Get the machine dimensions. */
 	@ResultColumn("width")
 	@ResultColumn("height")
 	static final String GET_MACHINE_DIMENSIONS =

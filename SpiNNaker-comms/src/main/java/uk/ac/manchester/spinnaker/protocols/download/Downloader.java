@@ -43,8 +43,6 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 /**
  * Class used to manage a download. Every instance <em>must only</em> ever
  * be used from one thread.
- *
- * @author Donal Fellows
  */
 public class Downloader implements AutoCloseable {
 
