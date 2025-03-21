@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.front_end.download;
+package uk.ac.manchester.spinnaker.protocols.download;
 
+import static java.lang.Integer.getInteger;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.front_end.Constants.NEXT_MESSAGES_COUNT;
-import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
-import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.START_MISSING_SEQS;
+import static uk.ac.manchester.spinnaker.protocols.download.GatherProtocolMessage.ID.NEXT_MISSING_SEQS;
+import static uk.ac.manchester.spinnaker.protocols.download.GatherProtocolMessage.ID.START_MISSING_SEQS;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
@@ -51,6 +52,26 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	/** How many sequence numbers fit in each subsequent message. */
 	private static final int MAX_NEXT_SIZE =
 			SDP_PAYLOAD_WORDS - NEXT_OVERHEAD_WORDS;
+
+	/**
+	 * The name of the system property defining the number of <em>next
+	 * messages</em> that should be used in the data speed up gatherer
+	 * protocol's retransmission mode.
+	 * <p>
+	 * If a property with this name is absent, a default is used ({@code 7}).
+	 */
+	public static final String NEXT_MSGS_PROPERTY = "spinnaker.next_messages";
+
+	/** Default value of {@link #PARALLEL_SIZE}. */
+	private static final int NEXT_MSGS_DEFAULT = 7;
+
+	/**
+	 * The number of <em>next messages</em> that should be used in the data
+	 * speed up gatherer protocol's retransmission mode.
+	 */
+	public static final int NEXT_MESSAGES_COUNT =
+			// Zero or less make no sense at all
+			max(0, getInteger(NEXT_MSGS_PROPERTY, NEXT_MSGS_DEFAULT));
 
 	/**
 	 * Max number of sequence numbers to send in one go when asking for

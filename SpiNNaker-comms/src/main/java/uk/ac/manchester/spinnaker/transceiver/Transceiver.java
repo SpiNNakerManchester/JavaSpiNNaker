@@ -163,6 +163,8 @@ import uk.ac.manchester.spinnaker.messages.scp.SDRAMDeAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.SendSignal;
 import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
+import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -341,6 +343,12 @@ public class Transceiver extends UDPTransceiver
 	private long retryCount = 0L;
 
 	private BMPCoords boundBMP = new BMPCoords(0, 0);
+
+	@GuardedBy("itself")
+	private Map<ChipLocation, FastDataIn> cachedDataIn = new HashMap<>();
+
+	@GuardedBy("itself")
+	private Map<ChipLocation, Downloader> cachedDownloaders = new HashMap<>();
 
 	/**
 	 * Create a Transceiver by creating a UDPConnection to the given hostname on
@@ -923,9 +931,11 @@ public class Transceiver extends UDPTransceiver
 		// TODO: Actually get the existing APP_IDs in use
 		appIDTracker = new AppIdTracker();
 
-		log.info("Detected a machine on IP address {} which has {}",
-				bootConnection.getRemoteIPAddress(),
-				machine.coresAndLinkOutputString());
+		if (bootConnection != null) {
+			log.info("Detected a machine on IP address {} which has {}",
+					bootConnection.getRemoteIPAddress(),
+					machine.coresAndLinkOutputString());
+		}
 	}
 
 	/**
@@ -1181,7 +1191,6 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @param request
 	 *            The request to make.
-	 * @return The successful response to the request.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a request.
 	 * @throws IOException
@@ -1189,7 +1198,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private void call(SCPRequest<EmptyResponse> request)
+	protected void call(SCPRequest<EmptyResponse> request)
 			throws ProcessException, IOException, InterruptedException {
 		new TxrxProcess(scpSelector, this).call(request);
 	}
@@ -1215,7 +1224,8 @@ public class Transceiver extends UDPTransceiver
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private <T, R extends PayloadedResponse<T, ?>> T get(SCPRequest<R> request)
+	protected <T, R extends PayloadedResponse<T, ?>> T get(
+			SCPRequest<R> request)
 			throws ProcessException, IOException, InterruptedException {
 		return new TxrxProcess(scpSelector, this).retrieve(request);
 	}
@@ -2369,8 +2379,8 @@ public class Transceiver extends UDPTransceiver
 	public void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		new MulticastRoutesControlProcess(scpSelector, this).setRoutes(chip,
-				routes, appID);
+		new MulticastRoutesControlProcess(scpSelector, this, this)
+				.setRoutes(chip, routes, appID);
 	}
 
 	@Override
@@ -2399,7 +2409,7 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException, InterruptedException {
 		var address = (MemoryLocation) getSystemVariable(chip,
 				router_table_copy_address);
-		return new MulticastRoutesControlProcess(scpSelector, this)
+		return new MulticastRoutesControlProcess(scpSelector, this, this)
 				.getRoutes(chip, address, appID);
 	}
 
@@ -2629,6 +2639,22 @@ public class Transceiver extends UDPTransceiver
 				.loadSystemRouterTable(monitorCores);
 	}
 
+	@Override
+	public void resetRouting(Map<Integer, DiagnosticFilter> customFilters)
+			throws ProcessException, IOException, InterruptedException {
+		var machine = this.getMachineDetails();
+		for (var chip : machine.chipCoordinates()) {
+			this.clearMulticastRoutes(chip);
+			this.clearRouterDiagnosticCounters(chip);
+			if (customFilters != null) {
+				for (var item : customFilters.entrySet()) {
+					this.setRouterDiagnosticFilter(chip, item.getKey(),
+							item.getValue());
+				}
+			}
+		}
+	}
+
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *
@@ -2638,6 +2664,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void close() throws IOException {
 		try {
+			synchronized (cachedDataIn) {
+				for (var dataIn : cachedDataIn.values()) {
+					dataIn.close();
+				}
+				cachedDataIn.clear();
+			}
+			synchronized (cachedDownloaders) {
+				cachedDownloaders.clear();
+			}
 			close(true, false);
 		} catch (InterruptedException e) {
 			log.warn("unexpected interruption", e);
@@ -2688,7 +2723,7 @@ public class Transceiver extends UDPTransceiver
 		return bmpSelectors;
 	}
 
-	/** A simple description of a connnection to create. */
+	/** A simple description of a connection to create. */
 	public static final class ConnectionDescriptor {
 		/** What host to talk to. */
 		private InetAddress hostname;

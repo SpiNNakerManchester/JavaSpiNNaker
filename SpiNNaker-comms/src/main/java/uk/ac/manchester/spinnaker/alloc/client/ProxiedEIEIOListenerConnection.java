@@ -19,7 +19,6 @@ import static java.util.Objects.isNull;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -33,7 +32,7 @@ import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
-	private final Map<Inet4Address, ChipLocation> hostToChip;
+	private final Map<InetAddress, ChipLocation> hostToChip;
 
 	private final BlockingQueue<ByteBuffer> receiveQueue;
 
@@ -41,7 +40,7 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 
 	private ProxyProtocolClient.UnconnectedChannel channel;
 
-	ProxiedEIEIOListenerConnection(Map<Inet4Address, ChipLocation> hostToChip,
+	ProxiedEIEIOListenerConnection(Map<InetAddress, ChipLocation> hostToChip,
 			ProxyProtocolClient proxy)
 			throws InterruptedException {
 		this.hostToChip = hostToChip;

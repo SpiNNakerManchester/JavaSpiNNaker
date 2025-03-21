@@ -258,8 +258,13 @@ abstract class SQL {
 	/** Get the app_id. */
 	@ResultColumn("app_id")
 	static final String GET_APP_ID =
-			"SELECT app_id "
-					+ "FROM app_id ";
+			"SELECT app_id FROM info";
+
+	/** Get the machine dimensions. */
+	@ResultColumn("width")
+	@ResultColumn("height")
+	static final String GET_MACHINE_DIMENSIONS =
+			"SELECT width, height FROM info";
 
 	/**
 	 * The name of the result containing the spalloc URI.

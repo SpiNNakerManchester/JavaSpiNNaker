@@ -16,6 +16,8 @@
 package uk.ac.manchester.spinnaker.storage;
 
 import java.nio.ByteBuffer;
+
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
@@ -24,6 +26,11 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * @author Christian
  */
 public class RegionInfo {
+
+	/**
+	 * The core location of the region.
+	 */
+	public final CoreLocation core;
 
 	/**
 	 * The address where the region will be start.
@@ -36,12 +43,16 @@ public class RegionInfo {
 	public final ByteBuffer  content;
 
 	/**
+	 * @param core
+	 *          The core location of the region
 	 * @param content
 	 *           The metadata to be written to the region or null
 	 * @param pointer
 	 *           The address the region metadata starts at
 	 */
-	public RegionInfo(ByteBuffer content, MemoryLocation pointer) {
+	public RegionInfo(CoreLocation core, ByteBuffer content,
+			MemoryLocation pointer) {
+		this.core = core;
 		this.content =  content;
 		this.pointer = pointer;
 	}

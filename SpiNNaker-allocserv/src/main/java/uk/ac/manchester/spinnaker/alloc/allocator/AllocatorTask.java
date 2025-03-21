@@ -125,7 +125,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	private HistoricalDataProperties historyProps;
 
 	@Autowired
-	private ProxyRememberer rememberer;
+	private JobObjectRememberer rememberer;
 
 	@Autowired
 	private TaskScheduler scheduler;
@@ -984,7 +984,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			return bmps;
 		} finally {
 			quotaManager.finishJob(id);
-			rememberer.killProxies(id);
+			rememberer.closeJob(id);
 		}
 	}
 
@@ -1245,7 +1245,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		log.info("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
 		// Any proxies that existed are now defunct; user must make anew
-		rememberer.killProxies(jobId);
+		rememberer.closeJob(jobId);
 		return setPower(sql, jobId, ON, READY);
 	}
 

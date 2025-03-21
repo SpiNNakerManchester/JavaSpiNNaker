@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.front_end;
+package uk.ac.manchester.spinnaker.protocols;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -122,71 +121,19 @@ public class NoDropPacketContext implements AutoCloseable {
 	}
 
 	/**
-	 * Create a no-drop-packets context for a single board.
+	 * Create a no-drop-packets context. This can manage multiple boards at
+	 * once, but it is <em>recommended</em> that only a single board be handled
+	 * by a context.
 	 *
 	 * @param txrx
 	 *            The transceiver to use for talking to SpiNNaker.
-	 * @param monitorCoreLocations
-	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers. These must be on the same board as the gatherer;
-	 *            this is not checked.
-	 * @param gatherer
-	 *            The gatherer for this context and linked to these extra
-	 *            monitor cores.
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	@MustBeClosed
-	public NoDropPacketContext(TransceiverInterface txrx,
-			CoreSubsets monitorCoreLocations, Gather gatherer)
-			throws IOException, ProcessException, InterruptedException {
-		this(txrx, monitorCoreLocations, convertToCoreSubset(gatherer));
-	}
-
-	/**
-	 * Create a no-drop-packets context for a single board.
-	 *
-	 * @param txrx
-	 *            The transceiver to use for talking to SpiNNaker.
-	 * @param monitorCoreLocations
-	 *            The extra monitor cores on the SpiNNaker system that control
-	 *            the routers. These must be on the same board as the gatherer;
-	 *            this is not checked.
-	 * @param gatherer
-	 *            The gatherer for this context and linked to these extra
-	 *            monitor cores.
-	 * @throws IOException
-	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	@MustBeClosed
-	public NoDropPacketContext(TransceiverInterface txrx,
-			List<? extends HasCoreLocation> monitorCoreLocations,
-			Gather gatherer)
-			throws IOException, ProcessException, InterruptedException {
-		this(txrx, convertToCoreSubset(monitorCoreLocations),
-				convertToCoreSubset(gatherer));
-	}
-
-	/**
-	 * Create a no-drop-packets context.
-	 *
-	 * @param txrx
-	 *            The transceiver to use for talking to SpiNNaker.
-	 * @param monitorCoreLocations
+	 * @param monitorCores
 	 *            The extra monitor cores on the SpiNNaker system that control
 	 *            the routers. These must be on the same board as one of the
 	 *            gatherers; this is not checked.
 	 * @param gatherers
-	 *            The gatherer for this context and linked to these extra
-	 *            monitor cores.
+	 *            The gatherer cores on the SpiNNaker system that supports the
+	 *            multicast router control API.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws ProcessException
@@ -196,10 +143,40 @@ public class NoDropPacketContext implements AutoCloseable {
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
-			Stream<? extends HasCoreLocation> monitorCoreLocations,
-			Stream<Gather> gatherers)
-			throws IOException, ProcessException, InterruptedException {
-		this(txrx, convertToCoreSubset(monitorCoreLocations),
+			List<? extends HasCoreLocation> monitorCores,
+			List<? extends HasCoreLocation> gatherers)
+					throws IOException, ProcessException, InterruptedException {
+		this(txrx, convertToCoreSubset(monitorCores),
+				convertToCoreSubset(gatherers));
+	}
+
+	/**
+	 * Create a no-drop-packets context. This can manage multiple boards at
+	 * once, but it is <em>recommended</em> that only a single board be handled
+	 * by a context.
+	 *
+	 * @param txrx
+	 *            The transceiver to use for talking to SpiNNaker.
+	 * @param monitorCores
+	 *            The extra monitor cores on the SpiNNaker system that control
+	 *            the routers. These must be on the same board as one of the
+	 *            gatherers; this is not checked.
+	 * @param gatherers
+	 *            The gatherer cores on the SpiNNaker system that supports the
+	 *            multicast router control API.
+	 * @throws IOException
+	 *             If communications fail.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 */
+	@MustBeClosed
+	public NoDropPacketContext(TransceiverInterface txrx,
+			Stream<? extends HasCoreLocation> monitorCores,
+			Stream<? extends HasCoreLocation> gatherers)
+					throws IOException, ProcessException, InterruptedException {
+		this(txrx, convertToCoreSubset(monitorCores),
 				convertToCoreSubset(gatherers));
 	}
 
@@ -209,12 +186,6 @@ public class NoDropPacketContext implements AutoCloseable {
 		for (var coreLocation : coreLocationList) {
 			cores.addCore(coreLocation.asCoreLocation());
 		}
-		return cores;
-	}
-
-	private static CoreSubsets convertToCoreSubset(Gather gather) {
-		var cores = new CoreSubsets();
-		cores.addCore(gather.asCoreLocation());
 		return cores;
 	}
 

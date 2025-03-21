@@ -16,14 +16,11 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.stream.Collectors.toList;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import static picocli.CommandLine.ExitCode.USAGE;
-import static uk.ac.manchester.spinnaker.alloc.client.SpallocClientFactory.getJobFromProxyInfo;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DOWNLOAD_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_APP_DESC;
-import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_MON_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.DSE_SYS_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.GATHER_DESC;
@@ -40,7 +37,6 @@ import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.PLACEMENT;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.REPORT;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.RUN;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
-import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.File;
 import java.io.FileReader;
@@ -53,7 +49,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.errorprone.annotations.MustBeClosed;
 
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -64,9 +59,7 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.TypeConversionException;
-import uk.ac.manchester.spinnaker.alloc.client.SpallocClient;
 import uk.ac.manchester.spinnaker.connections.LocateConnectedMachineIPAddress;
-import uk.ac.manchester.spinnaker.connections.MachineAware;
 import uk.ac.manchester.spinnaker.front_end.download.DataReceiver;
 import uk.ac.manchester.spinnaker.front_end.download.RecordingRegionDataGatherer;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
@@ -80,13 +73,8 @@ import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.DatabaseEngine;
-import uk.ac.manchester.spinnaker.storage.ProxyAwareStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver.ConnectionDescriptor;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -182,7 +170,7 @@ public final class CommandLineInterface {
 
 	@FunctionalInterface
 	interface HostDSEFactory {
-		HostExecuteDataSpecification create(TransceiverInterface txrx,
+		HostExecuteDataSpecification create(
 				Machine m, DSEDatabaseEngine db)
 				throws IOException, SpinnmanException, StorageException,
 				ExecutionException, InterruptedException, URISyntaxException;
@@ -196,7 +184,7 @@ public final class CommandLineInterface {
 
 	@FunctionalInterface
 	interface FastDSEFactory {
-		FastExecuteDataSpecification create(TransceiverInterface txrx,
+		FastExecuteDataSpecification create(
 				Machine machine, List<Gather> gatherers, File reportDir,
 				DSEDatabaseEngine db)
 				throws IOException, SpinnmanException, StorageException,
@@ -241,10 +229,8 @@ public final class CommandLineInterface {
 			ExecutionException, InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder);
 		var db = getDataSpecDB(dsFile);
-		var job = getJob(db);
 
-		try (var txrx = getTransceiver(machine, job);
-				var dseExec = hostFactory.create(txrx, machine, db)) {
+		try (var dseExec = hostFactory.create(machine, db)) {
 			if (filterSystemCores) {
 				dseExec.loadCores(false);
 			} else {
@@ -295,12 +281,10 @@ public final class CommandLineInterface {
 			ExecutionException, InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
 		var db = getDataSpecDB(dsFile.get());
-		var job = getJob(db);
 
-		try (var txrx = getTransceiver(machine.get(), job);
-				var dseExec = fastFactory.create(txrx, machine.get(),
+		try (var dseExec = fastFactory.create(machine.get(),
 						gatherers.get(), reportFolder.orElse(null), db)) {
-			dseExec.loadCores();
+			dseExec.loadCores(gatherers.get());
 		}
 	}
 
@@ -338,10 +322,8 @@ public final class CommandLineInterface {
 			StorageException, URISyntaxException {
 		setLoggerDir(runFolder.get());
 		var db = getBufferManagerDB(dbFile.get());
-		var job = getJob(db);
 
-		try (var txrx = getTransceiver(machine.get(), job);
-				var r = new IobufRetriever(txrx, machine.get(),
+		try (var r = new IobufRetriever(db, machine.get(),
 						PARALLEL_SIZE)) {
 			var result = r.retrieveIobufContents(iobuf.get(), runFolder.get());
 			MAPPER.writeValue(System.out, result);
@@ -380,10 +362,8 @@ public final class CommandLineInterface {
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
 		var db = getBufferManagerDB(dbFile.get());
-		var job = getJob(db);
 
-		try (var trans = getTransceiver(machine.get(), job)) {
-			var r = new DataReceiver(trans, machine.get(), db);
+		try (var r = new DataReceiver(machine.get(), db)) {
 			r.getDataForPlacementsParallel(placements.get(), PARALLEL_SIZE);
 		}
 	}
@@ -421,11 +401,8 @@ public final class CommandLineInterface {
 			InterruptedException, URISyntaxException {
 		setLoggerDir(runFolder.get());
 		var db = getBufferManagerDB(dbFile.get());
-		var job = getJob(db);
 
-		try (var trans = getTransceiver(machine.get(), job);
-				var r = new RecordingRegionDataGatherer(trans, machine.get(),
-						db)) {
+		try (var r = new RecordingRegionDataGatherer(machine.get(),	db)) {
 			int misses = r.gather(gatherers.get());
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
@@ -698,45 +675,6 @@ public final class CommandLineInterface {
 
 	private static BufferManagerStorage getBufferManagerDB(File dbFile) {
 		return new BufferManagerDatabaseEngine(dbFile).getStorageInterface();
-	}
-
-	private static SpallocClient.Job getJob(
-			DatabaseEngine<? extends ProxyAwareStorage> databaseEngine)
-			throws StorageException, IOException {
-		return getJob(databaseEngine.getStorageInterface());
-	}
-
-	private static SpallocClient.Job getJob(ProxyAwareStorage storage)
-			throws StorageException, IOException {
-		return getJobFromProxyInfo(storage.getProxyInformation());
-	}
-
-	@MustBeClosed
-	@SuppressWarnings("MustBeClosed")
-	private static TransceiverInterface getTransceiver(Machine machine,
-			SpallocClient.Job job)
-			throws IOException, SpinnmanException, InterruptedException {
-		final TransceiverInterface txrx;
-		if (job == null) {
-			// No job; must be a direct connection
-			txrx = Transceiver.makeWithDescriptors(
-					machine.version, generateScampConnections(machine));
-		} else {
-			txrx = job.getTransceiver();
-		}
-		var scpSelector = txrx.getScampConnectionSelector();
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
-		}
-		return txrx;
-	}
-
-	private static List<ConnectionDescriptor> generateScampConnections(
-			Machine machine) {
-		return machine.ethernetConnectedChips().stream()
-				.map(chip -> new ConnectionDescriptor(chip.ipAddress,
-						SCP_SCAMP_PORT, chip.asChipLocation()))
-				.collect(toList());
 	}
 }
 

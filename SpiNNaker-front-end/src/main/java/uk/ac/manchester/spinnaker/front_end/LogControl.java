@@ -19,7 +19,6 @@ import static java.lang.System.getProperty;
 import static org.apache.logging.log4j.Level.DEBUG;
 import static org.apache.logging.log4j.Level.ERROR;
 import static org.apache.logging.log4j.Level.INFO;
-import static org.apache.logging.log4j.Level.WARN;
 import static org.apache.logging.log4j.core.Filter.Result.ACCEPT;
 import static org.apache.logging.log4j.core.Filter.Result.DENY;
 import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_ERR;
@@ -176,7 +175,7 @@ public final class LogControl {
 				.add(builder
 						.newAppender(Loggers.CON, ConsoleAppender.PLUGIN_NAME)
 						.addAttribute(Attrs.TARGET, SYSTEM_ERR)
-						.add(filter(WARN)).add(layout(Patterns.CON)))
+						.add(filter(level)).add(layout(Patterns.CON)))
 				.add(builder.newAppender(Loggers.MAIN, FileAppender.PLUGIN_NAME)
 						.addAttribute(Attrs.FILE, logfile.getAbsolutePath())
 						.add(filter(level)).add(layout(Patterns.MAIN)))

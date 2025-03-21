@@ -140,61 +140,6 @@ public final class Permit {
 	 * @return Whatever the inner code returns
 	 */
 	public <T> T authorize(Supplier<T> inContext) {
-		/**
-		 * A temporarily-installable authentication token. Allows access to
-		 * secured APIs in asynchronous worker threads, provided they provide a
-		 * {@link Permit} (obtained from a service thread) to show that they may
-		 * do so.
-		 */
-		@SuppressWarnings("serial")
-		final class TempAuth implements Authentication {
-			// The permit already proves we're authenticated
-			private boolean auth = true;
-
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			public Collection<? extends GrantedAuthority> getAuthorities() {
-				return authorities;
-			}
-
-			@Override
-			public Object getCredentials() {
-				// You can never get the credentials from this
-				return null;
-			}
-
-			@Override
-			public Permit getDetails() {
-				return Permit.this;
-			}
-
-			@Override
-			public String getPrincipal() {
-				return name;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return auth;
-			}
-
-			@Override
-			public void setAuthenticated(boolean isAuthenticated) {
-				if (!isAuthenticated) {
-					auth = false;
-				}
-			}
-
-			private void writeObject(ObjectOutputStream out)
-					throws NotSerializableException {
-				throw new NotSerializableException("not actually serializable");
-			}
-		}
-
 		var c = SecurityContextHolder.getContext();
 		var old = c.getAuthentication();
 		c.setAuthentication(new TempAuth());
@@ -202,6 +147,61 @@ public final class Permit {
 			return inContext.get();
 		} finally {
 			c.setAuthentication(old);
+		}
+	}
+
+	/**
+	 * A temporarily-installable authentication token. Allows access to
+	 * secured APIs in asynchronous worker threads, provided they provide a
+	 * {@link Permit} (obtained from a service thread) to show that they may
+	 * do so.
+	 */
+	@SuppressWarnings("serial")
+	final class TempAuth implements Authentication {
+		// The permit already proves we're authenticated
+		private boolean auth = true;
+
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public Collection<? extends GrantedAuthority> getAuthorities() {
+			return authorities;
+		}
+
+		@Override
+		public Object getCredentials() {
+			// You can never get the credentials from this
+			return null;
+		}
+
+		@Override
+		public Permit getDetails() {
+			return Permit.this;
+		}
+
+		@Override
+		public String getPrincipal() {
+			return name;
+		}
+
+		@Override
+		public boolean isAuthenticated() {
+			return auth;
+		}
+
+		@Override
+		public void setAuthenticated(boolean isAuthenticated) {
+			if (!isAuthenticated) {
+				auth = false;
+			}
+		}
+
+		private void writeObject(ObjectOutputStream out)
+				throws NotSerializableException {
+			throw new NotSerializableException("not actually serializable");
 		}
 	}
 }

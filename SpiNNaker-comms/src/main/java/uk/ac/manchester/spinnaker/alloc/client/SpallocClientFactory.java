@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.alloc.client;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static java.lang.Integer.toUnsignedString;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -24,6 +25,7 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -32,8 +34,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.asDir;
-import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
-import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -42,9 +42,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -62,12 +64,14 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.alloc.client.SpallocClient.SpallocException;
-import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -104,6 +108,12 @@ public class SpallocClientFactory {
 	private static final URI POWER = URI.create("power");
 
 	private static final URI WAIT_FLAG = URI.create("?wait=true");
+
+	private static final URI MEMORY = URI.create("memory");
+
+	private static final URI FAST_DATA_WRITE = URI.create("fast-data-write");
+
+	private static final URI FAST_DATA_READ = URI.create("fast-data-read");
 
 	// Amount to divide keepalive interval by to get actual keep alive delay
 	private static final int KEEPALIVE_DIVIDER = 2;
@@ -278,6 +288,33 @@ public class SpallocClientFactory {
 					conn.getResponseCode());
 		}
 		return conn.getInputStream();
+	}
+
+	/**
+	 * Checks for errors in the response without expecting response content.
+	 *
+	 * @param conn
+	 *            The HTTP connection
+	 * @param errorMessage
+	 *            The message to use on error (describes what did not work at a
+	 *            higher level)
+	 * @throws IOException
+	 *             If things go wrong with comms.
+	 * @throws FileNotFoundException
+	 *             on a {@link HttpURLConnection#HTTP_NOT_FOUND}
+	 * @throws SpallocException
+	 *             on other server errors
+	 */
+	static void checkForErrorNoResponse(HttpURLConnection conn,
+			String errorMessage) throws IOException {
+		if (conn.getResponseCode() == HTTP_NOT_FOUND) {
+			// Special case
+			throw new FileNotFoundException(errorMessage);
+		}
+		if (conn.getResponseCode() >= HTTP_BAD_REQUEST) {
+			throw new SpallocException(conn.getErrorStream(),
+					conn.getResponseCode());
+		}
 	}
 
 	/**
@@ -697,30 +734,142 @@ public class SpallocClientFactory {
 		public TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException {
 			var ws = getProxy();
-			var am = machine();
-			// TODO: We should know if the machine wraps around or not here...
-			var version = MachineVersion.TRIAD_NO_WRAPAROUND;
-			var conns = new ArrayList<Connection>();
-			var hostToChip = new HashMap<Inet4Address, ChipLocation>();
-			InetAddress bootChipAddress = null;
-			for (var bc : am.getConnections()) {
-				var chipAddr = getByNameQuietly(bc.getHostname());
-				var chipLoc = bc.getChip().asChipLocation();
-				conns.add(new ProxiedSCPConnection(chipLoc, ws, chipAddr));
-				hostToChip.put(chipAddr, bc.getChip());
-				if (chipLoc.equals(ZERO_ZERO)) {
-					bootChipAddress = chipAddr;
-				}
-			}
-			if (bootChipAddress != null) {
-				conns.add(new ProxiedBootConnection(ws, bootChipAddress));
-			}
-			return new ProxiedTransceiver(version, conns, hostToChip, ws);
+			return new ProxiedTransceiver(this, ws);
 		}
 
 		@Override
 		public String toString() {
 			return "Job(" + uri + ")";
+		}
+
+		@Override
+		public void writeMemory(HasChipLocation chip,
+				MemoryLocation baseAddress, ByteBuffer data)
+				throws IOException {
+			try {
+				s.withRenewal(() -> {
+					var conn = s.connection(uri,
+							new URI(MEMORY + "?x=" + chip.getX()
+									+ "&y=" + chip.getY()
+									+ "&address="
+									+ toUnsignedString(baseAddress.address)),
+							true);
+					conn.setDoOutput(true);
+					conn.setRequestMethod("POST");
+					conn.setRequestProperty(
+							"Content-Type", "application/octet-stream");
+					try (var os = conn.getOutputStream();
+							var channel = Channels.newChannel(os)) {
+						channel.write(data);
+					}
+					checkForErrorNoResponse(conn, "Couldn't write memory");
+					return null;
+				});
+			} catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
+		}
+
+		@Override
+		public ByteBuffer readMemory(HasChipLocation chip,
+				MemoryLocation baseAddress, int length)
+				throws IOException {
+			try {
+				return s.withRenewal(() -> {
+					var conn = s.connection(uri,
+							new URI(MEMORY + "?x=" + chip.getX()
+									+ "&y=" + chip.getY()
+									+ "&address="
+									+ toUnsignedString(baseAddress.address)
+									+ "&size=" + length));
+					conn.setRequestMethod("GET");
+					conn.setRequestProperty(
+							"Accept", "application/octet-stream");
+					try (var is = checkForError(conn, "couldn't read memory")) {
+						var buffer = ByteBuffer.allocate(length);
+						var channel = Channels.newChannel(is);
+						IOUtils.readFully(channel, buffer);
+						buffer.rewind();
+						return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+					}
+				});
+			} catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
+		}
+
+		@Override
+		public void fastWriteData(CoreLocation gathererCore,
+				IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
+				ByteBuffer data) throws IOException {
+			try {
+				s.withRenewal(() -> {
+					var conn = s.connection(uri,
+							new URI(FAST_DATA_WRITE
+									+ "?gather_x=" + gathererCore.getX()
+									+ "&gather_y=" + gathererCore.getY()
+									+ "&gather_p=" + gathererCore.getP()
+									+ "&eth_x=" + iptag.getDestination().getX()
+									+ "&eth_y=" + iptag.getDestination().getY()
+									+ "&eth_address="
+									+ iptag.getBoardAddress().getHostAddress()
+									+ "&iptag=" + iptag.getTag()
+									+ "&x=" + chip.getX()
+									+ "&y=" + chip.getY()
+									+ "&address="
+									+ toUnsignedString(baseAddress.address)),
+							true);
+					conn.setDoOutput(true);
+					conn.setRequestMethod("POST");
+					conn.setRequestProperty(
+							"Content-Type", "application/octet-stream");
+					try (var os = conn.getOutputStream();
+							var channel = Channels.newChannel(os)) {
+						channel.write(data);
+					}
+					checkForErrorNoResponse(conn, "Couldn't fast write memory");
+					return null;
+				});
+			} catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
+		}
+
+		@Override
+		public ByteBuffer fastReadData(ChipLocation gathererChip,
+				IPTag iptag, HasCoreLocation monitorCore,
+				MemoryLocation baseAddress, int length) throws IOException {
+			try {
+				return s.withRenewal(() -> {
+					var conn = s.connection(uri,
+							new URI(FAST_DATA_READ
+									+ "?gather_x=" + gathererChip.getX()
+									+ "&gather_y=" + gathererChip.getY()
+									+ "&eth_x=" + iptag.getDestination().getX()
+									+ "&eth_y=" + iptag.getDestination().getY()
+									+ "&eth_address="
+									+ iptag.getBoardAddress().getHostAddress()
+									+ "&iptag=" + iptag.getTag()
+									+ "&x=" + monitorCore.getX()
+									+ "&y=" + monitorCore.getY()
+									+ "&p=" + monitorCore.getP()
+									+ "&address="
+									+ toUnsignedString(baseAddress.address)
+									+ "&size=" + length));
+					conn.setRequestMethod("GET");
+					conn.setRequestProperty(
+							"Accept", "application/octet-stream");
+					try (var is = checkForError(conn, "couldn't read memory")) {
+						var buffer = ByteBuffer.allocate(length);
+						var channel = Channels.newChannel(is);
+						IOUtils.readFully(channel, buffer);
+						buffer.rewind();
+						return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+					}
+				});
+			} catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
 		}
 	}
 

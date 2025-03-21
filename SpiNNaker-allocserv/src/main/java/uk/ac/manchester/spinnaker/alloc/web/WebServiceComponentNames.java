@@ -57,6 +57,18 @@ public interface WebServiceComponentNames {
 	/** The job report-an-issue-with-a-board resource name component. */
 	String REPORT_ISSUE = "report-issue";
 
+	/** The job memory to read or write. */
+	String MEMORY = "memory";
+
+	/** The boot path. */
+	String BOOT = "boot";
+
+	/** The fast-data-write path. */
+	String FAST_DATA_WRITE = "fast-data-write";
+
+	/** The fast-data-read path. */
+	String FAST_DATA_READ = "fast-data-read";
+
 	/** The wait-for-change query parameter name. */
 	String WAIT = "wait";
 
@@ -71,4 +83,34 @@ public interface WebServiceComponentNames {
 
 	/** The Y coordinate query parameter name. */
 	String CHIP_Y = "y";
+
+	/** The P coordinate query parameter name. */
+	String CHIP_P = "p";
+
+	/** The X coordinate of the Ethernet chip of the chip. */
+	String ETH_X = "eth_x";
+
+	/** The Y coordinate of the Ethernet chip of the chip. */
+	String ETH_Y = "eth_y";
+
+	/** The X coordinate of the gather core. */
+	String GATHER_X = "gather_x";
+
+	/** The Y coordinate of the gather core. */
+	String GATHER_Y = "gather_y";
+
+	/** The processor ID of the gather core. */
+	String GATHER_P = "gather_p";
+
+	/** The memory address query parameter name. */
+	String ADDRESS = "address";
+
+	/** The size to read or write query parameter name. */
+	String SIZE = "size";
+
+	/** The Ethernet address query parameter name. */
+	String ETH_ADDRESS = "eth_address";
+
+	/** The IPTag query parameter name. */
+	String IPTAG = "iptag";
 }

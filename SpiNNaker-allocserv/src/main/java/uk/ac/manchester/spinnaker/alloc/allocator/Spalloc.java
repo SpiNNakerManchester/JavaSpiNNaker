@@ -57,7 +57,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.FormatMethod;
-import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
@@ -83,15 +82,21 @@ import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -125,7 +130,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private AllocatorProperties props;
 
 	@Autowired
-	private ProxyRememberer rememberer;
+	private JobObjectRememberer rememberer;
 
 	@Autowired
 	private AllocatorTask allocator;
@@ -1442,7 +1447,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new PartialJobException();
 			}
 			powerController.destroyJob(id, reason);
-			rememberer.killProxies(id);
+			rememberer.closeJob(id);
 		}
 
 		@Override
@@ -1717,7 +1722,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
-		@MustBeClosed
+		@SuppressWarnings("MustBeClosed")
 		public TransceiverInterface getTransceiver() throws IOException,
 				InterruptedException, SpinnmanException {
 			var mac = getMachine();
@@ -1725,9 +1730,50 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new IllegalStateException(
 						"Job is not active!");
 			}
-			return new Transceiver(InetAddress.getByName(
-					mac.get().getConnections().get(0).getHostname()),
-					MachineVersion.FIVE);
+			var txrx = rememberer.getTransceiverForJob(id);
+			if (nonNull(txrx)) {
+				return txrx;
+			}
+			List<uk.ac.manchester.spinnaker.connections.model.Connection>
+				connections = new ArrayList<>();
+			for (var conn : mac.get().getConnections()) {
+				connections.add(new SCPConnection(conn.getChip(),
+						null, null, InetAddress.getByName(conn.getHostname())));
+			}
+			txrx = new Transceiver(MachineVersion.FIVE, connections);
+			var unused = txrx.getMachineDetails();
+			rememberer.rememberTransceiverForJob(id, txrx);
+			return txrx;
+		}
+
+		@Override
+		@SuppressWarnings("MustBeClosed")
+		public FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
+				throws ProcessException, IOException, InterruptedException {
+			var fdi = rememberer.getFastDataIn(id, iptag.getDestination());
+			if (fdi != null) {
+				return fdi;
+			}
+			fdi = new FastDataIn(gathererCore, iptag);
+			rememberer.rememberFastDataIn(id, iptag.getDestination(), fdi);
+			return fdi;
+		}
+
+		@Override
+		@SuppressWarnings("MustBeClosed")
+		public Downloader getDownloader(IPTag iptag)
+				throws ProcessException, IOException, InterruptedException {
+			var downloader = rememberer.getDownloader(id,
+					iptag.getDestination());
+			if (downloader != null) {
+				// Ensure the downloader can be reuse
+				downloader.reuse();
+				return downloader;
+			}
+			downloader = new Downloader(iptag);
+			rememberer.rememberDownloader(id, iptag.getDestination(),
+					downloader);
+			return downloader;
 		}
 
 		@Override

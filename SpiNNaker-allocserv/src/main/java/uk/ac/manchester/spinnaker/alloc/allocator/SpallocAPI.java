@@ -58,6 +58,7 @@ import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.ValidX;
@@ -67,8 +68,12 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -990,9 +995,35 @@ public interface SpallocAPI {
 		 * @throws SpinnmanException
 		 *         if there is an issue speaking to the machine.
 		 */
-		@MustBeClosed
 		TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException;
+
+		/**
+		 * Get a FastDataIn protocol instance for an Ethernet within a job.
+		 *
+		 * @param gathererCore The core that will do the gathering.
+		 * @param iptag The IPTag to use.
+		 * @return A FastDataIn instance.
+		 * @throws ProcessException if there is an issue setting up the tag.
+		 * @throws IOException if there is an issue communicating.
+		 * @throws InterruptedException if the operation is interrupted.
+		 */
+		@MustBeClosed
+		FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
+				throws ProcessException, IOException, InterruptedException;
+
+		/**
+		 * Get a Downloader protocol instance for an Ethernet within a job.
+		 *
+		 * @param iptag The IPTag to use.
+		 * @return A Downloader instance.
+		 * @throws ProcessException if there is an issue setting up the tag.
+		 * @throws IOException if there is an issue communicating.
+		 * @throws InterruptedException if the operation is interrupted.
+		 */
+		@MustBeClosed
+		Downloader getDownloader(IPTag iptag)
+				throws ProcessException, IOException, InterruptedException;
 	}
 
 	/**

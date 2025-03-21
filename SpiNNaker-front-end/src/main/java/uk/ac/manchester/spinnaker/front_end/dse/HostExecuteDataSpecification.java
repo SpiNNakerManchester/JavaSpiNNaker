@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
@@ -27,8 +28,10 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
+import uk.ac.manchester.spinnaker.storage.RegionInfo;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
@@ -37,35 +40,37 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @author Donal Fellows
  */
 public class HostExecuteDataSpecification extends ExecuteDataSpecification {
+	private final TransceiverInterface txrx;
+
 	/**
 	 * Create a high-level DSE interface.
 	 *
-	 * @param txrx
-	 *            The transceiver for talking to the SpiNNaker machine.
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
 	 * @param db
 	 *            The DSE database.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 * @throws URISyntaxException
 	 *             If the URI is not valid.
 	 * @throws StorageException
 	 *             If the database cannot be read.
+	 * @throws SpinnmanException
+	 *             If there is an issue creating the transceiver.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
 	@MustBeClosed
-	public HostExecuteDataSpecification(TransceiverInterface txrx,
+	@SuppressWarnings("MustBeClosed")
+	public HostExecuteDataSpecification(
 			Machine machine, DSEDatabaseEngine db)
-			throws IOException, ProcessException, InterruptedException,
-			StorageException, URISyntaxException {
-		super(txrx, machine, db);
+			throws IOException, InterruptedException,
+			StorageException, URISyntaxException, SpinnmanException {
+		super(machine, db);
+		txrx = getTransceiver();
 	}
 
 	/**
@@ -102,11 +107,13 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			InterruptedException {
 		try (var c = new BoardLocal(board.location)) {
 			var worker = new HostBoardWorker(txrx, board, storage);
+			var regionsToWrite = new ArrayList<RegionInfo>();
 			for (var xyp : storage.listCoresToLoad(board, system)) {
 				worker.mallocCore(xyp);
+				worker.loadCoreTable(xyp, regionsToWrite);
 			}
-			for (var ctl : storage.listCoresToLoad(board, system)) {
-				worker.loadCore(ctl);
+			for (var ri : regionsToWrite) {
+				worker.writeRegion(ri.core, ri.content, ri.pointer);
 			}
 		}
 	}
@@ -117,7 +124,24 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			super(txrx, board, storage);
 		}
 
-		@Override
+		/**
+		 * Writes the contents of a region. Caller is responsible for ensuring
+		 * this method has work to do.
+		 *
+		 * @param core
+		 *            Which core to write to.
+		 * @param content
+		 *            Data to write
+		 * @param baseAddress
+		 *            Where to write the region.
+		 * @return How many bytes were actually written.
+		 * @throws IOException
+		 *             If anything goes wrong with I/O.
+		 * @throws ProcessException
+		 *             If SCAMP rejects the request.
+		 * @throws InterruptedException
+		 *             If communications are interrupted.
+		 */
 		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
 				MemoryLocation baseAddress)
 				throws IOException, ProcessException, InterruptedException {
@@ -126,5 +150,10 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 			txrx.writeMemory(core.getScampCore(), baseAddress, data);
 			return written;
 		}
+	}
+
+	@Override
+	public void close() throws IOException {
+		txrx.close();
 	}
 }

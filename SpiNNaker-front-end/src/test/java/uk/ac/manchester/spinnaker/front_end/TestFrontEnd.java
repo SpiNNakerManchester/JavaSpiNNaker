@@ -23,8 +23,11 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -33,6 +36,14 @@ import org.opentest4j.AssertionFailedError;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
+import uk.ac.manchester.spinnaker.storage.DSEStorage;
+import uk.ac.manchester.spinnaker.storage.ProxyInformation;
+import uk.ac.manchester.spinnaker.storage.RegionInfo;
+import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class TestFrontEnd {
@@ -132,7 +143,7 @@ class TestFrontEnd {
 		var called = new ValueHolder<>("none");
 		try {
 			CommandLineInterface.hostFactory =
-					(t, m, db) -> new HostExecuteDataSpecification(t, m, null) {
+					(m, db) -> new HostExecuteDataSpecification(m, null) {
 						@Override
 						public void loadCores(boolean system) {
 							if (system) {
@@ -178,18 +189,19 @@ class TestFrontEnd {
 		var saved = CommandLineInterface.fastFactory;
 		var called = new ValueHolder<>("none");
 		try {
-			CommandLineInterface.fastFactory = (t, m, g, r,
-					db) -> new FastExecuteDataSpecification(t, m, g, r, null) {
-						@Override
-						public void loadCores() {
-							called.setValue("mon");
-						}
-
-						@Override
-						protected void buildMaps(List<Gather> gatherers) {
-							assertEquals(g, gatherers);
-						}
-					};
+			CommandLineInterface.fastFactory = (m, g, r, db) -> {
+				var mockDB = new DSEDatabaseEngine() {
+					public DSEStorage getStorageInterface() {
+						return new MockDSEStorage();
+					}
+				};
+				return new FastExecuteDataSpecification(m, g, r, mockDB) {
+					@Override
+					public void loadCores(List<Gather> gatherers) {
+						called.setValue("mon");
+					}
+				};
+			};
 
 			var msg = tapSystemErrNormalized(() -> {
 				runMainExpecting(2, "dse_app_mon");
@@ -222,5 +234,65 @@ class TestFrontEnd {
 		});
 		assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
 				"<runFolder>");
+	}
+}
+
+final class MockDSEStorage implements DSEStorage {
+
+	@Override
+	public ProxyInformation getProxyInformation() throws StorageException {
+		return null;
+	}
+
+	@Override
+	public List<Ethernet> listEthernetsToLoad() throws StorageException {
+		return List.of();
+	}
+
+	@Override
+	public List<CoreLocation> listCoresToLoad(Ethernet ethernet,
+			boolean loadSystemCores)
+			throws StorageException {
+		return List.of();
+	}
+
+	@Override
+	public LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation xyp)
+			throws StorageException {
+		return new LinkedHashMap<>();
+	}
+
+	@Override
+	public void setStartAddress(CoreLocation xyp, MemoryLocation start)
+			throws StorageException {
+		// Do Nothing
+	}
+
+	@Override
+	public MemoryLocation getStartAddress(CoreLocation xyp)
+			throws StorageException {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int getAppId() throws StorageException {
+		return 0;
+	}
+
+	@Override
+	public MachineDimensions getMachineDimensions() throws StorageException {
+		return new MachineDimensions(8, 8);
+	}
+
+	@Override
+	public void setRegionPointer(CoreLocation xyp, int regionNum, int pointer)
+			throws StorageException {
+		// Do Nothing
+	}
+
+	@Override
+	public Map<Integer, RegionInfo> getRegionPointersAndContent(
+			CoreLocation xyp) throws StorageException {
+		return Map.of();
 	}
 }

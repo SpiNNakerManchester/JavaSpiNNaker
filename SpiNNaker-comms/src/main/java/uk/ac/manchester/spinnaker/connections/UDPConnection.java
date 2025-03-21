@@ -42,11 +42,13 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ConcurrentModificationException;
 
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -101,6 +103,9 @@ public abstract class UDPConnection<T> implements Connection {
 	private final DatagramSocket socket;
 
 	private int receivePacketSize = PACKET_MAX_SIZE;
+
+	@GuardedBy("this")
+	private boolean inUse = false;
 
 	/**
 	 * Main constructor, any argument of which could {@code null}.
@@ -683,7 +688,8 @@ public abstract class UDPConnection<T> implements Connection {
 	 * port in a NAT and/or firewall to allow incoming packets to be received.
 	 *
 	 * @param host
-	 *            The address of the SpiNNaker board to which the message should
+	 *            The address of the SpiNNaker board to which the
+	 *            message should
 	 *            be sent
 	 * @throws IOException
 	 *             If anything goes wrong
@@ -706,5 +712,17 @@ public abstract class UDPConnection<T> implements Connection {
 		return format("%s(%s <-%s-> %s)",
 				getClass().getSimpleName().replaceAll("^.*\\.", ""),
 				localAddr(), isClosed() ? "|" : "", remoteAddr());
+	}
+
+	public synchronized void setInUse() {
+		if (inUse) {
+			throw new ConcurrentModificationException(
+					"Connection " + this + " is already in use!");
+		}
+		this.inUse = true;
+	}
+
+	public synchronized void setNotInUse() {
+		this.inUse = false;
 	}
 }

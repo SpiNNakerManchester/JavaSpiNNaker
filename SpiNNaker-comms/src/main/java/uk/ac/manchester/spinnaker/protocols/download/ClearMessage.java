@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.front_end.download;
+package uk.ac.manchester.spinnaker.protocols.download;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.front_end.download.GatherProtocolMessage.ID.CLEAR_TRANSMISSIONS;
+import static uk.ac.manchester.spinnaker.protocols.download.GatherProtocolMessage.ID.CLEAR_TRANSMISSIONS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE_DATA_SPEED_UP;
 
