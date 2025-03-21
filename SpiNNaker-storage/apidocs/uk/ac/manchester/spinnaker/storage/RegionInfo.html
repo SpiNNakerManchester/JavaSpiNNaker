@@ -121,6 +121,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#core">core</a></span></code></th>
+<td class="colLast">
+<div class="block">The core location of the region.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pointer">pointer</a></span></code></th>
 <td class="colLast">
@@ -149,7 +156,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.MemoryLocation)">RegionInfo</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;content,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.CoreLocation,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.MemoryLocation)">RegionInfo</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;core,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;content,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;pointer)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -184,6 +192,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
+<h3><a id="core">core</a></h3>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a></span>&nbsp;<span class="memberName">core</span></div>
+<div class="block">The core location of the region.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="pointer">pointer</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">pointer</span></div>
 <div class="block">The address where the region will be start.</div>
@@ -208,11 +223,13 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.MemoryLocation)">RegionInfo</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RegionInfo</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;content,
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.CoreLocation,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.MemoryLocation)">RegionInfo</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RegionInfo</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;core,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;content,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;pointer)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>core</code> - The core location of the region</dd>
 <dd><code>content</code> - The metadata to be written to the region or null</dd>
 <dd><code>pointer</code> - The address the region metadata starts at</dd>
 </dl>

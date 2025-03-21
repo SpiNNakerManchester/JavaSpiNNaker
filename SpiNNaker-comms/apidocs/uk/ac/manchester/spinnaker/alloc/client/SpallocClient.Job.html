@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":18,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":18,"i9":6};
+<script type="text/javascript">var data = {"i0":6,"i1":18,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":18,"i12":6,"i13":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -141,20 +141,42 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#fastReadData(uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">fastReadData</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">ChipLocation</a>&nbsp;gathererChip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;iptag,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;monitorCore,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">Fast read data directly with a job.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#fastWriteData(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">fastWriteData</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;gathererCore,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;iptag,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Fast write data directly with a job.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPower()">getPower</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get whether the boards of the machine are all switched on.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTransceiver()">getTransceiver</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Create a proxied transceiver for talking to the boards of the job.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepalive()">keepalive</a></span>()</code></th>
 <td class="colLast">
@@ -162,33 +184,51 @@ loadScripts(document, 'script');</script>
  culling the job.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="AllocatedMachine.html" title="class in uk.ac.manchester.spinnaker.alloc.client">AllocatedMachine</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machine()">machine</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a description of what's been allocated to the job.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="rowColor" id="i9">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readMemory</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">Read memory directly using the Spalloc API.</div>
+</td>
+</tr>
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPower(boolean)">setPower</a></span>&#8203;(boolean&nbsp;switchOn)</code></th>
 <td class="colLast">
 <div class="block">Set the power state of the boards of the machine.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForPower()">waitForPower</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Wait until the job's boards are powered on or the job is destroyed.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code><a href="WhereIs.html" title="class in uk.ac.manchester.spinnaker.alloc.client">WhereIs</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#whereIs(uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Given the location of a chip within an allocation, return more info
  about a board.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i13">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Write memory directly using the Spalloc API.</div>
 </td>
 </tr>
 </tbody>
@@ -371,6 +411,90 @@ loadScripts(document, 'script');</script>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communication fails.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemory</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">writeMemory</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</span>
+          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Write memory directly using the Spalloc API.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>chip</code> - The chip to write to</dd>
+<dd><code>baseAddress</code> - The base address to write to</dd>
+<dd><code>data</code> - The data to write</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="readMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readMemory</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">readMemory</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</span>
+               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Read memory directly using the Spalloc API.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>chip</code> - The chip to read from</dd>
+<dd><code>baseAddress</code> - The base address to read from</dd>
+<dd><code>length</code> - The number of bytes to read</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The data read</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="fastWriteData(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">fastWriteData</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">fastWriteData</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a>&nbsp;gathererCore,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;iptag,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</span>
+            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Fast write data directly with a job.  Assumes it has been set up.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>gathererCore</code> - The core to use on the Ethernet chip.</dd>
+<dd><code>iptag</code> - The tag ID to use for reading responses.</dd>
+<dd><code>chip</code> - The chip to write to.</dd>
+<dd><code>baseAddress</code> - The base address to write to.</dd>
+<dd><code>data</code> - The data to write.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="fastReadData(uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">fastReadData</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">fastReadData</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">ChipLocation</a>&nbsp;gathererChip,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="externalLink">IPTag</a>&nbsp;iptag,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;monitorCore,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Fast read data directly with a job.  Assumes it has been set up.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>gathererChip</code> - The chip where the gatherer core is.</dd>
+<dd><code>iptag</code> - The Tag ID to use for reading responses.</dd>
+<dd><code>monitorCore</code> - The monitor core to read from.</dd>
+<dd><code>baseAddress</code> - The SDRAM address to read from.</dd>
+<dd><code>length</code> - The number of bytes to read.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The data read.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 </dl>
 </section>
 </li>

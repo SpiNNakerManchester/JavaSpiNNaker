@@ -266,43 +266,48 @@
 <a class="jxr_linenumber" name="L258" href="#L258">258</a> 	<em class="jxr_javadoccomment">/** Get the app_id. */</em>
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> 	@ResultColumn(<span class="jxr_string">"app_id"</span>)
 <a class="jxr_linenumber" name="L260" href="#L260">260</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_APP_ID =
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 			<span class="jxr_string">"SELECT app_id "</span>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 					+ <span class="jxr_string">"FROM app_id "</span>;
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">	 * The name of the result containing the spalloc URI.</em>
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC_URI = <span class="jxr_string">"service uri"</span>;
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 			<span class="jxr_string">"SELECT app_id FROM info"</span>;
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 	<em class="jxr_javadoccomment">/** Get the machine dimensions. */</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 	@ResultColumn(<span class="jxr_string">"width"</span>)
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 	@ResultColumn(<span class="jxr_string">"height"</span>)
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_MACHINE_DIMENSIONS =
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 			<span class="jxr_string">"SELECT width, height FROM info"</span>;
 <a class="jxr_linenumber" name="L268" href="#L268">268</a> 
 <a class="jxr_linenumber" name="L269" href="#L269">269</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">	 * The name of the result containing the proxy URI.</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">	 * The name of the result containing the spalloc URI.</em>
 <a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PROXY_URI = <span class="jxr_string">"job uri"</span>;
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC_URI = <span class="jxr_string">"service uri"</span>;
 <a class="jxr_linenumber" name="L273" href="#L273">273</a> 
 <a class="jxr_linenumber" name="L274" href="#L274">274</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy cookie.</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">	 * The name of the result containing the proxy URI.</em>
 <a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COOKIE = <span class="jxr_string">"COOKIE"</span>;
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PROXY_URI = <span class="jxr_string">"job uri"</span>;
 <a class="jxr_linenumber" name="L278" href="#L278">278</a> 
 <a class="jxr_linenumber" name="L279" href="#L279">279</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy header.</em>
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy cookie.</em>
 <a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String HEADER = <span class="jxr_string">"HEADER"</span>;
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COOKIE = <span class="jxr_string">"COOKIE"</span>;
 <a class="jxr_linenumber" name="L283" href="#L283">283</a> 
 <a class="jxr_linenumber" name="L284" href="#L284">284</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a spalloc information.</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a proxy header.</em>
 <a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC = <span class="jxr_string">"SPALLOC"</span>;
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String HEADER = <span class="jxr_string">"HEADER"</span>;
 <a class="jxr_linenumber" name="L288" href="#L288">288</a> 
 <a class="jxr_linenumber" name="L289" href="#L289">289</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">	 * Get information about the proxy.</em>
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">	 * The kind of the result containing a spalloc information.</em>
 <a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_PROXY_INFORMATION =
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 			<span class="jxr_string">"SELECT kind, name, value FROM proxy_configuration WHERE "</span>
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> 			+ <span class="jxr_string">"((kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + PROXY_URI + <span class="jxr_string">"') OR"</span>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> 			+ <span class="jxr_string">" (kind = '"</span> + HEADER +  <span class="jxr_string">"') OR (kind = '"</span> + COOKIE + <span class="jxr_string">"') OR"</span>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> 			+ <span class="jxr_string">" (kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + SPALLOC_URI + <span class="jxr_string">"'))"</span>;
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> }
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SPALLOC = <span class="jxr_string">"SPALLOC"</span>;
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">	 * Get information about the proxy.</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String GET_PROXY_INFORMATION =
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 			<span class="jxr_string">"SELECT kind, name, value FROM proxy_configuration WHERE "</span>
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 			+ <span class="jxr_string">"((kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + PROXY_URI + <span class="jxr_string">"') OR"</span>
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> 			+ <span class="jxr_string">" (kind = '"</span> + HEADER +  <span class="jxr_string">"') OR (kind = '"</span> + COOKIE + <span class="jxr_string">"') OR"</span>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 			+ <span class="jxr_string">" (kind = '"</span> + SPALLOC + <span class="jxr_string">"' AND name = '"</span> + SPALLOC_URI + <span class="jxr_string">"'))"</span>;
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2025 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

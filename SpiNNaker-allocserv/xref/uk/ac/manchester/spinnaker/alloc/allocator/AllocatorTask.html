@@ -133,7 +133,7 @@
 <a class="jxr_linenumber" name="L125" href="#L125">125</a> 	<strong class="jxr_keyword">private</strong> HistoricalDataProperties historyProps;
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 	@Autowired
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 	<strong class="jxr_keyword">private</strong> <a name="ProxyRememberer" href="../../../../../../uk/ac/manchester/spinnaker/alloc/allocator/ProxyRememberer.html#ProxyRememberer">ProxyRememberer</a> rememberer;
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 	<strong class="jxr_keyword">private</strong> <a name="JobObjectRememberer" href="../../../../../../uk/ac/manchester/spinnaker/alloc/allocator/JobObjectRememberer.html#JobObjectRememberer">JobObjectRememberer</a> rememberer;
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 	@Autowired
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 	<strong class="jxr_keyword">private</strong> TaskScheduler scheduler;
@@ -992,7 +992,7 @@
 <a class="jxr_linenumber" name="L984" href="#L984">984</a> 			<strong class="jxr_keyword">return</strong> bmps;
 <a class="jxr_linenumber" name="L985" href="#L985">985</a> 		} <strong class="jxr_keyword">finally</strong> {
 <a class="jxr_linenumber" name="L986" href="#L986">986</a> 			quotaManager.finishJob(id);
-<a class="jxr_linenumber" name="L987" href="#L987">987</a> 			rememberer.killProxies(id);
+<a class="jxr_linenumber" name="L987" href="#L987">987</a> 			rememberer.closeJob(id);
 <a class="jxr_linenumber" name="L988" href="#L988">988</a> 		}
 <a class="jxr_linenumber" name="L989" href="#L989">989</a> 	}
 <a class="jxr_linenumber" name="L990" href="#L990">990</a> 
@@ -1253,7 +1253,7 @@
 <a class="jxr_linenumber" name="L1245" href="#L1245">1245</a> 		log.info(<span class="jxr_string">"allocated {} boards to {}; issuing power up commands"</span>,
 <a class="jxr_linenumber" name="L1246" href="#L1246">1246</a> 				boardsToAllocate.size(), jobId);
 <a class="jxr_linenumber" name="L1247" href="#L1247">1247</a> 		<em class="jxr_comment">// Any proxies that existed are now defunct; user must make anew</em>
-<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a> 		rememberer.killProxies(jobId);
+<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a> 		rememberer.closeJob(jobId);
 <a class="jxr_linenumber" name="L1249" href="#L1249">1249</a> 		<strong class="jxr_keyword">return</strong> setPower(sql, jobId, ON, READY);
 <a class="jxr_linenumber" name="L1250" href="#L1250">1250</a> 	}
 <a class="jxr_linenumber" name="L1251" href="#L1251">1251</a> 

@@ -75,6 +75,18 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.client">uk.ac.manchester.spinnaker.alloc.client</a></th>
+<td class="colLast">
+<div class="block">Java client for the SpiNNaker allocation service.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.db">uk.ac.manchester.spinnaker.alloc.db</a></th>
 <td class="colLast">
 <div class="block">Database support for Spalloc server.</div>
@@ -111,18 +123,24 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols">uk.ac.manchester.spinnaker.protocols</a></th>
+<td class="colLast">
+<div class="block">Data I/O Protocols.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage">uk.ac.manchester.spinnaker.storage</a></th>
 <td class="colLast">
 <div class="block">Storage management.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage.sqlite">uk.ac.manchester.spinnaker.storage.sqlite</a></th>
 <td class="colLast">
 <div class="block">Storage management implementation that uses SQLite.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -133,6 +151,67 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<h2>Uses of <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a> in <a href="../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> with parameters of type <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../protocols/FastDataIn.html" title="class in uk.ac.manchester.spinnaker.protocols">FastDataIn</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Job.</span><code><span class="memberNameLink"><a href="../../alloc/allocator/SpallocAPI.Job.html#getFastDataIn(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag)">getFastDataIn</a></span>&#8203;(<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Get a FastDataIn protocol instance for an Ethernet within a job.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.client">
+<!--   -->
+</a>
+<h2>Uses of <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a> in <a href="../../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a> with parameters of type <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../alloc/client/SpallocClient.Job.html#fastWriteData(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">fastWriteData</a></span>&#8203;(<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag,
+<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Fast write data directly with a job.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.db">
 <!--   -->
@@ -429,6 +508,34 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols">
+<!--   -->
+</a>
+<h2>Uses of <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a> in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> with parameters of type <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/FastDataIn.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag)">FastDataIn</a></span>&#8203;(<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Create an instance of the protocol for talking to a particular extra
+ monitor core on a particular board.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.storage">
 <!--   -->
 </a>
@@ -450,6 +557,13 @@ loadScripts(document, 'script');</script>
 <td class="colLast">
 <div class="block">What core owned the region? Note that the region might be retrieved
  from another core of the same chip.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">RegionInfo.</span><code><span class="memberNameLink"><a href="../../storage/RegionInfo.html#core">core</a></span></code></th>
+<td class="colLast">
+<div class="block">The core location of the region.</div>
 </td>
 </tr>
 </tbody>
@@ -534,6 +648,25 @@ int&nbsp;pointer)</code></th>
 <td class="colLast">
 <div class="block">Record the start address for the metadata on this core.</div>
 </td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a> with parameters of type <a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../storage/RegionInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.CoreLocation,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.MemoryLocation)">RegionInfo</a></span>&#8203;(<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;core,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;content,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;pointer)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>

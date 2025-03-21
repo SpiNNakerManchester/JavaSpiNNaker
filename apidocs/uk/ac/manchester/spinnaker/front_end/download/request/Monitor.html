@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -137,37 +137,18 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTransactionId()">getTransactionId</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getX()">getX</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getX()">getX</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getY()">getY</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i6">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateTransactionId()">updateTransactionId</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Updates the transaction ID by 1 and wraps with the cap.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i7">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)">updateTransactionIdFromMachine</a></span>&#8203;(<a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx)</code></th>
-<td class="colLast">
-<div class="block">gets the transaction id from the machine and updates.</div>
-</td>
 </tr>
 </tbody>
 </table>
@@ -234,41 +215,6 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <dd><code><a href="../../../machine/HasCoreLocation.html#getP()">getP</a></code>&nbsp;in interface&nbsp;<code><a href="../../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The processor coordinate of the core on its chip.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="updateTransactionId()">updateTransactionId</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateTransactionId</span>()</div>
-<div class="block">Updates the transaction ID by 1 and wraps with the cap.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getTransactionId()">getTransactionId</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getTransactionId</span>()</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The current transaction ID.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)">updateTransactionIdFromMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateTransactionIdFromMachine</span>&#8203;(<span class="arguments"><a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx)</span>
-                                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
-<div class="block">gets the transaction id from the machine and updates.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>txrx</code> - the spinnman instance.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with networking.</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 </dl>
 </section>
 </li>

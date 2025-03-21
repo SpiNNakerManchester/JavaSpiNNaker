@@ -75,28 +75,15 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end">uk.ac.manchester.spinnaker.front_end</a></th>
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.client">uk.ac.manchester.spinnaker.alloc.client</a></th>
 <td class="colLast">
-<div class="block">The front-end interface to the Java implementation of the SpiNNaker host
- libraries.</div>
+<div class="block">Java client for the SpiNNaker allocation service.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
-<td class="colLast">
-<div class="block">The buffer manager and support classes.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download.request">uk.ac.manchester.spinnaker.front_end.download.request</a></th>
 <td class="colLast">
 <div class="block">Classes used to describe the JSON requests to the data transfer code.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
-<td class="colLast">
-<div class="block">Data specification execution interface.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -136,6 +123,18 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols">uk.ac.manchester.spinnaker.protocols</a></th>
+<td class="colLast">
+<div class="block">Data I/O Protocols.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols.download">uk.ac.manchester.spinnaker.protocols.download</a></th>
+<td class="colLast">
+<div class="block">Fast data download protocol.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage">uk.ac.manchester.spinnaker.storage</a></th>
 <td class="colLast">
 <div class="block">Storage management.</div>
@@ -159,62 +158,30 @@ loadScripts(document, 'script');</script>
 <section class="classUses">
 <ul class="blockList">
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.client">
 <!--   -->
 </a>
-<h2>Uses of <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a> in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></h2>
+<h2>Uses of <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a> in <a href="../../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Constructor parameters in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a> with type arguments of type <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Methods in <a href="../../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a> with parameters of type <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
-<th class="colFirst" scope="col">Constructor</th>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations,
-<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&nbsp;gatherer)</code></th>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../alloc/client/SpallocClient.Job.html#fastReadData(uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">fastReadData</a></span>&#8203;(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;gathererChip,
+<a href="../tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag,
+<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
 <td class="colLast">
-<div class="block">Create a no-drop-packets context for a single board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download">
-<!--   -->
-</a>
-<h2>Uses of <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a> in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> with parameters of type <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/GatherProtocolMessage.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort,java.nio.ByteBuffer)">GatherProtocolMessage</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
-<a href="../../messages/sdp/SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a>&nbsp;destPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;payload)</code></th>
-<td class="colLast">
-<div class="block">Create a protocol message.</div>
+<div class="block">Fast read data directly with a job.</div>
 </td>
 </tr>
 </tbody>
@@ -257,40 +224,6 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a></span></code></th>
 <td class="colLast">
 <div class="block">Vertex placement information.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.dse">
-<!--   -->
-</a>
-<h2>Uses of <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a> in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Constructor parameters in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a> with type arguments of type <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
 </tbody>
@@ -843,6 +776,107 @@ int&nbsp;numSyncSteps)</code></th>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../messages/sdp/SDPLocation.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">SDPLocation</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Make an SDPLocation from a core location.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols">
+<!--   -->
+</a>
+<h2>Uses of <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a> in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructor parameters in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> with type arguments of type <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,java.util.List)">NoDropPacketContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols.download">
+<!--   -->
+</a>
+<h2>Uses of <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a> in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a> with parameters of type <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Downloader.</span><code><span class="memberNameLink"><a href="../../protocols/download/Downloader.html#doDownload(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">doDownload</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block">Do the downloading.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a> with parameters of type <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/download/GatherProtocolMessage.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort,java.nio.ByteBuffer)">GatherProtocolMessage</a></span>&#8203;(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+<a href="../../messages/sdp/SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a>&nbsp;destPort,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;payload)</code></th>
+<td class="colLast">
+<div class="block">Create a protocol message.</div>
 </td>
 </tr>
 </tbody>

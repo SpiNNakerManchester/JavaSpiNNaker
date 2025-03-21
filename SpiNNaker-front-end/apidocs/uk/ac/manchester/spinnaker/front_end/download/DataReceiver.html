@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -93,9 +93,14 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="description">
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+</dl>
 <hr>
 <pre>public class <span class="typeNameLabel">DataReceiver</span>
-extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></pre>
+extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a>
+implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></pre>
 <div class="block">Stripped down version of the BufferManager for early testing.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
@@ -130,7 +135,7 @@ extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spi
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
 <!--   -->
-</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#txrx">txrx</a></code></div>
+</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#storage">storage</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -150,8 +155,7 @@ extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spi
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;tranceiver,
-uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;storage)</code></th>
 <td class="colLast">
 <div class="block">Creates a new mini Buffer Manager.</div>
@@ -182,12 +186,17 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDataForPlacements(java.util.List)">getDataForPlacements</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&gt;&nbsp;placements)</code></th>
 <td class="colLast">
 <div class="block">Gets the data for a list of placements.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDataForPlacementsParallel(java.util.List,int)">getDataForPlacementsParallel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&gt;&nbsp;placements,
 int&nbsp;parallelFactor)</code></th>
@@ -199,6 +208,11 @@ int&nbsp;parallelFactor)</code></th>
 </table>
 </div>
 </div>
+<div class="inheritedList">
+<h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
+<!--   -->
+</a><code><a href="../BoardLocalSupport.html#getJob()">getJob</a>, <a href="../BoardLocalSupport.html#getTransceiver()">getTransceiver</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -219,16 +233,24 @@ int&nbsp;parallelFactor)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">DataReceiver</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;tranceiver,
-uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
-<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;storage)</span></div>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">DataReceiver</span>&#8203;(<span class="arguments">uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;storage)</span>
+             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/StorageException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">StorageException</a>,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/SpinnmanException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">SpinnmanException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Creates a new mini Buffer Manager.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tranceiver</code> - Transceiver to get data via.</dd>
 <dd><code>machine</code> - The SpiNNaker system to get the data from.</dd>
 <dd><code>storage</code> - How to talk to the database.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If we can't discover the machine details due to I/O problems</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
+<dd><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/SpinnmanException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">SpinnmanException</a></code> - If the there is an error creating a transceiver.</dd>
+<dd><code><a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/StorageException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">StorageException</a></code> - If the database access fails.</dd>
 </dl>
 </section>
 </li>
@@ -242,6 +264,19 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 </a>
 <h2>Method Details</h2>
 <ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="close()">close</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+</dl>
+</section>
+</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getDataForPlacementsParallel(java.util.List,int)">getDataForPlacementsParallel</a></h3>

@@ -106,24 +106,18 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols">uk.ac.manchester.spinnaker.protocols</a></th>
 <td class="colLast">
-<div class="block">Data specification execution interface.</div>
+<div class="block">Data I/O Protocols.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.iobuf">uk.ac.manchester.spinnaker.front_end.iobuf</a></th>
-<td class="colLast">
-<div class="block">Utility for retrieving IOBUF contents.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker old-style machine allocation client.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -197,71 +191,19 @@ loadScripts(document, 'script');</script>
 <h2>Uses of <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a> in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Fields in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a> declared as <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Methods in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a> that return <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
+<th class="colSecond" scope="col">Method</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">BoardLocalSupport.</span><code><span class="memberNameLink"><a href="../../front_end/BoardLocalSupport.html#txrx">txrx</a></span></code></th>
-<td class="colLast">
-<div class="block">The transceiver for talking to the SpiNNaker machine.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a> with parameters of type <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/BoardLocalSupport.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">BoardLocalSupport</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BoardLocalSupport.</span><code><span class="memberNameLink"><a href="../../front_end/BoardLocalSupport.html#getTransceiver()">getTransceiver</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations,
-<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&nbsp;gatherer)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context for a single board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCoreLocations,
-<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&nbsp;gatherer)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context for a single board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.machine.CoreSubsets)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores,
-<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;gatherers)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
 </tr>
 </tbody>
 </table>
@@ -273,6 +215,27 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a>
 <h2>Uses of <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a> in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Fields in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> declared as <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">DataGatherer.</span><code><span class="memberNameLink"><a href="../../front_end/download/DataGatherer.html#txrx">txrx</a></span></code></th>
+<td class="colLast">
+<div class="block">Transceiver to talk to the machine.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="useSummary">
 <table>
 <caption><span>Methods in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> with parameters of type <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
@@ -290,51 +253,6 @@ loadScripts(document, 'script');</script>
 <a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement)</code></th>
 <td class="colLast">
 <div class="block">Reads the recording regions from the machine.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> with parameters of type <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
-<td class="colLast">
-<div class="block">Create an instance of the protocol implementation.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DataReceiver.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;tranceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;storage)</code></th>
-<td class="colLast">
-<div class="block">Creates a new mini Buffer Manager.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DirectDataGatherer</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database)</code></th>
-<td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-<div class="block">Create a data gatherer.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database)</code></th>
-<td class="colLast">
-<div class="block">Create a data gatherer.</div>
 </td>
 </tr>
 </tbody>
@@ -365,26 +283,19 @@ loadScripts(document, 'script');</script>
 <div class="block">sets the transaction id from the machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Monitor.</span><code><span class="memberNameLink"><a href="../../front_end/download/request/Monitor.html#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)">updateTransactionIdFromMachine</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx)</code></th>
-<td class="colLast">
-<div class="block">gets the transaction id from the machine and updates.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
 </section>
 </li>
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.dse">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols">
 <!--   -->
 </a>
-<h2>Uses of <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a> in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a></h2>
+<h2>Uses of <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a> in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Constructors in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a> with parameters of type <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Constructors in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> with parameters of type <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Constructor</th>
@@ -393,76 +304,48 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,java.util.List)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir,
-<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
 <td class="colLast">
-<div class="block">Create an instance of this class.</div>
+<div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.machine.CoreSubsets)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores,
+<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;gatherers)</code></th>
 <td class="colLast">
-<div class="block">Create a high-level DSE interface.</div>
+<div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
 <td class="colLast">
 <div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
 <td class="colLast">
 <div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
 <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">
 <div class="block">Create a no-drop-packets context.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.iobuf">
-<!--   -->
-</a>
-<h2>Uses of <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a> in <a href="../../front_end/iobuf/package-summary.html">uk.ac.manchester.spinnaker.front_end.iobuf</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../front_end/iobuf/package-summary.html">uk.ac.manchester.spinnaker.front_end.iobuf</a> with parameters of type <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/iobuf/IobufRetriever.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,int)">IobufRetriever</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-int&nbsp;parallelSize)</code></th>
-<td class="colLast">
-<div class="block">Create a IOBUF retriever.</div>
 </td>
 </tr>
 </tbody>

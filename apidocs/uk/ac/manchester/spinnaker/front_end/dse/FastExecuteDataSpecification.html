@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -139,7 +139,7 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
 <!--   -->
-</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#txrx">txrx</a></code></div>
+</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#storage">storage</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -159,8 +159,7 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></span>&#8203;(<a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir,
 <a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
@@ -192,31 +191,17 @@ extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#buildMaps(java.util.List)">buildMaps</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
-<td class="colLast">
-<div class="block">Construct the internal mappings for gatherers and monitors.</div>
-</td>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadCores()">loadCores</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadCores(java.util.List)">loadCores</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
 <td class="colLast">
 <div class="block">Execute all application data specifications that a particular connection
  knows about, storing back in the database the information collected about
  those executions.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeReport(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.lang.Object)">writeReport</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;timeDiff,
-int&nbsp;size,
-<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;missingNumbers)</code></th>
-<td class="colLast">
-<div class="block">Writes (part of) the report describing what data transfer rates were
- achieved.</div>
 </td>
 </tr>
 </tbody>
@@ -227,7 +212,12 @@ int&nbsp;size,
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.dse.<a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.front_end.dse.ExecuteDataSpecification">
 <!--   -->
-</a><code><a href="ExecuteDataSpecification.html#close()">close</a>, <a href="ExecuteDataSpecification.html#processTasksInParallel(java.util.List,java.util.function.Function)">processTasksInParallel</a></code></div>
+</a><code><a href="ExecuteDataSpecification.html#processTasksInParallel(java.util.Collection,java.util.function.Function)">processTasksInParallel</a></code></div>
+<div class="inheritedList">
+<h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
+<!--   -->
+</a><code><a href="../BoardLocalSupport.html#getJob()">getJob</a>, <a href="../BoardLocalSupport.html#getTransceiver()">getTransceiver</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -248,22 +238,20 @@ int&nbsp;size,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="memberName">FastExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">FastExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir,
 <a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</span>
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a>,
+<a href="../../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span></div>
 <div class="block">Create an instance of this class.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>txrx</code> - The transceiver for talking to the SpiNNaker machine.</dd>
 <dd><code>machine</code> - The SpiNNaker machine description.</dd>
 <dd><code>gatherers</code> - The description of where the gatherers and monitors are.</dd>
 <dd><code>reportDir</code> - Where to write reports, or <code>null</code> if no reports are to
@@ -271,10 +259,10 @@ int&nbsp;size,
 <dd><code>db</code> - The DSE Database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If IO goes wrong.</dd>
-<dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></code> - If the proxy URI is provided but not valid.</dd>
 <dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If there is an error reading the database.</dd>
+<dd><code><a href="../../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code> - If there is an error creating the transceiver.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If something really strange occurs with talking to the BMP;
              this constructor should not be doing that!</dd>
 </dl>
@@ -292,26 +280,19 @@ int&nbsp;size,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="buildMaps(java.util.List)">buildMaps</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">buildMaps</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</span>
-                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
-<div class="block">Construct the internal mappings for gatherers and monitors.</div>
+<h3><a id="close()">close</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>gatherers</code> - The descriptions of whether the gatherers are located.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If IDs can't be read from the machine for network reasons.</dd>
-<dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If IDs can't be read from the machine for machine reasons.</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If we are interrupted.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="loadCores()">loadCores</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadCores</span>()
+<h3><a id="loadCores(java.util.List)">loadCores</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">loadCores</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</span>
                throws <span class="exceptions"><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
@@ -323,6 +304,8 @@ int&nbsp;size,
  Cannot load data for system cores; those are used by the implementation
  of this protocol.</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>gatherers</code> - The receivers of data from the machine.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database can't be talked to.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the transceiver can't talk to its sockets.</dd>
@@ -330,29 +313,6 @@ int&nbsp;size,
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code> - If communications are interrupted.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If an unexpected exception occurs in any of the parallel
              tasks.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="writeReport(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.lang.Object)">writeReport</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeReport</span>&#8203;(<span class="arguments"><a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;timeDiff,
-int&nbsp;size,
-<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;missingNumbers)</span>
-                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Writes (part of) the report describing what data transfer rates were
- achieved.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>chip</code> - Which chip was the data bound for?</dd>
-<dd><code>timeDiff</code> - How long did the transfer take, in nanoseconds.</dd>
-<dd><code>size</code> - How many bytes were transferred?</dd>
-<dd><code>baseAddress</code> - Where were the bytes written to?</dd>
-<dd><code>missingNumbers</code> - What were the missing sequence numbers at each stage.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If IO fails.</dd>
 </dl>
 </section>
 </li>

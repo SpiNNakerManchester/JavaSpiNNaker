@@ -75,45 +75,45 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
-<td class="colLast">
-<div class="block">The buffer manager and support classes.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp</a></th>
 <td class="colLast">
 <div class="block">Messages that talk to the BMP.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.boot">uk.ac.manchester.spinnaker.messages.boot</a></th>
 <td class="colLast">
 <div class="block">Messages used to boot a SpiNNaker board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
 <div class="block">The messages of the EIEIO protocol.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.notification">uk.ac.manchester.spinnaker.messages.notification</a></th>
 <td class="colLast">
 <div class="block">The messages of the notification protocol.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.sdp">uk.ac.manchester.spinnaker.messages.sdp</a></th>
 <td class="colLast">
 <div class="block">Messages sent and received by SDP (the SpiNNaker Datagram Protocol).</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols.download">uk.ac.manchester.spinnaker.protocols.download</a></th>
+<td class="colLast">
+<div class="block">Fast data download protocol.</div>
 </td>
 </tr>
 </tbody>
@@ -121,56 +121,6 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download">
-<!--   -->
-</a>
-<h2>Uses of <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a> in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Classes in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> that implement <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Class</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/ClearMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">ClearMessage</a></span></code></th>
-<td class="colLast">
-<div class="block">A message used to request fast data transfer from SpiNNaker to Host.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/GatherProtocolMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">GatherProtocolMessage</a></span></code></th>
-<td class="colLast">
-<div class="block">A message participating in the fast-data-download protocol.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/MissingSequenceNumbersMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">MissingSequenceNumbersMessage</a></span></code></th>
-<td class="colLast">
-<div class="block">A message used to describe what sequence numbers are missing from a fast data
- transfer stream so that they can be retransmitted.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/StartSendingMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">StartSendingMessage</a></span></code></th>
-<td class="colLast">
-<div class="block">A message used to request fast data transfer from SpiNNaker to Host.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.bmp">
 <!--   -->
@@ -1015,6 +965,56 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../sdp/SpinnakerRequest.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SpinnakerRequest</a></span></code></th>
 <td class="colLast">
 <div class="block">Base class for sendable SDP-based messages.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols.download">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a> in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a> that implement <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/download/ClearMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">ClearMessage</a></span></code></th>
+<td class="colLast">
+<div class="block">A message used to request fast data transfer from SpiNNaker to Host.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/download/GatherProtocolMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">GatherProtocolMessage</a></span></code></th>
+<td class="colLast">
+<div class="block">A message participating in the fast-data-download protocol.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/download/MissingSequenceNumbersMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">MissingSequenceNumbersMessage</a></span></code></th>
+<td class="colLast">
+<div class="block">A message used to describe what sequence numbers are missing from a fast data
+ transfer stream so that they can be retransmitted.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/download/StartSendingMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">StartSendingMessage</a></span></code></th>
+<td class="colLast">
+<div class="block">A message used to request fast data transfer from SpiNNaker to Host.</div>
 </td>
 </tr>
 </tbody>

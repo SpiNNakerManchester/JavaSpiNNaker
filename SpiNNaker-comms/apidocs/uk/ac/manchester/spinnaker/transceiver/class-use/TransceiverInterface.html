@@ -81,12 +81,18 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols">uk.ac.manchester.spinnaker.protocols</a></th>
+<td class="colLast">
+<div class="block">Data I/O Protocols.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker old-style machine allocation client.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -118,6 +124,71 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../alloc/client/SpallocClient.Job.html#getTransceiver()">getTransceiver</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Create a proxied transceiver for talking to the boards of the job.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols">
+<!--   -->
+</a>
+<h2>Uses of <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a> in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> with parameters of type <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,java.util.List)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.machine.CoreSubsets)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreSubsets.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreSubsets</a>&nbsp;monitorCores)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
 </tbody>

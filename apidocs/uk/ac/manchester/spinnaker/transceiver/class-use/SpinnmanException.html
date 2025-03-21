@@ -100,12 +100,30 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
+<td class="colLast">
+<div class="block">The buffer manager and support classes.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
+<td class="colLast">
+<div class="block">Data specification execution interface.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.iobuf">uk.ac.manchester.spinnaker.front_end.iobuf</a></th>
+<td class="colLast">
+<div class="block">Utility for retrieving IOBUF contents.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker old-style machine allocation client.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -259,6 +277,11 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BoardLocalSupport.</span><code><span class="memberNameLink"><a href="../../front_end/BoardLocalSupport.html#getTransceiver()">getTransceiver</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">CommandLineInterface.</span><code><span class="memberNameLink"><a href="../../front_end/CommandLineInterface.html#retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam)">retrieveIOBUFs</a></span>&#8203;(<a href="../../front_end/CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="../../front_end/CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a>&nbsp;iobuf,
@@ -268,7 +291,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Retrieve IOBUFs in parallel.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">CommandLineInterface.</span><code><span class="memberNameLink"><a href="../../front_end/CommandLineInterface.html#runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DsFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></span>&#8203;(<a href="../../front_end/CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
 <a href="../../front_end/CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
@@ -279,7 +302,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Run the data specifications in parallel.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">CommandLineInterface.</span><code><span class="memberNameLink"><a href="../../front_end/CommandLineInterface.html#runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dsFile,
@@ -287,6 +310,119 @@ loadScripts(document, 'script');</script>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</code></th>
 <td class="colLast">
 <div class="block">Run the data specifications in parallel.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a> in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> that throw <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.storage.ProxyAwareStorage,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer</a></span>&#8203;(<a href="../../storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a>&nbsp;db,
+<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
+<td class="colLast">
+<div class="block">Create an instance of the protocol implementation.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DataReceiver.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;storage)</code></th>
+<td class="colLast">
+<div class="block">Creates a new mini Buffer Manager.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DirectDataGatherer</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block">Create a data gatherer.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database)</code></th>
+<td class="colLast">
+<div class="block">Create a data gatherer.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.dse">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a> in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a> that throw <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir,
+<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
+<td class="colLast">
+<div class="block">Create an instance of this class.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
+<td class="colLast">
+<div class="block">Create a high-level DSE interface.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.iobuf">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a> in <a href="../../front_end/iobuf/package-summary.html">uk.ac.manchester.spinnaker.front_end.iobuf</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../front_end/iobuf/package-summary.html">uk.ac.manchester.spinnaker.front_end.iobuf</a> that throw <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/iobuf/IobufRetriever.html#%3Cinit%3E(uk.ac.manchester.spinnaker.storage.ProxyAwareStorage,uk.ac.manchester.spinnaker.machine.Machine,int)">IobufRetriever</a></span>&#8203;(<a href="../../storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a>&nbsp;db,
+<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+int&nbsp;parallelSize)</code></th>
+<td class="colLast">
+<div class="block">Create a IOBUF retriever.</div>
 </td>
 </tr>
 </tbody>

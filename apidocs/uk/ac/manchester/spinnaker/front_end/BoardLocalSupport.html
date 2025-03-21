@@ -19,7 +19,13 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var pathtoroot = "../../../../../";
+<script type="text/javascript">var data = {"i0":10,"i1":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "altColor";
+var rowColor = "rowColor";
+var tableTab = "tableTab";
+var activeTableTab = "activeTableTab";
+var pathtoroot = "../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -59,7 +65,7 @@ loadScripts(document, 'script');</script>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <div class="navListSearch"><label for="search">SEARCH:</label>
@@ -154,10 +160,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected <a href="../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#txrx">txrx</a></span></code></th>
+<td class="colFirst"><code>protected <a href="../storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#storage">storage</a></span></code></th>
 <td class="colLast">
-<div class="block">The transceiver for talking to the SpiNNaker machine.</div>
+<div class="block">A storage object that is aware of proxies.</div>
 </td>
 </tr>
 </tbody>
@@ -184,7 +190,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected </code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">BoardLocalSupport</a></span>&#8203;(<a href="../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.storage.ProxyAwareStorage,uk.ac.manchester.spinnaker.machine.Machine)">BoardLocalSupport</a></span>&#8203;(<a href="../storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a>&nbsp;storage,
 <a href="../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -199,6 +205,32 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <!--   -->
 </a>
 <h2>Method Summary</h2>
+<div class="memberSummary">
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
+<div id="memberSummary_tabpanel" role="tabpanel">
+<table aria-labelledby="t0">
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor" id="i0">
+<td class="colFirst"><code>protected <a href="../alloc/client/SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJob()">getJob</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code>protected <a href="../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTransceiver()">getTransceiver</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -219,9 +251,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="txrx">txrx</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span>&nbsp;<span class="memberName">txrx</span></div>
-<div class="block">The transceiver for talking to the SpiNNaker machine.</div>
+<h3><a id="storage">storage</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="../storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a></span>&nbsp;<span class="memberName">storage</span></div>
+<div class="block">A storage object that is aware of proxies.</div>
 </section>
 </li>
 <li class="blockList">
@@ -243,15 +275,56 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">BoardLocalSupport</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">BoardLocalSupport</span>&#8203;(<span class="arguments"><a href="../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.storage.ProxyAwareStorage,uk.ac.manchester.spinnaker.machine.Machine)">BoardLocalSupport</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">BoardLocalSupport</span>&#8203;(<span class="arguments"><a href="../storage/ProxyAwareStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">ProxyAwareStorage</a>&nbsp;storage,
 <a href="../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>transceiver</code> - How to talk to the SpiNNaker system via SCP. Where the system
-            is located.</dd>
+<dd><code>storage</code> - Database containing information about how to speak to the
+            proxy.</dd>
 <dd><code>machine</code> - Which machine is this on? Used for address mapping and
             provided as a general service to subclasses.</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li class="blockList">
+<section class="methodDetails"><a id="method.detail">
+<!--   -->
+</a>
+<h2>Method Details</h2>
+<ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="getTransceiver()">getTransceiver</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
+</span><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></span>&nbsp;<span class="memberName">getTransceiver</span>()
+                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
+<a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+<dd><code><a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code></dd>
+<dd><code><a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getJob()">getJob</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="../alloc/client/SpallocClient.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.client">SpallocClient.Job</a></span>&nbsp;<span class="memberName">getJob</span>()
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+<dd><code><a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -297,7 +370,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 </div>

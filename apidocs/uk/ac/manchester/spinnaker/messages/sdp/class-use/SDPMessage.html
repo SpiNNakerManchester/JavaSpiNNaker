@@ -81,9 +81,9 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols.download">uk.ac.manchester.spinnaker.protocols.download</a></th>
 <td class="colLast">
-<div class="block">The buffer manager and support classes.</div>
+<div class="block">Fast data download protocol.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -144,19 +144,26 @@ loadScripts(document, 'script');</script>
 <div class="block">Sends an SDP message down this connection.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">ThrottledConnection.</span><code><span class="memberNameLink"><a href="../../../connections/ThrottledConnection.html#send(uk.ac.manchester.spinnaker.messages.sdp.SDPMessage)">send</a></span>&#8203;(<a href="../SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&nbsp;message)</code></th>
+<td class="colLast">
+<div class="block">Throttled send.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
 </section>
 </li>
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols.download">
 <!--   -->
 </a>
-<h2>Uses of <a href="../SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a> in <a href="../../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></h2>
+<h2>Uses of <a href="../SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a> in <a href="../../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Subclasses of <a href="../SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a> in <a href="../../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Subclasses of <a href="../SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a> in <a href="../../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
@@ -167,21 +174,21 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/ClearMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">ClearMessage</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../protocols/download/ClearMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">ClearMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">A message used to request fast data transfer from SpiNNaker to Host.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/GatherProtocolMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">GatherProtocolMessage</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../protocols/download/GatherProtocolMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">GatherProtocolMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">A message participating in the fast-data-download protocol.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/MissingSequenceNumbersMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">MissingSequenceNumbersMessage</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../protocols/download/MissingSequenceNumbersMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">MissingSequenceNumbersMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">A message used to describe what sequence numbers are missing from a fast data
  transfer stream so that they can be retransmitted.</div>
@@ -189,7 +196,7 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/StartSendingMessage.html" title="class in uk.ac.manchester.spinnaker.front_end.download">StartSendingMessage</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../protocols/download/StartSendingMessage.html" title="class in uk.ac.manchester.spinnaker.protocols.download">StartSendingMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">A message used to request fast data transfer from SpiNNaker to Host.</div>
 </td>

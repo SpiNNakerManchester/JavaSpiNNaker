@@ -75,12 +75,42 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.client">uk.ac.manchester.spinnaker.alloc.client</a></th>
+<td class="colLast">
+<div class="block">Java client for the SpiNNaker allocation service.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
+<td class="colLast">
+<div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download.request">uk.ac.manchester.spinnaker.front_end.download.request</a></th>
 <td class="colLast">
 <div class="block">Classes used to describe the JSON requests to the data transfer code.</div>
 </td>
 </tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols">uk.ac.manchester.spinnaker.protocols</a></th>
+<td class="colLast">
+<div class="block">Data I/O Protocols.</div>
+</td>
+</tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols.download">uk.ac.manchester.spinnaker.protocols.download</a></th>
+<td class="colLast">
+<div class="block">Fast data download protocol.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -91,6 +121,112 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<h2>Uses of <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a> in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> with parameters of type <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../protocols/download/Downloader.html" title="class in uk.ac.manchester.spinnaker.protocols.download">Downloader</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Job.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Job.html#getDownloader(uk.ac.manchester.spinnaker.machine.tags.IPTag)">getDownloader</a></span>&#8203;(<a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Get a Downloader protocol instance for an Ethernet within a job.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../protocols/FastDataIn.html" title="class in uk.ac.manchester.spinnaker.protocols">FastDataIn</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Job.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Job.html#getFastDataIn(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag)">getFastDataIn</a></span>&#8203;(<a href="../../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Get a FastDataIn protocol instance for an Ethernet within a job.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.client">
+<!--   -->
+</a>
+<h2>Uses of <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a> in <a href="../../../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a> with parameters of type <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../../alloc/client/SpallocClient.Job.html#fastReadData(uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">fastReadData</a></span>&#8203;(<a href="../../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;gathererChip,
+<a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag,
+<a href="../../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore,
+<a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">Fast read data directly with a job.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../../alloc/client/SpallocClient.Job.html#fastWriteData(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">fastWriteData</a></span>&#8203;(<a href="../../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag,
+<a href="../../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Fast write data directly with a job.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
+<!--   -->
+</a>
+<h2>Uses of <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a> in <a href="../../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a> with parameters of type <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../connections/ThrottledConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.tags.IPTag)">ThrottledConnection</a></span>&#8203;(<a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Create a throttled connection for talking to a board and point an IPTag
+ so that messages sent to it arrive on this connection.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download.request">
 <!--   -->
@@ -111,6 +247,60 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code><a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Gather.</span><code><span class="memberNameLink"><a href="../../../front_end/download/request/Gather.html#getIptag()">getIptag</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols">
+<!--   -->
+</a>
+<h2>Uses of <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a> in <a href="../../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> with parameters of type <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../protocols/FastDataIn.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag)">FastDataIn</a></span>&#8203;(<a href="../../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Create an instance of the protocol for talking to a particular extra
+ monitor core on a particular board.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols.download">
+<!--   -->
+</a>
+<h2>Uses of <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a> in <a href="../../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a> with parameters of type <a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../protocols/download/Downloader.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.tags.IPTag)">Downloader</a></span>&#8203;(<a href="../IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 </tbody>
 </table>

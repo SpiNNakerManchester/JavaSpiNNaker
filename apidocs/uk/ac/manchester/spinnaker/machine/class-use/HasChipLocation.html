@@ -112,51 +112,51 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
-<td class="colLast">
-<div class="block">Data specification execution interface.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine">uk.ac.manchester.spinnaker.machine</a></th>
 <td class="colLast">
 <div class="block">Describes a SpiNNaker machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.bean">uk.ac.manchester.spinnaker.machine.bean</a></th>
 <td class="colLast">
 <div class="block">Beans used to describe a SpiNNaker machine in JSON.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.datalinks">uk.ac.manchester.spinnaker.machine.datalinks</a></th>
 <td class="colLast">
 <div class="block">Describes a data link.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.eieio">uk.ac.manchester.spinnaker.messages.eieio</a></th>
 <td class="colLast">
 <div class="block">The messages of the EIEIO protocol.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model</a></th>
 <td class="colLast">
 <div class="block">Model support classes for the communication messages.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.sdp">uk.ac.manchester.spinnaker.messages.sdp</a></th>
 <td class="colLast">
 <div class="block">Messages sent and received by SDP (the SpiNNaker Datagram Protocol).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols">uk.ac.manchester.spinnaker.protocols</a></th>
+<td class="colLast">
+<div class="block">Data I/O Protocols.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -247,11 +247,31 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../alloc/client/SpallocClient.Job.html#fastWriteData(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">fastWriteData</a></span>&#8203;(<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag,
+<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Fast write data directly with a job.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../alloc/client/WhereIs.html" title="class in uk.ac.manchester.spinnaker.alloc.client">WhereIs</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Machine.</span><code><span class="memberNameLink"><a href="../../alloc/client/SpallocClient.Machine.html#getBoard(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getBoard</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Given a <em>global</em> chip location, return more info about the
  board that contains it.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../alloc/client/SpallocClient.Job.html#readMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readMemory</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">Read memory directly using the Spalloc API.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -260,6 +280,15 @@ loadScripts(document, 'script');</script>
 <td class="colLast">
 <div class="block">Given the location of a chip within an allocation, return more info
  about a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocClient.Job.</span><code><span class="memberNameLink"><a href="../../alloc/client/SpallocClient.Job.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Write memory directly using the Spalloc API.</div>
 </td>
 </tr>
 </tbody>
@@ -421,39 +450,6 @@ int&nbsp;remotePort)</code></th>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a></span></code></th>
 <td class="colLast">
 <div class="block">Vertex placement information.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.dse">
-<!--   -->
-</a>
-<h2>Uses of <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a> in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Methods in <a href="../../front_end/dse/package-summary.html">uk.ac.manchester.spinnaker.front_end.dse</a> with parameters of type <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">FastExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#writeReport(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.lang.Object)">writeReport</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;timeDiff,
-int&nbsp;size,
-<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;missingNumbers)</code></th>
-<td class="colLast">
-<div class="block">Writes (part of) the report describing what data transfer rates were
- achieved.</div>
 </td>
 </tr>
 </tbody>
@@ -1184,6 +1180,36 @@ int&nbsp;tag)</code></th>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpinnakerRequest.</span><code><span class="memberNameLink"><a href="../../messages/sdp/SpinnakerRequest.html#getMessageData(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getMessageData</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;originatingChip)</code></th>
 <td class="colLast">
 <div class="block">Get a buffer holding the actual bytes of the message, ready to send.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols">
+<!--   -->
+</a>
+<h2>Uses of <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a> in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> with parameters of type <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">FastDataIn.</span><code><span class="memberNameLink"><a href="../../protocols/FastDataIn.html#fastWrite(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">fastWrite</a></span>&#8203;(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;boardLocalDestination,
+<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Write data to a given memory location.</div>
 </td>
 </tr>
 </tbody>

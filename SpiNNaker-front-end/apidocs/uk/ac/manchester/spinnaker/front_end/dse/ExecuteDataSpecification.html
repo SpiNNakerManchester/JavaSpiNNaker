@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -157,7 +157,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
 <!--   -->
-</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#txrx">txrx</a></code></div>
+</a><code><a href="../BoardLocalSupport.html#machine">machine</a>, <a href="../BoardLocalSupport.html#storage">storage</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -179,8 +179,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected </code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(<a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;txrx,
-uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEDatabaseEngine.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEDatabaseEngine</a>&nbsp;db)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -208,13 +207,8 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i1">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#processTasksInParallel(java.util.List,java.util.function.Function)">processTasksInParallel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEStorage.Ethernet</a>&gt;&nbsp;tasks,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#processTasksInParallel(java.util.Collection,java.util.function.Function)">processTasksInParallel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEStorage.Ethernet</a>&gt;&nbsp;tasks,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEStorage.Ethernet</a>,&#8203;<a href="../BasicExecutor.SimpleCallable.html" title="interface in uk.ac.manchester.spinnaker.front_end">BasicExecutor.SimpleCallable</a>&gt;&nbsp;mapper)</code></th>
 <td class="colLast">
 <div class="block">Run the tasks in parallel.</div>
@@ -225,10 +219,20 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 </div>
 </div>
 <div class="inheritedList">
+<h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.<a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
+<!--   -->
+</a><code><a href="../BoardLocalSupport.html#getJob()">getJob</a>, <a href="../BoardLocalSupport.html#getTransceiver()">getTransceiver</a></code></div>
+<div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+<div class="inheritedList">
+<h3>Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></h3>
+<a id="methods.inherited.from.class.java.lang.AutoCloseable">
+<!--   -->
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code></div>
 </section>
 </li>
 </ul>
@@ -261,10 +265,9 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/MustBeClosed.html?is-external=true" title="class or interface in com.google.errorprone.annotations" class="externalLink">@MustBeClosed</a>
-</span><span class="modifiers">protected</span>&nbsp;<span class="memberName">ExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;txrx,
-uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
+</span><span class="modifiers">protected</span>&nbsp;<span class="memberName">ExecuteDataSpecification</span>&#8203;(<span class="arguments">uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEDatabaseEngine.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEDatabaseEngine</a>&nbsp;db)</span>
                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a>,
@@ -273,7 +276,6 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URISyntaxException.html?is-external=true" title="class or interface in java.net" class="externalLink">URISyntaxException</a></span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>txrx</code> - The transceiver for talking to the SpiNNaker machine.</dd>
 <dd><code>machine</code> - The description of the SpiNNaker machine.</dd>
 <dd><code>db</code> - The DSE database.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -299,23 +301,8 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="close()">close</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
-                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="processTasksInParallel(java.util.List,java.util.function.Function)">processTasksInParallel</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">processTasksInParallel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEStorage.Ethernet</a>&gt;&nbsp;tasks,
+<h3><a id="processTasksInParallel(java.util.Collection,java.util.function.Function)">processTasksInParallel</a></h3>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">processTasksInParallel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEStorage.Ethernet</a>&gt;&nbsp;tasks,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">DSEStorage.Ethernet</a>,&#8203;<a href="../BasicExecutor.SimpleCallable.html" title="interface in uk.ac.manchester.spinnaker.front_end">BasicExecutor.SimpleCallable</a>&gt;&nbsp;mapper)</span>
                                      throws <span class="exceptions"><a href="https://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/StorageException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">StorageException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,

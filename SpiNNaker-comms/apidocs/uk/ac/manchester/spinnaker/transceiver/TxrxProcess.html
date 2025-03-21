@@ -193,7 +193,7 @@ int&nbsp;intermediateChannelWaits,
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected </code></td>
+<td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.ConnectionSelector,uk.ac.manchester.spinnaker.transceiver.RetryTracker)">TxrxProcess</a></span>&#8203;(<a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
 <a href="RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></th>
 <td class="colLast">&nbsp;</td>
@@ -222,7 +222,7 @@ int&nbsp;intermediateChannelWaits,
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>protected void</code></td>
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#call(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">call</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../messages/scp/EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">EmptyResponse</a>&gt;&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Do a synchronous call of an SCP operation, sending the given message and
@@ -238,7 +238,7 @@ int&nbsp;intermediateChannelWaits,
 </td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code>protected &lt;T,&#8203;
+<td class="colFirst"><code>&lt;T,&#8203;
 R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
 ?&gt;&gt;<br>T</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieve(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">retrieve</a></span>&#8203;(<a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</code></th>
@@ -375,7 +375,7 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.ConnectionSelector,uk.ac.manchester.spinnaker.transceiver.RetryTracker)">TxrxProcess</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">TxrxProcess</span>&#8203;(<span class="arguments"><a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">TxrxProcess</span>&#8203;(<span class="arguments"><a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
 <a href="RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</span></div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -505,8 +505,8 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 <li class="blockList">
 <section class="detail">
 <h3><a id="call(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">call</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">call</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../messages/scp/EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">EmptyResponse</a>&gt;&nbsp;request)</span>
-                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">call</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../messages/scp/EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">EmptyResponse</a>&gt;&nbsp;request)</span>
+                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Do a synchronous call of an SCP operation, sending the given message and
@@ -524,11 +524,10 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 <li class="blockList">
 <section class="detail">
 <h3><a id="retrieve(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">retrieve</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="typeParameters">&lt;T,&#8203;
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="typeParameters">&lt;T,&#8203;
 R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
-?&gt;&gt;</span>
-<span class="returnType">T</span>&nbsp;<span class="memberName">retrieve</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</span>
-    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+?&gt;&gt;</span>&nbsp;<span class="returnType">T</span>&nbsp;<span class="memberName">retrieve</span>&#8203;(<span class="arguments"><a href="../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</span>
+                                                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Do a synchronous call of an SCP operation, sending the given message and

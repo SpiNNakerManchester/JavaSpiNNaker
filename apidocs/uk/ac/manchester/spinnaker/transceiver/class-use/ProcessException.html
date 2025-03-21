@@ -75,43 +75,60 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.bmp">uk.ac.manchester.spinnaker.alloc.bmp</a></th>
 <td class="colLast">
 <div class="block">The BMP control subsystem.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end">uk.ac.manchester.spinnaker.front_end</a></th>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
 <td class="colLast">
-<div class="block">The front-end interface to the Java implementation of the SpiNNaker host
- libraries.</div>
+<div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
 <td class="colLast">
 <div class="block">The buffer manager and support classes.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download.request">uk.ac.manchester.spinnaker.front_end.download.request</a></th>
 <td class="colLast">
 <div class="block">Classes used to describe the JSON requests to the data transfer code.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
 <td class="colLast">
 <div class="block">Data specification execution interface.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.iobuf">uk.ac.manchester.spinnaker.front_end.iobuf</a></th>
 <td class="colLast">
 <div class="block">Utility for retrieving IOBUF contents.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols">uk.ac.manchester.spinnaker.protocols</a></th>
+<td class="colLast">
+<div class="block">Data I/O Protocols.</div>
+</td>
+</tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols.download">uk.ac.manchester.spinnaker.protocols.download</a></th>
+<td class="colLast">
+<div class="block">Fast data download protocol.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -122,6 +139,42 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<h2>Uses of <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> in <a href="../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../protocols/download/Downloader.html" title="class in uk.ac.manchester.spinnaker.protocols.download">Downloader</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Job.</span><code><span class="memberNameLink"><a href="../../alloc/allocator/SpallocAPI.Job.html#getDownloader(uk.ac.manchester.spinnaker.machine.tags.IPTag)">getDownloader</a></span>&#8203;(<a href="../../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Get a Downloader protocol instance for an Ethernet within a job.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../protocols/FastDataIn.html" title="class in uk.ac.manchester.spinnaker.protocols">FastDataIn</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Job.</span><code><span class="memberNameLink"><a href="../../alloc/allocator/SpallocAPI.Job.html#getFastDataIn(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag)">getFastDataIn</a></span>&#8203;(<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Get a FastDataIn protocol instance for an Ethernet within a job.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.bmp">
 <!--   -->
@@ -218,35 +271,13 @@ int&nbsp;slot,
 </section>
 </li>
 <li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
 <!--   -->
 </a>
-<h2>Uses of <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a></h2>
+<h2>Uses of <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> in <a href="../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></h2>
 <div class="useSummary">
 <table>
-<caption><span>Methods in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">NoDropPacketContext.</span><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#close()">close</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Restore the SpiNNaker board (or boards, for the brave) to its normal
- operating mode.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../front_end/package-summary.html">uk.ac.manchester.spinnaker.front_end</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>Constructors in <a href="../../connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
 <th class="colFirst" scope="col">Constructor</th>
@@ -255,35 +286,10 @@ int&nbsp;slot,
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations,
-<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&nbsp;gatherer)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../connections/ThrottledConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.tags.IPTag)">ThrottledConnection</a></span>&#8203;(<a href="../../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
 <td class="colLast">
-<div class="block">Create a no-drop-packets context for a single board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCoreLocations,
-<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&nbsp;gatherer)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context for a single board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.machine.CoreSubsets)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores,
-<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;gatherers)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
+<div class="block">Create a throttled connection for talking to a board and point an IPTag
+ so that messages sent to it arrive on this connection.</div>
 </td>
 </tr>
 </tbody>
@@ -363,43 +369,6 @@ int&nbsp;index)</code></th>
 </tbody>
 </table>
 </div>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
-<td class="colLast">
-<div class="block">Create an instance of the protocol implementation.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DirectDataGatherer</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database)</code></th>
-<td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-<div class="block">Create a data gatherer.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;transceiver,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&nbsp;database)</code></th>
-<td class="colLast">
-<div class="block">Create a data gatherer.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 </li>
 <li class="blockList">
@@ -425,13 +394,6 @@ int&nbsp;index)</code></th>
 <div class="block">sets the transaction id from the machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Monitor.</span><code><span class="memberNameLink"><a href="../../front_end/download/request/Monitor.html#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)">updateTransactionIdFromMachine</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx)</code></th>
-<td class="colLast">
-<div class="block">gets the transaction id from the machine and updates.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -454,22 +416,8 @@ int&nbsp;index)</code></th>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">FastExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#buildMaps(java.util.List)">buildMaps</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
-<td class="colLast">
-<div class="block">Construct the internal mappings for gatherers and monitors.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SystemRouterTableContext.</span><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#close()">close</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Restore the SpiNNaker board to its normal operating mode.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">FastExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#loadCores()">loadCores</a></span>()</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">FastExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#loadCores(java.util.List)">loadCores</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
 <td class="colLast">
 <div class="block">Execute all application data specifications that a particular connection
  knows about, storing back in the database the information collected about
@@ -487,7 +435,7 @@ int&nbsp;index)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">ExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../front_end/dse/ExecuteDataSpecification.html#processTasksInParallel(java.util.List,java.util.function.Function)">processTasksInParallel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../storage/DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&gt;&nbsp;tasks,
+<th class="colSecond" scope="row"><span class="typeNameLabel">ExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../front_end/dse/ExecuteDataSpecification.html#processTasksInParallel(java.util.Collection,java.util.function.Function)">processTasksInParallel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../storage/DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&gt;&nbsp;tasks,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="../../storage/DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>,&#8203;<a href="../../front_end/BasicExecutor.SimpleCallable.html" title="interface in uk.ac.manchester.spinnaker.front_end">BasicExecutor.SimpleCallable</a>&gt;&nbsp;mapper)</code></th>
 <td class="colLast">
 <div class="block">Run the tasks in parallel.</div>
@@ -507,49 +455,9 @@ int&nbsp;index)</code></th>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
 <td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">FastExecuteDataSpecification</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir,
-<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
-<td class="colLast">
-<div class="block">Create an instance of this class.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine)">HostExecuteDataSpecification</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
-<a href="../../storage/DSEDatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DSEDatabaseEngine</a>&nbsp;db)</code></th>
-<td class="colLast">
-<div class="block">Create a high-level DSE interface.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
-<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
-<td class="colLast">
-<div class="block">Create a no-drop-packets context.</div>
-</td>
 </tr>
 </tbody>
 </table>
@@ -587,6 +495,164 @@ int&nbsp;index)</code></th>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;provenanceDir)</code></th>
 <td class="colLast">
 <div class="block">Retrieve and translate some IOBUFs.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols">
+<!--   -->
+</a>
+<h2>Uses of <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">NoDropPacketContext.</span><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#close()">close</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Restore the SpiNNaker board (or boards, for the brave) to its normal
+ operating mode.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SystemRouterTableContext.</span><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#close()">close</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Restore the SpiNNaker board to its normal operating mode.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../protocols/package-summary.html">uk.ac.manchester.spinnaker.protocols</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/FastDataIn.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.CoreLocation,uk.ac.manchester.spinnaker.machine.tags.IPTag)">FastDataIn</a></span>&#8203;(<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;gathererCore,
+<a href="../../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Create an instance of the protocol for talking to a particular extra
+ monitor core on a particular board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,java.util.List)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCores,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.machine.CoreSubsets)">NoDropPacketContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores,
+<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;gatherers)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
+<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
+<td class="colLast">
+<div class="block">Create a no-drop-packets context.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols.download">
+<!--   -->
+</a>
+<h2>Uses of <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Downloader.</span><code><span class="memberNameLink"><a href="../../protocols/download/Downloader.html#doDownload(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">doDownload</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block">Do the downloading.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Downloader.</span><code><span class="memberNameLink"><a href="../../protocols/download/Downloader.html#reuse()">reuse</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Prepare to reuse the downloader.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../protocols/download/Downloader.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.tags.IPTag)">Downloader</a></span>&#8203;(<a href="../../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a>&nbsp;iptag)</code></th>
+<td class="colLast">
+<div class="block">Create an instance.</div>
 </td>
 </tr>
 </tbody>
@@ -801,52 +867,61 @@ int&nbsp;index)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#call(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">call</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../../messages/scp/EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">EmptyResponse</a>&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Do a synchronous call of an SCP operation using the default connection
+ for a request, sending the given message and completely processing the
+ interaction.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../TxrxProcess.html#call(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">call</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;<a href="../../messages/scp/EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">EmptyResponse</a>&gt;&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Do a synchronous call of an SCP operation, sending the given message and
  completely processing the interaction before returning its response.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#clearIobuf(uk.ac.manchester.spinnaker.machine.CoreSubsets)">clearIobuf</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearIobuf()">clearIobuf</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Clear the contents of the IOBUF buffer for all processors.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearIobuf(uk.ac.manchester.spinnaker.machine.CoreSubsets)">clearIobuf</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets)</code></th>
 <td class="colLast">
 <div class="block">Clear the contents of the IOBUF buffer for a collection of processors.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearIobuf(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">clearIobuf</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Clear the contents of the IOBUF buffer for a given core.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#clearIPTag(int,java.net.InetAddress)">clearIPTag</a></span>&#8203;(int&nbsp;tag,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearIPTag(@uk.ac.manchester.spinnaker.machine.tags.TagIDint)">clearIPTag</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag)</code></th>
 <td class="colLast">
 <div class="block">Clear the setting of an IP tag.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearIPTag(@uk.ac.manchester.spinnaker.machine.tags.TagIDint,java.net.InetAddress)">clearIPTag</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress)</code></th>
@@ -854,64 +929,64 @@ int&nbsp;index)</code></th>
 <div class="block">Clear the setting of an IP tag.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearIPTag(uk.ac.manchester.spinnaker.machine.tags.Tag)">clearIPTag</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/tags/Tag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">Tag</a>&nbsp;tag)</code></th>
 <td class="colLast">
 <div class="block">Clear the setting of an IP tag.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#clearMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation)">clearMulticastRoutes</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation)">clearMulticastRoutes</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Remove all the multicast routes on a chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#clearReinjectionQueues(uk.ac.manchester.spinnaker.machine.CoreSubsets)">clearReinjectionQueues</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#clearReinjectionQueues(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">clearReinjectionQueues</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearReinjectionQueues(uk.ac.manchester.spinnaker.machine.CoreSubsets)">clearReinjectionQueues</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">
 <div class="block">Clear the packet reinjection queues in some monitor processes.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearReinjectionQueues(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">clearReinjectionQueues</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore)</code></th>
 <td class="colLast">
 <div class="block">Clear the packet reinjection queues in a monitor process.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#clearRouterDiagnosticCounters(uk.ac.manchester.spinnaker.machine.HasChipLocation,boolean,java.lang.Iterable)">clearRouterDiagnosticCounters</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 boolean&nbsp;enable,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;counterIDs)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearRouterDiagnosticCounters(uk.ac.manchester.spinnaker.machine.HasChipLocation)">clearRouterDiagnosticCounters</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Clear router diagnostic information on a chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearRouterDiagnosticCounters(uk.ac.manchester.spinnaker.machine.HasChipLocation,boolean)">clearRouterDiagnosticCounters</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 boolean&nbsp;enable)</code></th>
@@ -919,7 +994,7 @@ boolean&nbsp;enable)</code></th>
 <div class="block">Clear router diagnostic information on a chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearRouterDiagnosticCounters(uk.ac.manchester.spinnaker.machine.HasChipLocation,boolean,java.lang.Iterable)">clearRouterDiagnosticCounters</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 boolean&nbsp;enable,
@@ -928,7 +1003,7 @@ boolean&nbsp;enable,
 <div class="block">Clear router diagnostic information on a chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#clearRouterDiagnosticCounters(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.lang.Iterable)">clearRouterDiagnosticCounters</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;counterIDs)</code></th>
@@ -936,27 +1011,27 @@ boolean&nbsp;enable,
 <div class="block">Clear router diagnostic information on a chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#discoverScampConnections()">discoverScampConnections</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Find connections to the board and store these for future use.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#enableWatchDogTimer(boolean)">enableWatchDogTimer</a></span>&#8203;(boolean&nbsp;watchdog)</code></th>
 <td class="colLast">
 <div class="block">Enable or disable the watch dog timer.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#enableWatchDogTimerOnChip(uk.ac.manchester.spinnaker.machine.HasChipLocation,boolean)">enableWatchDogTimerOnChip</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 boolean&nbsp;watchdog)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#enableWatchDogTimerOnChip(uk.ac.manchester.spinnaker.machine.HasChipLocation,boolean)">enableWatchDogTimerOnChip</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 boolean&nbsp;watchdog)</code></th>
@@ -964,13 +1039,13 @@ boolean&nbsp;watchdog)</code></th>
 <div class="block">Enable or disable the watch dog timer on a specific chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#ensureBoardIsReady(int,java.util.Map)">ensureBoardIsReady</a></span>&#8203;(int&nbsp;numRetries,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="../../messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;extraBootValues)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#ensureBoardIsReady()">ensureBoardIsReady</a></span>()</code></th>
 <td class="colLast">
@@ -978,7 +1053,7 @@ boolean&nbsp;watchdog)</code></th>
  transceiver.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#ensureBoardIsReady(@javax.validation.constraints.PositiveOrZeroint)">ensureBoardIsReady</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero int&nbsp;numRetries)</code></th>
 <td class="colLast">
@@ -986,7 +1061,7 @@ boolean&nbsp;watchdog)</code></th>
  transceiver.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#ensureBoardIsReady(@javax.validation.constraints.PositiveOrZeroint,java.util.Map)">ensureBoardIsReady</a></span>&#8203;(@javax.validation.constraints.PositiveOrZero int&nbsp;numRetries,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="../../messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;extraBootValues)</code></th>
@@ -995,7 +1070,7 @@ boolean&nbsp;watchdog)</code></th>
  transceiver.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#ensureBoardIsReady(java.util.Map)">ensureBoardIsReady</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="../../messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a>,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;extraBootValues)</code></th>
 <td class="colLast">
@@ -1003,7 +1078,7 @@ boolean&nbsp;watchdog)</code></th>
  transceiver.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1012,7 +1087,7 @@ boolean&nbsp;watchdog)</code></th>
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.io.InputStream,int,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1022,7 +1097,7 @@ int&nbsp;numBytes,
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1031,7 +1106,7 @@ boolean&nbsp;wait)</code></th>
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1041,7 +1116,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1052,7 +1127,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.io.InputStream,@javax.validation.constraints.Positiveint,uk.ac.manchester.spinnaker.messages.model.AppID)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1063,7 +1138,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.io.InputStream,@javax.validation.constraints.Positiveint,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1075,7 +1150,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1085,7 +1160,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;executable,
@@ -1094,7 +1169,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;executable,
@@ -1104,7 +1179,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single core.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.io.InputStream,@javax.validation.constraints.Positiveint,uk.ac.manchester.spinnaker.messages.model.AppID)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;executable,
@@ -1114,7 +1189,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.io.InputStream,@javax.validation.constraints.Positiveint,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;executable,
@@ -1125,7 +1200,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single core.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;executable,
@@ -1134,7 +1209,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;executable,
@@ -1144,7 +1219,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single core.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#execute(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">execute</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;processors,
@@ -1155,7 +1230,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on a single chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeApplication(uk.ac.manchester.spinnaker.messages.model.ExecutableTargets,uk.ac.manchester.spinnaker.messages.model.AppID)">executeApplication</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../messages/model/ExecutableTargets.html" title="class in uk.ac.manchester.spinnaker.messages.model">ExecutableTargets</a>&nbsp;executableTargets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
@@ -1165,7 +1240,7 @@ boolean&nbsp;wait)</code></th>
  binaries.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">executeFlood</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;executable,
@@ -1173,7 +1248,7 @@ boolean&nbsp;wait)</code></th>
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.InputStream,int,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">executeFlood</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;executable,
@@ -1182,7 +1257,7 @@ int&nbsp;numBytes,
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">executeFlood</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;executable,
@@ -1190,7 +1265,7 @@ boolean&nbsp;wait)</code></th>
 boolean&nbsp;wait)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID)">executeFlood</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;executable,
@@ -1199,7 +1274,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on multiple places on the board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">executeFlood</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;executable,
@@ -1209,7 +1284,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on multiple places on the board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.InputStream,@javax.validation.constraints.Positiveint,uk.ac.manchester.spinnaker.messages.model.AppID)">executeFlood</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;executable,
@@ -1219,7 +1294,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on multiple places on the board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.InputStream,@javax.validation.constraints.Positiveint,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">executeFlood</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;executable,
@@ -1230,7 +1305,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on multiple places on the board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID)">executeFlood</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;executable,
@@ -1239,7 +1314,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on multiple places on the board.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#executeFlood(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.messages.model.AppID,boolean)">executeFlood</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;executable,
@@ -1249,7 +1324,7 @@ boolean&nbsp;wait)</code></th>
 <div class="block">Start an executable running on multiple places on the board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int,uk.ac.manchester.spinnaker.transceiver.FillDataType)">fillMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
@@ -1258,7 +1333,7 @@ int&nbsp;size,
 <a href="../FillDataType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">FillDataType</a>&nbsp;dataType)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,@javax.validation.constraints.Positiveint)">fillMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
@@ -1268,7 +1343,7 @@ int&nbsp;repeatValue,
 <div class="block">Fill some memory with repeated data.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,@javax.validation.constraints.Positiveint,uk.ac.manchester.spinnaker.transceiver.FillDataType)">fillMemory</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
@@ -1279,7 +1354,7 @@ int&nbsp;repeatValue,
 <div class="block">Fill some memory with repeated data.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../TxrxProcess.html#finishBatch()">finishBatch</a></span>()</code></th>
 <td class="colLast">
@@ -1287,19 +1362,19 @@ int&nbsp;repeatValue,
  or time out.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">freeSDRAM</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
@@ -1307,12 +1382,23 @@ int&nbsp;repeatValue,
 <div class="block">Free allocated SDRAM.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">freeSDRAM</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">
 <div class="block">Free all SDRAM allocated to a given application ID.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected &lt;T,&#8203;
+R extends <a href="../../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
+?&gt;&gt;<br>T</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#get(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">get</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Do a synchronous call of an SCP operation using the default connection
+ for a request, sending the given message and completely processing the
+ interaction before returning its response.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -2417,7 +2503,20 @@ int&nbsp;length)</code></th>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected &lt;T,&#8203;
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#resetRouting(java.util.Map)">resetRouting</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="../../messages/model/DiagnosticFilter.html" title="class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter</a>&gt;&nbsp;customFilters)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#resetRouting(java.util.Map)">resetRouting</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>,&#8203;<a href="../../messages/model/DiagnosticFilter.html" title="class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter</a>&gt;&nbsp;customFilters)</code></th>
+<td class="colLast">
+<div class="block">Clear the router tables, reset diagnostic counters and put in optional
+ custom filters.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>&lt;T,&#8203;
 R extends <a href="../../messages/scp/PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
 ?&gt;&gt;<br>T</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../TxrxProcess.html#retrieve(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">retrieve</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</code></th>

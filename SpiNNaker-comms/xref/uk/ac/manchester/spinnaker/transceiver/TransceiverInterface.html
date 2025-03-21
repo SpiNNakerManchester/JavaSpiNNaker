@@ -4271,7 +4271,22 @@
 <a class="jxr_linenumber" name="L4263" href="#L4263">4263</a> 	@UsedInJavadocOnly(Constants.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L4264" href="#L4264">4264</a> 	SCPConnection createScpConnection(ChipLocation chip, InetAddress addr)
 <a class="jxr_linenumber" name="L4265" href="#L4265">4265</a> 			<strong class="jxr_keyword">throws</strong> IOException;
-<a class="jxr_linenumber" name="L4266" href="#L4266">4266</a> }
+<a class="jxr_linenumber" name="L4266" href="#L4266">4266</a> 
+<a class="jxr_linenumber" name="L4267" href="#L4267">4267</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L4268" href="#L4268">4268</a> <em class="jxr_javadoccomment">	 * Clear the router tables, reset diagnostic counters and put in optional</em>
+<a class="jxr_linenumber" name="L4269" href="#L4269">4269</a> <em class="jxr_javadoccomment">	 * custom filters.</em>
+<a class="jxr_linenumber" name="L4270" href="#L4270">4270</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L4271" href="#L4271">4271</a> <em class="jxr_javadoccomment">	 * @param customFilters a map of filter position to custom filter, or null</em>
+<a class="jxr_linenumber" name="L4272" href="#L4272">4272</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L4273" href="#L4273">4273</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L4274" href="#L4274">4274</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
+<a class="jxr_linenumber" name="L4275" href="#L4275">4275</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
+<a class="jxr_linenumber" name="L4276" href="#L4276">4276</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
+<a class="jxr_linenumber" name="L4277" href="#L4277">4277</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L4278" href="#L4278">4278</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.	 */</em>
+<a class="jxr_linenumber" name="L4279" href="#L4279">4279</a> 	<strong class="jxr_keyword">void</strong> resetRouting(Map&lt;Integer, DiagnosticFilter&gt; customFilters)
+<a class="jxr_linenumber" name="L4280" href="#L4280">4280</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException, InterruptedException;
+<a class="jxr_linenumber" name="L4281" href="#L4281">4281</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2025 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

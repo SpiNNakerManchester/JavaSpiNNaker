@@ -224,6 +224,17 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>protected &lt;T,&#8203;
 R extends <a href="../PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
 ?&gt;&gt;<br>T</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#get(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">get</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</code></th>
+<td class="colLast">
+<div class="block">Do a synchronous call of an SCP operation using the default connection
+ for a request, sending the given message and completely processing the
+ interaction before returning its response.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>&lt;T,&#8203;
+R extends <a href="../PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
+?&gt;&gt;<br>T</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TxrxProcess.</span><code><span class="memberNameLink"><a href="../../../transceiver/TxrxProcess.html#retrieve(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)">retrieve</a></span>&#8203;(<a href="../SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;R&gt;&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Do a synchronous call of an SCP operation, sending the given message and
@@ -231,7 +242,7 @@ R extends <a href="../PayloadedResponse.html" title="class in uk.ac.manchester.s
  payload.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected &lt;T,&#8203;
 R extends <a href="../PayloadedResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">PayloadedResponse</a>&lt;T,&#8203;
 ?&gt;&gt;<br>void</code></td>

@@ -75,15 +75,15 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
-<td class="colLast">
-<div class="block">The buffer manager and support classes.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.sdp">uk.ac.manchester.spinnaker.messages.sdp</a></th>
 <td class="colLast">
 <div class="block">Messages sent and received by SDP (the SpiNNaker Datagram Protocol).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.protocols.download">uk.ac.manchester.spinnaker.protocols.download</a></th>
+<td class="colLast">
+<div class="block">Fast data download protocol.</div>
 </td>
 </tr>
 </tbody>
@@ -91,34 +91,6 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download">
-<!--   -->
-</a>
-<h2>Uses of <a href="../SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a> in <a href="../../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../../front_end/download/package-summary.html">uk.ac.manchester.spinnaker.front_end.download</a> with parameters of type <a href="../SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../front_end/download/GatherProtocolMessage.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort,java.nio.ByteBuffer)">GatherProtocolMessage</a></span>&#8203;(<a href="../../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
-<a href="../SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a>&nbsp;destPort,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;payload)</code></th>
-<td class="colLast">
-<div class="block">Create a protocol message.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.sdp">
 <!--   -->
@@ -190,6 +162,34 @@ the order they are declared.</div>
 <a href="../SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a>&nbsp;destinationPort)</code></th>
 <td class="colLast">
 <div class="block">Create a simple header with just the flags and destination set.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.protocols.download">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a> in <a href="../../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../../protocols/download/package-summary.html">uk.ac.manchester.spinnaker.protocols.download</a> with parameters of type <a href="../SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../protocols/download/GatherProtocolMessage.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.sdp.SDPPort,java.nio.ByteBuffer)">GatherProtocolMessage</a></span>&#8203;(<a href="../../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
+<a href="../SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a>&nbsp;destPort,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;payload)</code></th>
+<td class="colLast">
+<div class="block">Create a protocol message.</div>
 </td>
 </tr>
 </tbody>

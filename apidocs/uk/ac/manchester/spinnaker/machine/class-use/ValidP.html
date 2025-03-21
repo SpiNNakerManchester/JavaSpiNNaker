@@ -81,12 +81,18 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.web">uk.ac.manchester.spinnaker.alloc.web</a></th>
+<td class="colLast">
+<div class="block">The user-facing web interface to the new spalloc service.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine">uk.ac.manchester.spinnaker.machine</a></th>
 <td class="colLast">
 <div class="block">Describes a SpiNNaker machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -122,6 +128,45 @@ loadScripts(document, 'script');</script>
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;description)</code></th>
 <td class="colLast">
 <div class="block">Report a problem with a board, chip or core.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.web">
+<!--   -->
+</a>
+<h2>Uses of <a href="../ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidP</a> in <a href="../../alloc/web/package-summary.html">uk.ac.manchester.spinnaker.alloc.web</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Method parameters in <a href="../../alloc/web/package-summary.html">uk.ac.manchester.spinnaker.alloc.web</a> with annotations of type <a href="../ValidP.html" title="annotation in uk.ac.manchester.spinnaker.machine">ValidP</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocServiceAPI.JobAPI.</span><code><span class="memberNameLink"><a href="../../alloc/web/SpallocServiceAPI.JobAPI.html#fastDataRead(@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint,java.lang.String,int,@uk.ac.manchester.spinnaker.machine.ValidXint,@uk.ac.manchester.spinnaker.machine.ValidYint,@uk.ac.manchester.spinnaker.machine.ValidPint,long,int,javax.ws.rs.container.AsyncResponse)">fastDataRead</a></span>&#8203;(@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;gatherX,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;gatherY,
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;ethX,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;ethY,
+<a href="../../utils/validation/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;ethAddress,
+int&nbsp;iptag,
+@uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
+@uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y,
+@uk.ac.manchester.spinnaker.machine.ValidP int&nbsp;p,
+long&nbsp;address,
+int&nbsp;size,
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
+<td class="colLast">
+<div class="block">Read data from job boards using the fast data download protocol.</div>
 </td>
 </tr>
 </tbody>
