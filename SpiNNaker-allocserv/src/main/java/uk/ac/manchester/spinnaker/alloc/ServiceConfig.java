@@ -49,6 +49,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
+import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -255,7 +256,11 @@ public class ServiceConfig extends Application {
 		factory.setBus(bus);
 		factory.setProviders(List.of(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
-		factory.setFeatures(List.of(new OpenApiFeature()));
+		final var openApi = new OpenApiFeature();
+		openApi.setSwaggerUiConfig(
+				new SwaggerUiConfig().url("/spalloc/openapi.json")
+				.queryConfigEnabled(true));
+		factory.setFeatures(List.of(openApi));
 		factory.setInInterceptors(List
 				.of(new JAXRSBeanValidationInInterceptor(), protocolCorrector));
 		return factory;
