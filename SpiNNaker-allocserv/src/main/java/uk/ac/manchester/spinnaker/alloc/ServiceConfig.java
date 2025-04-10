@@ -49,7 +49,6 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
-import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -92,7 +91,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
-import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.alloc.security.SecurityConfig;
 import uk.ac.manchester.spinnaker.alloc.web.MvcConfig;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
@@ -231,42 +229,6 @@ public class ServiceConfig extends Application {
 	}
 
 	/**
-	 * A factory for JAX-RS servers. This is a <em>prototype</em> bean; you get
-	 * a new instance each time.
-	 * <p>
-	 * You should call {@link JAXRSServerFactoryBean#setServiceBeans(List)
-	 * setServiceBeans(...)} on it, and then
-	 * {@link JAXRSServerFactoryBean#create() create()}. You might also need to
-	 * call {@link JAXRSServerFactoryBean#setAddress(String) setAddress(...)}.
-	 *
-	 * @param bus
-	 *            The CXF bus.
-	 * @param protocolCorrector
-	 *            How to correct the protocol
-	 * @return A factory instance
-	 */
-	@Bean
-	@Prototype
-	@Role(ROLE_INFRASTRUCTURE)
-	JAXRSServerFactoryBean rawFactory(SpringBus bus,
-			ProtocolUpgraderInterceptor protocolCorrector) {
-		var factory = new JAXRSServerFactoryBean();
-		factory.setStaticSubresourceResolution(true);
-		factory.setAddress("/");
-		factory.setBus(bus);
-		factory.setProviders(List.of(
-				ctx.getBeansWithAnnotation(Provider.class).values()));
-		final var openApi = new OpenApiFeature();
-		openApi.setSwaggerUiConfig(
-				new SwaggerUiConfig().url("/spalloc/openapi.json")
-				.queryConfigEnabled(true));
-		factory.setFeatures(List.of(openApi));
-		factory.setInInterceptors(List
-				.of(new JAXRSBeanValidationInInterceptor(), protocolCorrector));
-		return factory;
-	}
-
-	/**
 	 * Handles the upgrade of the CXF endpoint protocol to HTTPS when the
 	 * service is behind a reverse proxy like nginx which might be handling
 	 * SSL/TLS for us. In theory, CXF should do this itself; this is the kind of
@@ -347,13 +309,18 @@ public class ServiceConfig extends Application {
 	@ConditionalOnWebApplication
 	@DependsOn("JSONProvider")
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
-			Executor executor, JAXRSServerFactoryBean factory) {
+			Executor executor, SpringBus bus,
+			ProtocolUpgraderInterceptor protocolCorrector) {
+		var factory = new JAXRSServerFactoryBean();
 		factory.setServiceBeans(List.of(service, adminService));
-		final var openApi = new OpenApiFeature();
-		openApi.setSwaggerUiConfig(
-				new SwaggerUiConfig().url("/spalloc/openapi.json")
-				.queryConfigEnabled(true));
-		factory.setFeatures(List.of(openApi));
+		factory.setStaticSubresourceResolution(true);
+		factory.setAddress("/");
+		factory.setBus(bus);
+		factory.setProviders(List.of(
+				ctx.getBeansWithAnnotation(Provider.class).values()));
+		factory.setFeatures(List.of(new OpenApiFeature()));
+		factory.setInInterceptors(List.of(
+				new JAXRSBeanValidationInInterceptor(), protocolCorrector));
 		var s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
