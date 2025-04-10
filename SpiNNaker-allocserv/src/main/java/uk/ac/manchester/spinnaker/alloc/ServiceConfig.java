@@ -349,6 +349,11 @@ public class ServiceConfig extends Application {
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
 			Executor executor, JAXRSServerFactoryBean factory) {
 		factory.setServiceBeans(List.of(service, adminService));
+		final var openApi = new OpenApiFeature();
+		openApi.setSwaggerUiConfig(
+				new SwaggerUiConfig().url("/spalloc/openapi.json")
+				.queryConfigEnabled(true));
+		factory.setFeatures(List.of(openApi));
 		var s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
