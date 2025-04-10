@@ -301,8 +301,10 @@ public class ServiceConfig extends Application {
 	 *            The admin service
 	 * @param executor
 	 *            The thread pool
-	 * @param factory
-	 *            A factory used to make servers.
+	 * @param bus
+	 *            The Spring bus (think VengaBus but without the music)
+	 * @param protocolCorrector
+	 *            Attempts to make the protocol work correctly
 	 * @return The REST service core, configured.
 	 */
 	@Bean(destroyMethod = "destroy")
