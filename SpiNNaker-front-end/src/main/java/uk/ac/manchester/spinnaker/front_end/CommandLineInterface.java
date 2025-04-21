@@ -302,6 +302,8 @@ public final class CommandLineInterface {
 	 *            The database that receives the output).
 	 * @param logfile
 	 *            The path where the log should write.
+	 * @param iobufDir
+	 * 			  The path to the directory where the iobuff would be written
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -568,7 +570,8 @@ public final class CommandLineInterface {
 	 * @see Parameters
 	 */
 	public static class LogfileParam implements Supplier<File> {
-		@Parameters(description = LOGFILE, converter = Converter.class, arity = "1")
+		@Parameters(description = LOGFILE, converter = Converter.class,
+			arity = "1")
 		private ValueHolder<File> logfile = new ValueHolder<>();
 
 		/** @hidden */
@@ -588,7 +591,7 @@ public final class CommandLineInterface {
 				var f = new File(filename);
 				if (f.isDirectory()) {
 					throw new TypeConversionException(
-							"<logfile> " + filename + " must not be a directory");
+						"<logfile> " + filename + " must not be a directory");
 				}
 				return new ValueHolder<>(f);
 			}
