@@ -26,89 +26,89 @@
 name: "CodeQL"
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ master ]
-  schedule:
-    - cron: '31 6 * * 0'
+push:
+	branches: [ master ]
+pull_request:
+	# The branches below must be a subset of the branches above
+	branches: [ master ]
+schedule:
+	- cron: '31 6 * * 0'
 
 env:
-  SETTINGS_FILE: .github/settings.xml
-  # Workaround for occasional unreliable downloads.
-  # See https://stackoverflow.com/q/55899091/301832 for details
-  # Except Maven doesn't use Wagon any more, but Aether.
-  # https://maven.apache.org/resolver/configuration.html
-  MAVEN_OPTS: >
-    -Daether.connector.http.connectionMaxTtl=25
+SETTINGS_FILE: .github/settings.xml
+# Workaround for occasional unreliable downloads.
+# See https://stackoverflow.com/q/55899091/301832 for details
+# Except Maven doesn't use Wagon any more, but Aether.
+# https://maven.apache.org/resolver/configuration.html
+MAVEN_OPTS: >
+	-Daether.connector.http.connectionMaxTtl=25
 
 jobs:
-  analyze:
-    permissions:
-      actions: read
-      contents: write
-      security-events: write
-    name: Analyze
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+analyze:
+	permissions:
+	  actions: read
+	  contents: write
+	  security-events: write
+	name: Analyze
+	runs-on: ubuntu-latest
+	timeout-minutes: 15
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java' ]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
-        # Learn more:
-        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
-        version: [ 11 ]
+	strategy:
+	  fail-fast: false
+	  matrix:
+		language: [ 'java' ]
+		# CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+		# Learn more:
+		# https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+		version: [ 11 ]
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: "Set up node cache"
-      uses: actions/cache@v4
-      with:
-        path: '~/.m2/repository/com/github/eirslett/node'
-        key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
-        restore-keys: ${{ runner.os }}-node-
+	steps:
+	- name: Checkout repository
+	  uses: actions/checkout@v4
+	- name: "Set up node cache"
+	  uses: actions/cache@v4
+	  with:
+		path: '~/.m2/repository/com/github/eirslett/node'
+		key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
+		restore-keys: ${{ runner.os }}-node-
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        # queries: ./path/to/local/query, your-org/your-repo/queries@main
+	# Initializes the CodeQL tools for scanning.
+	- name: Initialize CodeQL
+	  uses: github/codeql-action/init@v3
+	  with:
+		languages: ${{ matrix.language }}
+		# If you wish to specify custom queries, you can do so here or in a config file.
+		# By default, queries listed here will override any specified in a config file.
+		# Prefix the list here with "+" to use these queries and those in the config file.
+		# queries: ./path/to/local/query, your-org/your-repo/queries@main
 
-    # Set up right Java version: https://github.com/github/codeql-action/issues/825
-    - uses: actions/setup-java@v4.4.0
-      with:
-        java-version: ${{ matrix.version }}
-        distribution: zulu
-        cache: maven
+	# Set up right Java version: https://github.com/github/codeql-action/issues/825
+	- uses: actions/setup-java@v4.7.1
+	  with:
+		java-version: ${{ matrix.version }}
+		distribution: zulu
+		cache: maven
 
-    # Fetch the dependencies if we can, to accelerate the autobuild step
-    - name: Resolve dependencies
-      run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
-      continue-on-error: true
+	# Fetch the dependencies if we can, to accelerate the autobuild step
+	- name: Resolve dependencies
+	  run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
+	  continue-on-error: true
 
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+	# Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+	# If this step fails, then you should remove it and run the build manually (see below)
+	- name: Autobuild
+	  uses: github/codeql-action/autobuild@v3
 
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 https://git.io/JvXDl
+	# ℹ️ Command-line programs to run using the OS shell.
+	# 📚 https://git.io/JvXDl
 
-    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
-    #    and modify them (or add more) to build your code if your project
-    #    uses a compiled language
+	# ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
+	#    and modify them (or add more) to build your code if your project
+	#    uses a compiled language
 
-    #- run: |
-    #   make bootstrap
-    #   make release
+	#- run: |
+	#   make bootstrap
+	#   make release
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+	- name: Perform CodeQL Analysis
+	  uses: github/codeql-action/analyze@v3

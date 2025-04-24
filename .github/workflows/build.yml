@@ -16,143 +16,143 @@
 
 name: Build and Test
 on:
-  push:
-    # On any push to any branch
-  schedule:
-    # Build daily on the default branch at 04:40
-    - cron: "40 4 * * *"
+push:
+	# On any push to any branch
+schedule:
+	# Build daily on the default branch at 04:40
+	- cron: "40 4 * * *"
 env:
-  SETTINGS_FILE: .github/settings.xml
-  # Workaround for occasional unreliable downloads.
-  # See https://stackoverflow.com/q/55899091/301832 for details
-  # Except Maven doesn't use Wagon any more, but Aether.
-  # https://maven.apache.org/resolver/configuration.html
-  MAVEN_OPTS: >
-    -Daether.connector.http.connectionMaxTtl=25
+SETTINGS_FILE: .github/settings.xml
+# Workaround for occasional unreliable downloads.
+# See https://stackoverflow.com/q/55899091/301832 for details
+# Except Maven doesn't use Wagon any more, but Aether.
+# https://maven.apache.org/resolver/configuration.html
+MAVEN_OPTS: >
+	-Daether.connector.http.connectionMaxTtl=25
 
 jobs:
-  compile:
-    runs-on: ubuntu-latest
-    timeout-minutes: 100
-    strategy:
-      matrix:
-        # Minimum Java version!
-        java: [11]
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v4.4.0
-      with:
-        distribution: 'zulu'
-        java-version: ${{ matrix.java }}
-        cache: 'maven'
-    - name: "Set up node cache"
-      uses: actions/cache@v4
-      with:
-        path: '~/.m2/repository/com/github/eirslett/node'
-        key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
-        restore-keys: ${{ runner.os }}-node-
+compile:
+	runs-on: ubuntu-latest
+	timeout-minutes: 100
+	strategy:
+	  matrix:
+		# Minimum Java version!
+		java: [11]
+	steps:
+	- uses: actions/checkout@v4
+	- name: Set up JDK ${{ matrix.java }}
+	  uses: actions/setup-java@v4.7.1
+	  with:
+		distribution: 'zulu'
+		java-version: ${{ matrix.java }}
+		cache: 'maven'
+	- name: "Set up node cache"
+	  uses: actions/cache@v4
+	  with:
+		path: '~/.m2/repository/com/github/eirslett/node'
+		key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
+		restore-keys: ${{ runner.os }}-node-
 
-    - name: Compile
-      run: mvn clean install --settings $SETTINGS_FILE -B -DskipTests=true -Dmaven.javadoc.skip=true -P "!jsp-precompile"
-    - name: Resolve Remaining Dependencies
-      # Explicit get of error_prone_core because of MDEP-830
-      run: mvn dependency:resolve-plugins dependency:resolve dependency:get@fetch-error-prone --settings $SETTINGS_FILE -B -P "CheckForFIXME,ErrorProne,KeycloakClient,devtools"
+	- name: Compile
+	  run: mvn clean install --settings $SETTINGS_FILE -B -DskipTests=true -Dmaven.javadoc.skip=true -P "!jsp-precompile"
+	- name: Resolve Remaining Dependencies
+	  # Explicit get of error_prone_core because of MDEP-830
+	  run: mvn dependency:resolve-plugins dependency:resolve dependency:get@fetch-error-prone --settings $SETTINGS_FILE -B -P "CheckForFIXME,ErrorProne,KeycloakClient,devtools"
 
-  test:
-    needs: compile
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    strategy:
-      matrix:
-        java: [11, 14, 17]
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK
-      uses: actions/setup-java@v4.4.0
-      with:
-        distribution: 'zulu'
-        java-version: ${{ matrix.java }}
-        cache: 'maven'
+test:
+	needs: compile
+	runs-on: ubuntu-latest
+	timeout-minutes: 20
+	strategy:
+	  matrix:
+		java: [11, 14, 17]
+	steps:
+	- uses: actions/checkout@v4
+	- name: Set up JDK
+	  uses: actions/setup-java@v4.4.0
+	  with:
+		distribution: 'zulu'
+		java-version: ${{ matrix.java }}
+		cache: 'maven'
 
-    - name: Set dns server
-      run: |
-        sudo sed -i 's/#DNS=/DNS=8.8.8.8 8.8.4.4/g' /etc/systemd/resolved.conf
-        sudo systemctl daemon-reload
-        sudo systemctl restart systemd-networkd
-        sudo systemctl restart systemd-resolved
+	- name: Set dns server
+	  run: |
+		sudo sed -i 's/#DNS=/DNS=8.8.8.8 8.8.4.4/g' /etc/systemd/resolved.conf
+		sudo systemctl daemon-reload
+		sudo systemctl restart systemd-networkd
+		sudo systemctl restart systemd-resolved
 
-    - name: Build with Java ${{ matrix.java }}
-      run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
-    - name: "Check: Test"
-      run: mvn verify --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true jacoco:report
-    - name: "Report: Coverage via coveralls.io"
-      run: |
-        export CI_BRANCH=${BRANCH_NAME_OR_REF#refs/heads/}
-        export CI_PULL_REQUEST=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-        mvn coveralls:report --settings $SETTINGS_FILE --no-transfer-progress -DrepoToken=$COVERALLS_SECRET
-      env:
-        CI_NAME: github
-        BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
-        CI_BUILD_NUMBER: ${{ github.run_id }}
-        CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
-        COVERALLS_SECRET: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
-    - name: Upload Build (JDK 11 only)
-      if: matrix.java == 11
-      uses: actions/upload-artifact@v4
-      with:
-        name: spinnaker-exe.jar
-        path: SpiNNaker-front-end/target/spinnaker-exe.jar
-        retention-days: 5
-      continue-on-error: true
-    - name: Submit Dependency Snapshot
-      if: matrix.java == 11
-      uses: advanced-security/maven-dependency-submission-action@v4
-      continue-on-error: true
+	- name: Build with Java ${{ matrix.java }}
+	  run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+	- name: "Check: Test"
+	  run: mvn verify --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true jacoco:report
+	- name: "Report: Coverage via coveralls.io"
+	  run: |
+		export CI_BRANCH=${BRANCH_NAME_OR_REF#refs/heads/}
+		export CI_PULL_REQUEST=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+		mvn coveralls:report --settings $SETTINGS_FILE --no-transfer-progress -DrepoToken=$COVERALLS_SECRET
+	  env:
+		CI_NAME: github
+		BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+		CI_BUILD_NUMBER: ${{ github.run_id }}
+		CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
+		COVERALLS_SECRET: ${{ secrets.GITHUB_TOKEN }}
+	  continue-on-error: true
+	- name: Upload Build (JDK 11 only)
+	  if: matrix.java == 11
+	  uses: actions/upload-artifact@v4
+	  with:
+		name: spinnaker-exe.jar
+		path: SpiNNaker-front-end/target/spinnaker-exe.jar
+		retention-days: 5
+	  continue-on-error: true
+	- name: Submit Dependency Snapshot
+	  if: matrix.java == 11
+	  uses: advanced-security/maven-dependency-submission-action@v4
+	  continue-on-error: true
 
-  validate:
-    needs: compile
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        java: [11, 14]
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v4.4.0
-      with:
-        distribution: 'zulu'
-        java-version: ${{ matrix.java }}
-        cache: 'maven'
+validate:
+	needs: compile
+	runs-on: ubuntu-latest
+	timeout-minutes: 5
+	strategy:
+	  matrix:
+		java: [11, 14]
+	steps:
+	- uses: actions/checkout@v4
+	- name: Set up JDK ${{ matrix.java }}
+	  uses: actions/setup-java@v4.4.0
+	  with:
+		distribution: 'zulu'
+		java-version: ${{ matrix.java }}
+		cache: 'maven'
 
-    - name: "Check: Error Prone"
-      if: matrix.java != 14
-      run: mvn clean test-compile -P "ErrorProne,!jsp-precompile" --settings $SETTINGS_FILE
-    - name: "Check: Code Style"
-      run: mvn directory:highest-basedir@find-root checkstyle:check --settings $SETTINGS_FILE
-    - name: "Check: Documentation"
-      run: mvn javadoc:aggregate --settings $SETTINGS_FILE -P "!jsp-precompile"
+	- name: "Check: Error Prone"
+	  if: matrix.java != 14
+	  run: mvn clean test-compile -P "ErrorProne,!jsp-precompile" --settings $SETTINGS_FILE
+	- name: "Check: Code Style"
+	  run: mvn directory:highest-basedir@find-root checkstyle:check --settings $SETTINGS_FILE
+	- name: "Check: Documentation"
+	  run: mvn javadoc:aggregate --settings $SETTINGS_FILE -P "!jsp-precompile"
 
-  minor-style:
-    needs: compile
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 11
-      uses: actions/setup-java@v4.4.0
-      with:
-        distribution: 'zulu'
-        java-version: 11
-        cache: 'maven'
+minor-style:
+	needs: compile
+	runs-on: ubuntu-latest
+	timeout-minutes: 5
+	steps:
+	- uses: actions/checkout@v4
+	- name: Set up JDK 11
+	  uses: actions/setup-java@v4.4.0
+	  with:
+		distribution: 'zulu'
+		java-version: 11
+		cache: 'maven'
 
-    - name: "Check: No FIXMEs left"
-      run: mvn exec:exec@check-for-fixme --settings $SETTINGS_FILE -P CheckForFIXME
-    - name: "Check: copyright declarations"
-      run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
-    - name: "Check: CITATION.cff validity"
-      uses: dieghernan/cff-validator@v3
-      with:
-        install-r: true
+	- name: "Check: No FIXMEs left"
+	  run: mvn exec:exec@check-for-fixme --settings $SETTINGS_FILE -P CheckForFIXME
+	- name: "Check: copyright declarations"
+	  run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
+	- name: "Check: CITATION.cff validity"
+	  uses: dieghernan/cff-validator@v3
+	  with:
+		install-r: true
