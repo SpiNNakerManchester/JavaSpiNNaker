@@ -15,69 +15,69 @@
 name: Publish
 
 on: #[push]
-push:
-	branches: [ master ]
+  push:
+    branches: [ master ]
 
 env:
-SETTINGS_FILE: .github/settings.xml
-# Workaround for occasional unreliable downloads.
-# See https://stackoverflow.com/q/55899091/301832 for details
-# Except Maven doesn't use Wagon any more, but Aether.
-# https://maven.apache.org/resolver/configuration.html
-MAVEN_OPTS: >
-	-Daether.connector.http.connectionMaxTtl=25
+  SETTINGS_FILE: .github/settings.xml
+  # Workaround for occasional unreliable downloads.
+  # See https://stackoverflow.com/q/55899091/301832 for details
+  # Except Maven doesn't use Wagon any more, but Aether.
+  # https://maven.apache.org/resolver/configuration.html
+  MAVEN_OPTS: >
+    -Daether.connector.http.connectionMaxTtl=25
 
 jobs:
-build:
-	permissions:
-	  contents: write
-	runs-on: ubuntu-latest
-	timeout-minutes: 10
-	strategy:
-	  matrix:
-		java: [14]
-	env:
-	  SITE_DIR: target/staging
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        java: [14]
+    env:
+      SITE_DIR: target/staging
 
-	steps:
-	  - uses: actions/checkout@v4
-	  - name: "Set up node cache"
-		uses: actions/cache@v4
-		with:
-		  path: '~/.m2/repository/com/github/eirslett/node'
-		  key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
-		  restore-keys: ${{ runner.os }}-node-
-	  - name: Set up JDK ${{ matrix.java }}
-		uses: actions/setup-java@v4.7.1
-		with:
-		  distribution: 'zulu'
-		  java-version: ${{ matrix.java }}
-	  - name: Cache Maven packages
-		uses: actions/cache@v4
-		with:
-		  path: ~/.m2
-		  key: ${{ runner.os }}-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
-		  restore-keys: ${{ runner.os }}-m2-j${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Set up node cache"
+        uses: actions/cache@v4
+        with:
+          path: '~/.m2/repository/com/github/eirslett/node'
+          key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
+          restore-keys: ${{ runner.os }}-node-
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4.7.1
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-j${{ matrix.java }}
 
-	  - name: Ensure dependencies are present
-		run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
-		continue-on-error: true
+      - name: Ensure dependencies are present
+        run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
+        continue-on-error: true
 
-	  - name: Build
-		run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+      - name: Build
+        run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
 
-	  - name: Build Documentation
-		run: |
-		  mvn site site:stage --settings $SETTINGS_FILE -P "!jsp-precompile"
-		  touch $SITE_DIR/.nojekyll
+      - name: Build Documentation
+        run: |
+          mvn site site:stage --settings $SETTINGS_FILE -P "!jsp-precompile"
+          touch $SITE_DIR/.nojekyll
 
-	  - name: Deploy to GitHub Pages
-		uses: JamesIves/github-pages-deploy-action@v4.6.8
-		with:
-		  branch: gh-pages
-		  folder: ${{ env.SITE_DIR }}
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
+        with:
+          branch: gh-pages
+          folder: ${{ env.SITE_DIR }}
 
-	  - name: "Post: Purge SNAPSHOTs"
-		# Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
-		# will always rebuild internal snapshots.
-		run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
+      - name: "Post: Purge SNAPSHOTs"
+        # Do not cache SNAPSHOT dependencies; we don't use external snapshots and we
+        # will always rebuild internal snapshots.
+        run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
