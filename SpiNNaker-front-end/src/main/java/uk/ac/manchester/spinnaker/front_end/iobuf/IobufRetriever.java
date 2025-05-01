@@ -123,6 +123,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 * @throws RuntimeException
 	 *             If an unexpected exception happens.
 	 */
+	// see https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/1218
 	public NotableMessages retrieveIobufContents(IobufRequest request,
 			File provenanceDir)
 			throws IOException, ProcessException, InterruptedException {
@@ -173,6 +174,7 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 * @throws RuntimeException
 	 *             If an unexpected exception happens.
 	 */
+	// see https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/1218
 	public NotableMessages retrieveIobufContents(CoreSubsets cores,
 			File binaryFile, File provenanceDir)
 			throws IOException, ProcessException, InterruptedException {
