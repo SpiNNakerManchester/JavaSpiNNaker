@@ -1012,7 +1012,8 @@ public class AllocatorTask extends DatabaseAwareBean
 				destroyAll.call(
 						"The machine has been shut down due to an emergency");
 				return jobs;
-			}}));
+			}
+		}));
 		allocations.updateEpochs();
 	}
 

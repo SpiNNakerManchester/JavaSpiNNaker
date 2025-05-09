@@ -249,7 +249,7 @@ public class BMPController extends DatabaseAwareBean {
 				} catch (ProcessException | InterruptedException
 						| IOException e) {
 					log.warn("Error when stopping", e);
-				};
+				}
 			}
 			execute(conn -> {
 				try (var setAllOff = conn.update(SET_ALL_BOARDS_OFF)) {

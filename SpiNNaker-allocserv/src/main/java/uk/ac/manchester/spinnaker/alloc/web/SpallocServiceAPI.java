@@ -272,8 +272,12 @@ public interface SpallocServiceAPI {
 			@Context UriInfo ui, @Context HttpServletRequest request,
 			@Context SecurityContext security);
 
-
-
+	/**
+	 * Immediately stop all jobs and power down all boards.
+	 *
+	 * @param commandCode
+	 * @param response
+	 */
 	@DELETE
 	@Description("Immediately stop all jobs and power down all boards,"
 			+ " and stop accepting new jobs.")
