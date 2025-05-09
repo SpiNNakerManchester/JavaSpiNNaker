@@ -1457,6 +1457,11 @@ public class AllocatorTask extends DatabaseAwareBean
 		 * Stop the allocator.
 		 */
 		void emergencyStop();
+
+		/**
+		 * Restart allocations after stopping, to allow more tests!
+		 */
+		void restartAfterStop();
 	}
 
 	/** Operations for testing historical database only. */
@@ -1505,6 +1510,12 @@ public class AllocatorTask extends DatabaseAwareBean
 			@Override
 			public void emergencyStop() {
 				AllocatorTask.this.emergencyStop();
+			}
+
+			@Override
+			public void restartAfterStop() {
+				AllocatorTask.this.emergencyStop = false;
+				AllocatorTask.this.init();
 			}
 		};
 	}

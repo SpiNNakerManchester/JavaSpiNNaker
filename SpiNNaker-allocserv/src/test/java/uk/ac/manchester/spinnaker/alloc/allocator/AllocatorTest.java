@@ -458,6 +458,9 @@ class AllocatorTest extends TestSupport {
 			getAllocTester().emergencyStop();
 
 			assertState(job, DESTROYED, 0, 0);
+
+			getAllocTester().restartAfterStop();
+			bmpCtrl.emergencyResume();
 		});
 	}
 }

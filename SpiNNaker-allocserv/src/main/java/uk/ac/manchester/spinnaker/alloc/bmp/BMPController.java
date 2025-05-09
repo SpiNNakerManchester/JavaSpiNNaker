@@ -239,6 +239,9 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
+	/**
+	 * Stops execution immediately.
+	 */
 	public void emergencyStop() {
 		synchronized (scheduler) {
 			emergencyStop = true;
@@ -1271,6 +1274,11 @@ public class BMPController extends DatabaseAwareBean {
 		 * Clear the last BMP exception.
 		 */
 		void clearBmpException();
+
+		/**
+		 * Resume after emergency stop.
+		 */
+		void emergencyResume();
 	}
 
 	/**
@@ -1329,6 +1337,15 @@ public class BMPController extends DatabaseAwareBean {
 			public void clearBmpException() {
 				synchronized (BMPController.this) {
 					bmpProcessingException = null;
+				}
+			}
+
+			@Override
+			public void emergencyResume() {
+				synchronized (scheduler) {
+					emergencyStop = false;
+					workers.clear();
+					init();
 				}
 			}
 		};
