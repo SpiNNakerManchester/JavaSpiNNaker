@@ -111,9 +111,12 @@ public class BMPController extends DatabaseAwareBean {
 	@Autowired
 	private AllocatorTask allocator;
 
-	@GuardedBy("itself")
+	private Object guard = new Object();
+
+	@GuardedBy("guard")
 	private ThreadPoolTaskScheduler scheduler;
 
+	@GuardedBy("guard")
 	private boolean emergencyStop = false;
 
 	/**
@@ -160,9 +163,9 @@ public class BMPController extends DatabaseAwareBean {
 
 	@PostConstruct
 	private void init() {
-		// Set up scheduler
-		scheduler = new ThreadPoolTaskScheduler();
-		synchronized (scheduler) {
+		synchronized (guard) {
+			// Set up scheduler
+			scheduler = new ThreadPoolTaskScheduler();
 			scheduler.setThreadGroupName("BMP");
 
 			controllerFactory = controllerFactoryBean::getObject;
@@ -223,7 +226,7 @@ public class BMPController extends DatabaseAwareBean {
 	 *            A list of BMPs that have changed.
 	 */
 	public void triggerSearch(Collection<Integer> bmps) {
-		synchronized (scheduler) {
+		synchronized (guard) {
 			if (emergencyStop) {
 				log.warn("Emergency stop; not triggering workers");
 				return;
@@ -243,7 +246,7 @@ public class BMPController extends DatabaseAwareBean {
 	 * Stops execution immediately.
 	 */
 	public void emergencyStop() {
-		synchronized (scheduler) {
+		synchronized (guard) {
 			emergencyStop = true;
 			scheduler.shutdown();
 			for (var worker : workers.values()) {
@@ -1342,11 +1345,11 @@ public class BMPController extends DatabaseAwareBean {
 
 			@Override
 			public void emergencyResume() {
-				synchronized (scheduler) {
+				synchronized (guard) {
 					emergencyStop = false;
 					workers.clear();
-					init();
 				}
+				init();
 			}
 		};
 	}
