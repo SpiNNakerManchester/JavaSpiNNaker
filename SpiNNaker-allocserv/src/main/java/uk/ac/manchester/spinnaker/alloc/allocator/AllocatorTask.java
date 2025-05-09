@@ -1514,8 +1514,11 @@ public class AllocatorTask extends DatabaseAwareBean
 
 			@Override
 			public void restartAfterStop() {
-				AllocatorTask.this.emergencyStop = false;
-				AllocatorTask.this.init();
+				synchronized (AllocatorTask.this.futures) {
+					AllocatorTask.this.emergencyStop = false;
+					AllocatorTask.this.futures.clear();
+					AllocatorTask.this.init();
+				}
 			}
 		};
 	}
