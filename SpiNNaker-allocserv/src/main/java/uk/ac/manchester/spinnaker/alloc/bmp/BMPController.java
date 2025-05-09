@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedResource;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -112,7 +111,10 @@ public class BMPController extends DatabaseAwareBean {
 	@Autowired
 	private AllocatorTask allocator;
 
-	private TaskScheduler scheduler;
+	@GuardedBy("self")
+	private ThreadPoolTaskScheduler scheduler;
+
+	private boolean emergencyStop = false;
 
 	/**
 	 * Synchronizer for power request access to the database (as otherwise
@@ -159,31 +161,33 @@ public class BMPController extends DatabaseAwareBean {
 	@PostConstruct
 	private void init() {
 		// Set up scheduler
-		var sched = new ThreadPoolTaskScheduler();
-		scheduler = sched;
-		sched.setThreadGroupName("BMP");
+		scheduler = new ThreadPoolTaskScheduler();
+		synchronized (scheduler) {
+			scheduler.setThreadGroupName("BMP");
 
-		controllerFactory = controllerFactoryBean::getObject;
-		allocator.setBMPController(this);
+			controllerFactory = controllerFactoryBean::getObject;
+			allocator.setBMPController(this);
 
-		// We do the making of workers later in tests
-		List<Worker> madeWorkers = null;
-		if (!serviceControl.isUseDummyBMP()) {
-			madeWorkers = makeWorkers();
-		}
+			// We do the making of workers later in tests
+			List<Worker> madeWorkers = null;
+			if (!serviceControl.isUseDummyBMP()) {
+				madeWorkers = makeWorkers();
+			}
 
-		// Set the pool size to match the number of workers
-		if (workers.size() > 1) {
-			sched.setPoolSize(workers.size());
-		}
+			// Set the pool size to match the number of workers
+			if (workers.size() > 1) {
+				scheduler.setPoolSize(workers.size());
+			}
 
-		// Launch the scheduler now it is all set up
-		sched.initialize();
+			// Launch the scheduler now it is all set up
+			scheduler.initialize();
 
-		// And now use the scheduler
-		if (madeWorkers != null) {
-			for (var worker : madeWorkers) {
-				scheduler.scheduleAtFixedRate(worker, allocProps.getPeriod());
+			// And now use the scheduler
+			if (madeWorkers != null) {
+				for (var worker : madeWorkers) {
+					scheduler.scheduleAtFixedRate(worker,
+							allocProps.getPeriod());
+				}
 			}
 		}
 	}
@@ -219,13 +223,40 @@ public class BMPController extends DatabaseAwareBean {
 	 *            A list of BMPs that have changed.
 	 */
 	public void triggerSearch(Collection<Integer> bmps) {
-		for (var b : bmps) {
-			var worker = workers.get(b);
-			if (worker != null) {
-				scheduler.schedule(() -> worker.run(), Instant.now());
-			} else {
-				log.error("Could not find worker for BMP {}", b);
+		synchronized (scheduler) {
+			if (emergencyStop) {
+				log.warn("Emergency stop; not triggering workers");
+				return;
 			}
+			for (var b : bmps) {
+				var worker = workers.get(b);
+				if (worker != null) {
+					scheduler.schedule(() -> worker.run(), Instant.now());
+				} else {
+					log.error("Could not find worker for BMP {}", b);
+				}
+			}
+		}
+	}
+
+	public void emergencyStop() {
+		synchronized (scheduler) {
+			emergencyStop = true;
+			scheduler.shutdown();
+			for (var worker : workers.values()) {
+				try {
+					worker.getControl().powerOff(worker.boards.keySet());
+				} catch (ProcessException | InterruptedException
+						| IOException e) {
+					log.warn("Error when stopping", e);
+				};
+			}
+			execute(conn -> {
+				try (var setAllOff = conn.update(SET_ALL_BOARDS_OFF)) {
+					setAllOff.call();
+				}
+				return null;
+			});
 		}
 	}
 

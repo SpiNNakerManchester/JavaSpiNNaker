@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -315,7 +316,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	@Override
-	public void powerOff(List<BMPBoard> boards)
+	public void powerOff(Collection<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
 		txrx.powerOff(boards);
 	}

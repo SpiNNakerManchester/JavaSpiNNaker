@@ -178,6 +178,17 @@ public abstract class SQLQueries {
 					+ "FROM jobs WHERE job_state != 4 " // DESTROYED
 					+ "ORDER BY job_id DESC LIMIT :limit OFFSET :offset";
 
+	/** Select all live jobs. */
+	@ResultColumn("job_id")
+	protected static final String GET_ALL_LIVE_JOBS =
+			"SELECT job_id FROM jobs WHERE job_state != 4";
+
+	/** Destroy all live jobs. */
+	@Parameter("death_reason")
+	protected static final String DESTROY_ALL_LIVE_JOBS =
+			"UPDATE jobs SET job_state = 4, death_reason = :death_reason, "
+			+ "death_timestamp = UNIX_TIMESTAMP() WHERE job_state != 4";
+
 	/** Get basic information about a specific job. */
 	@Parameter("job_id")
 	@ResultColumn("job_id")
@@ -765,6 +776,13 @@ public abstract class SQLQueries {
 					+ "WHERE board_id = :board_id";
 
 	/**
+	 * Set all boards to off.
+	 */
+	protected static final String SET_ALL_BOARDS_OFF =
+			"UPDATE boards SET board_power = 0, "
+					+ "power_off_timestamp = UNIX_TIMESTAMP()";
+
+	/**
 	 * Find jobs that have expired their keepalive interval.
 	 *
 	 * @see AllocatorTask
@@ -801,6 +819,10 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	protected static final String KILL_JOB_ALLOC_TASK =
 			"DELETE FROM job_request WHERE job_id = :job_id";
+
+	/** Delete all requests to allocate resources for a job. */
+	protected static final String KILL_ALL_JOB_ALLOC_TASK =
+			"DELETE FROM job_request";
 
 	/**
 	 * Delete a request to change the power of a board. Used once the change has

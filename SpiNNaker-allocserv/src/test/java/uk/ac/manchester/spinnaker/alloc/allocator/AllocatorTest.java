@@ -443,4 +443,21 @@ class AllocatorTest extends TestSupport {
 			}
 		});
 	}
+
+	@Test
+	public void emergencyStop() throws Exception {
+		doTransactionalTest(() -> {
+			int job = makeQueuedJob(1);
+			getAllocTester().allocate();
+			makeAllocBySizeRequest(job, 1);
+			snooze1s();
+			snooze1s();
+
+			assumeState(job, QUEUED, 1, 0);
+
+			getAllocTester().emergencyStop();
+
+			assertState(job, DESTROYED, 0, 0);
+		});
+	}
 }

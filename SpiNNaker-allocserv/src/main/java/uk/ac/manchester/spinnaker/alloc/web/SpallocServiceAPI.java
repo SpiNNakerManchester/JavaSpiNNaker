@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -270,6 +271,18 @@ public interface SpallocServiceAPI {
 			@Positive(message = "job ID must be positive") int id,
 			@Context UriInfo ui, @Context HttpServletRequest request,
 			@Context SecurityContext security);
+
+
+
+	@DELETE
+	@Description("Immediately stop all jobs and power down all boards,"
+			+ " and stop accepting new jobs.")
+	@Operation(parameters = @Parameter(in = QUERY, name = "commandCode",
+			description = "The command code to validate the request.",
+			schema = @Schema(implementation = String.class)))
+	@Path("/emergencyStop")
+	void emergencyStop(@QueryParam("commandCode") String commandCode,
+			@Suspended AsyncResponse response);
 
 	/**
 	 * Interface to a particular machine.
