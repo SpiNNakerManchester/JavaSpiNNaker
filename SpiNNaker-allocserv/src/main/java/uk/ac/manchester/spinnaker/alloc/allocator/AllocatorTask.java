@@ -132,7 +132,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	@Autowired
 	private TaskScheduler scheduler;
 
-	@GuardedBy("self")
+	@GuardedBy("itself")
 	private final List<ScheduledFuture<?>> futures = new ArrayList<>();
 
 	@GuardedBy("futures")

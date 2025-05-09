@@ -111,7 +111,7 @@ public class BMPController extends DatabaseAwareBean {
 	@Autowired
 	private AllocatorTask allocator;
 
-	@GuardedBy("self")
+	@GuardedBy("itself")
 	private ThreadPoolTaskScheduler scheduler;
 
 	private boolean emergencyStop = false;
