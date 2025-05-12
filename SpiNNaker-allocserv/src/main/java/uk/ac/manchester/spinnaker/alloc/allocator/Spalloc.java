@@ -907,10 +907,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	public void emergencyStop(String commandCode) {
-		if (commandCode != props.getEmergencyStopCommandCode()) {
+		if (!commandCode.equals(props.getEmergencyStopCommandCode())) {
 			throw new IllegalArgumentException("Invalid emergency stop code");
 		}
-		// TODO: Stop!
+		allocator.emergencyStop();
 		emergencyStop = true;
 		log.warn("Emergency stop requested!");
 	}
