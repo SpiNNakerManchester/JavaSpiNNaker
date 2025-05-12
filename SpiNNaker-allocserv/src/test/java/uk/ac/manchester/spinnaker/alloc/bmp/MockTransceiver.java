@@ -159,8 +159,10 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
 		var r = fpgaResults.pollFirst();
 		if (r != null) {
+			log.info("Returning {} from queue", r.value);
 			return r.value;
 		}
+		log.info("Returning {} from FPGA", fpga.value);
 		return fpga.value;
 	}
 

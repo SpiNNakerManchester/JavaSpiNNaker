@@ -123,6 +123,7 @@ public class AllocatorFailTest extends TestSupport {
 
 				// Make a transceiver that *doesn't* fail the requests
 				MockTransceiver.installIntoFactory(txrxFactory);
+				MockTransceiver.fpgaResults.clear();
 				this.bmpCtrl.resetTransceivers();
 
 				// So we should be able to reallocate the job to a new board
