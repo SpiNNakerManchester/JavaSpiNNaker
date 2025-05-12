@@ -142,9 +142,23 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.IobufDirParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufDirParam</a></span></code></th>
+<td class="colLast">
+<div class="block">Argument handler for the <code>&lt;iobufDir&gt;</code> parameter.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a></span></code></th>
 <td class="colLast">
 <div class="block">Argument handler for the <code>&lt;iobufMapFile&gt;</code> parameter.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a></span></code></th>
+<td class="colLast">
+<div class="block">Argument handler for the <code>&lt;logfile&gt;</code> parameter.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -159,13 +173,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a></span></code></th>
 <td class="colLast">
 <div class="block">Argument handler for the <code>&lt;placementFile&gt;</code> parameter.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a></span></code></th>
-<td class="colLast">
-<div class="block">Argument handler for the <code>&lt;runFolder&gt;</code> parameter.</div>
 </td>
 </tr>
 </tbody>
@@ -193,20 +200,20 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#downloadRecordingChannelsViaClassicTransfer(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.PlacementsParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam)">downloadRecordingChannelsViaClassicTransfer</a></span>&#8203;(<a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a>&nbsp;placements,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#downloadRecordingChannelsViaClassicTransfer(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.PlacementsParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam)">downloadRecordingChannelsViaClassicTransfer</a></span>&#8203;(<a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a>&nbsp;placements,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.DbFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DbFileParam</a>&nbsp;dbFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder)</code></th>
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile)</code></th>
 <td class="colLast">
 <div class="block">Download data without using data gatherer cores.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#downloadRecordingChannelsViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam)">downloadRecordingChannelsViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#downloadRecordingChannelsViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam)">downloadRecordingChannelsViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.DbFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DbFileParam</a>&nbsp;dbFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder)</code></th>
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile)</code></th>
 <td class="colLast">
 <div class="block">Download data using data gatherer cores.</div>
 </td>
@@ -220,20 +227,21 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam)">retrieveIOBUFs</a></span>&#8203;(<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufDirParam)">retrieveIOBUFs</a></span>&#8203;(<a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a>&nbsp;iobuf,
 <a href="CommandLineInterface.DbFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DbFileParam</a>&nbsp;dbFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder)</code></th>
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile,
+<a href="CommandLineInterface.IobufDirParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufDirParam</a>&nbsp;iobufDir)</code></th>
 <td class="colLast">
 <div class="block">Retrieve IOBUFs in parallel.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DsFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DsFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></span>&#8203;(<a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.DsFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DsFileParam</a>&nbsp;dsFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder,
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&gt;&nbsp;reportFolder)</code></th>
 <td class="colLast">
 <div class="block">Run the data specifications in parallel.</div>
@@ -243,7 +251,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></span>&#8203;(<a href="../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dsFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;logfile,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</code></th>
 <td class="colLast">
 <div class="block">Run the data specifications in parallel.</div>
@@ -288,7 +296,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <h3><a id="runDSEUploadingViaClassicTransfer(uk.ac.manchester.spinnaker.machine.Machine,java.io.File,java.io.File,java.lang.Boolean)">runDSEUploadingViaClassicTransfer</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">runDSEUploadingViaClassicTransfer</span>&#8203;(<span class="arguments"><a href="../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dsFile,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;runFolder,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;logfile,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;filterSystemCores)</span>
                                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
@@ -301,7 +309,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - Description of overall machine</dd>
 <dd><code>dsFile</code> - Path to the dataspec database</dd>
-<dd><code>runFolder</code> - Directory containing per-run information.</dd>
+<dd><code>logfile</code> - The path where the log should write.</dd>
 <dd><code>filterSystemCores</code> - If <code>true</code>, only run the DSE for application vertices. If
             <code>false</code>, only run the DSE for system vertices. If
             <code>null</code>, run the DSE for all vertices.</dd>
@@ -317,11 +325,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DsFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></h3>
+<h3><a id="runDSEForAppCoresUploadingViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DsFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam,java.util.Optional)">runDSEForAppCoresUploadingViaMonitorStreaming</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">runDSEForAppCoresUploadingViaMonitorStreaming</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.DsFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DsFileParam</a>&nbsp;dsFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder,
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&gt;&nbsp;reportFolder)</span>
                                                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
@@ -335,7 +343,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dd><code>gatherers</code> - List of descriptions of gatherers.</dd>
 <dd><code>machine</code> - Description of overall machine.</dd>
 <dd><code>dsFile</code> - Path to the dataspec database</dd>
-<dd><code>runFolder</code> - Directory containing per-run information.</dd>
+<dd><code>logfile</code> - The path where the log should write.</dd>
 <dd><code>reportFolder</code> - Directory containing reports. If <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true#empty()" title="class or interface in java.util" class="externalLink"><code>Optional.empty()</code></a>, no
             report will be written.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -350,11 +358,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam)">retrieveIOBUFs</a></h3>
+<h3><a id="retrieveIOBUFs(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufMapParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.IobufDirParam)">retrieveIOBUFs</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">retrieveIOBUFs</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.IobufMapParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufMapParam</a>&nbsp;iobuf,
 <a href="CommandLineInterface.DbFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DbFileParam</a>&nbsp;dbFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder)</span>
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile,
+<a href="CommandLineInterface.IobufDirParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.IobufDirParam</a>&nbsp;iobufDir)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
@@ -368,7 +377,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
             are running those executables, and which we will download
             IOBUFs for.</dd>
 <dd><code>dbFile</code> - The database that receives the output).</dd>
-<dd><code>runFolder</code> - Directory containing per-run information (i.e., where to log).</dd>
+<dd><code>logfile</code> - The path where the log should write.</dd>
+<dd><code>iobufDir</code> - The path to the directory where the iobuff would be written</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail.</dd>
 <dd><code><a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code> - If a BMP is uncontactable or SpiNNaker rejects a message.</dd>
@@ -380,11 +390,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="downloadRecordingChannelsViaClassicTransfer(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.PlacementsParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam)">downloadRecordingChannelsViaClassicTransfer</a></h3>
+<h3><a id="downloadRecordingChannelsViaClassicTransfer(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.PlacementsParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam)">downloadRecordingChannelsViaClassicTransfer</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">downloadRecordingChannelsViaClassicTransfer</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.PlacementsParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.PlacementsParam</a>&nbsp;placements,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.DbFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DbFileParam</a>&nbsp;dbFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder)</span>
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile)</span>
                                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
@@ -396,7 +406,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dd><code>placements</code> - List of descriptions of binary placements.</dd>
 <dd><code>machine</code> - Description of overall machine.</dd>
 <dd><code>dbFile</code> - The database that receives the output).</dd>
-<dd><code>runFolder</code> - Directory containing per-run information (i.e., where to log).</dd>
+<dd><code>logfile</code> - The path where the log should write.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail</dd>
 <dd><code><a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code> - If a BMP is uncontactable or SpiNNaker rejects a message</dd>
@@ -408,11 +418,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="downloadRecordingChannelsViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.RunFolderParam)">downloadRecordingChannelsViaMonitorStreaming</a></h3>
+<h3><a id="downloadRecordingChannelsViaMonitorStreaming(uk.ac.manchester.spinnaker.front_end.CommandLineInterface.GatherersParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.MachineParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.DbFileParam,uk.ac.manchester.spinnaker.front_end.CommandLineInterface.LogfileParam)">downloadRecordingChannelsViaMonitorStreaming</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">downloadRecordingChannelsViaMonitorStreaming</span>&#8203;(<span class="arguments"><a href="CommandLineInterface.GatherersParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.GatherersParam</a>&nbsp;gatherers,
 <a href="CommandLineInterface.MachineParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.MachineParam</a>&nbsp;machine,
 <a href="CommandLineInterface.DbFileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.DbFileParam</a>&nbsp;dbFile,
-<a href="CommandLineInterface.RunFolderParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.RunFolderParam</a>&nbsp;runFolder)</span>
+<a href="CommandLineInterface.LogfileParam.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface.LogfileParam</a>&nbsp;logfile)</span>
                                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a>,
 <a href="../storage/StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a>,
@@ -424,7 +434,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <dd><code>gatherers</code> - List of descriptions of gatherers.</dd>
 <dd><code>machine</code> - Description of overall machine.</dd>
 <dd><code>dbFile</code> - The database that receives the output).</dd>
-<dd><code>runFolder</code> - Directory containing per-run information (i.e., where to log).</dd>
+<dd><code>logfile</code> - The path where the log should write.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the communications fail</dd>
 <dd><code><a href="../transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></code> - If a BMP is uncontactable or SpiNNaker rejects a message</dd>
