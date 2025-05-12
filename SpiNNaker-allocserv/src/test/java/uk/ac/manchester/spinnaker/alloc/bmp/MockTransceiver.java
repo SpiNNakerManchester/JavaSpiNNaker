@@ -291,4 +291,10 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		crc.update(slice(flash, baseAddress.address, length));
 		return (int) (crc.getValue() & CRC_MASK);
 	}
+
+	@Override
+	public int pingBoard(String address) {
+		log.info("pingBoard({})", address);
+		return 0;
+	}
 }

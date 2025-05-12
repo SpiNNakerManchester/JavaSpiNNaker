@@ -67,7 +67,7 @@ class FirmwareLoaderTest extends TestSupport {
 		killDB();
 		setupDB1();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare();
+		this.bmpCtrl.prepare(true);
 		this.bmpCtrl.clearBmpException();
 	}
 

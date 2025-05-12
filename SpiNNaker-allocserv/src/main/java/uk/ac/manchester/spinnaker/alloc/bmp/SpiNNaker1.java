@@ -44,7 +44,6 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.utils.Ping;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -349,7 +348,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void ping(List<BMPBoard> boards) {
 		boards.parallelStream().forEach(id -> {
 			var address = boardAddresses.get(id);
-			if (Ping.ping(address) != 0) {
+			if (txrx.pingBoard(address) != 0) {
 				log.warn(
 						"ARP fault? Board with address {} might not have "
 								+ "come up correctly", address);

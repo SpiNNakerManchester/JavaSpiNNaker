@@ -146,6 +146,8 @@ public class BMPController extends DatabaseAwareBean {
 	@GuardedBy("this")
 	private Throwable bmpProcessingException;
 
+	private boolean useDummyComms = false;
+
 	/**
 	 * An {@link UncaughtExceptionHandler}.
 	 *
@@ -163,6 +165,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	@PostConstruct
 	private void init() {
+		useDummyComms = serviceControl.isUseDummyBMP();
 		synchronized (guard) {
 			// Set up scheduler
 			scheduler = new ThreadPoolTaskScheduler();
@@ -171,13 +174,8 @@ public class BMPController extends DatabaseAwareBean {
 			controllerFactory = controllerFactoryBean::getObject;
 			allocator.setBMPController(this);
 
-			// We do the making of workers later in tests
-			List<Worker> madeWorkers = null;
-			if (!serviceControl.isUseDummyBMP()) {
-				madeWorkers = makeWorkers();
-			}
-
 			// Set the pool size to match the number of workers
+			makeWorkers();
 			if (workers.size() > 1) {
 				scheduler.setPoolSize(workers.size());
 			}
@@ -186,11 +184,9 @@ public class BMPController extends DatabaseAwareBean {
 			scheduler.initialize();
 
 			// And now use the scheduler
-			if (madeWorkers != null) {
-				for (var worker : madeWorkers) {
-					scheduler.scheduleAtFixedRate(worker,
-							allocProps.getPeriod());
-				}
+			for (var worker : workers.values()) {
+				scheduler.scheduleAtFixedRate(worker,
+						allocProps.getPeriod());
 			}
 		}
 	}
@@ -656,10 +652,7 @@ public class BMPController extends DatabaseAwareBean {
 			boolean ok = bmpAction(() -> {
 				changeBoardPowerState(controller);
 				// We want to ensure the lead board is alive
-				if (!serviceControl.isUseDummyBMP()) {
-					// Don't bother with pings when the dummy is enabled
-					controller.ping(powerOnBoards);
-				}
+				controller.ping(powerOnBoards);
 				synchronized (powerDBSync) {
 					done();
 				}
@@ -1113,11 +1106,16 @@ public class BMPController extends DatabaseAwareBean {
 
 		private SpiNNakerControl getControl() {
 			if (control == null) {
-				try {
-					control = controllerFactory.create(machine, coords, boards);
-				} catch (Exception e) {
-					log.error("Could not create control for BMP '{}'",
-							bmpId, e);
+				if (useDummyComms) {
+					control = new SpiNNakerControlDummy();
+				} else {
+					try {
+						control = controllerFactory.create(machine, coords,
+								boards);
+					} catch (Exception e) {
+						log.error("Could not create control for BMP '{}'",
+								bmpId, e);
+					}
 				}
 			}
 			return control;
@@ -1223,8 +1221,10 @@ public class BMPController extends DatabaseAwareBean {
 		/**
 		 * Ensure things are set up after a database change that updates the
 		 * BMPs in the system.
+		 *
+		 * @param useDummyComms Whether to use dummy communications in the test
 		 */
-		void prepare();
+		void prepare(boolean useDummyComms);
 
 		/**
 		 * Reset the transceivers stored in the workers after installing a new
@@ -1297,7 +1297,8 @@ public class BMPController extends DatabaseAwareBean {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
-			public void prepare() {
+			public void prepare(boolean useDummyCommsParam) {
+				useDummyComms = useDummyCommsParam;
 				makeWorkers();
 			}
 
