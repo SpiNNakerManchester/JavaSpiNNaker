@@ -1336,4 +1336,16 @@ class DQLTest extends SimpleDBTestBase {
 			});
 		}
 	}
+
+	@Test
+	void getAllLiveJobs() {
+		try (var q = c.query(GET_ALL_LIVE_JOBS)) {
+			c.transaction(() -> {
+				assertEquals(List.of(), q.getParameters());
+				assertEquals(List.of("job_id"),	q.getColumns());
+				// No jobs right now
+				assertEquals(empty(), q.call1(integer("job_id")));
+			});
+		}
+	}
 }

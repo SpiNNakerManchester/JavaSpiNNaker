@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +89,7 @@ public interface SpiNNakerControl {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	void powerOff(List<BMPBoard> boards)
+	void powerOff(Collection<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException;
 
 	/**

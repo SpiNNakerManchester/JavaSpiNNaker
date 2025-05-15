@@ -157,7 +157,7 @@ public class TransceiverFactory
 			BMPCoords bmp) {
 		var connData = makeConnectionData(machineDescription, bmp);
 		try {
-			if (control.isUseDummyBMP()) {
+			if (testFactory != null) {
 				return testFactory.create(machineDescription.getName(),
 						connData, setBlacklist);
 			} else {

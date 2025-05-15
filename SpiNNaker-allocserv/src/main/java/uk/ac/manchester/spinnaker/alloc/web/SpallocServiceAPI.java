@@ -272,6 +272,20 @@ public interface SpallocServiceAPI {
 			@Context SecurityContext security);
 
 	/**
+	 * Immediately stop all jobs and power down all boards.
+	 *
+	 * @param commandCode
+	 * @param response
+	 */
+	@GET
+	@Description("Immediately stop all jobs and power down all boards,"
+			+ " and stop accepting new jobs.")
+	@Path("/emergencyStop")
+	void emergencyStop(@Description("Code to validate the request.")
+			@QueryParam("commandCode") String commandCode,
+			@Suspended AsyncResponse response);
+
+	/**
 	 * Interface to a particular machine.
 	 *
 	 * @author Donal Fellows

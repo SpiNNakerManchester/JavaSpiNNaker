@@ -590,6 +590,9 @@ public class SpallocProperties {
 		/** Name of user that system-generated reports are done by. */
 		private String systemReportUser;
 
+		/** Command code to accept for an emergency shutdown. */
+		private String emergencyStopCommandCode;
+
 		/**
 		 * @param period
 		 *            Time between runs of the main allocation algorithm.
@@ -603,17 +606,21 @@ public class SpallocProperties {
 		 *            taken out of service.
 		 * @param systemReportUser
 		 *            Name of user that system-generated reports are done by.
+		 * @param emergencyStopCommandCode
+		 *           Command code to accept for an emergency stop.
 		 */
 		public AllocatorProperties(@DefaultValue("5s") Duration period,
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
-				@DefaultValue("") String systemReportUser) {
+				@DefaultValue("") String systemReportUser,
+				@DefaultValue String emergencyStopCommandCode) {
 			this.period = period;
 			this.importanceSpan = importanceSpan;
 			this.priorityScale = priorityScale;
 			this.reportActionThreshold = reportActionThreshold;
 			this.systemReportUser = systemReportUser;
+			this.emergencyStopCommandCode = emergencyStopCommandCode;
 		}
 
 		/**
@@ -682,6 +689,18 @@ public class SpallocProperties {
 
 		void setSystemReportUser(String systemReportUser) {
 			this.systemReportUser = systemReportUser;
+		}
+
+		/**
+		 * @return Command code to accept for an emergency stop.
+		 */
+		@NotBlank
+		public String getEmergencyStopCommandCode() {
+			return emergencyStopCommandCode;
+		}
+
+		void setEmergencyStopCommandCode(String emergencyStopCommandCode) {
+			this.emergencyStopCommandCode = emergencyStopCommandCode;
 		}
 	}
 

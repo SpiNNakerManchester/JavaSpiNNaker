@@ -29,8 +29,6 @@ spalloc:
       domain: file:/there-is-no-such-file.txt
       introspection: file:/there-is-no-such-file.txt
       userinfo: file:/there-is-no-such-file.txt
-  transceiver:
-    dummy: true
   sqlite:
     performance-log: true
     performance-threshold: 1e2
@@ -39,3 +37,5 @@ spalloc:
   historical-data:
     datasource:
       jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spallochistory?user=root&password=test
+  allocator:
+    emergencyStopCommandCode: TestingTesting123

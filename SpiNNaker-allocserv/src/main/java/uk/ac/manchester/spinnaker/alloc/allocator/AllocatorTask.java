@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -54,6 +55,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.RestrictedApi;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -130,6 +132,15 @@ public class AllocatorTask extends DatabaseAwareBean
 	@Autowired
 	private TaskScheduler scheduler;
 
+	@GuardedBy("itself")
+	private final List<ScheduledFuture<?>> futures = new ArrayList<>();
+
+	@GuardedBy("futures")
+	private ScheduledFuture<?> allocateFuture = null;
+
+	@GuardedBy("futures")
+	private boolean emergencyStop = false;
+
 	// Note can't be autowired as circular;
 	// instead set by setter in postconstruct of BMPController
 	private BMPController bmpController;
@@ -141,11 +152,14 @@ public class AllocatorTask extends DatabaseAwareBean
 	@PostConstruct
 	@SuppressWarnings("FutureReturnValueIgnored")
 	private void init() {
-		scheduler.scheduleAtFixedRate(() -> allocate(),	allocProps.getPeriod());
-		scheduler.scheduleAtFixedRate(() -> expireJobs(),
-				keepAliveProps.getExpiryPeriod());
-		scheduler.schedule(() -> tombstone(),
-				new CronTrigger(historyProps.getSchedule()));
+		synchronized (futures) {
+			futures.add(scheduler.scheduleAtFixedRate(() -> allocate(),
+					allocProps.getPeriod()));
+			futures.add(scheduler.scheduleAtFixedRate(() -> expireJobs(),
+					keepAliveProps.getExpiryPeriod()));
+			futures.add(scheduler.schedule(() -> tombstone(),
+					new CronTrigger(historyProps.getSchedule())));
+		}
 	}
 
 	/**
@@ -160,8 +174,18 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	public void updateJob(int jobId, JobState sourceState,
 			JobState targetState) {
-		scheduler.schedule(() -> updateJobNow(jobId, sourceState, targetState),
-				Instant.now());
+		synchronized (futures) {
+			// No need to update the job in emergency stop mode, as we are
+			// going to cancel them all!  This is non-critical though; anything
+			// that gets through here should be OK.
+			if (emergencyStop) {
+				log.warn("emergency stop; not updating job {}", jobId);
+				return;
+			}
+			scheduler.schedule(
+					() -> updateJobNow(jobId, sourceState, targetState),
+					Instant.now());
+		}
 	}
 
 	private void updateJobNow(int jobId, JobState sourceState,
@@ -223,9 +247,18 @@ public class AllocatorTask extends DatabaseAwareBean
 				}
 
 				// If the job was not ready, we need to re-queue and reallocate
-				// boards
-				scheduler.schedule(() -> setPower(jobId, OFF, QUEUED),
-						Instant.now());
+				// boards, but not if in emergency stop mode
+				synchronized (futures) {
+					if (emergencyStop) {
+						log.warn("emergency stop; not requeuing job {}", jobId);
+						return false;
+					}
+					// The power request will get through here, but will be
+					// stopped later.  This is a request for off anyway, so non
+					// critical.
+					scheduler.schedule(() -> setPower(jobId, OFF, QUEUED),
+							Instant.now());
+				}
 				return false;
 			} else if (status.nChanges > 0) {
 				// There are still changes happening - let them finish first
@@ -258,6 +291,20 @@ public class AllocatorTask extends DatabaseAwareBean
 
 			return setJobState.call(targetState, jobId) > 0;
 		}
+	}
+
+	public void emergencyStop() {
+		synchronized (futures) {
+			emergencyStop = true;
+			for (var future : futures) {
+				future.cancel(true);
+			}
+			if (allocateFuture != null) {
+				allocateFuture.cancel(true);
+			}
+		}
+		bmpController.emergencyStop();
+		destroyAllJobs();
 	}
 
 	/**
@@ -298,7 +345,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * Ask for allocation to happen now.
 	 */
 	public void scheduleAllocateNow() {
-		scheduler.schedule(this::allocate, Instant.now());
+		synchronized (futures) {
+			if (emergencyStop) {
+				log.warn("emergency stop; not scheduling allocation");
+				return;
+			}
+			allocateFuture = scheduler.schedule(this::allocate, Instant.now());
+		}
 	}
 
 	/**
@@ -477,6 +530,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	/** Encapsulates the queries and updates used in deletion. */
 	private final class DestroySQL extends PowerSQL {
+
 		/** Get basic information about a specific job. */
 		private final Query getJob = conn.query(GET_JOB);
 
@@ -947,6 +1001,22 @@ public class AllocatorTask extends DatabaseAwareBean
 		allocations.updateBMPs();
 	}
 
+	private void destroyAllJobs() {
+		var allocations = new Allocations();
+		allocations.jobIds.addAll(execute(conn -> {
+			try (var getAll = conn.query(GET_ALL_LIVE_JOBS);
+					var destroyAll = conn.update(DESTROY_ALL_LIVE_JOBS);
+					var killAllAllocs = conn.update(KILL_ALL_JOB_ALLOC_TASK)) {
+				var jobs = getAll.call(integer("job_id"));
+				killAllAllocs.call();
+				destroyAll.call(
+						"The machine has been shut down due to an emergency");
+				return jobs;
+			}
+		}));
+		allocations.updateEpochs();
+	}
+
 	/**
 	 * Destroy a job.
 	 *
@@ -1382,6 +1452,16 @@ public class AllocatorTask extends DatabaseAwareBean
 		 * @return The BMPs updated by the expiry.
 		 */
 		Allocations expireJobs();
+
+		/**
+		 * Stop the allocator.
+		 */
+		void emergencyStop();
+
+		/**
+		 * Restart allocations after stopping, to allow more tests!
+		 */
+		void restartAfterStop();
 	}
 
 	/** Operations for testing historical database only. */
@@ -1425,6 +1505,20 @@ public class AllocatorTask extends DatabaseAwareBean
 			@Override
 			public Allocations expireJobs() {
 				return AllocatorTask.this.expireJobs(conn);
+			}
+
+			@Override
+			public void emergencyStop() {
+				AllocatorTask.this.emergencyStop();
+			}
+
+			@Override
+			public void restartAfterStop() {
+				synchronized (AllocatorTask.this.futures) {
+					AllocatorTask.this.emergencyStop = false;
+					AllocatorTask.this.futures.clear();
+					AllocatorTask.this.init();
+				}
 			}
 		};
 	}

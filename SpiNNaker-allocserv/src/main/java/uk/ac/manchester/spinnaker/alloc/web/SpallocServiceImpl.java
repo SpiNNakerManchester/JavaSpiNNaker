@@ -367,4 +367,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 			return new CreateNumBoards(1, 0);
 		}
 	}
+
+	@Override
+	public void emergencyStop(String commandCode, AsyncResponse response) {
+		bgAction(response, () -> {
+			core.emergencyStop(commandCode);
+			return ok().build();
+		});
+	}
 }

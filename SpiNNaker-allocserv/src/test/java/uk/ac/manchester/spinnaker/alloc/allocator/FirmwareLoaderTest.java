@@ -67,7 +67,7 @@ class FirmwareLoaderTest extends TestSupport {
 		killDB();
 		setupDB1();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare();
+		this.bmpCtrl.prepare(true);
 		this.bmpCtrl.clearBmpException();
 	}
 
@@ -180,6 +180,7 @@ class FirmwareLoaderTest extends TestSupport {
 		 * FPGA_ALL is a bogus value for the result of the particular
 		 * readFPGARegister() call we care about.
 		 */
+		MockTransceiver.fpgaResults.clear();
 		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL);
 		try (var c = db.getConnection()) {
 			this.conn = c;
@@ -204,6 +205,7 @@ class FirmwareLoaderTest extends TestSupport {
 		 * Two failures trigger a the reloading of the firmware. This is slow
 		 * (even slower in reality).
 		 */
+		MockTransceiver.fpgaResults.clear();
 		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL);
 		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL);
 		try (var c = db.getConnection()) {
