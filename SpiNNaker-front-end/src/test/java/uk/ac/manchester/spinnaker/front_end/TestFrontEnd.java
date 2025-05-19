@@ -110,7 +110,7 @@ class TestFrontEnd {
 			runMainExpecting(0, "help");
 		});
 		var requiredSubcommands = List.of("dse_app_mon", "gather");
-		var requiredArgs = List.of("<machineFile>", "<runFolder>");
+		var requiredArgs = List.of("<machineFile>", "<logfile>");
 		for (var cmd: requiredSubcommands) {
 			assertContainsInOrder(msg, cmd);
 			var msg2 = tapSystemOutNormalized(() -> {
@@ -136,8 +136,7 @@ class TestFrontEnd {
 	void testSimpleDSE(String cmd) throws Exception {
 		var machineFile = getClass().getResource("/machine.json").getFile();
 		var dsFile = getClass().getResource("/ds.sqlite3").getFile();
-		var runFolder = "target/test/SimpleDSE";
-		new File(runFolder).mkdirs();
+		var logfile = "target/test/SimpleDSE/jspin.log";
 
 		var saved = CommandLineInterface.hostFactory;
 		var called = new ValueHolder<>("none");
@@ -157,19 +156,19 @@ class TestFrontEnd {
 			var msg = tapSystemErrNormalized(() -> {
 				runMainExpecting(2, cmd);
 			});
-			assertContainsInOrder(msg, "<machineFile>", "<runFolder>");
+			assertContainsInOrder(msg, "<machineFile>", "<logfile>");
 
 			tapSystemErrNormalized(() -> {
 				runMainExpecting(2, cmd, machineFile);
 			});
 
 			tapSystemErrNormalized(() -> {
-				runMainExpecting(2, cmd, machineFile, dsFile, runFolder,
+				runMainExpecting(2, cmd, machineFile, dsFile, logfile,
 						"gorp");
 			});
 
 			assertEquals("none", called.getValue());
-			runMainExpecting(0, cmd, machineFile, dsFile, runFolder);
+			runMainExpecting(0, cmd, machineFile, dsFile, logfile);
 			assertEquals(cmd, called.getValue());
 		} finally {
 			CommandLineInterface.hostFactory = saved;
@@ -183,8 +182,7 @@ class TestFrontEnd {
 		var gatherFile = cls.getResource("/gather.json").getFile();
 		var machineFile = cls.getResource("/machine.json").getFile();
 		var dsFile = getClass().getResource("/ds.sqlite3").getFile();
-		var runFolder = "target/test/AdvancedDSE";
-		new File(runFolder).mkdirs();
+		var logfile = "target/test/AdvancedDSE/jspin.log";
 
 		var saved = CommandLineInterface.fastFactory;
 		var called = new ValueHolder<>("none");
@@ -207,11 +205,11 @@ class TestFrontEnd {
 				runMainExpecting(2, "dse_app_mon");
 			});
 			assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
-					"<runFolder>", "[<reportFolder>]");
+					"<logfile>", "[<reportFolder>]");
 
 			assertEquals("none", called.getValue());
 			runMainExpecting(0, "dse_app_mon", gatherFile, machineFile, dsFile,
-					runFolder);
+					logfile);
 			assertEquals("mon", called.getValue());
 		} finally {
 			CommandLineInterface.fastFactory = saved;
@@ -224,7 +222,7 @@ class TestFrontEnd {
 			runMainExpecting(2, "download");
 		});
 		assertContainsInOrder(msg, "<placementFile>", "<machineFile>",
-				"<runFolder>");
+				"<logfile");
 	}
 
 	@Test
@@ -233,7 +231,7 @@ class TestFrontEnd {
 			runMainExpecting(2, "gather");
 		});
 		assertContainsInOrder(msg, "<gatherFile>", "<machineFile>",
-				"<runFolder>");
+				"<logfile>");
 	}
 }
 
