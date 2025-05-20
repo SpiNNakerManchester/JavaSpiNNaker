@@ -248,8 +248,7 @@ public class BMPController extends DatabaseAwareBean {
 			for (var worker : workers.values()) {
 				try {
 					worker.getControl().powerOff(worker.boards.keySet());
-				} catch (ProcessException | InterruptedException
-						| IOException e) {
+				} catch (Throwable e) {
 					log.warn("Error when stopping", e);
 				}
 			}
