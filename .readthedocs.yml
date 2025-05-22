@@ -26,7 +26,7 @@ build:
         - tar zxvf maven.tar.gz
         - JAVA_HOME=./.jdk/17
         - PATH=$JAVA_HOME/bin:./apache-maven-3.9.9/bin:$PATH
-        - echo $PATH
+        - env
         - mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
         - mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
         - mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
