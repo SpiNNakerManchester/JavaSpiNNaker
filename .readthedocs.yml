@@ -24,8 +24,8 @@ build:
         - python doc/install_jdk.py
         - curl --output maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
         - tar zxvf maven.tar.gz
-        - export JAVA_HOME=.jdk/17
-        - export PATH=$JAVA_HOME/bin:apache-maven-3.9.9/bin:$PATH
+        - JAVA_HOME=./.jdk/17
+        - PATH=$JAVA_HOME/bin:./apache-maven-3.9.9/bin:$PATH
         - mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
         - mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
         - mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
