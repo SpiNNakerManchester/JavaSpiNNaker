@@ -29,7 +29,7 @@ build:
         - ln -s $PWD/jdk17.0.2/bin/javac ${READTHEDOCS_VIRTUALENV_PATH}/bin/javac
         - ln -s $PWD/jdk17.0.2/bin/javadoc ${READTHEDOCS_VIRTUALENV_PATH}/bin/javadoc
         - ln -s $PWD/apache-maven-3.9.9/bin/mvn ${READTHEDOCS_VIRTUALENV_PATH}/bin/mvn
-        - ls -l PWD/jdk17.0.2/bin/
+        - ls -l $PWD/jdk17.0.2/bin/
         - JAVA_HOME=$PWD/jdk17.0.2/ java -version
         - JAVA_HOME=$PWD/jdk17.0.2/ mvn --version
         - JAVA_HOME=$PWD/jdk17.0.2/ mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
