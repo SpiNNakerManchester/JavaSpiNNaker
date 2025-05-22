@@ -248,7 +248,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Tell a job that it is allocated.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AllocatorProperties.html#%3Cinit%3E(java.time.Duration,int,uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale,int,java.lang.String)">AllocatorProperties(Duration, int, SpallocProperties.PriorityScale, int, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AllocatorProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.AllocatorProperties</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AllocatorProperties.html#%3Cinit%3E(java.time.Duration,int,uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale,int,java.lang.String,java.lang.String)">AllocatorProperties(Duration, int, SpallocProperties.PriorityScale, int, String, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AllocatorProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.AllocatorProperties</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator"><span class="typeNameLink">AllocatorTask</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></dt>
 <dd>
@@ -1178,6 +1178,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Mark the job as destroyed.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#DESTROY_ALL_LIVE_JOBS">DESTROY_ALL_LIVE_JOBS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Destroy all live jobs.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#DESTROY_JOB">DESTROY_JOB</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Mark a job as dead.</div>
@@ -1299,6 +1303,22 @@ loadScripts(document, 'script');</script>
  gatherer, which does a complex muxing and programs sockets/tags in a
  different way.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html#emergencyStop()">emergencyStop()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/AllocatorTask.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">AllocatorTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BMPController.html#emergencyStop()">emergencyStop()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/BMPController.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">BMPController</a></dt>
+<dd>
+<div class="block">Stops execution immediately.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/Spalloc.html#emergencyStop(java.lang.String)">emergencyStop(String)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/Spalloc.html" title="class in uk.ac.manchester.spinnaker.alloc.allocator">Spalloc</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.html#emergencyStop(java.lang.String)">emergencyStop(String)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.allocator.<a href="uk/ac/manchester/spinnaker/alloc/allocator/SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceAPI.html#emergencyStop(java.lang.String,javax.ws.rs.container.AsyncResponse)">emergencyStop(String, AsyncResponse)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></dt>
+<dd>
+<div class="block">Immediately stop all jobs and power down all boards.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html#emergencyStop(java.lang.String,javax.ws.rs.container.AsyncResponse)">emergencyStop(String, AsyncResponse)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SpallocServiceImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceImpl</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/RequestFailedException.EmptyResponse.html#%3Cinit%3E()">EmptyResponse()</a></span> - Constructor for exception uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/RequestFailedException.EmptyResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">RequestFailedException.EmptyResponse</a></dt>
 <dd>
 <div class="block">Create an instance.</div>
@@ -1612,6 +1632,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ALL_BOARDS_OF_ALL_MACHINES">GET_ALL_BOARDS_OF_ALL_MACHINES</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Get all the boards (and related info) known to the service.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ALL_LIVE_JOBS">GET_ALL_LIVE_JOBS</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Select all live jobs.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#GET_ALL_MACHINES">GET_ALL_MACHINES</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
@@ -2164,6 +2188,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the contents of the named column.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AllocatorProperties.html#getEmergencyStopCommandCode()">getEmergencyStopCommandCode()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.<a href="uk/ac/manchester/spinnaker/alloc/SpallocProperties.AllocatorProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.AllocatorProperties</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/UserRecord.html#getEnabled()">getEnabled()</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/Row.html#getEnum(java.lang.String,java.lang.Class)">getEnum(String, Class&lt;T&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/Row.html" title="class in uk.ac.manchester.spinnaker.alloc.db">Row</a></dt>
@@ -3632,6 +3658,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Run the update on the given arguments.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#KILL_ALL_JOB_ALLOC_TASK">KILL_ALL_JOB_ALLOC_TASK</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Delete all requests to allocate resources for a job.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#KILL_JOB_ALLOC_TASK">KILL_JOB_ALLOC_TASK</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Delete a request to allocate resources for a job.</div>
@@ -4395,6 +4425,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Ping the given boards.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#ping(java.util.List)">ping(List&lt;BMPBoard&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/SystemController.html#postPasswordChangeForm(uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord,java.security.Principal)">postPasswordChangeForm(PasswordChangeRecord, Principal)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/SystemController.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SystemController</a></dt>
 <dd>
 <div class="block">Carry out a password change.</div>
@@ -4424,15 +4456,19 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Switch on or off a job's boards.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#powerOff(java.util.List)">powerOff(List&lt;BMPBoard&gt;)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#powerOff(java.util.Collection)">powerOff(Collection&lt;BMPBoard&gt;)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></dt>
 <dd>
 <div class="block">Turn off boards managed by a BMP.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#powerOff(java.util.Collection)">powerOff(Collection&lt;BMPBoard&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#powerOnAndCheck(java.util.List)">powerOnAndCheck(List&lt;BMPBoard&gt;)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></dt>
 <dd>
 <div class="block">Switch on a collection of boards managed by a BMP on a machine and check
  that they've come up correctly.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#powerOnAndCheck(java.util.List)">powerOnAndCheck(List&lt;BMPBoard&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/JobStateResponse.html#powerRef">powerRef</a></span> - Variable in class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/JobStateResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">JobStateResponse</a></dt>
 <dd>
 <div class="block">Where the power controls are.</div>
@@ -4592,6 +4628,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Read a blacklist from the given board.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#readBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBlacklist(BMPBoard)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#readBlacklistFromDB(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)">readBlacklistFromDB(MachineStateControl.BoardState)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Given a board, read its blacklist from the database.</div>
@@ -4622,10 +4660,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Read a BMP serial number from the given board.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#readSerial(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readSerial(BMPBoard)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readTemp(BMPBoard)</a></span> - Method in interface uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></dt>
 <dd>
 <div class="block">Read the temperature data from the given board.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readTemp(BMPBoard)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#readTemperatureFromMachine(int,int)">readTemperatureFromMachine(int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Given a board, read its temperature data off the machine.</div>
@@ -4911,6 +4953,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/nmpi/SessionResponse.html#%3Cinit%3E()">SessionResponse()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.nmpi.<a href="uk/ac/manchester/spinnaker/alloc/nmpi/SessionResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">SessionResponse</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_ALL_BOARDS_OFF">SET_ALL_BOARDS_OFF</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
+<dd>
+<div class="block">Set all boards to off.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html#SET_BOARD_POWER_OFF">SET_BOARD_POWER_OFF</a></span> - Static variable in class uk.ac.manchester.spinnaker.alloc.db.<a href="uk/ac/manchester/spinnaker/alloc/db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></dt>
 <dd>
 <div class="block">Set the power state of a board.</div>
@@ -5125,6 +5171,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Turns a link off.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#setLinkOff(uk.ac.manchester.spinnaker.alloc.bmp.Link)">setLinkOff(Link)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/MachineDescription.html#setLive(java.util.List)">setLive(List&lt;BoardCoords&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineDescription</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/model/MachineDescription.html#setLive(uk.ac.manchester.spinnaker.utils.MappableIterable)">setLive(MappableIterable&lt;BoardCoords&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.model.<a href="uk/ac/manchester/spinnaker/alloc/model/MachineDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineDescription</a></dt>
@@ -5539,6 +5587,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A guide for how to make a BMP controller.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp"><span class="typeNameLink">SpiNNakerControlDummy</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></dt>
+<dd>
+<div class="block">Dummy implementation of the SpiNNakerControl interface.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#%3Cinit%3E()">SpiNNakerControlDummy()</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/alloc/proxy/SpinWSHandler.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy"><span class="typeNameLink">SpinWSHandler</span></a> - Class in <a href="uk/ac/manchester/spinnaker/alloc/proxy/package-summary.html">uk.ac.manchester.spinnaker.alloc.proxy</a></dt>
 <dd>
 <div class="block">Initial handler for web sockets.</div>
@@ -6181,6 +6235,8 @@ the order they are declared.</div>
 <dd>
 <div class="block">Write a blacklist to the given board.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html#writeBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist(BMPBoard, Blacklist)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.bmp.<a href="uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html#writeBlacklistToDB(int,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklistToDB(int, Blacklist)</a></span> - Method in class uk.ac.manchester.spinnaker.alloc.admin.<a href="uk/ac/manchester/spinnaker/alloc/admin/MachineStateControl.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl</a></dt>
 <dd>
 <div class="block">Given a board, write a blacklist for it to the database.</div>

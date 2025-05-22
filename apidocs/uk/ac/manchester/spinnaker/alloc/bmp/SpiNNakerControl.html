@@ -88,6 +88,10 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="contentContainer">
 <section class="description">
+<dl>
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="SpiNNakerControlDummy.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControlDummy</a></code></dd>
+</dl>
 <hr>
 <pre>public interface <span class="typeNameLabel">SpiNNakerControl</span></pre>
 <div class="block">How to tell a SpiNNaker BMP (specifically one that manages a frame) to turn
@@ -161,7 +165,7 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOff(java.util.List)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOff(java.util.Collection)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Turn off boards managed by a BMP.</div>
 </td>
@@ -269,8 +273,8 @@ loadScripts(document, 'script');</script>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="powerOff(java.util.List)">powerOff</a></h3>
-<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOff</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</span>
+<h3><a id="powerOff(java.util.Collection)">powerOff</a></h3>
+<div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">powerOff</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</span>
        throws <span class="exceptions"><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>

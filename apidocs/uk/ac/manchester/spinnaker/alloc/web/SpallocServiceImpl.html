@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -196,6 +196,14 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 </td>
 </tr>
 <tr class="altColor" id="i2">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#emergencyStop(java.lang.String,javax.ws.rs.container.AsyncResponse)">emergencyStop</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;commandCode,
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
+<td class="colLast">
+<div class="block">Immediately stop all jobs and power down all boards.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="SpallocServiceAPI.JobAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.JobAPI</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJob(int,javax.ws.rs.core.UriInfo,javax.servlet.http.HttpServletRequest,javax.ws.rs.core.SecurityContext)">getJob</a></span>&#8203;(int&nbsp;id,
 <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
@@ -205,7 +213,7 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <div class="block">Get a sub-resource for managing a job.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="SpallocServiceAPI.MachineAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.MachineAPI</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachine(java.lang.String,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext)">getMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
 <a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
@@ -214,14 +222,14 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <div class="block">Get a sub-resource for managing a machine.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="MachinesResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinesResponse</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachines(javax.ws.rs.core.UriInfo)">getMachines</a></span>&#8203;(<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the machines.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listJobs(boolean,boolean,int,int,javax.ws.rs.core.UriInfo,javax.ws.rs.container.AsyncResponse)">listJobs</a></span>&#8203;(boolean&nbsp;wait,
 boolean&nbsp;destroyed,
@@ -395,6 +403,19 @@ int&nbsp;start,
 <dd><code>ui</code> - How to build URIs</dd>
 <dd><code>security</code> - Information about the user</dd>
 <dd><code>response</code> - Filled out with a <a href="CreateJobResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web"><code>CreateJobResponse</code></a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="emergencyStop(java.lang.String,javax.ws.rs.container.AsyncResponse)">emergencyStop</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">emergencyStop</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;commandCode,
+<a href="https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#emergencyStop(java.lang.String,javax.ws.rs.container.AsyncResponse)">SpallocServiceAPI</a></code></span></div>
+<div class="block">Immediately stop all jobs and power down all boards.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="SpallocServiceAPI.html#emergencyStop(java.lang.String,javax.ws.rs.container.AsyncResponse)">emergencyStop</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></code></dd>
 </dl>
 </section>
 </li>

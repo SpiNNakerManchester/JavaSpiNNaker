@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -119,11 +119,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.time.Duration,int,uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale,int,java.lang.String)">AllocatorProperties</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;period,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.time.Duration,int,uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale,int,java.lang.String,java.lang.String)">AllocatorProperties</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;period,
 int&nbsp;importanceSpan,
 <a href="SpallocProperties.PriorityScale.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.PriorityScale</a>&nbsp;priorityScale,
 int&nbsp;reportActionThreshold,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;systemReportUser)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;systemReportUser,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;emergencyStopCommandCode)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -150,32 +151,37 @@ int&nbsp;reportActionThreshold,
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getEmergencyStopCommandCode()">getEmergencyStopCommandCode</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getImportanceSpan()">getImportanceSpan</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Maximum span of job importance that will be allocated at once.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPeriod()">getPeriod</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Time between runs of the main allocation algorithm.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="SpallocProperties.PriorityScale.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.PriorityScale</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPriorityScale()">getPriorityScale</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Properties relating to job priority scaling.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getReportActionThreshold()">getReportActionThreshold</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSystemReportUser()">getSystemReportUser</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -204,7 +210,7 @@ int&nbsp;reportActionThreshold,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.time.Duration,int,uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale,int,java.lang.String)">AllocatorProperties</a></h3>
+<h3><a id="&lt;init&gt;(java.time.Duration,int,uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale,int,java.lang.String,java.lang.String)">AllocatorProperties</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">AllocatorProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/2.7.17/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("5s")
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;period,
 <a href="https://docs.spring.io/spring-boot/docs/2.7.17/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("10000")
@@ -214,7 +220,9 @@ int&nbsp;importanceSpan,
 <a href="https://docs.spring.io/spring-boot/docs/2.7.17/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("2")
 int&nbsp;reportActionThreshold,
 <a href="https://docs.spring.io/spring-boot/docs/2.7.17/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("")
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;systemReportUser)</span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;systemReportUser,
+<a href="https://docs.spring.io/spring-boot/docs/2.7.17/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;emergencyStopCommandCode)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>period</code> - Time between runs of the main allocation algorithm.</dd>
@@ -224,6 +232,7 @@ int&nbsp;reportActionThreshold,
 <dd><code>reportActionThreshold</code> - Number of reports of board problems at which the board is
             taken out of service.</dd>
 <dd><code>systemReportUser</code> - Name of user that system-generated reports are done by.</dd>
+<dd><code>emergencyStopCommandCode</code> - Command code to accept for an emergency stop.</dd>
 </dl>
 </section>
 </li>
@@ -296,6 +305,17 @@ int&nbsp;reportActionThreshold,
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Name of user that system-generated reports are done by.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getEmergencyStopCommandCode()">getEmergencyStopCommandCode</a></h3>
+<div class="memberSignature"><span class="annotations"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javadoc.io/doc/javax.validation/validation-api/latest/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getEmergencyStopCommandCode</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Command code to accept for an emergency stop.</dd>
 </dl>
 </section>
 </li>

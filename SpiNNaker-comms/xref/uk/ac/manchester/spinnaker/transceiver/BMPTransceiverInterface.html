@@ -1872,30 +1872,39 @@
 <a class="jxr_linenumber" name="L1864" href="#L1864">1864</a> 
 <a class="jxr_linenumber" name="L1865" href="#L1865">1865</a> 	@Override
 <a class="jxr_linenumber" name="L1866" href="#L1866">1866</a> 	<strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> IOException;
-<a class="jxr_linenumber" name="L1867" href="#L1867">1867</a> }
-<a class="jxr_linenumber" name="L1868" href="#L1868">1868</a> 
-<a class="jxr_linenumber" name="L1869" href="#L1869">1869</a> <strong class="jxr_keyword">interface</strong> <a name="BMPConstants" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#BMPConstants">BMPConstants</a> {
-<a class="jxr_linenumber" name="L1870" href="#L1870">1870</a> 	<em class="jxr_javadoccomment">/** Location in serial flash of blacklist. */</em>
-<a class="jxr_linenumber" name="L1871" href="#L1871">1871</a> 	MemoryLocation SF_BL_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x100);
-<a class="jxr_linenumber" name="L1872" href="#L1872">1872</a> 
-<a class="jxr_linenumber" name="L1873" href="#L1873">1873</a> 	<em class="jxr_javadoccomment">/** Size of blacklist, in bytes. */</em>
-<a class="jxr_linenumber" name="L1874" href="#L1874">1874</a> 	<strong class="jxr_keyword">int</strong> SF_BL_LEN = 256;
-<a class="jxr_linenumber" name="L1875" href="#L1875">1875</a> 
-<a class="jxr_linenumber" name="L1876" href="#L1876">1876</a> 	<em class="jxr_javadoccomment">/** Offset of blacklist in boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1877" href="#L1877">1877</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_BLACKLIST_OFFSET = 0xe00;
-<a class="jxr_linenumber" name="L1878" href="#L1878">1878</a> 
-<a class="jxr_linenumber" name="L1879" href="#L1879">1879</a> 	<em class="jxr_javadoccomment">/** Location of boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1880" href="#L1880">1880</a> 	MemoryLocation BMP_BOOT_SECTOR_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x1000);
+<a class="jxr_linenumber" name="L1867" href="#L1867">1867</a> 
+<a class="jxr_linenumber" name="L1868" href="#L1868">1868</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1869" href="#L1869">1869</a> <em class="jxr_javadoccomment">	 * Ping a board.</em>
+<a class="jxr_linenumber" name="L1870" href="#L1870">1870</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L1871" href="#L1871">1871</a> <em class="jxr_javadoccomment">	 * @param address The board IP address.</em>
+<a class="jxr_linenumber" name="L1872" href="#L1872">1872</a> <em class="jxr_javadoccomment">	 * @return 0 on success, other values on failure (reflecting the result of</em>
+<a class="jxr_linenumber" name="L1873" href="#L1873">1873</a> <em class="jxr_javadoccomment">	 *         the OS subprocess).</em>
+<a class="jxr_linenumber" name="L1874" href="#L1874">1874</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1875" href="#L1875">1875</a> 	<strong class="jxr_keyword">int</strong> pingBoard(String address);
+<a class="jxr_linenumber" name="L1876" href="#L1876">1876</a> }
+<a class="jxr_linenumber" name="L1877" href="#L1877">1877</a> 
+<a class="jxr_linenumber" name="L1878" href="#L1878">1878</a> <strong class="jxr_keyword">interface</strong> <a name="BMPConstants" href="../../../../../uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#BMPConstants">BMPConstants</a> {
+<a class="jxr_linenumber" name="L1879" href="#L1879">1879</a> 	<em class="jxr_javadoccomment">/** Location in serial flash of blacklist. */</em>
+<a class="jxr_linenumber" name="L1880" href="#L1880">1880</a> 	MemoryLocation SF_BL_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x100);
 <a class="jxr_linenumber" name="L1881" href="#L1881">1881</a> 
-<a class="jxr_linenumber" name="L1882" href="#L1882">1882</a> 	<em class="jxr_javadoccomment">/** Size of boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1883" href="#L1883">1883</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_SECTOR_SIZE = 0x1000;
+<a class="jxr_linenumber" name="L1882" href="#L1882">1882</a> 	<em class="jxr_javadoccomment">/** Size of blacklist, in bytes. */</em>
+<a class="jxr_linenumber" name="L1883" href="#L1883">1883</a> 	<strong class="jxr_keyword">int</strong> SF_BL_LEN = 256;
 <a class="jxr_linenumber" name="L1884" href="#L1884">1884</a> 
-<a class="jxr_linenumber" name="L1885" href="#L1885">1885</a> 	<em class="jxr_javadoccomment">/** Offset of CRC in boot sector of flash. */</em>
-<a class="jxr_linenumber" name="L1886" href="#L1886">1886</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_CRC_OFFSET = BMP_BOOT_SECTOR_SIZE - WORD_SIZE;
+<a class="jxr_linenumber" name="L1885" href="#L1885">1885</a> 	<em class="jxr_javadoccomment">/** Offset of blacklist in boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1886" href="#L1886">1886</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_BLACKLIST_OFFSET = 0xe00;
 <a class="jxr_linenumber" name="L1887" href="#L1887">1887</a> 
-<a class="jxr_linenumber" name="L1888" href="#L1888">1888</a> 	<em class="jxr_javadoccomment">/** Byte used to blank out the space used for blacklists. */</em>
-<a class="jxr_linenumber" name="L1889" href="#L1889">1889</a> 	byte BLACKLIST_BLANK = (byte) 255;
-<a class="jxr_linenumber" name="L1890" href="#L1890">1890</a> }
+<a class="jxr_linenumber" name="L1888" href="#L1888">1888</a> 	<em class="jxr_javadoccomment">/** Location of boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1889" href="#L1889">1889</a> 	MemoryLocation BMP_BOOT_SECTOR_ADDR = <strong class="jxr_keyword">new</strong> MemoryLocation(0x1000);
+<a class="jxr_linenumber" name="L1890" href="#L1890">1890</a> 
+<a class="jxr_linenumber" name="L1891" href="#L1891">1891</a> 	<em class="jxr_javadoccomment">/** Size of boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1892" href="#L1892">1892</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_SECTOR_SIZE = 0x1000;
+<a class="jxr_linenumber" name="L1893" href="#L1893">1893</a> 
+<a class="jxr_linenumber" name="L1894" href="#L1894">1894</a> 	<em class="jxr_javadoccomment">/** Offset of CRC in boot sector of flash. */</em>
+<a class="jxr_linenumber" name="L1895" href="#L1895">1895</a> 	<strong class="jxr_keyword">int</strong> BMP_BOOT_CRC_OFFSET = BMP_BOOT_SECTOR_SIZE - WORD_SIZE;
+<a class="jxr_linenumber" name="L1896" href="#L1896">1896</a> 
+<a class="jxr_linenumber" name="L1897" href="#L1897">1897</a> 	<em class="jxr_javadoccomment">/** Byte used to blank out the space used for blacklists. */</em>
+<a class="jxr_linenumber" name="L1898" href="#L1898">1898</a> 	byte BLACKLIST_BLANK = (byte) 255;
+<a class="jxr_linenumber" name="L1899" href="#L1899">1899</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2025 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

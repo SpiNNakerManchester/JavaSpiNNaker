@@ -200,18 +200,28 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControl.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControl.html#powerOff(java.util.List)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControl.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControl.html#powerOff(java.util.Collection)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Turn off boards managed by a BMP.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControlDummy.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControlDummy.html#powerOff(java.util.Collection)">powerOff</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControl.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControl.html#powerOnAndCheck(java.util.List)">powerOnAndCheck</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Switch on a collection of boards managed by a BMP on a machine and check
  that they've come up correctly.</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControlDummy.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControlDummy.html#powerOnAndCheck(java.util.List)">powerOnAndCheck</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></code></td>
@@ -221,11 +231,21 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code><a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControlDummy.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControlDummy.html#readBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readBlacklist</a></span>&#8203;(<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControl.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControl.html#readSerial(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readSerial</a></span>&#8203;(<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a BMP serial number from the given board.</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControlDummy.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControlDummy.html#readSerial(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readSerial</a></span>&#8203;(<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
@@ -235,11 +255,21 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code><a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControlDummy.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControlDummy.html#readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)">readTemp</a></span>&#8203;(<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControl.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControl.html#setLinkOff(uk.ac.manchester.spinnaker.alloc.bmp.Link)">setLinkOff</a></span>&#8203;(<a href="../../alloc/bmp/Link.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">Link</a>&nbsp;link)</code></th>
 <td class="colLast">
 <div class="block">Turns a link off.</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControlDummy.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControlDummy.html#setLinkOff(uk.ac.manchester.spinnaker.alloc.bmp.Link)">setLinkOff</a></span>&#8203;(<a href="../../alloc/bmp/Link.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">Link</a>&nbsp;link)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
@@ -264,6 +294,12 @@ int&nbsp;slot,
 <td class="colLast">
 <div class="block">Write a blacklist to the given board.</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControlDummy.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/SpiNNakerControlDummy.html#writeBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist</a></span>&#8203;(<a href="../../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
+<a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>
