@@ -20,19 +20,19 @@ build:
   jobs:
     build:
       html:
-        - pip install install-jdk
-        - python doc/install_jdk.py
+        - curl --output jdk.tar.gz https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+        - tar zxvf jdk.tar.gz
         - curl --output maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
         - tar zxvf maven.tar.gz
         - mkdir -p ${READTHEDOCS_VIRTUALENV_PATH}/bin/
-        - ln -s $HOME/.jdk/17/java ${READTHEDOCS_VIRTUALENV_PATH}/bin/java
-        - ln -s $HOME/.jdk/17/javac ${READTHEDOCS_VIRTUALENV_PATH}/bin/javac
-        - ln -s $HOME/.jdk/17/javadoc ${READTHEDOCS_VIRTUALENV_PATH}/bin/javadoc
+        - ln -s $PWD/jdk17.0.2/bin/java ${READTHEDOCS_VIRTUALENV_PATH}/bin/java
+        - ln -s $PWD/jdk17.0.2/bin/javac ${READTHEDOCS_VIRTUALENV_PATH}/bin/javac
+        - ln -s $PWD/jdk17.0.2/bin/javadoc ${READTHEDOCS_VIRTUALENV_PATH}/bin/javadoc
         - ln -s $PWD/apache-maven-3.9.9/bin/mvn ${READTHEDOCS_VIRTUALENV_PATH}/bin/mvn
-        - JAVA_HOME=$HOME/.jdk/17 java -version
-        - JAVA_HOME=$HOME/.jdk/17 mvn --version
-        - JAVA_HOME=$HOME/.jdk/17 mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
-        - JAVA_HOME=$HOME/.jdk/17 mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
-        - JAVA_HOME=$HOME/.jdk/17 mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
+        - JAVA_HOME=$PWD/jdk17.0.2/ java -version
+        - JAVA_HOME=$PWD/jdk17.0.2/ mvn --version
+        - JAVA_HOME=$PWD/jdk17.0.2/ mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
+        - JAVA_HOME=$PWD/jdk17.0.2/ mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
+        - JAVA_HOME=$PWD/jdk17.0.2/ mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
         - mkdir -p ${READTHEDOCS_OUTPUT}html/
         - cp -a target/staging/* ${READTHEDOCS_OUTPUT}html/
