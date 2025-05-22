@@ -143,6 +143,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private transient Map<String, List<DownLink>> downLinksCache =
 			new HashMap<>();
 
+	private boolean emergencyStop = false;
+
 	@Override
 	public Map<String, Machine> getMachines(boolean allowOutOfService) {
 		return executeRead(c -> getMachines(c, allowOutOfService));
@@ -432,6 +434,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			CreateDescriptor descriptor, String machineName, List<String> tags,
 			Duration keepaliveInterval, byte[] req)
 					throws IllegalArgumentException {
+		if (emergencyStop) {
+			throw new IllegalStateException(
+					"The Server has been stopped due to an emergency.");
+		}
 		return execute(conn -> {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new RuntimeException("no such user: " + owner));
@@ -898,6 +904,15 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				row.getInteger("board_2_b"), row.getString("board_2_addr"));
 		return new DownLink(board1, row.getEnum("dir_1", Direction.class),
 				board2, row.getEnum("dir_2", Direction.class));
+	}
+
+	public void emergencyStop(String commandCode) {
+		if (!commandCode.equals(props.getEmergencyStopCommandCode())) {
+			throw new IllegalArgumentException("Invalid emergency stop code");
+		}
+		allocator.emergencyStop();
+		emergencyStop = true;
+		log.warn("Emergency stop requested!");
 	}
 
 	private class MachineImpl implements Machine {

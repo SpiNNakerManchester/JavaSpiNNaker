@@ -333,6 +333,8 @@ public interface SpallocAPI {
 	void reportProblem(@IPAddress String address, HasChipLocation coreLocation,
 			String description, Permit permit);
 
+	void emergencyStop(String commandCode);
+
 	/**
 	 * Describes what sort of request to create a job this is.
 	 *

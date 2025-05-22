@@ -80,7 +80,8 @@ class BlacklistCommsTest extends TestSupport {
 		this.txrxFactory = txrxFactory.getTestAPI();
 		exec = newSingleThreadExecutor();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare();
+		this.bmpCtrl.prepare(false);
+		this.bmpCtrl.resetTransceivers();
 		this.bmpCtrl.clearBmpException();
 	}
 
