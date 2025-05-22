@@ -20,7 +20,7 @@ build:
   jobs:
     build:
       html:
-		- pip install install-jdk
+        - pip install install-jdk
         - python doc/install_jdk.py
         - curl --output maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
         - tar zxvf maven.tar.gz
