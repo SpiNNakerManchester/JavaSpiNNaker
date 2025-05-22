@@ -25,14 +25,14 @@ build:
         - curl --output maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
         - tar zxvf maven.tar.gz
         - mkdir -p ${READTHEDOCS_VIRTUALENV_PATH}/bin/
-        - ln -s $PWD/.jdk/17/java ${READTHEDOCS_VIRTUALENV_PATH}/bin/java
-        - ln -s $PWD/.jdk/17/javac ${READTHEDOCS_VIRTUALENV_PATH}/bin/javac
-        - ln -s $PWD/.jdk/17/javadoc ${READTHEDOCS_VIRTUALENV_PATH}/bin/javadoc
+        - ln -s $HOME/.jdk/17/java ${READTHEDOCS_VIRTUALENV_PATH}/bin/java
+        - ln -s $HOME/.jdk/17/javac ${READTHEDOCS_VIRTUALENV_PATH}/bin/javac
+        - ln -s $HOME/.jdk/17/javadoc ${READTHEDOCS_VIRTUALENV_PATH}/bin/javadoc
         - ln -s $PWD/apache-maven-3.9.9/bin/mvn ${READTHEDOCS_VIRTUALENV_PATH}/bin/mvn
-        - JAVA_HOME=$PWD/.jdk/17 java -version
-        - JAVA_HOME=$PWD/.jdk/17 mvn --version
-        - JAVA_HOME=$PWD/.jdk/17 mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
-        - JAVA_HOME=$PWD/.jdk/17 mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
-        - JAVA_HOME=$PWD/.jdk/17 mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
+        - JAVA_HOME=$HOME/.jdk/17 java -version
+        - JAVA_HOME=$HOME/.jdk/17 mvn --version
+        - JAVA_HOME=$HOME/.jdk/17 mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
+        - JAVA_HOME=$HOME/.jdk/17 mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
+        - JAVA_HOME=$HOME/.jdk/17 mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
         - mkdir -p ${READTHEDOCS_OUTPUT}html/
         - cp -a target/staging/* ${READTHEDOCS_OUTPUT}html/
