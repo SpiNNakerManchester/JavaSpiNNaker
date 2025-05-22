@@ -30,9 +30,6 @@ build:
         - ln -s $PWD/jdk-17.0.2/bin/javadoc ${READTHEDOCS_VIRTUALENV_PATH}/bin/javadoc
         - ln -s $PWD/apache-maven-3.9.9/bin/mvn ${READTHEDOCS_VIRTUALENV_PATH}/bin/mvn
         - ls -l $PWD/jdk-17.0.2/bin
-        - JAVA_HOME=$PWD/jdk-17.0.2/ java -version
-        - JAVA_HOME=$PWD/jdk-17.0.2/ mvn --version
-        - JAVA_HOME=$PWD/jdk-17.0.2/ mvn -B dependency:resolve dependency:resolve-plugins --settings .github/settings.xml
         - JAVA_HOME=$PWD/jdk-17.0.2/ mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
         - JAVA_HOME=$PWD/jdk-17.0.2/ mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
         - mkdir -p ${READTHEDOCS_OUTPUT}html/
