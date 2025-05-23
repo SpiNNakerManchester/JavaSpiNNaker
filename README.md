@@ -1,6 +1,6 @@
 [![Build and Test](https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions/workflows/build.yml/badge.svg)](https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/JavaSpiNNaker/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/JavaSpiNNaker?branch=master)
-
+[![Documentation Status](https://readthedocs.org/projects/javaspinnaker/badge/?version=latest)](https://javaspinnaker.readthedocs.io/en/latest/?badge=latest)
 # JavaSpiNNaker
 This is an implementation of the SpiNNaker host software in Java. It requires at least Java 11. We test regularly with OpenJDK 11, 14 and 17. It also includes the new implementation of the Spalloc (SpiNNaker Allocator) service and associated support tools.
 
@@ -45,6 +45,6 @@ This option says where to find the built version of JavaSpiNNaker. If you have f
 [Spalloc Server](https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-allocserv) is its own sub-project.
 
 # Documentation
-[API documentation](https://spinnakermanchester.github.io/JavaSpiNNaker/apidocs/) (Javadoc)
+[API documentation](https://javaspinnaker.readthedocs.io/apidocs/) (Javadoc)
 <br>
-[Maven metadata](https://spinnakermanchester.github.io/JavaSpiNNaker/)
+[Maven metadata](https://javaspinnaker.readthedocs.io/)
