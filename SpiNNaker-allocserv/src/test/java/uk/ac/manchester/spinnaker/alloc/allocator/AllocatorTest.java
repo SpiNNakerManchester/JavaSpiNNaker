@@ -69,7 +69,7 @@ class AllocatorTest extends TestSupport {
 		killDB();
 		setupDB3();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare();
+		this.bmpCtrl.prepare(true);
 		this.bmpCtrl.clearBmpException();
 	}
 
@@ -441,6 +441,26 @@ class AllocatorTest extends TestSupport {
 				assertEquals(preMain - 1, countJobInTable(conn, job));
 				assertEquals(preTomb + 1, countJobInTable(histConn, job));
 			}
+		});
+	}
+
+	@Test
+	public void emergencyStop() throws Exception {
+		doTransactionalTest(() -> {
+			int job = makeQueuedJob(1);
+			getAllocTester().allocate();
+			makeAllocBySizeRequest(job, 1);
+			snooze1s();
+			snooze1s();
+
+			assumeState(job, QUEUED, 1, 0);
+
+			getAllocTester().emergencyStop();
+
+			assertState(job, DESTROYED, 0, 0);
+
+			getAllocTester().restartAfterStop();
+			bmpCtrl.emergencyResume();
 		});
 	}
 }
