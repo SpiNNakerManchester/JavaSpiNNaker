@@ -1,0 +1,37 @@
+# Copyright (c) 2023 The University of Manchester
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: 2
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.11"
+  jobs:
+    build:
+      html:
+        - curl --output jdk.tar.gz https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+        - tar zxvf jdk.tar.gz
+        - curl --output maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+        - tar zxvf maven.tar.gz
+        - mkdir -p ${READTHEDOCS_VIRTUALENV_PATH}/bin/
+        - ln -s $PWD/jdk-17.0.2/bin/java ${READTHEDOCS_VIRTUALENV_PATH}/bin/java
+        - ln -s $PWD/jdk-17.0.2/bin/javac ${READTHEDOCS_VIRTUALENV_PATH}/bin/javac
+        - ln -s $PWD/jdk-17.0.2/bin/javadoc ${READTHEDOCS_VIRTUALENV_PATH}/bin/javadoc
+        - ln -s $PWD/apache-maven-3.9.9/bin/mvn ${READTHEDOCS_VIRTUALENV_PATH}/bin/mvn
+        - echo "jdk-17.0.2/**" >> .gitignore
+        - echo "apache-maven-3.9.9/**" >> .gitignore
+        - JAVA_HOME=$PWD/jdk-17.0.2/ mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
+        - JAVA_HOME=$PWD/jdk-17.0.2/ mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
+        - mkdir -p ${READTHEDOCS_OUTPUT}html/
+        - cp -a target/staging/* ${READTHEDOCS_OUTPUT}html/
