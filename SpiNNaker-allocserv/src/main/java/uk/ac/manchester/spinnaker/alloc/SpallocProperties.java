@@ -22,19 +22,19 @@ import java.time.Duration;
 import java.util.Set;
 
 import javax.sql.DataSource;
-import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -53,7 +53,6 @@ import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
  * @author Donal Fellows
  */
 @ConfigurationProperties("spalloc")
-@ConstructorBinding
 @Validated
 public class SpallocProperties {
 	/** Path to the main database file. */
@@ -135,6 +134,7 @@ public class SpallocProperties {
 	 *            The database connection configuration.
 	 */
 	@SuppressWarnings("checkstyle:ParameterNumber")
+	@ConstructorBinding
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
@@ -430,6 +430,7 @@ public class SpallocProperties {
 		 *            Database connection properties for the connection to the
 		 *            historical database.
 		 */
+		@ConstructorBinding
 		public HistoricalDataProperties(
 				@DefaultValue("spalloc-history.sqlite3") File path,
 				@DefaultValue("14d") Duration gracePeriod,
@@ -515,6 +516,7 @@ public class SpallocProperties {
 		 * @param max
 		 *            Maximum keepalive period.
 		 */
+		@ConstructorBinding
 		public KeepaliveProperties(//
 				@DefaultValue("30s") Duration expiryPeriod,
 				@DefaultValue("30s") Duration min,
@@ -609,6 +611,7 @@ public class SpallocProperties {
 		 * @param emergencyStopCommandCode
 		 *           Command code to accept for an emergency stop.
 		 */
+		@ConstructorBinding
 		public AllocatorProperties(@DefaultValue("5s") Duration period,
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
@@ -729,6 +732,7 @@ public class SpallocProperties {
 		 *            Priority scaling factor for jobs requiring a specific
 		 *            board.
 		 */
+		@ConstructorBinding
 		public PriorityScale(@DefaultValue("1.0") double size,
 				@DefaultValue("1.5") double dimensions,
 				@DefaultValue("65.0") double specificBoard) {
@@ -802,6 +806,7 @@ public class SpallocProperties {
 		 * @param subject
 		 *            The {@code Subject:} header.
 		 */
+		@ConstructorBinding
 		public ReportProperties(@DefaultValue("false") boolean send,
 				@DefaultValue("spalloc@localhost") String from,
 				@DefaultValue("root@localhost") String to,
@@ -949,6 +954,7 @@ public class SpallocProperties {
 		 *            OpenID-related security properties. Required for allowing
 		 *            people to use HBP/EBRAINS identities.
 		 */
+		@ConstructorBinding
 		public AuthProperties(//
 				@DefaultValue("true") boolean basic,
 				@DefaultValue("SpallocService") String realm,
@@ -1231,6 +1237,7 @@ public class SpallocProperties {
 		 *            How to unlock the truststore.
 		 */
 		@SuppressWarnings("checkstyle:ParameterNumber")
+		@ConstructorBinding
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
 				Set<String> scopes,
 				@DefaultValue("") String registrationId,
@@ -1557,6 +1564,7 @@ public class SpallocProperties {
 		 *            The platform to use when creating session on the NMPI
 		 *            service.
 		 */
+		@ConstructorBinding
 		public QuotaProperties(@DefaultValue("100") int defaultQuota,
 				@DefaultValue("0") long defaultOrgQuota,
 				@DefaultValue("3600000") long defaultCollabQuota,
@@ -1725,6 +1733,7 @@ public class SpallocProperties {
 		 *            How long to wait between powering off and powering on
 		 *            a board.
 		 */
+		@ConstructorBinding
 		public TxrxProperties(@DefaultValue("10s") Duration period,
 				@DefaultValue("15s") Duration probeInterval,
 				@DefaultValue("2") int powerAttempts,
@@ -1863,6 +1872,7 @@ public class SpallocProperties {
 		 * @param password
 		 *            Password for the connection.
 		 */
+		@ConstructorBinding
 		public DataSourceProperties(
 				@DefaultValue("jdbc:sqlite:/fix.me") String jdbcUrl,
 				@DefaultValue("sa") String username,
@@ -1989,6 +1999,7 @@ public class SpallocProperties {
 		 *            Whether to determine the caller when doing transaction
 		 *            logging.
 		 */
+		@ConstructorBinding
 		public DBProperties(@DefaultValue("1s") Duration timeout,
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("400") int analysisLimit,
@@ -2241,6 +2252,7 @@ public class SpallocProperties {
 		 * @param defaultKeepalive
 		 *            The default value for the keepalive property of jobs.
 		 */
+		@ConstructorBinding
 		public CompatibilityProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("0") int threadPoolSize,
 				@DefaultValue("0.0.0.0") String host,
@@ -2446,6 +2458,7 @@ public class SpallocProperties {
 		 *            they're not being bound to a specific board. If empty,
 		 *            that type of socket will be disabled.
 		 */
+		@ConstructorBinding
 		public ProxyProperties(@DefaultValue("true") boolean enable,
 				@DefaultValue("false") boolean logWriteCounts,
 				@DefaultValue("") String localHost) {
@@ -2523,6 +2536,7 @@ public class SpallocProperties {
 		 *            How many blacklists to read from a full machine at once
 		 *            when synchronizing the overall state?
 		 */
+		@ConstructorBinding
 		public StateControlProperties(
 				@DefaultValue("15s") Duration blacklistPoll,
 				@DefaultValue("60s") Duration blacklistTimeout,

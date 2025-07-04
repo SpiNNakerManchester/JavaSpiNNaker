@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;

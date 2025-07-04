@@ -25,7 +25,7 @@ limitations under the License.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>11</maven.compiler.release>
+		<maven.compiler.release>17</maven.compiler.release>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
@@ -42,7 +42,7 @@ limitations under the License.
 		<log4j.version>2.21.0</log4j.version>
 
 		<spring.version>5.3.39</spring.version>
-		<spring.boot.version>2.7.17</spring.boot.version>
+		<spring.boot.version>3.3.4</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		processor binding in Eclipse for SpiNNaker-allocserv:
@@ -358,7 +358,7 @@ limitations under the License.
 			<dependency>
 				<groupId>jakarta.validation</groupId>
 				<artifactId>jakarta.validation-api</artifactId>
-				<version>2.0.2</version>
+				<version>3.1.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.errorprone</groupId>

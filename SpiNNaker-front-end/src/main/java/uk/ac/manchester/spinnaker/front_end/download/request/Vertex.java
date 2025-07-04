@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

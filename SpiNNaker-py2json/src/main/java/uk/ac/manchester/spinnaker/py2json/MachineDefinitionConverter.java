@@ -19,7 +19,7 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.System.exit;
-import static javax.validation.Validation.buildDefaultValidatorFactory;
+import static jakarta.validation.Validation.buildDefaultValidatorFactory;
 import static org.python.core.Py.getSystemState;
 import static org.python.core.Py.newString;
 import static org.python.core.PySystemState.initialize;
@@ -28,7 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ValidatorFactory;
 
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;

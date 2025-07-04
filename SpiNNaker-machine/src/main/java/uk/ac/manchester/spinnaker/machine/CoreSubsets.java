@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;

@@ -23,7 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.ValidP;

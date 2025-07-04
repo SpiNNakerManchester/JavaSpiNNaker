@@ -36,7 +36,7 @@ import java.util.concurrent.Executor;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
 import javax.sql.DataSource;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;

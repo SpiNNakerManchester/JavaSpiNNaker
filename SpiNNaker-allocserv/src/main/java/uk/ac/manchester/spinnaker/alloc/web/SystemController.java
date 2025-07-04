@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.logout.LogoutHandler;

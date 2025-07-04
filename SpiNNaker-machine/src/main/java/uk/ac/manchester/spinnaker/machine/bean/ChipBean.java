@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

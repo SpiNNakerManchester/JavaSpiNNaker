@@ -17,8 +17,8 @@ package uk.ac.manchester.spinnaker.alloc.model;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.errorprone.annotations.Immutable;
