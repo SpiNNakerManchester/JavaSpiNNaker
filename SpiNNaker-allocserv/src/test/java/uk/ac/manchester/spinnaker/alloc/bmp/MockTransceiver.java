@@ -35,8 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 

@@ -26,8 +26,8 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
