@@ -31,11 +31,11 @@ WITH RECURSIVE
 	-- Form the sequences into grids of points
 	c(x,y,z) AS (SELECT x, y, z FROM cx, cy, triad ORDER BY x, y, z),
 	g(x,y) AS (SELECT x, y FROM gx, gy ORDER BY x, y),
-    -- Root coords and number of boards available from that point
+	-- Root coords and number of boards available from that point
 	-- NB: Can't use board ID safely as we are using a GROUP BY
 	root(x,y,z,available) AS (
 		SELECT g.x AS x, g.y AS y, 0 AS z,
-			SUM(boards.may_be_allocated) AS available
+			SUM(%usable) AS available
 		FROM args
 			JOIN c
 			JOIN g
@@ -56,5 +56,5 @@ FROM args
 	JOIN boards USING (machine_id)
 	JOIN root USING (x, y, z)
 WHERE root.available >= args.width * args.height - args.max_dead_boards
-	AND boards.may_be_allocated > 0
+	AND %usable > 0
 ORDER BY power_off_timestamp ASC;

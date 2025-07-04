@@ -209,4 +209,9 @@ public abstract class UnimplementedBMPTransceiver
 	@Override
 	public void close() throws IOException {
 	}
+
+	@Override
+	public int pingBoard(String address) {
+		throw new UnsupportedOperationException();
+	}
 }

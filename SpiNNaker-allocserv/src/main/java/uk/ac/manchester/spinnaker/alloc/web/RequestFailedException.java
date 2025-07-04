@@ -61,7 +61,7 @@ public class RequestFailedException extends RuntimeException {
 	 * @param cause
 	 *            The cause of the exception.
 	 */
-	private RequestFailedException(Status code, String message,
+	public RequestFailedException(Status code, String message,
 			Throwable cause) {
 		super(message, cause);
 		this.code = code;

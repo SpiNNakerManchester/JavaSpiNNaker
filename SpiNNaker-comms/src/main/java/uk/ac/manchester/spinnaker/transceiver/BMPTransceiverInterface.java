@@ -1864,6 +1864,15 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 
 	@Override
 	void close() throws IOException;
+
+	/**
+	 * Ping a board.
+	 *
+	 * @param address The board IP address.
+	 * @return 0 on success, other values on failure (reflecting the result of
+	 *         the OS subprocess).
+	 */
+	int pingBoard(String address);
 }
 
 interface BMPConstants {

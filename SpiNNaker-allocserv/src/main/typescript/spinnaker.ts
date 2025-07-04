@@ -124,6 +124,52 @@ interface JobDescriptor {
 	triad_height: number;
 };
 
+interface Process {
+	/** The virtual core ID. */
+	virtualId: number;
+
+	/** The physical core ID. */
+	physicalId: number;
+
+	/** The state of the process. */
+	state: string;
+
+	/** The name of the process. */
+	application: string;
+
+	/** The application id of the process. */
+	appId: number;
+
+	/** The start time of the process. */
+	start: string;
+
+	/** If the process is in RTE. */
+	rte: boolean;
+
+	/** The RTE state name. */
+	rteName: string;
+
+	/** The RTE registers. */
+	rteRegisters: string;
+};
+
+interface SpringError {
+	/** The time of the error as milliseconds since the epoch */
+	timestamp: number;
+
+	/** The HTTP Status */
+	status: number;
+
+	/** The HTTP Error message */
+	error: string;
+
+	/** The error message */
+	message: string;
+
+	/** The error path of the URL */
+	path: string;
+};
+
 /** Type of a function for looking up the location descriptor for a board. */
 type GetBoardInfo = (board: BoardTriad) => BoardLocator | undefined;
 /** Type of a function for looking up the job descriptor for a board. */
@@ -394,14 +440,15 @@ function setTooltipCore(
 		return;
 	}
 	const rect = canv.getBoundingClientRect();
+	const bodyRect = document.body.getBoundingClientRect();
 	const hc = locmapper(triad);
 	if (hc === undefined) {
 		tooltip.style.left = "-2000px";
 		return;
 	}
 	const [x, y] = hc[0];
-	tooltip.style.top = (rect.top + y + scale + 10) + "px";
-	tooltip.style.left = (rect.left + x - scale + 10) + "px";
+	tooltip.style.top = (rect.top - bodyRect.top + y + scale + 10) + "px";
+	tooltip.style.left = (rect.left - bodyRect.left + x - scale + 10) + "px";
 	tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
 	tooltipCtx.textAlign = "center";
 	const tx = tooltip.getBoundingClientRect().width / 2;
@@ -1053,6 +1100,81 @@ function saveBlacklist(sourceUri: string, boardId: number, bmpId: number, elemen
 	element.disabled = true;
 	saveButton.disabled = true;
 	loadButton.disabled = true;
+
+	r.send();
+}
+
+const PROCESS_HEADINGS: string[] = ["Core", "Phys", "State", "Application", "App Id", "Started"];
+
+function addProcessCell(row: HTMLTableRowElement, value: string) {
+	const cell = document.createElement('td') as HTMLTableCellElement;
+	cell.innerHTML = value;
+	row.appendChild(cell);
+}
+
+function addProcessRow(table: HTMLTableElement, process: Process) {
+	const row = document.createElement('tr') as HTMLTableRowElement;
+	addProcessCell(row, String(process.virtualId));
+	addProcessCell(row, String(process.physicalId));
+	if (process.rte) {
+		addProcessCell(row, process.state + " (" + process.rteName + ")");
+	} else {
+		addProcessCell(row, process.state);
+	}
+	addProcessCell(row, process.application);
+	addProcessCell(row, String(process.appId));
+	addProcessCell(row, process.start);
+	table.appendChild(row);
+	if (process.rte) {
+		const rteRow = document.createElement('tr') as HTMLTableRowElement;
+		const emptyCell = document.createElement('td') as HTMLTableCellElement;
+		rteRow.appendChild(emptyCell);
+		const rteCell = document.createElement('td') as HTMLTableCellElement;
+		rteCell.colSpan = 4;
+		rteCell.innerHTML = process.rteRegisters;
+		rteRow.appendChild(rteCell);
+		table.appendChild(rteRow);
+	}
+}
+
+function loadProcessList(sourceUri: string, elementId: string, xId: string, yId: string) {
+	const element = document.getElementById(elementId) as HTMLElement;
+	const xElement = document.getElementById(xId) as HTMLSelectElement;
+	const yElement = document.getElementById(yId) as HTMLSelectElement;
+	if (element == null) {
+		console.log("Missing " + element);
+		return;
+	}
+	const r = new XMLHttpRequest();
+	r.open("GET", sourceUri + "?x=" + xElement.value + "&y=" + yElement.value);
+	r.onload = () => {
+		if (r.status == 200) {
+			element.innerHTML = "";
+			const result = JSON.parse(r.response) as Process[];
+			const table = document.createElement('table') as HTMLTableElement;
+			const headerRow = document.createElement('tr') as HTMLTableRowElement;
+			for (let h = 0; h < PROCESS_HEADINGS.length; h++) {
+				const heading = document.createElement('th') as HTMLTableCellElement;
+				heading.className = "process_heading";
+				heading.innerHTML = PROCESS_HEADINGS[h];
+				headerRow.appendChild(heading);
+			}
+			table.appendChild(headerRow);
+			for (let row = 0; row < result.length; row++) {
+				addProcessRow(table, result[row]);
+			}
+			element.appendChild(table)
+		} else {
+			const error = JSON.parse(r.response) as SpringError;
+			element.innerHTML = "Failed load process list: "
+				+ error.message.replace(/\n/g, " ");
+		}
+	};
+	r.onerror = () => {
+		element.innerHTML = "Error reading process list!";
+	};
+
+	element.innerHTML = "Loading process list...";
 
 	r.send();
 }

@@ -80,6 +80,11 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 			return defaultConnection;
 		}
 		var destination = request.sdpHeader.getDestination().asChipLocation();
+		var chip = machine.getChipAt(destination);
+		if (chip == null) {
+			// Probably 255, 255
+			return defaultConnection;
+		}
 		var routeVia = machine.getChipAt(destination).nearestEthernet;
 		var conn = connections.get(routeVia);
 		if (log.isDebugEnabled()) {

@@ -20,15 +20,14 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
-import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTING_TABLE_DATA;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
@@ -36,7 +35,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
-import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.RouterAlloc;
 import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
 
@@ -44,19 +42,11 @@ import uk.ac.manchester.spinnaker.messages.scp.RouterInit;
  * A process for reading and writing the multicast routing table of a SpiNNaker
  * chip.
  */
-class MulticastRoutesControlProcess extends WriteMemoryProcess {
+class MulticastRoutesControlProcess extends TxrxProcess {
 	private static final long INVALID_ROUTE_MARKER = 0xFF000000L;
 
 	/** Each routing table entry is 16 bytes long. */
 	private static final int BYTES_PER_ENTRY = 16;
-
-	/** 16 entries fit in a 256-byte read. */
-	private static final int ENTRIES_PER_READ =
-			UDP_MESSAGE_MAX_SIZE / BYTES_PER_ENTRY;
-
-	/** 64 reads of 16 entries are required for 1024 entries. */
-	private static final int NUM_READS =
-			ROUTER_AVAILABLE_ENTRIES / ENTRIES_PER_READ;
 
 	private static final int END = 0xFFFFFFFF;
 
@@ -66,6 +56,8 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 */
 	private static final int MAX_ROUTER_ENTRIES = 1023;
 
+	private final Transceiver txrx;
+
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -73,11 +65,14 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 *            Object used to track how many retries were used in an
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
+	 * @param txrx
+	 * 			  A transceiver to do the writing of memory.
 	 */
 	MulticastRoutesControlProcess(
 			ConnectionSelector<? extends SCPConnection> connectionSelector,
-			RetryTracker retryTracker) {
+			RetryTracker retryTracker, Transceiver txrx) {
 		super(connectionSelector, retryTracker);
+		this.txrx = txrx;
 	}
 
 	/**
@@ -153,13 +148,13 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 		var routingData = serializeRoutingData(routes);
 
 		// Upload the data
-		writeMemory(chip.getScampCore(), ROUTING_TABLE_DATA, routingData);
+		txrx.writeMemory(chip.getScampCore(), ROUTING_TABLE_DATA, routingData);
 
 		// Allocate space in the router table
 		int baseIndex = retrieve(new RouterAlloc(chip, appID, routes.size()));
 
 		// Load the entries
-		call(new RouterInit(chip, routes.size(),
+		txrx.call(new RouterInit(chip, routes.size(),
 				ROUTING_TABLE_DATA, baseIndex, appID));
 	}
 
@@ -184,21 +179,10 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			MemoryLocation baseAddress, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		var routes = new TreeMap<Integer, MulticastRoutingEntry>();
-		for (int i = 0; i < NUM_READS; i++) {
-			int offset = i * ENTRIES_PER_READ;
-			sendGet(new ReadMemory(chip,
-					baseAddress.add(offset * BYTES_PER_ENTRY),
-					UDP_MESSAGE_MAX_SIZE),
-					bytes -> addRoutes(bytes, offset, routes, appID));
-		}
-		finishBatch();
-		return List.copyOf(routes.values());
-	}
-
-	private void addRoutes(ByteBuffer data, int offset,
-			Map<Integer, MulticastRoutingEntry> routes, AppID appID) {
-		for (int r = 0; r < ENTRIES_PER_READ; r++) {
+		var routes = new ArrayList<MulticastRoutingEntry>();
+		var nBytes = ROUTER_AVAILABLE_ENTRIES * BYTES_PER_ENTRY;
+		var data = txrx.readMemory(chip, baseAddress, nBytes);
+		for (int r = 0; r < ROUTER_AVAILABLE_ENTRIES; r++) {
 			data.getShort(); // Ignore
 			var appid = new AppID(toUnsignedInt(data.get()));
 			data.get(); // Ignore
@@ -208,9 +192,9 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 
 			if (toUnsignedLong(route) < INVALID_ROUTE_MARKER
 					&& (appID == null || appID.equals(appid))) {
-				routes.put(r + offset,
-						new MulticastRoutingEntry(key, mask, route, false));
+				routes.add(new MulticastRoutingEntry(key, mask, route, false));
 			}
 		}
+		return Collections.unmodifiableList(routes);
 	}
 }

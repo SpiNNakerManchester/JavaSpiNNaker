@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -31,8 +30,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Extra monitor core information.
@@ -56,12 +53,6 @@ public class Monitor implements HasCoreLocation {
 
 	/** The vertex placements that this monitor will read. */
 	private final List<@Valid @NotNull Placement> placements;
-
-	/** The transaction id for this extra monitor. */
-	private int transactionId = 0;
-
-	/** cap of where a transaction id will get to. */
-	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
 
 	/**
 	 * Constructor with minimum information needed.
@@ -101,35 +92,6 @@ public class Monitor implements HasCoreLocation {
 	@Override
 	public int getP() {
 		return p;
-	}
-
-	/**
-	 * Updates the transaction ID by 1 and wraps with the cap.
-	 */
-	public void updateTransactionId() {
-		transactionId = (transactionId + 1) & TRANSACTION_ID_CAP;
-	}
-
-	/** @return The current transaction ID. */
-	public int getTransactionId() {
-		return transactionId;
-	}
-
-	/**
-	 * gets the transaction id from the machine and updates.
-	 *
-	 * @param txrx
-	 *            the spinnman instance.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	public void updateTransactionIdFromMachine(TransceiverInterface txrx)
-			throws IOException, ProcessException, InterruptedException {
-		transactionId = txrx.readUser1(this);
 	}
 
 	/**

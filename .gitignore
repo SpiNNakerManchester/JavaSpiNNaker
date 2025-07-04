@@ -42,3 +42,5 @@ nbactions.xml
 
 # Output of shade plugin
 dependency-reduced-pom.xml
+
+/src/support/eclipse/

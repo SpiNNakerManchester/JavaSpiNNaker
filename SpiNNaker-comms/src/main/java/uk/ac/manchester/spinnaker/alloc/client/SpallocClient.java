@@ -22,6 +22,7 @@ import static org.apache.commons.io.IOUtils.readLines;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -30,9 +31,14 @@ import javax.validation.constraints.NotNull;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
@@ -381,6 +387,62 @@ public interface SpallocClient {
 				state = describe(true).getState();
 			}
 		}
+
+		/**
+		 * Write memory directly using the Spalloc API.
+		 *
+		 * @param chip The chip to write to
+		 * @param baseAddress The base address to write to
+		 * @param data The data to write
+		 * @throws IOException
+		 *             If communications fail.
+		 */
+		void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
+				ByteBuffer data) throws IOException;
+
+		/**
+		 * Read memory directly using the Spalloc API.
+		 *
+		 * @param chip The chip to read from
+		 * @param baseAddress The base address to read from
+		 * @param length The number of bytes to read
+		 * @return The data read
+		 * @throws IOException
+		 *             If communications fail.
+		 */
+		ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+				int length) throws IOException;
+
+		/**
+		 * Fast write data directly with a job.  Assumes it has been set up.
+		 *
+		 * @param gathererCore The core to use on the Ethernet chip.
+		 * @param iptag The tag ID to use for reading responses.
+		 * @param chip The chip to write to.
+		 * @param baseAddress The base address to write to.
+		 * @param data The data to write.
+		 *
+		 * @throws IOException
+		 *             If communications fail.
+		 */
+		void fastWriteData(CoreLocation gathererCore,
+				IPTag iptag, HasChipLocation chip, MemoryLocation baseAddress,
+				ByteBuffer data) throws IOException;
+
+		/**
+		 * Fast read data directly with a job.  Assumes it has been set up.
+		 *
+		 * @param gathererChip The chip where the gatherer core is.
+		 * @param iptag The Tag ID to use for reading responses.
+		 * @param monitorCore The monitor core to read from.
+		 * @param baseAddress The SDRAM address to read from.
+		 * @param length The number of bytes to read.
+		 * @return The data read.
+		 * @throws IOException If communications fail.
+		 */
+		ByteBuffer fastReadData(ChipLocation gathererChip,
+				IPTag iptag, HasCoreLocation monitorCore,
+				MemoryLocation baseAddress, int length) throws IOException;
 	}
 
 	/**

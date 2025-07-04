@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS jobs(
 		death_timestamp - allocation_timestamp) VIRTUAL,
 	resources_used INTEGER GENERATED ALWAYS AS ( -- generated column
 		lifetime_duration * allocation_size) VIRTUAL,
+	nmpi_job_id INTEGER,
+	nmpi_session_id INTEGER,
 	UNIQUE INDEX (job_id ASC)
 );
 

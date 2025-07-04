@@ -17,15 +17,27 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_USER;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_MCH;
 import static uk.ac.manchester.spinnaker.alloc.web.DocConstants.T_TOP;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ADDRESS;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_X;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_Y;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.CHIP_P;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ETH_ADDRESS;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ETH_X;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ETH_Y;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.FAST_DATA_WRITE;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.GATHER_P;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.GATHER_X;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.GATHER_Y;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.FAST_DATA_READ;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.ID;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.IPTAG;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
@@ -36,9 +48,11 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_LOGICAL;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MEMORY;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.NAME;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.REPORT_ISSUE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SIZE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,6 +89,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
 import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber;
@@ -255,6 +270,20 @@ public interface SpallocServiceAPI {
 			@Positive(message = "job ID must be positive") int id,
 			@Context UriInfo ui, @Context HttpServletRequest request,
 			@Context SecurityContext security);
+
+	/**
+	 * Immediately stop all jobs and power down all boards.
+	 *
+	 * @param commandCode
+	 * @param response
+	 */
+	@GET
+	@Description("Immediately stop all jobs and power down all boards,"
+			+ " and stop accepting new jobs.")
+	@Path("/emergencyStop")
+	void emergencyStop(@Description("Code to validate the request.")
+			@QueryParam("commandCode") String commandCode,
+			@Suspended AsyncResponse response);
 
 	/**
 	 * Interface to a particular machine.
@@ -565,6 +594,180 @@ public interface SpallocServiceAPI {
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
 		void reportBoardIssue(IssueReportRequest report,
+				@Suspended AsyncResponse response);
+
+		/**
+		 * Write data to job boards.
+		 *
+		 * @param x Chip X coordinate
+		 * @param y Chip Y coordinate
+		 * @param address Address to write to
+		 * @param bytes Data to write
+		 * @param response Eventual response once request is complete
+		 */
+		@POST
+		@Description("Write data to job boards.")
+		@Operation(tags = T_JOB, summary = "Write data to job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(MEMORY)
+		@Consumes(APPLICATION_OCTET_STREAM)
+		void writeDataToJob(
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address,
+				byte[] bytes,
+				@Suspended AsyncResponse response);
+
+		/**
+		 * Read data from job boards.
+		 *
+		 * @param x Chip X coordinate
+		 * @param y Chip Y coordinate
+		 * @param address Address to read from
+		 * @param size Number of bytes to read
+		 * @param response Filled out with bytes read.
+		 */
+		@GET
+		@Description("Read data from job boards.")
+		@Operation(tags = T_JOB, summary = "Read data from job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(MEMORY)
+		@Produces(APPLICATION_OCTET_STREAM)
+		void readDataFromJob(
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address, @QueryParam(SIZE) int size,
+				@Suspended AsyncResponse response);
+
+		/**
+		 * Write data to job boards using the fast data protocol.
+		 * Note: it is assumed that the board has been set up before this is
+		 * called.
+		 *
+		 * @param gatherX X coordinate of the gather core
+		 * @param gatherY Y coordinate of the gather core
+		 * @param gatherP Processor ID of the gather core
+		 * @param ethX X coordinate of the Ethernet chip of x, y
+		 * @param ethY Y coordinate of the Ethernet chip of x, y
+		 * @param ethAddress The Ethernet address of the Ethernet chip
+		 * @param iptag The IPTag to use for the write
+		 * @param x The X coordinate of the chip within the job's allocation.
+		 * @param y The Y coordinate of the chip within the job's allocation.
+		 * @param address The address to write the data to.
+		 * @param bytes The data to write.
+		 * @param response Eventual response once request is complete
+		 */
+		@POST
+		@Description("Write data to job boards using the fast data protocol.")
+		@Operation(tags = T_JOB,
+				summary = "Write data to job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(FAST_DATA_WRITE)
+		@Consumes(APPLICATION_OCTET_STREAM)
+		@SuppressWarnings("checkstyle:ParameterNumber")
+		void fastDataWrite(
+				@Description("X coordinate of the gather core")
+				@QueryParam(GATHER_X) @ValidX int gatherX,
+				@Description("Y coordinate of the gather core")
+				@QueryParam(GATHER_Y) @ValidY int gatherY,
+				@Description("Processor ID of the gather core")
+				@QueryParam(GATHER_P) @Positive int gatherP,
+				@Description("X coordinate of the Ethernet chip of x, y")
+				@QueryParam(ETH_X) @DefaultValue("0") @ValidX int ethX,
+				@Description("Y coordinate of the Ethernet chip of x, y")
+				@QueryParam(ETH_Y) @DefaultValue("0") @ValidY int ethY,
+				@Description("The Ethernet address of the Ethernet chip")
+				@QueryParam(ETH_ADDRESS) @IPAddress String ethAddress,
+				@Description("The IPTag to use for the write")
+				@QueryParam(IPTAG) int iptag,
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address, byte[] bytes,
+				@Suspended AsyncResponse response);
+
+		/**
+		 * Read data from job boards using the fast data download protocol.
+		 * Note: it is assumed that the board has been set up before this is
+		 * called.
+		 *
+		 * @param gatherX X coordinate of the gather core
+		 * @param gatherY Y coordinate of the gather core
+		 * @param ethX X coordinate of the Ethernet chip of x, y
+		 * @param ethY Y coordinate of the Ethernet chip of x, y
+		 * @param ethAddress The Ethernet address of the Ethernet chip
+		 * @param iptag The IPTag to use for the write
+		 * @param x Chip X coordinate
+		 * @param y Chip Y coordinate
+		 * @param p Core processor
+		 * @param address Address to read from
+		 * @param size Number of bytes to read
+		 * @param response Filled out with bytes read.
+		 */
+		@GET
+		@Description("Read data from job boards using the fast data protocol.")
+		@Operation(tags = T_JOB, summary = "Read data from job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path(FAST_DATA_READ)
+		@Produces(APPLICATION_OCTET_STREAM)
+		@SuppressWarnings("checkstyle:ParameterNumber")
+		void fastDataRead(
+				@Description("X coordinate of the gather core")
+				@QueryParam(GATHER_X) @ValidX int gatherX,
+				@Description("Y coordinate of the gather core")
+				@QueryParam(GATHER_Y) @ValidY int gatherY,
+				@Description("X coordinate of the Ethernet chip of x, y")
+				@QueryParam(ETH_X) @DefaultValue("0") @ValidX int ethX,
+				@Description("Y coordinate of the Ethernet chip of x, y")
+				@QueryParam(ETH_Y) @DefaultValue("0") @ValidY int ethY,
+				@Description("The Ethernet address of the Ethernet chip")
+				@QueryParam(ETH_ADDRESS) @IPAddress String ethAddress,
+				@Description("The IPTag to use for the write")
+				@QueryParam(IPTAG) int iptag,
+				@Description("X coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
+				@Description("Y coordinate of chip within job's allocation.")
+				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
+				@Description("Processor id of monitor core on chip.")
+				@QueryParam(CHIP_P) @DefaultValue("0") @ValidP int p,
+				@Description("The address to write the data to")
+				@QueryParam(ADDRESS) long address,
+				@QueryParam(SIZE) int size, @Suspended AsyncResponse response);
+
+		/**
+		 * Clear routes, reset counters and install counting filters needed.
+		 *
+		 * @param uriInfo
+		 *         The info containing the query parameters of the request,
+		 *         to include filters to be set as n=value where n is the
+		 *         index of the filter to be set and value is the integer word
+		 *         made of the combined flags of the filter.
+		 * @param response The response to answer with
+		 */
+		@DELETE
+		@Description("Clear routes, reset counters and install counters needed")
+		@Operation(tags = T_JOB, summary = "Read data from job boards.",
+				parameters = @Parameter(in = PATH, name = ID,
+				description = "Job identifier",
+				schema = @Schema(implementation = Integer.class)))
+		@Path("/router")
+		void prepareRoutingTables(@Context UriInfo uriInfo,
 				@Suspended AsyncResponse response);
 	}
 }

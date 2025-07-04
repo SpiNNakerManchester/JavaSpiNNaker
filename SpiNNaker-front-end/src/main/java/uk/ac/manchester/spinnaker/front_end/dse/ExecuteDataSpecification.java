@@ -19,7 +19,7 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Function;
 
 import com.google.errorprone.annotations.MustBeClosed;
@@ -32,7 +32,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Common base for executing data specifications.
@@ -48,8 +47,6 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	private final BasicExecutor executor;
 
 	/**
-	 * @param txrx
-	 *            The transceiver for talking to the SpiNNaker machine.
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
 	 * @param db
@@ -70,21 +67,12 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	protected ExecuteDataSpecification(TransceiverInterface txrx,
-			Machine machine, DSEDatabaseEngine db)
+	protected ExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
 			throws IOException, ProcessException, InterruptedException,
 			StorageException, URISyntaxException {
-		super((db == null) ? null : txrx, machine);
+		super(db == null ? null : db.getStorageInterface(), machine);
 		this.db = db;
 		this.executor = new BasicExecutor(PARALLEL_SIZE);
-	}
-
-	@Override
-	public final void close() throws IOException, InterruptedException {
-		if (txrx != null) {
-			txrx.close();
-		}
-		executor.close();
 	}
 
 	/**
@@ -107,7 +95,7 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
 	 */
-	protected final void processTasksInParallel(List<Ethernet> tasks,
+	protected final void processTasksInParallel(Collection<Ethernet> tasks,
 			Function<Ethernet, SimpleCallable> mapper) throws StorageException,
 			IOException, ProcessException, InterruptedException {
 		try {

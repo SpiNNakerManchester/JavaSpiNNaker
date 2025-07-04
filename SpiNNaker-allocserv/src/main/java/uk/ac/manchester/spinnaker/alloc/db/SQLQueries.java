@@ -15,8 +15,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
@@ -53,6 +57,9 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 })
 // @formatter:on
 public abstract class SQLQueries {
+
+	private static final ResourceLoader CTX = new DefaultResourceLoader();
+
 	/** Get basic information about all machines. */
 	@Parameter("allow_out_of_service")
 	@ResultColumn("machine_id")
@@ -170,6 +177,17 @@ public abstract class SQLQueries {
 			"SELECT job_id, machine_id, job_state, keepalive_timestamp "
 					+ "FROM jobs WHERE job_state != 4 " // DESTROYED
 					+ "ORDER BY job_id DESC LIMIT :limit OFFSET :offset";
+
+	/** Select all live jobs. */
+	@ResultColumn("job_id")
+	protected static final String GET_ALL_LIVE_JOBS =
+			"SELECT job_id FROM jobs WHERE job_state != 4";
+
+	/** Destroy all live jobs. */
+	@Parameter("death_reason")
+	protected static final String DESTROY_ALL_LIVE_JOBS =
+			"UPDATE jobs SET job_state = 4, death_reason = :death_reason, "
+			+ "death_timestamp = UNIX_TIMESTAMP() WHERE job_state != 4";
 
 	/** Get basic information about a specific job. */
 	@Parameter("job_id")
@@ -660,9 +678,9 @@ public abstract class SQLQueries {
 					+ "WHERE board_id = :board_id";
 
 	/** Delete an allocation task. */
-	@Parameter("request_id")
+	@Parameter("job_id")
 	protected static final String DELETE_TASK =
-			"DELETE FROM job_request WHERE req_id = :request_id";
+			"DELETE FROM job_request WHERE job_id = :job_id";
 
 	/** Find a single free board. */
 	@Parameter("machine_id")
@@ -673,6 +691,16 @@ public abstract class SQLQueries {
 	protected static final String FIND_FREE_BOARD =
 			"SELECT x, y, z FROM boards "
 					+ "WHERE machine_id = :machine_id AND may_be_allocated "
+					+ "ORDER BY power_off_timestamp ASC LIMIT 1";
+
+	/** Check there is a single free board. */
+	@Parameter("machine_id")
+	@ResultColumn("c")
+	@SingleRowResult
+	protected static final String COUNT_FUNCTIONING_BOARDS =
+			"SELECT COUNT(*) as c FROM boards "
+					+ "WHERE machine_id = :machine_id AND "
+					+ "(functioning IS NULL or functioning != 0) "
 					+ "ORDER BY power_off_timestamp ASC LIMIT 1";
 
 	/**
@@ -748,6 +776,13 @@ public abstract class SQLQueries {
 					+ "WHERE board_id = :board_id";
 
 	/**
+	 * Set all boards to off.
+	 */
+	protected static final String SET_ALL_BOARDS_OFF =
+			"UPDATE boards SET board_power = 0, "
+					+ "power_off_timestamp = UNIX_TIMESTAMP()";
+
+	/**
 	 * Find jobs that have expired their keepalive interval.
 	 *
 	 * @see AllocatorTask
@@ -784,6 +819,10 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	protected static final String KILL_JOB_ALLOC_TASK =
 			"DELETE FROM job_request WHERE job_id = :job_id";
+
+	/** Delete all requests to allocate resources for a job. */
+	protected static final String KILL_ALL_JOB_ALLOC_TASK =
+			"DELETE FROM job_request";
 
 	/**
 	 * Delete a request to change the power of a board. Used once the change has
@@ -1827,6 +1866,21 @@ public abstract class SQLQueries {
 			"DELETE FROM old_board_allocations WHERE alloc_id = :alloc_id";
 
 	/**
+	 * Actually delete an NMPI job record. Only called by the data tombstone-r.
+	 */
+	@Parameter("nmpi_job_id")
+	protected static final String DELETE_NMPI_JOB =
+			"DELETE FROM job_nmpi_job WHERE nmpi_job_id = :nmpi_job_id";
+
+	/**
+	 * Actually delete an NMPI session record.
+	 * Only called by the data tombstone-r.
+	 */
+	@Parameter("session_id")
+	protected static final String DELETE_NMPI_SESSION =
+			"DELETE FROM job_nmpi_session WHERE session_id = :session_id";
+
+	/**
 	 * Read the blacklisted chips for a board.
 	 *
 	 * @see BlacklistStore
@@ -2256,17 +2310,23 @@ public abstract class SQLQueries {
 	@ResultColumn("user_name")
 	@ResultColumn("group_id")
 	@ResultColumn("group_name")
+	@ResultColumn("nmpi_job_id")
+	@ResultColumn("nmpi_session_id")
 	protected static final String READ_HISTORICAL_JOBS =
 			"SELECT job_id, machine_id, owner, create_timestamp, "
 			+ "jobs.width as width, jobs.height as height, jobs.depth as depth,"
 			+ "allocated_root, keepalive_interval, keepalive_host, "
 			+ "death_reason, death_timestamp, original_request, "
 			+ "allocation_timestamp, allocation_size, "
-			+ "machine_name, user_name, group_id, group_name "
+			+ "machine_name, user_name, group_id, group_name, "
+			+ "job_nmpi_job.nmpi_job_id as nmpi_job_id, "
+			+ "job_nmpi_session.session_id as nmpi_session_id "
 			+ "FROM jobs "
 			+ "JOIN user_groups USING (group_id) "
 			+ "JOIN machines USING (machine_id) "
 			+ "JOIN user_info ON jobs.owner = user_info.user_id "
+			+ "LEFT JOIN job_nmpi_job USING (job_id) "
+			+ "LEFT JOIN job_nmpi_session USING (job_id) "
 			+ "WHERE death_timestamp + :grace_period < UNIX_TIMESTAMP()";
 
 	/**
@@ -2303,6 +2363,8 @@ public abstract class SQLQueries {
 	@Parameter("owner_name")
 	@Parameter("group_id")
 	@Parameter("group_name")
+	@Parameter("nmpi_job_id")
+	@Parameter("nmpi_session_id")
 	protected static final String WRITE_HISTORICAL_JOBS =
 			"INSERT IGNORE INTO jobs( "
 			+ "job_id, machine_id, owner, create_timestamp, "
@@ -2310,13 +2372,15 @@ public abstract class SQLQueries {
 			+ "keepalive_interval, keepalive_host, "
 			+ "death_reason, death_timestamp, "
 			+ "original_request, allocation_timestamp, allocation_size, "
-			+ "machine_name, owner_name, group_id, group_name) "
+			+ "machine_name, owner_name, group_id, group_name, "
+			+ "nmpi_job_id, nmpi_session_id) "
 			+ "VALUES(:job_id, :machine_id, :owner, :create_timestamp, "
 			+ ":width, :height, :depth, :root_id, "
 			+ ":keepalive_interval, :keepalive_host, "
 			+ ":death_reason, :death_timestamp, "
 			+ ":original_request, :allocation_timestamp, :allocation_size, "
-			+ ":machine_name, :owner_name, :group_id, :group_name)";
+			+ ":machine_name, :owner_name, :group_id, :group_name, "
+			+ ":nmpi_job_id, :nmpi_session_id)";
 
 	/**
 	 * Set the NMPI session for a Job.
@@ -2360,6 +2424,42 @@ public abstract class SQLQueries {
 			"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "
 			+ "WHERE job_id=:job_id";
 
+
+	/**
+	 * Find an allocatable board with a specific board ID. (This will have been
+	 * previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String FIND_LOCATION =
+			"SELECT x, y, z FROM boards "
+			+ "WHERE boards.machine_id = :machine_id "
+			+ "AND boards.board_id = :board_id AND boards.may_be_allocated";
+
+	/**
+	 * Check a board with a specific board ID is allocatable. (This will have
+	 * been previously converted from some other form of board coordinates.)
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("machine_id")
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@SingleRowResult
+	protected static final String CHECK_LOCATION =
+			"SELECT x, y, z FROM boards "
+			+ "WHERE boards.machine_id = :machine_id "
+			+ "AND boards.board_id = :board_id "
+			+ "AND (boards.functioning is NULL or boards.functioning != 0)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2378,8 +2478,30 @@ public abstract class SQLQueries {
 	@ResultColumn("y")
 	@ResultColumn("z")
 	@ResultColumn("available")
-	@Value("classpath:queries/find_rectangle.sql")
-	protected Resource findRectangle;
+	protected SQL findRectangle = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle.sql"),
+			List.of("%usable"), List.of("boards.may_be_allocated"));
+
+	/**
+	 * Check that a rectangle of triads of boards that may be allocated. The
+	 * {@code max_dead_boards} gives the amount of allowance for non-allocatable
+	 * resources to be made within the rectangle.
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("machine_id")
+	@Parameter("max_dead_boards")
+	@ResultColumn("id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("available")
+	protected SQL checkRectangle = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle.sql"),
+			List.of("%usable"),
+			List.of("(boards.functioning is NULL or boards.functioning != 0)"));
 
 	/**
 	 * Find a rectangle of triads of boards rooted at a specific board that may
@@ -2399,23 +2521,36 @@ public abstract class SQLQueries {
 	@ResultColumn("z")
 	@ResultColumn("available")
 	@SingleRowResult
-	@Value("classpath:queries/find_rectangle_at.sql")
-	protected Resource findRectangleAt;
+	protected SQL findRectangleAt = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle_at.sql"),
+			List.of("%usable", "%root_usable"),
+			List.of("bs.may_be_allocated",
+					"selected_root.may_be_allocated > 0"));
 
 	/**
-	 * Find an allocatable board with a specific board ID. (This will have been
-	 * previously converted from some other form of board coordinates.)
+	 * Find a rectangle of triads of boards rooted at a specific board that may
+	 * be allocated. The {@code max_dead_boards} gives the amount of allowance
+	 * for non-allocatable resources to be made within the rectangle.
 	 *
 	 * @see AllocatorTask
 	 */
-	@Parameter("machine_id")
 	@Parameter("board_id")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("machine_id")
+	@Parameter("max_dead_boards")
+	@ResultColumn("id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
+	@ResultColumn("available")
 	@SingleRowResult
-	@Value("classpath:queries/find_location.sql")
-	protected Resource findLocation;
+	protected SQL checkRectangleAt = new SQL(
+			CTX.getResource("classpath:queries/find_rectangle_at.sql"),
+			List.of("%usable", "%root_usable"),
+			List.of("(bs.functioning is NULL or bs.functioning != 0)",
+					"(selected_root.functioning is NULL or "
+					+ "selected_root.functioning != 0)"));
 
 	/** Create a request to change the power status of a board. */
 	@Parameter("job_id")

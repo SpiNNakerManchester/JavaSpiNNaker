@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -54,6 +55,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.RestrictedApi;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -125,10 +127,19 @@ public class AllocatorTask extends DatabaseAwareBean
 	private HistoricalDataProperties historyProps;
 
 	@Autowired
-	private ProxyRememberer rememberer;
+	private JobObjectRememberer rememberer;
 
 	@Autowired
 	private TaskScheduler scheduler;
+
+	@GuardedBy("itself")
+	private final List<ScheduledFuture<?>> futures = new ArrayList<>();
+
+	@GuardedBy("futures")
+	private ScheduledFuture<?> allocateFuture = null;
+
+	@GuardedBy("futures")
+	private boolean emergencyStop = false;
 
 	// Note can't be autowired as circular;
 	// instead set by setter in postconstruct of BMPController
@@ -141,11 +152,14 @@ public class AllocatorTask extends DatabaseAwareBean
 	@PostConstruct
 	@SuppressWarnings("FutureReturnValueIgnored")
 	private void init() {
-		scheduler.scheduleAtFixedRate(() -> allocate(),	allocProps.getPeriod());
-		scheduler.scheduleAtFixedRate(() -> expireJobs(),
-				keepAliveProps.getExpiryPeriod());
-		scheduler.schedule(() -> tombstone(),
-				new CronTrigger(historyProps.getSchedule()));
+		synchronized (futures) {
+			futures.add(scheduler.scheduleAtFixedRate(() -> allocate(),
+					allocProps.getPeriod()));
+			futures.add(scheduler.scheduleAtFixedRate(() -> expireJobs(),
+					keepAliveProps.getExpiryPeriod()));
+			futures.add(scheduler.schedule(() -> tombstone(),
+					new CronTrigger(historyProps.getSchedule())));
+		}
 	}
 
 	/**
@@ -160,8 +174,18 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	public void updateJob(int jobId, JobState sourceState,
 			JobState targetState) {
-		scheduler.schedule(() -> updateJobNow(jobId, sourceState, targetState),
-				Instant.now());
+		synchronized (futures) {
+			// No need to update the job in emergency stop mode, as we are
+			// going to cancel them all!  This is non-critical though; anything
+			// that gets through here should be OK.
+			if (emergencyStop) {
+				log.warn("emergency stop; not updating job {}", jobId);
+				return;
+			}
+			scheduler.schedule(
+					() -> updateJobNow(jobId, sourceState, targetState),
+					Instant.now());
+		}
 	}
 
 	private void updateJobNow(int jobId, JobState sourceState,
@@ -185,10 +209,13 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private boolean update(int jobId, JobState sourceState,
 			JobState targetState, Connection c) {
+		log.debug("Updating job {} from {} to {}", jobId, sourceState,
+				targetState);
 		try (var getChangeStatus = c.query(COUNT_CHANGES_FOR_JOB);
 				var setJobState = c.update(SET_STATE_PENDING);
 				var setJobDestroyed = c.update(SET_STATE_DESTROYED);
-				var deleteChanges = c.update(DELETE_PENDING)) {
+				var deleteChanges = c.update(DELETE_PENDING);
+				var deleteTask = c.update(DELETE_TASK)) {
 			// Count pending changes for this state change
 			var status = getChangeStatus.call1(ChangeStatus::new,
 					jobId, sourceState, targetState).orElseThrow(
@@ -220,9 +247,18 @@ public class AllocatorTask extends DatabaseAwareBean
 				}
 
 				// If the job was not ready, we need to re-queue and reallocate
-				// boards
-				scheduler.schedule(() -> setPower(jobId, OFF, QUEUED),
-						Instant.now());
+				// boards, but not if in emergency stop mode
+				synchronized (futures) {
+					if (emergencyStop) {
+						log.warn("emergency stop; not requeuing job {}", jobId);
+						return false;
+					}
+					// The power request will get through here, but will be
+					// stopped later.  This is a request for off anyway, so non
+					// critical.
+					scheduler.schedule(() -> setPower(jobId, OFF, QUEUED),
+							Instant.now());
+				}
 				return false;
 			} else if (status.nChanges > 0) {
 				// There are still changes happening - let them finish first
@@ -234,6 +270,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			// If there are no more pending changes and no errors,
 			// set the job state to the target state
 			log.debug("Job {} moving to state {}", jobId, targetState);
+
+			// If destroyed, we don't need to set the state as it will be gone
 			if (targetState == DESTROYED) {
 				int rows = setJobDestroyed.call(jobId);
 				if (rows != 1) {
@@ -241,10 +279,32 @@ public class AllocatorTask extends DatabaseAwareBean
 							+ "destroy in state update: {}", rows);
 				}
 				return rows > 0;
+
+			// If ready, we can now delete the job request too
+			} else if (targetState == READY) {
+				int rows = deleteTask.call(jobId);
+				if (rows != 1) {
+					log.warn("unexpected number of rows affected by ready in "
+							+ "state update: {}", rows);
+				}
 			}
 
 			return setJobState.call(targetState, jobId) > 0;
 		}
+	}
+
+	public void emergencyStop() {
+		synchronized (futures) {
+			emergencyStop = true;
+			for (var future : futures) {
+				future.cancel(true);
+			}
+			if (allocateFuture != null) {
+				allocateFuture.cancel(true);
+			}
+		}
+		bmpController.emergencyStop();
+		destroyAllJobs();
 	}
 
 	/**
@@ -285,7 +345,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * Ask for allocation to happen now.
 	 */
 	public void scheduleAllocateNow() {
-		scheduler.schedule(this::allocate, Instant.now());
+		synchronized (futures) {
+			if (emergencyStop) {
+				log.warn("emergency stop; not scheduling allocation");
+				return;
+			}
+			allocateFuture = scheduler.schedule(this::allocate, Instant.now());
+		}
 	}
 
 	/**
@@ -387,9 +453,6 @@ public class AllocatorTask extends DatabaseAwareBean
 		/** Get the list of allocation tasks for jobs in a given state. */
 		private final Query getTasks;
 
-		/** Delete an allocation task. */
-		private final Update delete;
-
 		/** Find a single free board. */
 		private final Query findFreeBoard;
 
@@ -439,12 +502,11 @@ public class AllocatorTask extends DatabaseAwareBean
 			super(conn);
 			bumpImportance = conn.update(BUMP_IMPORTANCE);
 			getTasks = conn.query(getAllocationTasks);
-			delete = conn.update(DELETE_TASK);
 			findFreeBoard = conn.query(FIND_FREE_BOARD);
 			getRectangles = conn.query(findRectangle);
 			getRectangleAt = conn.query(findRectangleAt);
 			countConnectedBoards = conn.query(countConnected);
-			findSpecificBoard = conn.query(findLocation);
+			findSpecificBoard = conn.query(FIND_LOCATION);
 			getConnectedBoardIDs = conn.query(getConnectedBoards);
 			allocBoard = conn.update(ALLOCATE_BOARDS_BOARD);
 			allocJob = conn.update(ALLOCATE_BOARDS_JOB);
@@ -455,7 +517,6 @@ public class AllocatorTask extends DatabaseAwareBean
 			super.close();
 			bumpImportance.close();
 			getTasks.close();
-			delete.close();
 			findFreeBoard.close();
 			getRectangles.close();
 			getRectangleAt.close();
@@ -469,6 +530,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	/** Encapsulates the queries and updates used in deletion. */
 	private final class DestroySQL extends PowerSQL {
+
 		/** Get basic information about a specific job. */
 		private final Query getJob = conn.query(GET_JOB);
 
@@ -642,7 +704,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			int maxImportance = -1;
 			log.trace("Allocate running");
 			var allocations = new Allocations();
-			for (AllocTask task : sql.getTasks.call(AllocTask::new, QUEUED)) {
+			var tasks = sql.getTasks.call(AllocTask::new, QUEUED);
+			log.debug("allocate for {} tasks", tasks.size());
+			for (AllocTask task : tasks) {
 				if (task.importance > maxImportance) {
 					maxImportance = task.importance;
 				} else if (task.importance < maxImportance
@@ -651,10 +715,6 @@ public class AllocatorTask extends DatabaseAwareBean
 					continue;
 				}
 				var handled = task.allocate(sql);
-				// If we handled it, delete the request
-				if (handled.size() > 0) {
-					sql.delete.call(task.id);
-				}
 				allocations.addAll(task.jobId, handled);
 				log.debug("allocate for {} (job {}): {}", task.id,
 						task.jobId, handled);
@@ -765,6 +825,14 @@ public class AllocatorTask extends DatabaseAwareBean
 			return jobs.stream().filter(Objects::nonNull);
 		}
 
+		private Stream<Integer> nmpiJobs() {
+			return jobs().map(j -> j.nmpiJobId).filter(Objects::nonNull);
+		}
+
+		private Stream<Integer> nmpiSessions() {
+			return jobs().map(j -> j.nmpiSessionId).filter(Objects::nonNull);
+		}
+
 		/**
 		 * @return The number of job records to copy over to the historical
 		 *         database.
@@ -844,6 +912,10 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		String groupName;
 
+		Integer nmpiJobId;
+
+		Integer nmpiSessionId;
+
 		HistoricalJob(Row row) {
 			jobId = row.getInt("job_id");
 			machineId = row.getInt("machine_id");
@@ -864,6 +936,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			userName = row.getString("user_name");
 			groupId = row.getInt("group_id");
 			groupName = row.getString("group_name");
+			nmpiJobId = row.getInteger("nmpi_job_id");
+			nmpiSessionId = row.getInteger("nmpi_session_id");
 		}
 
 		Object[] args() {
@@ -872,7 +946,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				width, height, depth, allocatedRoot, keepaliveInterval,
 				keepaliveHost, deathReason, deathTimestamp, originalRequest,
 				allocationTimestamp, allocationSize, machineName, userName,
-				groupId, groupName
+				groupId, groupName, nmpiJobId, nmpiSessionId
 			};
 		}
 	}
@@ -897,6 +971,8 @@ public class AllocatorTask extends DatabaseAwareBean
 				var readAllocs = conn.query(READ_HISTORICAL_ALLOCS);
 				var deleteJobs = conn.update(DELETE_JOB_RECORD);
 				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD);
+				var deleteNMPIJob = conn.update(DELETE_NMPI_JOB);
+				var deleteNMPISession = conn.update(DELETE_NMPI_SESSION);
 				var writeJobs = histConn.update(WRITE_HISTORICAL_JOBS);
 				var writeAllocs = histConn.update(WRITE_HISTORICAL_ALLOCS)) {
 			var grace = historyProps.getGracePeriod();
@@ -908,6 +984,8 @@ public class AllocatorTask extends DatabaseAwareBean
 				copied.jobs().forEach((j) -> writeJobs.call(j.args()));
 			});
 			conn.transaction(() -> {
+				copied.nmpiJobs().forEach(deleteNMPIJob::call);
+				copied.nmpiSessions().forEach(deleteNMPISession::call);
 				copied.allocs().forEach((a) -> deleteAllocs.call(a.allocId));
 				copied.jobs().forEach((j) -> deleteJobs.call(j.jobId));
 			});
@@ -921,6 +999,22 @@ public class AllocatorTask extends DatabaseAwareBean
 				id, execute(conn -> destroyJob(conn, id, reason)));
 		allocations.updateEpochs();
 		allocations.updateBMPs();
+	}
+
+	private void destroyAllJobs() {
+		var allocations = new Allocations();
+		allocations.jobIds.addAll(execute(conn -> {
+			try (var getAll = conn.query(GET_ALL_LIVE_JOBS);
+					var destroyAll = conn.update(DESTROY_ALL_LIVE_JOBS);
+					var killAllAllocs = conn.update(KILL_ALL_JOB_ALLOC_TASK)) {
+				var jobs = getAll.call(integer("job_id"));
+				killAllAllocs.call();
+				destroyAll.call(
+						"The machine has been shut down due to an emergency");
+				return jobs;
+			}
+		}));
+		allocations.updateEpochs();
 	}
 
 	/**
@@ -960,7 +1054,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			return bmps;
 		} finally {
 			quotaManager.finishJob(id);
-			rememberer.killProxies(id);
+			rememberer.closeJob(id);
 		}
 	}
 
@@ -1221,7 +1315,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		log.info("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
 		// Any proxies that existed are now defunct; user must make anew
-		rememberer.killProxies(jobId);
+		rememberer.closeJob(jobId);
 		return setPower(sql, jobId, ON, READY);
 	}
 
@@ -1358,6 +1452,16 @@ public class AllocatorTask extends DatabaseAwareBean
 		 * @return The BMPs updated by the expiry.
 		 */
 		Allocations expireJobs();
+
+		/**
+		 * Stop the allocator.
+		 */
+		void emergencyStop();
+
+		/**
+		 * Restart allocations after stopping, to allow more tests!
+		 */
+		void restartAfterStop();
 	}
 
 	/** Operations for testing historical database only. */
@@ -1401,6 +1505,20 @@ public class AllocatorTask extends DatabaseAwareBean
 			@Override
 			public Allocations expireJobs() {
 				return AllocatorTask.this.expireJobs(conn);
+			}
+
+			@Override
+			public void emergencyStop() {
+				AllocatorTask.this.emergencyStop();
+			}
+
+			@Override
+			public void restartAfterStop() {
+				synchronized (AllocatorTask.this.futures) {
+					AllocatorTask.this.emergencyStop = false;
+					AllocatorTask.this.futures.clear();
+					AllocatorTask.this.init();
+				}
 			}
 		};
 	}

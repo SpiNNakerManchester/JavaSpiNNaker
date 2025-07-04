@@ -16,14 +16,18 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static java.util.Objects.isNull;
+import static java.nio.ByteBuffer.wrap;
 import static javax.ws.rs.core.Response.accepted;
+import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.noContent;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
+import java.util.HashMap;
 import java.util.Optional;
 
+import javax.validation.constraints.Positive;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -52,8 +56,16 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.JobAPI;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.machine.ValidP;
+import uk.ac.manchester.spinnaker.machine.ValidX;
+import uk.ac.manchester.spinnaker.machine.ValidY;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
+import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Manufactures instances of {@link MachineAPI} and {@link JobAPI}. This
@@ -168,90 +180,200 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	@Role(ROLE_APPLICATION)
 	public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
 		var sp = props.getProxy().isEnable() ? servletPath : null;
-		return new JobAPI() {
-			@Override
-			public String keepAlive(String reqBody) {
-				log.debug("keeping job {} alive: {}", j.getId(), caller);
-				j.access(caller);
-				return "ok";
-			}
+		return new JobAPIImpl(j, caller, permit, ui, sp);
+	}
 
-			@Override
-			public void getState(boolean wait, AsyncResponse response) {
-				if (wait) {
-					bgAction(response, permit, () -> {
-						log.debug("starting wait for change of job");
-						j.waitForChange(props.getWait());
-						// Refresh the handle
-						var nj = core.getJob(permit, j.getId())
-								.orElseThrow(() -> new ItsGone("no such job"));
-						log.debug("job state now {}", nj.getState());
-						return new JobStateResponse(nj, ui, mapper, sp);
-					});
-				} else {
-					fgAction(response, () -> new JobStateResponse(j, ui, mapper,
-							sp));
-				}
-			}
+	/**
+	 * Implementation of the JobAPI.
+	 */
+	private final class JobAPIImpl implements JobAPI {
 
-			@Override
-			public Response deleteJob(String reason) {
-				if (isNull(reason)) {
-					reason = "unspecified";
-				}
-				j.destroy(reason);
-				return noContent().build();
-			}
+		private final String caller;
 
-			private SubMachine allocation() {
-				return j.getMachine().orElseThrow(
-						// No machine allocated yet
-						EmptyResponse::new);
-			}
+		private final Job j;
 
-			@Override
-			public SubMachineResponse getMachine() {
-				j.access(caller);
-				return new SubMachineResponse(allocation(), ui);
-			}
+		private final Permit permit;
 
-			@Override
-			public MachinePower getMachinePower() {
-				j.access(caller);
-				return new MachinePower(allocation().getPower());
-			}
+		private final UriInfo ui;
 
-			@Override
-			public void setMachinePower(MachinePower reqBody,
-					AsyncResponse response) {
-				// Async because it involves getting a write lock
-				if (isNull(reqBody)) {
-					throw new BadArgs("bad power description");
-				}
+		private final String sp;
+
+		private JobAPIImpl(Job j, String caller, Permit permit, UriInfo ui,
+				String sp) {
+			this.j = j;
+			this.caller = caller;
+			this.permit = permit;
+			this.ui = ui;
+			this.sp = sp;
+		}
+
+		@Override
+		public String keepAlive(String reqBody) {
+			log.debug("keeping job {} alive: {}", j.getId(), caller);
+			j.access(caller);
+			return "ok";
+		}
+
+		@Override
+		public void getState(boolean wait, AsyncResponse response) {
+			if (wait) {
 				bgAction(response, permit, () -> {
-					j.access(caller);
-					allocation().setPower(reqBody.getPower());
-					return accepted().build();
+					log.debug("starting wait for change of job");
+					j.waitForChange(props.getWait());
+					// Refresh the handle
+					var nj = core.getJob(permit, j.getId())
+							.orElseThrow(() -> new ItsGone("no such job"));
+					log.debug("job state now {}", nj.getState());
+					return new JobStateResponse(nj, ui, mapper, sp);
 				});
+			} else {
+				fgAction(response, () -> new JobStateResponse(j, ui, mapper,
+						sp));
 			}
+		}
 
-			@Override
-			public WhereIsResponse getJobChipLocation(int x, int y) {
+		@Override
+		public Response deleteJob(String reason) {
+			if (isNull(reason)) {
+				reason = "unspecified";
+			}
+			j.destroy(reason);
+			return noContent().build();
+		}
+
+		private SubMachine allocation() {
+			return j.getMachine().orElseThrow(
+					// No machine allocated yet
+					EmptyResponse::new);
+		}
+
+		@Override
+		public SubMachineResponse getMachine() {
+			j.access(caller);
+			return new SubMachineResponse(allocation(), ui);
+		}
+
+		@Override
+		public MachinePower getMachinePower() {
+			j.access(caller);
+			return new MachinePower(allocation().getPower());
+		}
+
+		@Override
+		public void setMachinePower(MachinePower reqBody,
+				AsyncResponse response) {
+			// Async because it involves getting a write lock
+			if (isNull(reqBody)) {
+				throw new BadArgs("bad power description");
+			}
+			bgAction(response, permit, () -> {
 				j.access(caller);
-				var loc = j.whereIs(x, y).orElseThrow(EmptyResponse::new);
-				return new WhereIsResponse(loc, ui);
-			}
+				allocation().setPower(reqBody.getPower());
+				return accepted().build();
+			});
+		}
 
-			@Override
-			public void reportBoardIssue(IssueReportRequest reqBody,
-					AsyncResponse response) {
-				// Async because it involves getting a write lock
-				if (isNull(reqBody)) {
-					throw new BadArgs("bad issue description");
-				}
-				bgAction(response, () -> new IssueReportResponse(
-						j.reportIssue(reqBody, permit)));
+		@Override
+		public WhereIsResponse getJobChipLocation(int x, int y) {
+			j.access(caller);
+			var loc = j.whereIs(x, y).orElseThrow(EmptyResponse::new);
+			return new WhereIsResponse(loc, ui);
+		}
+
+		@Override
+		public void reportBoardIssue(IssueReportRequest reqBody,
+				AsyncResponse response) {
+			// Async because it involves getting a write lock
+			if (isNull(reqBody)) {
+				throw new BadArgs("bad issue description");
 			}
-		};
+			bgAction(response, () -> new IssueReportResponse(
+					j.reportIssue(reqBody, permit)));
+		}
+
+		@Override
+		public void writeDataToJob(int x, int y, long address,
+				byte[] bytes,
+				AsyncResponse response) {
+			bgAction(response, () -> {
+				var txrx = j.getTransceiver();
+				txrx.writeMemory(new ChipLocation(x, y),
+						new MemoryLocation(address), bytes);
+				return accepted().build();
+			});
+		}
+
+		@Override
+		public void readDataFromJob(int x, int y, long address, int size,
+				AsyncResponse response) {
+			bgAction(response, () -> {
+				var txrx = j.getTransceiver();
+				var arr = new byte[size];
+				var buffer = txrx.readMemory(new ChipLocation(x, y),
+						new MemoryLocation(address), size);
+				buffer.get(arr);
+				return ok(arr).build();
+			});
+
+		}
+
+		@Override
+		@SuppressWarnings("MustBeClosed")
+		public void fastDataWrite(@ValidX int gatherX, @ValidY int gatherY,
+				@Positive int gatherP, @ValidX int ethX,
+				@ValidY int ethY, @IPAddress String ethAddress, int iptag,
+				@ValidX int x, @ValidY int y, long address, byte[] bytes,
+				AsyncResponse response) {
+			bgAction(response, () -> {
+				var fdi = j.getFastDataIn(
+						new CoreLocation(gatherX, gatherY, gatherP),
+						new IPTag(ethAddress, iptag, ethX, ethY, "localhost",
+								null, true, "DATA_SPEED_UP"));
+				fdi.fastWrite(new ChipLocation(x, y),
+						new MemoryLocation(address), wrap(bytes));
+				return accepted().build();
+			});
+		}
+
+		@Override
+		@SuppressWarnings("MustBeClosed")
+		public void fastDataRead(@ValidX int gatherX, @ValidY int gatherY,
+				@ValidX int ethX, @ValidY int ethY,
+				@IPAddress String ethAddress, int iptag,
+				@ValidX int x, @ValidY int y, @ValidP int p,
+				long address, int size,	AsyncResponse response) {
+			bgAction(response, () -> {
+				var downloader = j.getDownloader(
+						new IPTag(ethAddress, iptag, ethX, ethY, "localhost",
+								null, true, null));
+				var buffer = downloader.doDownload(new CoreLocation(x, y, p),
+						new MemoryLocation(address), size);
+				var arr = new byte[size];
+				buffer.get(arr);
+				return ok(arr).build();
+			});
+		}
+
+		@Override
+		public void prepareRoutingTables(UriInfo uriInfo,
+				AsyncResponse response) {
+			var queryParams = uriInfo.getQueryParameters();
+			var filters = new HashMap<Integer, DiagnosticFilter>();
+			for (String param : queryParams.keySet()) {
+				int index = Integer.parseInt(param);
+				var values = queryParams.get(param);
+				if (values.size() != 1) {
+					throw new RuntimeException(
+							"Multiple values for index " + param);
+				}
+				int value = Integer.parseInt(values.get(0));
+				filters.put(index, new DiagnosticFilter(value));
+			}
+			bgAction(response, () -> {
+				var txrx = j.getTransceiver();
+				txrx.resetRouting(filters);
+				return accepted().build();
+			});
+		}
 	}
 }
