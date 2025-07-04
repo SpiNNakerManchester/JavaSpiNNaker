@@ -34,7 +34,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -53,7 +53,6 @@ import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
  * @author Donal Fellows
  */
 @ConfigurationProperties("spalloc")
-@ConstructorBinding
 @Validated
 public class SpallocProperties {
 	/** Path to the main database file. */
@@ -135,6 +134,7 @@ public class SpallocProperties {
 	 *            The database connection configuration.
 	 */
 	@SuppressWarnings("checkstyle:ParameterNumber")
+	@ConstructorBinding
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
