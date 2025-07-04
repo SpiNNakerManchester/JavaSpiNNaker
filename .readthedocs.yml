@@ -22,7 +22,7 @@ build:
       html:
         - curl --output jdk.tar.gz https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
         - tar zxvf jdk.tar.gz
-        - curl --output maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+        - curl --output maven.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz
         - tar zxvf maven.tar.gz
         - mkdir -p ${READTHEDOCS_VIRTUALENV_PATH}/bin/
         - ln -s $PWD/jdk-17.0.2/bin/java ${READTHEDOCS_VIRTUALENV_PATH}/bin/java
