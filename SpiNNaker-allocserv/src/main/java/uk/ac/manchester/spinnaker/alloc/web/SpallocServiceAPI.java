@@ -55,7 +55,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SIZE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.WAIT;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

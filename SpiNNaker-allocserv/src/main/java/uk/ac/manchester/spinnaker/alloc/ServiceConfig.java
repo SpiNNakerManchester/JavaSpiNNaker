@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 import javax.sql.DataSource;
 import jakarta.validation.ValidationException;
 import javax.ws.rs.ApplicationPath;

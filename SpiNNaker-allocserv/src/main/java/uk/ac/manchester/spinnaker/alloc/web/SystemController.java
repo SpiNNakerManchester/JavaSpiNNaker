@@ -21,8 +21,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_J
 import java.security.Principal;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -34,7 +34,6 @@ import java.util.Set;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.json.JSONException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -85,7 +84,7 @@ class JsonTest {
 
 			@Override
 			public UriBuilder getRequestUriBuilder() {
-				return new UriBuilderImpl(uri);
+				return UriBuilder.fromUri(uri);
 			}
 
 			@Override
@@ -95,7 +94,7 @@ class JsonTest {
 
 			@Override
 			public UriBuilder getAbsolutePathBuilder() {
-				return new UriBuilderImpl(uri);
+				return UriBuilder.fromUri(uri);
 			}
 
 			@Override
@@ -105,7 +104,7 @@ class JsonTest {
 
 			@Override
 			public UriBuilder getBaseUriBuilder() {
-				return new UriBuilderImpl(uri);
+				return UriBuilder.fromUri(uri);
 			}
 		};
 	}
