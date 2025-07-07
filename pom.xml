@@ -60,7 +60,6 @@ limitations under the License.
 		<sqlite.version>3.43.0.0</sqlite.version>
 		<keycloak.version>23.0.3</keycloak.version>
 		<swagger.version>5.10.3</swagger.version>
-		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.5</picocli.version>
@@ -339,11 +338,6 @@ limitations under the License.
 				<groupId>org.webjars</groupId>
 				<artifactId>swagger-ui</artifactId>
 				<version>${swagger.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.github.livesense</groupId>
-				<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
-				<version>${jsontaglib.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.python</groupId>
@@ -696,9 +690,9 @@ limitations under the License.
 					<version>1.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.sling</groupId>
-					<artifactId>jspc-maven-plugin</artifactId>
-					<version>2.3.4</version>
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-jspc-maven-plugin</artifactId>
+					<version>11.0.25</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>

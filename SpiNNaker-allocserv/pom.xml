@@ -432,10 +432,6 @@ limitations under the License.
 			<artifactId>spring-security-taglibs</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.livesense</groupId>
-			<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-jul</artifactId>
 		</dependency>
@@ -525,8 +521,8 @@ limitations under the License.
 				<plugins>
 					<plugin>
 						<!-- JSP syntax check via pre-compilation -->
-						<groupId>org.apache.sling</groupId>
-						<artifactId>jspc-maven-plugin</artifactId>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-jspc-maven-plugin</artifactId>
 						<executions>
 							<execution>
 								<goals>
