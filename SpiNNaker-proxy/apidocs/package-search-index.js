@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"uk.ac.manchester.spinnaker.proxy"}]
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"uk.ac.manchester.spinnaker.proxy"}];updateSearchResults();

@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	 * @param context</em>
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">	 *            The originating security context.</em>
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">public</strong> <a name="Permit" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/Permit.html#Permit">Permit</a>(javax.ws.rs.core.SecurityContext context) {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">public</strong> <a name="Permit" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/Permit.html#Permit">Permit</a>(jakarta.ws.rs.core.SecurityContext context) {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  		authorities = STDAUTH.stream().filter(context::isUserInRole)
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  				.map(SimpleGrantedAuthority::<strong class="jxr_keyword">new</strong>).collect(toUnmodifiableList());
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  		admin = is(authorities, GRANT_ADMIN);

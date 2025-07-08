@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"uk.ac.manchester.spinnaker.proxy","l":"TCPProxy"}]
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"uk.ac.manchester.spinnaker.proxy","l":"TCPProxy"}];updateSearchResults();

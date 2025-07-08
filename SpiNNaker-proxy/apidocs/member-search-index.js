@@ -1,1 +1,1 @@
-memberSearchIndex = [{"p":"uk.ac.manchester.spinnaker.proxy","c":"TCPProxy","l":"main(String[])","url":"main(java.lang.String[])"}]
+memberSearchIndex = [{"p":"uk.ac.manchester.spinnaker.proxy","c":"TCPProxy","l":"main(String[])","u":"main(java.lang.String[])"}];updateSearchResults();
