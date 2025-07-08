@@ -20,7 +20,7 @@ import static java.util.Objects.nonNull;
 
 import java.security.SecureRandom;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

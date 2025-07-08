@@ -45,7 +45,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

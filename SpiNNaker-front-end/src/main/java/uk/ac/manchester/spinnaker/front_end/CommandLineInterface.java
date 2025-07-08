@@ -128,6 +128,16 @@ public final class CommandLineInterface {
 		LocateConnectedMachineIPAddress.main();
 	}
 
+	protected static int run(String... args) {
+		var cmd = new CommandLine(new CommandLineInterface());
+		if (args.length == 0) {
+			cmd.usage(cmd.getErr());
+			return USAGE;
+		} else {
+			return cmd.execute(args);
+		}
+	}
+
 	/**
 	 * The main command line interface. Dispatches to other classes based on the
 	 * first argument, which is a command word.
@@ -136,13 +146,7 @@ public final class CommandLineInterface {
 	 *            The command line arguments.
 	 */
 	public static void main(String... args) {
-		var cmd = new CommandLine(new CommandLineInterface());
-		if (args.length == 0) {
-			cmd.usage(cmd.getErr());
-			System.exit(USAGE);
-		} else {
-			System.exit(cmd.execute(args));
-		}
+		System.exit(run(args));
 	}
 
 	static CommandSpec getSpec() {

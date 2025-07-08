@@ -15,19 +15,21 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
-import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErrNormalized;
-import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOutNormalized;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -47,6 +49,71 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class TestFrontEnd {
+
+	private static final ByteArrayOutputStream outContent =
+			new ByteArrayOutputStream();
+	private static final ByteArrayOutputStream errContent =
+			new ByteArrayOutputStream();
+	private static final PrintStream originalOut = System.out;
+	private static final PrintStream originalErr = System.err;
+
+	@BeforeAll
+	public static void setUpStreams() {
+		System.setOut(new PrintStream(outContent));
+		System.setErr(new PrintStream(errContent));
+	}
+
+	@BeforeEach
+	public void clearStreams() {
+		outContent.reset();
+		errContent.reset();
+	}
+
+	@AfterAll
+	public static void restoreStreams() {
+		System.setOut(originalOut);
+		System.setErr(originalErr);
+	}
+
+	/**
+	 * Code that should be executed by on of the methods of {@link SystemLambda}.
+	 * This code may throw an {@link Exception}. Therefore we cannot use
+	 * {@link Runnable}.
+	 */
+	private interface Statement {
+		/**
+		 * Execute the statement.
+		 *
+		 * @throws Exception the statement may throw an arbitrary exception.
+		 */
+		void execute() throws Exception;
+	}
+
+	private String tapSystemOutNormalized(Statement runnable) throws Exception {
+		try {
+			runnable.execute();
+		} finally {
+			try {
+				outContent.flush();
+			} catch (IOException e) {
+				// Do Nothing
+			}
+		}
+		return outContent.toString().replace(System.lineSeparator(), "\n");
+	}
+
+	private String tapSystemErrNormalized(Statement runnable) throws Exception {
+		try {
+			runnable.execute();
+		} finally {
+			try {
+				errContent.flush();
+			} catch (IOException e) {
+				// Do Nothing
+			}
+		}
+		return errContent.toString().replace(System.lineSeparator(), "\n");
+	}
 
 	/**
 	 * Run the command line, trapping its exit and comparing it with an expected
@@ -68,7 +135,7 @@ class TestFrontEnd {
 	 */
 	private static void runMainExpecting(int expectedCode, String... args)
 			throws Exception {
-		int code = catchSystemExit(() -> CommandLineInterface.main(args));
+		int code = CommandLineInterface.run(args);
 		assertEquals(expectedCode, code);
 	}
 
