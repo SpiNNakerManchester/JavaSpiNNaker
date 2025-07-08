@@ -50,147 +50,149 @@ import picocli.CommandLine.TypeConversionException;
  * @author Donal Fellows
  */
 public class MachineDefinitionConverter implements AutoCloseable {
-	private static final ValidatorFactory VALIDATOR_FACTORY =
-			buildDefaultValidatorFactory();
+    private static final ValidatorFactory VALIDATOR_FACTORY =
+            buildDefaultValidatorFactory();
 
-	private PySystemState sys;
+    private PySystemState sys;
 
-	/**
-	 * Create a converter.
-	 */
-	@MustBeClosed
-	public MachineDefinitionConverter() {
-		initialize(null, null);
-		sys = getSystemState();
-		var enumPy = locateEnumPy();
-		sys.path.append(newString(enumPy.getParent()));
-	}
+    /**
+     * Create a converter.
+     */
+    @MustBeClosed
+    public MachineDefinitionConverter() {
+        initialize(null, null);
+        sys = getSystemState();
+        var enumPy = locateEnumPy();
+        sys.path.append(newString(enumPy.getParent()));
+    }
 
-	private static File locateEnumPy() {
-		var cl = MachineDefinitionConverter.class.getClassLoader();
-		return new File(cl.getResource("enum.py").getFile());
-	}
+    private static File locateEnumPy() {
+        var cl = MachineDefinitionConverter.class.getClassLoader();
+        return new File(cl.getResource("enum.py").getFile());
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public void close() {
-		sys.close();
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void close() {
+        sys.close();
+    }
 
-	/**
-	 * Get the configuration from a Python file.
-	 * <p>
-	 * <strong>WARNING!</strong> This changes the current working directory of
-	 * the process (if {@code doCd} is true).
-	 *
-	 * @param definitionFile
-	 *            The file to load from.
-	 * @param doCd
-	 *            Whether to force the change of the working directory for the
-	 *            duration. Some scripts (especially test cases) need this.
-	 * @return The converted configuration.
-	 */
-	public Configuration loadClassicConfigurationDefinition(File definitionFile,
-			boolean doCd) {
-		var what = definitionFile.getAbsolutePath();
-		try (var py = new PythonInterpreter(null, sys);
-				var cd = new WithCurrentDirectory(py, doCd)) {
-			py.execfile(what);
-			return new Configuration(py.get("configuration"));
-		}
-	}
+    /**
+     * Get the configuration from a Python file.
+     * <p>
+     * <strong>WARNING!</strong> This changes the current working directory of
+     * the process (if {@code doCd} is true).
+     *
+     * @param definitionFile
+     *            The file to load from.
+     * @param doCd
+     *            Whether to force the change of the working directory for the
+     *            duration. Some scripts (especially test cases) need this.
+     * @return The converted configuration.
+     */
+    public Configuration loadClassicConfigurationDefinition(File definitionFile,
+            boolean doCd) {
+        var what = definitionFile.getAbsolutePath();
+        try (var py = new PythonInterpreter(null, sys);
+                var cd = new WithCurrentDirectory(py, doCd)) {
+            py.execfile(what);
+            return new Configuration(py.get("configuration"));
+        }
+    }
 
-	/**
-	 * Validate a configuration, writing failures to {@link System#err}.
-	 *
-	 * @param config
-	 *            The configuration to validate.
-	 */
-	public void validate(Configuration config) {
-		var failures = VALIDATOR_FACTORY.getValidator().validate(config);
-		failures.forEach(c -> {
-			System.err.println(
-					"WARNING: validation failure: " + c.getMessage());
-		});
-		if (!failures.isEmpty()) {
-			System.err.println("validation failed; JSON may be unusable");
-		}
-	}
+    /**
+     * Validate a configuration, writing failures to {@link System#err}.
+     *
+     * @param config
+     *            The configuration to validate.
+     */
+    public void validate(Configuration config) {
+        var failures = VALIDATOR_FACTORY.getValidator().validate(config);
+        failures.forEach(c -> {
+            System.err.println(
+                    "WARNING: validation failure: " + c.getMessage());
+        });
+        if (!failures.isEmpty()) {
+            System.err.println("validation failed; JSON may be unusable");
+        }
+    }
 
-	/**
-	 * How we write JSON.
-	 *
-	 * @return A service for writing objects as JSON.
-	 */
-	protected static ObjectWriter getJsonWriter() {
-		return JsonMapper.builder().findAndAddModules()
-				.disable(WRITE_DATES_AS_TIMESTAMPS)
-				.propertyNamingStrategy(KEBAB_CASE).build().writer()
-				.without(FAIL_ON_EMPTY_BEANS);
-	}
+    /**
+     * How we write JSON.
+     *
+     * @return A service for writing objects as JSON.
+     */
+    protected static ObjectWriter getJsonWriter() {
+        return JsonMapper.builder().findAndAddModules()
+                .disable(WRITE_DATES_AS_TIMESTAMPS)
+                .propertyNamingStrategy(KEBAB_CASE).build().writer()
+                .without(FAIL_ON_EMPTY_BEANS);
+    }
 
-	/**
-	 * Command line definition.
-	 */
-	@Command(name = "py2json", mixinStandardHelpOptions = true, version = {
-		"version 0.1", "NB: this tool is only partially supported; it "
-				+ "exists to support University of Manchester staff only"})
-	private final class CmdImpl implements Callable<Integer> {
-		@Parameters(index = "0", paramLabel = "source.py",
-				description = "The file to load the configuration Python from.",
-				converter = ExistingFileConverter.class)
-		private File configFile;
+    /**
+     * Command line definition.
+     */
+    @Command(name = "py2json", mixinStandardHelpOptions = true, version = {
+        "version 0.1", "NB: this tool is only partially supported; it "
+                + "exists to support University of Manchester staff only"})
+    private final class CmdImpl implements Callable<Integer> {
+        @Parameters(index = "0", paramLabel = "source.py",
+                description = "The file to load the configuration Python from.",
+                converter = ExistingFileConverter.class)
+        private File configFile;
 
-		@Parameters(index = "1", paramLabel = "target.json",
-				description = "The file to write the configuration JSON into.")
-		private File destination;
+        @Parameters(index = "1", paramLabel = "target.json",
+                description = "The file to write the configuration JSON into.")
+        private File destination;
 
-		/**
-		 * Load a configuration from a Python config file and write it to a JSON
-		 * file. Which files to use are defined by command line arguments.
-		 *
-		 * @return The exit code.
-		 * @throws IOException
-		 *             If anything goes wrong.
-		 */
-		@Override
-		public Integer call() throws IOException {
-			var config = loadClassicConfigurationDefinition(configFile, false);
-			validate(config);
-			getJsonWriter().writeValue(destination, config);
-			return CommandLine.ExitCode.OK;
-		}
-	}
+        /**
+         * Load a configuration from a Python config file and write it to a JSON
+         * file. Which files to use are defined by command line arguments.
+         *
+         * @return The exit code.
+         * @throws IOException
+         *             If anything goes wrong.
+         */
+        @Override
+        public Integer call() throws IOException {
+            var config = loadClassicConfigurationDefinition(configFile, false);
+            validate(config);
+            getJsonWriter().writeValue(destination, config);
+            return CommandLine.ExitCode.OK;
+        }
+    }
 
-	/**
-	 * Requires that an argument be an existing plain file.
-	 */
-	private static final class ExistingFileConverter
-			implements ITypeConverter<File> {
-		@Override
-		public File convert(String value) throws Exception {
-			var f = new File(value);
-			if (!f.isFile() || !f.canRead()) {
-				throw new TypeConversionException("file must be readable");
-			}
-			return f;
-		}
-	}
+    /**
+     * Requires that an argument be an existing plain file.
+     */
+    private static final class ExistingFileConverter
+            implements ITypeConverter<File> {
+        @Override
+        public File convert(String value) throws Exception {
+            var f = new File(value);
+            if (!f.isFile() || !f.canRead()) {
+                throw new TypeConversionException("file must be readable");
+            }
+            return f;
+        }
+    }
 
-	/**
-	 * Main entry point.
-	 *
-	 * @param args
-	 *            Takes two arguments: {@code <source.py>} and
-	 *            {@code <target.json>}.
-	 * @throws Exception
-	 *             If things go wrong
-	 */
-	public static void main(String... args) throws Exception {
-		int code;
-		try (var loader = new MachineDefinitionConverter()) {
-			code = new CommandLine(loader.new CmdImpl()).execute(args);
-		}
-		exit(code);
-	}
+    protected static int run(String... args) throws Exception {
+        try (var loader = new MachineDefinitionConverter()) {
+            return new CommandLine(loader.new CmdImpl()).execute(args);
+        }
+    }
+
+    /**
+     * Main entry point.
+     *
+     * @param args
+     *            Takes two arguments: {@code <source.py>} and
+     *            {@code <target.json>}.
+     * @throws Exception
+     *             If things go wrong
+     */
+    public static void main(String... args) throws Exception {
+        exit(run(args));
+    }
 }
