@@ -19,7 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.net.URI;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.errorprone.annotations.Immutable;

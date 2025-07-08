@@ -38,8 +38,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

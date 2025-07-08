@@ -55,7 +55,7 @@ limitations under the License.
 		<spring.security.version>6.5.1</spring.security.version>
 
 		<cxf.version>4.1.2</cxf.version>
-		<jackson.version>2.17.2</jackson.version>
+		<jackson.version>2.19.1</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.43.0.0</sqlite.version>
 		<keycloak.version>23.0.3</keycloak.version>
@@ -65,7 +65,7 @@ limitations under the License.
 		<picocli.version>4.7.5</picocli.version>
 		<mysql.version>8.2.0</mysql.version>
 		<testcontainers.version>1.19.3</testcontainers.version>
-		<javax.ws.version>2.1.1</javax.ws.version>
+		<jakarta.ws.version>4.0.0</jakarta.ws.version>
 		<resteasy.version>6.2.5.Final</resteasy.version>
 	</properties>
 
@@ -176,7 +176,7 @@ limitations under the License.
 			<dependency>
 				<!-- Explicitly override Spring Boot -->
 				<groupId>com.fasterxml.jackson.module</groupId>
-				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
@@ -205,14 +205,14 @@ limitations under the License.
 			</dependency>
 			<dependency>
 				<!-- Explicitly override Spring Boot -->
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+				<artifactId>jackson-jakarta-rs-json-provider</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<!-- Explicitly override Spring Boot -->
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-base</artifactId>
+				<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+				<artifactId>jackson-jakarta-rs-base</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
@@ -234,9 +234,9 @@ limitations under the License.
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.ws.rs</groupId>
-				<artifactId>javax.ws.rs-api</artifactId>
-				<version>${javax.ws.version}</version>
+				<groupId>jakarta.ws.rs</groupId>
+				<artifactId>jakarta.ws.rs-api</artifactId>
+				<version>${jakarta.ws.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
@@ -309,9 +309,9 @@ limitations under the License.
 				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>8.0.1</version>
+				<groupId>jakarta.platform</groupId>
+				<artifactId>jakarta.jakartaee-api</artifactId>
+				<version>10.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -362,8 +362,8 @@ limitations under the License.
 			<dependency>
 				<!-- Has to be this old version for Spring Boot to find it -->
 				<groupId>org.glassfish</groupId>
-				<artifactId>javax.el</artifactId>
-				<version>3.0.0</version>
+				<artifactId>jakarta.el</artifactId>
+				<version>4.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.mysql</groupId>
@@ -580,12 +580,12 @@ limitations under the License.
 						<offlineLinks>
 							<!-- Internal property used below: See https://issues.apache.org/jira/browse/MNG-7038 and https://stackoverflow.com/a/41387133/301832 -->
 							<offlineLink>
-								<url>https://javadoc.io/doc/javax.validation/validation-api/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/javax.validation</location>
+								<url>https://javadoc.io/doc/jakarta.validation/validation-api/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/jakarta.validation</location>
 							</offlineLink>
 							<offlineLink>
-								<url>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/javax.ws.rs</location>
+								<url>https://javadoc.io/doc/jakarta.ws.rs/jakarta.ws.rs-api/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/jakarta.ws.rs</location>
 							</offlineLink>
 							<offlineLink>
 								<url>https://javadoc.io/doc/org.keycloak/keycloak-client-registration-api/latest/</url>
@@ -634,14 +634,6 @@ limitations under the License.
 					<groupId>org.eluder.coveralls</groupId>
 					<artifactId>coveralls-maven-plugin</artifactId>
 					<version>4.3.0</version>
-					<dependencies>
-						<!-- Of course! -->
-						<dependency>
-							<groupId>javax.xml.bind</groupId>
-							<artifactId>jaxb-api</artifactId>
-							<version>2.3.1</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -1187,6 +1179,7 @@ limitations under the License.
 											discovered on the regular -classpath; see also 'Using Error Prone
 											together with other annotation processors' below. -->
 										</annotationProcessorPaths>
+										<parameters>true</parameters>
 									</configuration>
 								</execution>
 								<execution>

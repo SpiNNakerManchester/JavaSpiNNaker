@@ -27,8 +27,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.BadRequestException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.BadRequestException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

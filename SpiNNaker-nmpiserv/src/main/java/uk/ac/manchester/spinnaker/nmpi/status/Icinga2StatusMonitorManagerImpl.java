@@ -20,8 +20,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.WebApplicationException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.apache.ws.commons.util.Base64;
 import org.slf4j.Logger;

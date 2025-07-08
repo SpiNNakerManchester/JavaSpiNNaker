@@ -22,7 +22,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import java.net.URI;
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

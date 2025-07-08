@@ -32,9 +32,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

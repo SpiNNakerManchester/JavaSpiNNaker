@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Nested;

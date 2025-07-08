@@ -17,9 +17,9 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static java.util.Objects.isNull;
 import static java.nio.ByteBuffer.wrap;
-import static javax.ws.rs.core.Response.accepted;
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.noContent;
+import static jakarta.ws.rs.core.Response.accepted;
+import static jakarta.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.noContent;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import jakarta.validation.constraints.Positive;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
