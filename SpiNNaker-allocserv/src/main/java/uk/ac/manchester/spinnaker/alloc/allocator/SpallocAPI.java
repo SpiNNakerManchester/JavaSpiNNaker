@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_NMPI_EXEC;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -31,16 +32,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.google.errorprone.annotations.Keep;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -56,6 +58,7 @@ import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.ValidX;
@@ -65,8 +68,14 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadHeight;
 import uk.ac.manchester.spinnaker.machine.board.ValidTriadWidth;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
@@ -192,12 +201,13 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
-	Optional<Job> createJob(@NotNull String owner,
+	Job createJob(@NotNull String owner,
 			@Valid CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/**
 	 * Create a job for a user in a specific local group.
@@ -224,12 +234,13 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
-	Optional<Job> createJobInGroup(@NotNull String owner, @NotNull String group,
+	Job createJobInGroup(@NotNull String owner, @NotNull String group,
 			@Valid CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/**
 	 * Create a job for interactive use in an NMPI Collab Session.
@@ -256,13 +267,14 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
-	Optional<Job> createJobInCollabSession(@NotNull String owner,
+	Job createJobInCollabSession(@NotNull String owner,
 			@NotNull String nmpiCollab,
 			@Valid CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/**
 	 * Create a job for interactive use in an NMPI Collab Session.
@@ -289,13 +301,14 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
+	 * @return The job created.
+	 * @throws IllegalArgumentException if the job could not be created.
 	 */
 	@PreAuthorize(IS_NMPI_EXEC)
-	Optional<Job> createJobForNMPIJob(@NotNull String owner, int nmpiJobId,
+	Job createJobForNMPIJob(@NotNull String owner, int nmpiJobId,
 			@Valid CreateDescriptor descriptor,	String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			byte[] originalRequest);
+			byte[] originalRequest) throws IllegalArgumentException;
 
 	/** Purge the cache of what boards are down. */
 	void purgeDownCache();
@@ -319,6 +332,8 @@ public interface SpallocAPI {
 	@UsedInJavadocOnly(HasCoreLocation.class)
 	void reportProblem(@IPAddress String address, HasChipLocation coreLocation,
 			String description, Permit permit);
+
+	void emergencyStop(String commandCode);
 
 	/**
 	 * Describes what sort of request to create a job this is.
@@ -971,6 +986,46 @@ public interface SpallocAPI {
 		 *            The proxy.
 		 */
 		void forgetProxy(ProxyCore proxy);
+
+		/**
+		 * Get a way to talk to the machine directly.  Note that it might not be
+		 * booted...
+		 *
+		 * @return The transceiver interface.
+		 * @throws IOException if there is an issue creating the transceiver.
+		 * @throws InterruptedException if the operation is interrupted.
+		 * @throws SpinnmanException
+		 *         if there is an issue speaking to the machine.
+		 */
+		TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException;
+
+		/**
+		 * Get a FastDataIn protocol instance for an Ethernet within a job.
+		 *
+		 * @param gathererCore The core that will do the gathering.
+		 * @param iptag The IPTag to use.
+		 * @return A FastDataIn instance.
+		 * @throws ProcessException if there is an issue setting up the tag.
+		 * @throws IOException if there is an issue communicating.
+		 * @throws InterruptedException if the operation is interrupted.
+		 */
+		@MustBeClosed
+		FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
+				throws ProcessException, IOException, InterruptedException;
+
+		/**
+		 * Get a Downloader protocol instance for an Ethernet within a job.
+		 *
+		 * @param iptag The IPTag to use.
+		 * @return A Downloader instance.
+		 * @throws ProcessException if there is an issue setting up the tag.
+		 * @throws IOException if there is an issue communicating.
+		 * @throws InterruptedException if the operation is interrupted.
+		 */
+		@MustBeClosed
+		Downloader getDownloader(IPTag iptag)
+				throws ProcessException, IOException, InterruptedException;
 	}
 
 	/**

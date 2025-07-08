@@ -86,9 +86,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -292,13 +294,22 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@ExceptionHandler(BindException.class)
-	ModelAndView validationError(BindException result) {
+	ModelAndView validationError(BindException result, HttpServletRequest req) {
+		log.debug("Binding problem on request {}", req.getRequestURI());
+		if (req.getMethod() == "POST") {
+			try {
+				log.debug("Body: {}", req.getReader().lines().collect(
+						Collectors.joining()));
+			} catch (IOException e) {
+				log.debug("Failed to read request body", e);
+			}
+		}
 		if (result.hasGlobalErrors()) {
 			// I don't believe this is really reachable code
-			log.debug("binding problem", result);
+			log.debug("global binding problem", result);
 			return errors(errorMessage(result.getGlobalError()));
 		} else if (result.hasFieldErrors()) {
-			log.debug("binding problem", result);
+			log.debug("field binding problem", result);
 			return errors(errorMessage(result.getFieldError()));
 		} else {
 			// This should definitely be unreachable
@@ -416,7 +427,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView createUser(UserRecord user, ModelMap model,
 			RedirectAttributes attrs) {
 		user.initCreationDefaults();
-		var realUser = userManager.createUser(user)
+		var realUser = userManager.createUser(user, this::showGroupInfoUrl)
 				.orElseThrow(() -> new AdminException(
 						"user creation failed (duplicate username?)"));
 		int id = realUser.getUserId();

@@ -69,7 +69,7 @@ class AllocatorTest extends TestSupport {
 		killDB();
 		setupDB3();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare();
+		this.bmpCtrl.prepare(true);
 		this.bmpCtrl.clearBmpException();
 	}
 
@@ -413,6 +413,54 @@ class AllocatorTest extends TestSupport {
 				assertEquals(preMain - 1, countJobInTable(conn, job));
 				assertEquals(preTomb + 1, countJobInTable(histConn, job));
 			}
+		});
+	}
+
+	@Test
+	public void tombstoneNMPI() throws Exception {
+		doTransactionalTest(() -> {
+			assumeTrue(db.isHistoricalDBAvailable());
+
+			try (Connection histConn = db.getHistoricalConnection()) {
+
+				int job = makeQueuedJob(1);
+				conn.update(SET_JOB_NMPI_JOB).call(job, 1234, "UNITS");
+				conn.update(SET_JOB_SESSION).call(job, 4321, "UNITS");
+				conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
+				conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
+				int preMain = countJobInTable(conn, job);
+				assertTrue(preMain == 1,
+						() -> "must have created a job we can tombstone");
+				int preTomb = countJobInTable(histConn, job);
+
+				var moved = getHistAllocTester(histConn).tombstone();
+
+				assertEquals(1, moved.numJobs());
+				// No resources were ever allocated, so no moves to do
+				assertEquals(0, moved.numAllocs());
+				assertEquals(preMain - 1, countJobInTable(conn, job));
+				assertEquals(preTomb + 1, countJobInTable(histConn, job));
+			}
+		});
+	}
+
+	@Test
+	public void emergencyStop() throws Exception {
+		doTransactionalTest(() -> {
+			int job = makeQueuedJob(1);
+			getAllocTester().allocate();
+			makeAllocBySizeRequest(job, 1);
+			snooze1s();
+			snooze1s();
+
+			assumeState(job, QUEUED, 1, 0);
+
+			getAllocTester().emergencyStop();
+
+			assertState(job, DESTROYED, 0, 0);
+
+			getAllocTester().restartAfterStop();
+			bmpCtrl.emergencyResume();
 		});
 	}
 }

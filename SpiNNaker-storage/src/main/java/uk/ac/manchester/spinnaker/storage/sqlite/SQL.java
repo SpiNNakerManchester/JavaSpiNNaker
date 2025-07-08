@@ -49,92 +49,93 @@ abstract class SQL {
 	static final String GET_LOCATION = "SELECT core_id FROM core"
 			+ " WHERE x = ? AND y = ? AND processor = ? LIMIT 1";
 
-	/** Create an empty region record. */
+	/** Create a recording region record. */
 	@Parameter("core_id")
 	@Parameter("local_region_index")
-	@Parameter("address")
-	@ResultColumn("region_id")
-	static final String INSERT_REGION = "INSERT INTO "
-			+ "region(core_id, local_region_index, address)"
-			+ " VALUES (?, ?, ?) RETURNING region_id";
+	@ResultColumn("recording_region_id")
+	static final String INSERT_RECORDING_REGION = "INSERT INTO"
+			+ " recording_region(core_id, local_region_index)"
+			+ " VALUES (?, ?) RETURNING recording_region_id";
 
-	/** Find an existing region record. */
+	/** Create a download region record. */
 	@Parameter("core_id")
 	@Parameter("local_region_index")
-	@ResultColumn("region_id")
-	static final String GET_REGION = "SELECT region_id FROM region WHERE "
-			+ "core_id = ? AND local_region_index = ? LIMIT 1";
+	@ResultColumn("download_region_id")
+	static final String INSERT_DOWNLOAD_REGION = "INSERT INTO"
+			+ " download_region(core_id, local_region_index)"
+			+ " VALUES (?, ?) RETURNING download_region_id";
 
-	/** Append content to a region record. */
-	@Parameter("content_to_add")
-	@Parameter("content_len")
-	@Parameter("append_time")
-	@Parameter("region_id")
-	static final String ADD_CONTENT =
-			"UPDATE region SET content = CAST(? AS BLOB), content_len = ?, "
-					+ "fetches = 1, append_time = ? WHERE region_id = ?";
+	/** For testing create an extraction record.
 
-	/** Prepare a region record for handling content in the extra table. */
-	@Parameter("append_time")
-	@Parameter("region_id")
-	static final String PREP_EXTRA_CONTENT =
-			"UPDATE region SET fetches = fetches + 1, append_time = ? "
-			+ "WHERE region_id = ?";
+	Would normally be done by python.
+	*/
+	@ResultColumn("extraction_id")
+	static final String INSERT_MOCK_EXTRACTION = "INSERT INTO "
+			+ "extraction(run_timestep, n_run, n_loop, extract_time) "
+			+ "VALUES(12345, 1, NULL, 987654) RETURNING extraction_id ";
 
-	/** Add content to a new row in the extra table. */
-	@Parameter("region_id")
-	@Parameter("content_to_add")
-	@Parameter("content_len")
-	@ResultColumn("extra_id")
-	static final String ADD_EXTRA_CONTENT =
-			"INSERT INTO region_extra(region_id, content, content_len) "
-					+ "VALUES (?, CAST(? AS BLOB), ?) RETURNING extra_id";
-
-	/**
-	 * Discover whether region in the main region table is available for storing
-	 * data.
-	 */
-	@Parameter("region_id")
-	@ResultColumn("existing")
-	static final String GET_MAIN_CONTENT_AVAILABLE =
-			"SELECT COUNT(*) AS existing FROM region "
-					+ "WHERE region_id = ? AND fetches = 0";
-
-	/**
-	 * Determine just how much content there is for a row, overall.
-	 */
-	@Parameter("region_id")
-	@ResultColumn("len")
-	static final String GET_CONTENT_TOTAL_LENGTH =
-			"SELECT r.content_len + ("
-					+ "    SELECT SUM(x.content_len) "
-					+ "    FROM region_extra AS x "
-					+ "    WHERE x.region_id = r.region_id"
-					+ ") AS len FROM region AS r WHERE region_id = ?";
-
-	/** Fetch the current variable state of a region record. */
-	@Parameter("x")
-	@Parameter("y")
-	@Parameter("processor")
+	/** Find an existing recording region record. */
+	@Parameter("core_id")
 	@Parameter("local_region_index")
-	@ResultColumn("content")
-	@ResultColumn("content_len")
-	@ResultColumn("fetches")
-	@ResultColumn("append_time")
-	@ResultColumn("region_id")
-	static final String FETCH_RECORDING =
-			"SELECT content, content_len, fetches, append_time, region_id "
-					+ "FROM region_view"
-					+ " WHERE x = ? AND y = ? AND processor = ?"
-					+ " AND local_region_index = ? LIMIT 1";
+	@ResultColumn("recoding_region_id")
+	static final String GET_RECORDING_REGION = "SELECT recording_region_id"
+			+ " FROM recording_region "
+			+ " WHERE core_id = ? AND local_region_index = ? LIMIT 1";
+
+	/** Find an existing download region record. */
+	@Parameter("core_id")
+	@Parameter("local_region_index")
+	@ResultColumn("download_region_id")
+	static final String GET_DOWNLOAD_REGION = "SELECT download_region_id "
+			+ " FROM download_region"
+			+ " WHERE core_id = ? AND local_region_index = ? LIMIT 1";
+
+	/** Find the current extraction_id. */
+	@ResultColumn("max_id")
+	static final String GET_LAST_EXTRACTION_ID =
+			"SELECT max(extraction_id) as max_id "
+			+ "FROM extraction LIMIT 1";
+
+	/** Create a recoding data record. */
+	@Parameter("recording_region_id")
+	@Parameter("extraction_id")
+	@Parameter("content_to_add")
+	@Parameter("content_len")
+	@ResultColumn("recording_data_id")
+	static final String ADD_RECORDING_DATA =
+		"INSERT INTO recording_data(recording_region_id, extraction_id, "
+			+ " content, content_len, missing_data) "
+			+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+			+ "RETURNING recording_data_id";
+
+	/** Create a recoding data record. */
+	@Parameter("download_region_id")
+	@Parameter("extraction_id")
+	@Parameter("content_to_add")
+	@Parameter("content_len")
+	@ResultColumn("download_data_id")
+	static final String ADD_DOWNLOAD_DATA =
+		"INSERT INTO download_data(download_region_id, extraction_id, "
+			+ " content, content_len, missing_data) "
+			+ "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+			+ "RETURNING download_data_id";
 
 	/** Fetch the current variable state of a region record. */
-	@Parameter("region_id")
+	@Parameter("recording_region_id")
 	@ResultColumn("content")
-	@ResultColumn("content_len")
-	static final String FETCH_EXTRA_RECORDING =
-			"SELECT content, content_len FROM region_extra"
-					+ " WHERE region_id = ? ORDER BY extra_id ASC";
+	@ResultColumn("missing_data")
+	static final String GET_RECORDING =
+			"SELECT content, missing_data FROM recording_data "
+				+ "WHERE recording_region_id = ? ORDER BY extraction_id ASC";
+
+	/** Fetch the current variable state of a region record. */
+	@Parameter("download_region_id")
+	@ResultColumn("content")
+	@ResultColumn("missing_data")
+	static final String GET_DOWNLOAD =
+		"SELECT content, missing_data FROM download_data "
+			+ "WHERE download_region_id = ? ORDER BY extraction_id DESC "
+			+ "LIMIT 1";
 
 	/** List the cores with storage. */
 	@Parameters({})
@@ -142,8 +143,10 @@ abstract class SQL {
 	@ResultColumn("y")
 	@ResultColumn("processor")
 	static final String GET_CORES_WITH_STORAGE =
-			"SELECT DISTINCT x, y, processor FROM region_view"
-					+ " ORDER BY x, y, processor";
+			"SELECT DISTINCT x, y, processor FROM recording_data_view "
+			+ "UNION "
+			+ "SELECT DISTINCT x, y, processor FROM download_data_view "
+			+ "ORDER BY x, y, processor;";
 
 	/** List the regions of a core with storage. */
 	@Parameter("x")
@@ -151,9 +154,16 @@ abstract class SQL {
 	@Parameter("processor")
 	@ResultColumn("local_region_index")
 	static final String GET_REGIONS_WITH_STORAGE =
-			"SELECT DISTINCT local_region_index FROM region_view"
-					+ " WHERE x = ? AND y = ? AND processor = ?"
-					+ " ORDER BY local_region_index";
+			"SELECT DISTINCT local_region_index FROM "
+			+ "("
+			+ "SELECT local_region_index, x, y, processor "
+			+ "FROM recording_region_view "
+			+ "UNION "
+			+ "SELECT local_region_index, x, y, processor "
+			+ "FROM download_region_view "
+			+ ") "
+			+ "WHERE x = ? AND y = ? AND processor = ? "
+			+ "ORDER BY local_region_index";
 
 	// -----------------------------------------------------------------
 	// Data loading ----------------------------------------------------
@@ -248,8 +258,13 @@ abstract class SQL {
 	/** Get the app_id. */
 	@ResultColumn("app_id")
 	static final String GET_APP_ID =
-			"SELECT app_id "
-					+ "FROM app_id ";
+			"SELECT app_id FROM info";
+
+	/** Get the machine dimensions. */
+	@ResultColumn("width")
+	@ResultColumn("height")
+	static final String GET_MACHINE_DIMENSIONS =
+			"SELECT width, height FROM info";
 
 	/**
 	 * The name of the result containing the spalloc URI.

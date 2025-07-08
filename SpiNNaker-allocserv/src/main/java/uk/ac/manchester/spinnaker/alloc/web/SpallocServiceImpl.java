@@ -21,29 +21,27 @@ import static java.lang.String.join;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.created;
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.Response.created;
+import static jakarta.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.address;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.physical;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
-import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
@@ -226,7 +224,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 * @throws JsonProcessingException
 	 *             If there is an error converting the request into bytes.
 	 */
-	private Optional<SpallocAPI.Job> createJob(CreateJobRequest req,
+	private SpallocAPI.Job createJob(CreateJobRequest req,
 			CreateDescriptor crds) throws JsonProcessingException {
 		if (!isNull(req.group)) {
 			return core.createJobInGroup(trim(req.owner), trim(req.group), crds,
@@ -270,14 +268,17 @@ public class SpallocServiceImpl extends BackgroundSupport
 					"At most one of group, nmpiCollabId or nmpiJobId"
 					+ " can be specified").build());
 		}
-		bgAction(response, () -> ifElse(
-				createJob(req, crds),
-				job -> created(ui.getRequestUriBuilder().path("{id}")
+		bgAction(response, () -> {
+			try {
+				var job = createJob(req, crds);
+				return created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
-						.entity(new CreateJobResponse(job, ui)).build(),
-				() -> status(BAD_REQUEST).type(TEXT_PLAIN)
-						// Most likely reason for failure
-						.entity("out of quota").build()));
+						.entity(new CreateJobResponse(job, ui)).build();
+			} catch (IllegalArgumentException e) {
+				return status(BAD_REQUEST).type(TEXT_PLAIN)
+						.entity(e.getMessage()).build();
+			}
+		});
 	}
 
 	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
@@ -365,5 +366,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 			// It's a single board
 			return new CreateNumBoards(1, 0);
 		}
+	}
+
+	@Override
+	public void emergencyStop(String commandCode, AsyncResponse response) {
+		bgAction(response, () -> {
+			core.emergencyStop(commandCode);
+			return ok().build();
+		});
 	}
 }

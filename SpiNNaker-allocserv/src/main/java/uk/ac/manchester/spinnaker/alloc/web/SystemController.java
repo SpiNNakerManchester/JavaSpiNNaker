@@ -19,10 +19,11 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.security.Principal;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
@@ -198,4 +200,22 @@ public interface SystemController {
 	@UsedInJavadocOnly(LogoutHandler.class)
 	String performLogout(HttpServletRequest request,
 			HttpServletResponse response);
+
+	/**
+	 * Get job processes on a chip.
+	 *
+	 * @param id
+	 *            Which job is being asked for
+	 * @param x
+	 * 	          The x coordinate of the chip
+	 * @param y
+	 *            The y coordinate of the chip
+	 * @return List of Processes.  Note all cores are returned though there
+	 *        may be no process on some of them and some may be dead cores.
+	 */
+	@GetMapping("/job_processes/{id}")
+	@PreAuthorize(IS_READER)
+	@ResponseBody
+	List<Process> listProcesses(@PathVariable("id") int id,
+			@Valid @RequestParam("x") int x, @Valid @RequestParam("y") int y);
 }

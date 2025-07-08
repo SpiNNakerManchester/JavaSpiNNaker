@@ -178,7 +178,7 @@ class DMLTest extends SimpleDBTestBase {
 		assumeWritable(c);
 		try (var u = c.update(DELETE_TASK)) {
 			c.transaction(() -> {
-				assertEquals(List.of("request_id"), u.getParameters());
+				assertEquals(List.of("job_id"), u.getParameters());
 				assertEquals(0, u.call(NO_JOB));
 			});
 		}
@@ -758,7 +758,8 @@ class DMLTest extends SimpleDBTestBase {
 						"keepalive_host", "death_reason", "death_timestamp",
 						"original_request", "allocation_timestamp",
 						"allocation_size", "machine_name", "user_name",
-						"group_id", "group_name"), q.getColumns());
+						"group_id", "group_name", "nmpi_job_id",
+						"nmpi_session_id"), q.getColumns());
 				assertEquals(empty(), q.call1(Row::toString, A_LONG_TIME));
 			});
 		}
@@ -789,11 +790,12 @@ class DMLTest extends SimpleDBTestBase {
 						"keepalive_host", "death_reason", "death_timestamp",
 						"original_request", "allocation_timestamp",
 						"allocation_size", "machine_name", "owner_name",
-						"group_id", "group_name"), q.getParameters());
+						"group_id", "group_name", "nmpi_job_id",
+						"nmpi_session_id"), q.getParameters());
 				assertEquals(1,
 						q.call(0, 0, "", A_LONG_TIME, 0, 0, 0, 0, A_LONG_TIME,
 								"", "", A_LONG_TIME, new byte[] {}, A_LONG_TIME,
-								0, "", "", 0, ""));
+								0, "", "", 0, "", null, null));
 			});
 		}
 	}
@@ -1033,6 +1035,39 @@ class DMLTest extends SimpleDBTestBase {
 						u.getParameters());
 				// No such job
 				assertEquals(0, u.call(0, 0, ""));
+			});
+		}
+	}
+
+	@Test
+	void destroyAllLiveJobs() {
+		assumeWritable(c);
+		try (var u = c.update(DESTROY_ALL_LIVE_JOBS)) {
+			c.transaction(() -> {
+				assertEquals(List.of("death_reason"), u.getParameters());
+				assertEquals(0, u.call(""));
+			});
+		}
+	}
+
+	@Test
+	void killAllJobAllocTask() {
+		assumeWritable(c);
+		try (var u = c.update(KILL_ALL_JOB_ALLOC_TASK)) {
+			c.transaction(() -> {
+				assertEquals(List.of(), u.getParameters());
+				assertEquals(0, u.call());
+			});
+		}
+	}
+
+	@Test
+	void setAllBoardsOff() {
+		assumeWritable(c);
+		try (var u = c.update(SET_ALL_BOARDS_OFF)) {
+			c.transaction(() -> {
+				assertEquals(List.of(), u.getParameters());
+				assertEquals(0, u.call());
 			});
 		}
 	}

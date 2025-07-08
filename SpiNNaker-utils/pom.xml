@@ -15,39 +15,39 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>uk.ac.manchester.spinnaker</groupId>
-		<artifactId>SpiNNaker</artifactId>
-		<version>7.1.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>SpiNNaker-utils</artifactId>
-	<description>General utilities for the SpiNNaker runtime.</description>
-	<name>SpiNNaker Utilities</name>
-	<dependencies>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>java-hamcrest</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.validation</groupId>
-			<artifactId>jakarta.validation-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.errorprone</groupId>
-			<artifactId>error_prone_annotations</artifactId>
-		</dependency>
-		<dependency>
-			<!-- Enable processing of template substitutions in validation messages. -->
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.el</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-	</dependencies>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>uk.ac.manchester.spinnaker</groupId>
+        <artifactId>SpiNNaker</artifactId>
+        <version>7.3.1</version>
+    </parent>
+    <artifactId>SpiNNaker-utils</artifactId>
+    <description>General utilities for the SpiNNaker runtime.</description>
+    <name>SpiNNaker Utilities</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>java-hamcrest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Enable processing of template substitutions in validation messages. -->
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 </project>

@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -162,8 +162,18 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		}
 
 		@Override
+		public Query query(SQL sql) {
+			return new QueryImpl(sql.getSQL(), connectionJdbcTemplate);
+		}
+
+		@Override
 		public Update update(String sql) {
 			return new UpdateImpl(sql, connectionJdbcTemplate);
+		}
+
+		@Override
+		public Update update(SQL sql) {
+			return new UpdateImpl(sql.getSQL(), connectionJdbcTemplate);
 		}
 
 		@Override
@@ -223,6 +233,11 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		@Override
 		public Query query(Resource sqlResource, boolean lockType) {
 			return query(sqlResource);
+		}
+
+		@Override
+		public Query query(SQL sql, boolean lockType) {
+			return query(sql);
 		}
 	}
 

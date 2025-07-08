@@ -33,14 +33,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-import javax.validation.ValidatorFactory;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

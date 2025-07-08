@@ -15,7 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import javax.validation.constraints.Positive;
+import jakarta.validation.constraints.Positive;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;

@@ -1,1 +1,1 @@
-{"label": "pop_1:0:0", "recordedRegionIds": [0, 1], "recordingRegionBaseAddress": 1612972372}
+{"label": "pop_1:0:0", "recordedRegionIds": [0, 1], "recordingRegionBaseAddress": 1612972372, "downloadRegions": [{"index": 2, "address": 12345678, "size": 10000}]}

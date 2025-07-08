@@ -21,7 +21,7 @@ limitations under the License.
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
 		<artifactId>SpiNNaker</artifactId>
-		<version>7.1.0-SNAPSHOT</version>
+		<version>7.3.1</version>
 	</parent>
 	<artifactId>SpiNNaker-allocserv</artifactId>
 	<packaging>war</packaging>
@@ -165,30 +165,6 @@ limitations under the License.
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>uk.co.automatictester</groupId>
-				<artifactId>truststore-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-truststore</id>
-						<goals>
-							<goal>generate-truststore</goal>
-						</goals>
-						<phase>generate-resources</phase>
-						<configuration>
-							<truststoreFile>${truststore.file}</truststoreFile>
-							<truststorePassword>${truststore.pass}</truststorePassword>
-							<servers>
-								<server>${ebrains.wellknown.server}:443</server>
-								<!-- Skip things that are down -->
-								<!--
-								<server>${ebrains.wellknown.server.dev}:443</server>
-								-->
-							</servers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -204,6 +180,7 @@ limitations under the License.
 								<version>${spring.boot.version}</version>
 							</annotationProcessorPath>
 						</annotationProcessorPaths>
+						<parameters>true</parameters>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -336,6 +313,11 @@ limitations under the License.
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-autoconfigure</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>uk.ac.manchester.spinnaker</groupId>
 			<artifactId>SpiNNaker-comms</artifactId>
 		</dependency>
@@ -366,6 +348,11 @@ limitations under the License.
 			<artifactId>spring-security-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
@@ -374,8 +361,8 @@ limitations under the License.
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+			<artifactId>jackson-jakarta-rs-json-provider</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -389,8 +376,8 @@ limitations under the License.
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -438,16 +425,12 @@ limitations under the License.
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.github.livesense</groupId>
-			<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -539,14 +522,48 @@ limitations under the License.
 				<plugins>
 					<plugin>
 						<!-- JSP syntax check via pre-compilation -->
-						<groupId>org.apache.sling</groupId>
-						<artifactId>jspc-maven-plugin</artifactId>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-jspc-maven-plugin</artifactId>
 						<executions>
 							<execution>
 								<goals>
 									<goal>jspc</goal>
 								</goals>
 								<phase>compile</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>generate-truststore</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>uk.co.automatictester</groupId>
+						<artifactId>truststore-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>generate-truststore</id>
+								<goals>
+									<goal>generate-truststore</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<truststoreFile>${truststore.file}</truststoreFile>
+									<truststorePassword>${truststore.pass}</truststorePassword>
+									<servers>
+										<server>${ebrains.wellknown.server}:443</server>
+										<!-- Skip things that are down -->
+										<!--
+										<server>${ebrains.wellknown.server.dev}:443</server>
+										-->
+									</servers>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>

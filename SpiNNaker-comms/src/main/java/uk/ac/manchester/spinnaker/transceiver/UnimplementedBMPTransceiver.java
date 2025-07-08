@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
@@ -208,5 +208,10 @@ public abstract class UnimplementedBMPTransceiver
 
 	@Override
 	public void close() throws IOException {
+	}
+
+	@Override
+	public int pingBoard(String address) {
+		throw new UnsupportedOperationException();
 	}
 }

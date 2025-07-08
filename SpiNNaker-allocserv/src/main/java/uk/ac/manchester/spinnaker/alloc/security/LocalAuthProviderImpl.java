@@ -40,8 +40,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +87,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
+import uk.ac.manchester.spinnaker.alloc.security.Permit.TempAuth;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 
 /**
@@ -294,7 +295,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthenticationToken.class, BearerTokenAuthentication.class,
-		AlreadyDoneMarker.class
+		AlreadyDoneMarker.class, TempAuth.class
 	};
 
 	/** The classes that we <em>know</em> we don't ever want to handle. */

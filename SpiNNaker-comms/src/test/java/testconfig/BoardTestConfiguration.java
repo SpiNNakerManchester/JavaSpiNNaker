@@ -53,7 +53,7 @@ public class BoardTestConfiguration {
 	public static final String LOCALHOST = "127.0.0.1";
 
 	/**
-	 * Microsoft invalid IP address.
+	 * Microsoft invalid IP address
 	 *
 	 * @see <a href=
 	 *      "https://answers.microsoft.com/en-us/windows/forum/windows_vista-networking/invalid-ip-address-169254xx/ce096728-e2b7-4d54-80cc-52a4ed342870"

@@ -53,16 +53,34 @@ class TestSQLiteStorage {
 	}
 
 	@Test
-	void testBasicOps() throws StorageException {
+	void testRecording() throws StorageException {
 		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
 		var core = new CoreLocation(0, 0, 0);
 
 		assertEquals(List.of(), storage.getCoresWithStorage());
 
-		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100);
-		storage.appendRecordingContents(rr, bytes("def"));
+		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100, true);
+		storage.insertMockExtraction();
+		storage.addRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
-				storage.getRecordingRegionContents(rr));
+				storage.getContents(rr));
+
+		assertEquals(List.of(core), storage.getCoresWithStorage());
+		assertEquals(List.of(0), storage.getRegionsWithStorage(core));
+	}
+
+	@Test
+	void testDownload() throws StorageException {
+		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
+		var core = new CoreLocation(0, 0, 0);
+
+		assertEquals(List.of(), storage.getCoresWithStorage());
+
+		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100, false);
+		storage.insertMockExtraction();
+		storage.addRecordingContents(rr, bytes("def"));
+		assertArrayEquals("def".getBytes(UTF_8),
+			storage.getContents(rr));
 
 		assertEquals(List.of(core), storage.getCoresWithStorage());
 		assertEquals(List.of(0), storage.getRegionsWithStorage(core));
@@ -74,11 +92,19 @@ class TestSQLiteStorage {
 		var core = new CoreLocation(0, 0, 0);
 
 		// append creates
-		var rr = new BufferManagerStorage.Region(core, 1, NULL, 100);
-		storage.appendRecordingContents(rr, bytes("ab"));
-		storage.appendRecordingContents(rr, bytes("cd"));
-		storage.appendRecordingContents(rr, bytes("ef"));
-		assertEquals("abcdef", str(storage.getRecordingRegionContents(rr)));
+		var rr = new BufferManagerStorage.Region(core, 1, NULL, 100, true);
+		var rd = new BufferManagerStorage.Region(core, 1, NULL, 100, false);
+		storage.insertMockExtraction();
+		storage.addRecordingContents(rr, bytes("ab"));
+		storage.addRecordingContents(rd, bytes("AB"));
+		storage.insertMockExtraction();
+		storage.addRecordingContents(rr, bytes("cd"));
+		storage.addRecordingContents(rd, bytes("CD"));
+		storage.insertMockExtraction();
+		storage.addRecordingContents(rr, bytes("ef"));
+		storage.addRecordingContents(rd, bytes("EF"));
+		assertEquals("abcdef", str(storage.getContents(rr)));
+		assertEquals("EF", str(storage.getContents(rd)));
 	}
 
 }

@@ -272,6 +272,7 @@ public interface DatabaseAPI {
 		 *            The SQL of the query.
 		 * @return The query object.
 		 * @see #query(Resource)
+		 * @see #query(SQL)
 		 * @see #update(String)
 		 * @see SQLQueries
 		 */
@@ -311,6 +312,7 @@ public interface DatabaseAPI {
 		 *            Whether we expect to have a write lock. This is vital
 		 * @return The query object.
 		 * @see #query(Resource)
+		 * @see #query(SQL)
 		 * @see #update(String)
 		 * @see SQLQueries
 		 */
@@ -348,6 +350,7 @@ public interface DatabaseAPI {
 		 *            Reference to the SQL of the query.
 		 * @return The query object.
 		 * @see #query(String)
+		 * @see #query(SQL)
 		 * @see #update(Resource)
 		 * @see SQLQueries
 		 */
@@ -388,11 +391,91 @@ public interface DatabaseAPI {
 		 *            only when the query is an {@code UPDATE RETURNING}.
 		 * @return The query object.
 		 * @see #query(String)
+		 * @see #query(SQL)
 		 * @see #update(Resource)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
 		Query query(Resource sqlResource, boolean lockType);
+
+		// @formatter:off
+		/**
+		 * Create a new query. Usage pattern:
+		 * <pre>
+		 * try (var q = conn.query(new SQL(SQL_SELECT))) {
+		 *     for (var value : q.call(mapper, argument1, argument2)) {
+		 *         // Do something with the mapped row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(new SQL(SQL_SELECT))) {
+		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(new SQL(SQL_SELECT))) {
+		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sql
+		 *            The SQL of the query.
+		 * @return The query object.
+		 * @see #query(String)
+		 * @see #query(Resource)
+		 * @see #update(String)
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		Query query(SQL sql);
+
+		// @formatter:off
+		/**
+		 * Create a new query. Usage pattern:
+		 * <pre>
+		 * try (var q = conn.query(SQL_SELECT, false)) {
+		 *     for (var value : q.call(mapper, argument1, argument2)) {
+		 *         // Do something with the mapped row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(SQL_SELECT, false)) {
+		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var q = conn.query(SQL_SELECT, false)) {
+		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
+		 *         // Do something with the mapped row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sql
+		 *            The SQL of the query.
+		 * @param lockType
+		 *            Whether we expect to have a write lock. This is vital
+		 * @return The query object.
+		 * @see #query(String)
+		 * @see #query(Resource)
+		 * @see #update(String)
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		Query query(SQL sql, boolean lockType);
+
 
 		// @formatter:off
 		/**
@@ -428,6 +511,7 @@ public interface DatabaseAPI {
 		 *            The SQL of the update.
 		 * @return The update object.
 		 * @see #update(Resource)
+		 * @see #update(SQL)
 		 * @see #query(String)
 		 * @see SQLQueries
 		 */
@@ -468,11 +552,53 @@ public interface DatabaseAPI {
 		 *            Reference to the SQL of the update.
 		 * @return The update object.
 		 * @see #update(String)
+		 * @see #update(SQL)
 		 * @see #query(Resource)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
 		Update update(Resource sqlResource);
+
+		// @formatter:off
+		/**
+		 * Create a new update. Usage pattern:
+		 * <pre>
+		 * try (var u = conn.update(new SQL(SQL_UPDATE))) {
+		 *     int numRows = u.call(argument1, argument2);
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (var u = conn.update(new SQL(SQL_INSERT))) {
+		 *     for (var key : u.keys(argument1, argument2)) {
+		 *         // Do something with the key
+		 *     }
+		 * }
+		 * </pre>
+		 * or even:
+		 * <pre>
+		 * try (var u = conn.update(new SQL(SQL_INSERT))) {
+		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
+		 *         // Do something with the key
+		 *     });
+		 * }
+		 * </pre>
+		 * <p>
+		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
+		 * you should use a {@link Query} with the {@code lockType} set to
+		 * {@code true}.
+		 * <em>{@code RETURNING} clauses are not supported by MySQL.</em>
+		 *
+		 * @param sql
+		 *            The SQL of the update.
+		 * @return The update object.
+		 * @see #update(String)
+		 * @see #update(Resource)
+		 * @see #query(String)
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		Update update(SQL sql);
 	}
 
 	/**

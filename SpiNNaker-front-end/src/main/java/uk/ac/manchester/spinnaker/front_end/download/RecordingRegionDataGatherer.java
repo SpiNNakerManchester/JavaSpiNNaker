@@ -41,8 +41,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
-
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 /**
  * A data gatherer that pulls the data from a recording region. Internally, this
  * accepts requests to store data (after it has been retrieved from SpiNNaker)
@@ -74,23 +73,25 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	/**
 	 * Create a data gatherer.
 	 *
-	 * @param transceiver
-	 *            How to talk to the machine.
 	 * @param machine
 	 *            The description of the machine talked to.
 	 * @param database
 	 *            Where to put the retrieved data.
-	 * @throws ProcessException
-	 *             If we can't discover the machine details due to SpiNNaker
-	 *             rejecting messages
 	 * @throws IOException
-	 *             If we can't discover the machine details due to I/O problems
+	 *            If we can't discover the machine details due to I/O problems
+	 * @throws InterruptedException
+	 *            If communications are interrupted.
+	 * @throws SpinnmanException
+	 *            If the there is an error creating a transceiver.
+	 * @throws StorageException
+	 *           If the database access fails.
 	 */
 	@MustBeClosed
-	public RecordingRegionDataGatherer(TransceiverInterface transceiver,
-			Machine machine, BufferManagerStorage database)
-			throws IOException, ProcessException {
-		super(transceiver, machine);
+	public RecordingRegionDataGatherer(Machine machine,
+			BufferManagerStorage database)
+			throws IOException, StorageException, SpinnmanException,
+			InterruptedException {
+		super(database, machine);
 		this.database = database;
 	}
 
@@ -113,16 +114,14 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	protected List<Region> getRegion(Placement placement, int index)
+	protected Region getRecordingRegion(
+			Placement placement, int index)
 			throws IOException, ProcessException, InterruptedException {
 		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);
-		if (region.size > 0) {
-			return List.of(new Region(placement, index, region.data,
-					(int) region.size));
-		}
-		return List.of();
+		return new Region(placement, index, region.data, (int) region.size,
+				true);
 	}
 
 	@Override
@@ -133,10 +132,10 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 			return;
 		}
 		dbWorker.execute(() -> {
-			log.info("storing region data for {} R:{} from {} as {} bytes",
+			log.debug("storing region data for {} R:{} from {} as {} bytes",
 					r.core, r.regionIndex, r.startAddress, data.remaining());
 			try {
-				database.appendRecordingContents(r, data);
+				database.addRecordingContents(r, data);
 				numWrites++;
 			} catch (StorageException e) {
 				log.error("failed to write to database", e);
@@ -145,7 +144,7 @@ public class RecordingRegionDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	public void close() throws InterruptedException {
+	public void close() throws InterruptedException, IOException {
 		super.close();
 		log.info("waiting for database usage to complete");
 		long start = currentTimeMillis();

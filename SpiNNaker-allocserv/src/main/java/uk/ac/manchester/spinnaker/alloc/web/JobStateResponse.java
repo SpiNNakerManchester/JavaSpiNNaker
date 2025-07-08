@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.springframework.dao.DataAccessException;
 

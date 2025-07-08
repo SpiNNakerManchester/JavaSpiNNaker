@@ -15,7 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.errorprone.annotations.Immutable;

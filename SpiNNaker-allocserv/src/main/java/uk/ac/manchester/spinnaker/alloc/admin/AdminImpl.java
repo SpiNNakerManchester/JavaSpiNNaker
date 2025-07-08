@@ -16,12 +16,12 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.created;
-import static javax.ws.rs.core.Response.noContent;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.created;
+import static jakarta.ws.rs.core.Response.noContent;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BASE_PATH;
 
@@ -29,11 +29,11 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,11 +186,12 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Response createUser(UserRecord providedUser, UriInfo ui) {
 		log.warn("CALLED createUser({})", providedUser.getUserName());
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		providedUser.initCreationDefaults();
-		var realUser = userManager.createUser(providedUser)
+		var realUser = userManager.createUser(providedUser,
+				m -> ub.build(m.getUserId()))
 				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
 						"user already exists"));
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		int id = realUser.getUserId();
 		return created(ub.build(id)).type(APPLICATION_JSON)
 				.entity(realUser.sanitise()).build();
@@ -210,10 +211,10 @@ public class AdminImpl implements AdminAPI {
 		log.warn("CALLED updateUser({})", providedUser.getUserName());
 		var adminUser = security.getUserPrincipal().getName();
 		providedUser.setUserId(null);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		return userManager
 				.updateUser(id, providedUser, adminUser,
-						m -> ub.build(m.getGroupId()))
+						m -> ub.build(m.getUserId()))
 				.orElseThrow(AdminImpl::noUser).sanitise();
 	}
 

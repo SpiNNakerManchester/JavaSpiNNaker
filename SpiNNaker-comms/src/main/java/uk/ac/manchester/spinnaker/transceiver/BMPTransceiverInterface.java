@@ -40,9 +40,9 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
@@ -1864,6 +1864,15 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 
 	@Override
 	void close() throws IOException;
+
+	/**
+	 * Ping a board.
+	 *
+	 * @param address The board IP address.
+	 * @return 0 on success, other values on failure (reflecting the result of
+	 *         the OS subprocess).
+	 */
+	int pingBoard(String address);
 }
 
 interface BMPConstants {

@@ -17,7 +17,7 @@ package uk.ac.manchester.spinnaker.storage;
 
 import java.util.Map;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * Information about the proxy to allow connection.

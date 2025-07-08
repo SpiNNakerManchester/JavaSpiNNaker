@@ -45,6 +45,7 @@ import static uk.ac.manchester.spinnaker.messages.model.Signal.STOP;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFERED_SDRAM_START;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -102,13 +103,13 @@ public class TransceiverITCase {
 	private static Map<ChipLocation, Set<Integer>> downCores;
 
 	@BeforeAll
-	@Timeout(60) // Two minutes is enough
+	@Timeout(120) // Two minutes is enough
 	@SuppressWarnings("MustBeClosed")
 	static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
 		try {
 			job = boardConfig.setUpSpallocedBoard();
-		} catch (JobDestroyedException e) {
+		} catch (JobDestroyedException | IOException e) {
 			abort("could not set up job: " + e.getMessage());
 		}
 		coreSubsets = new CoreSubsets();

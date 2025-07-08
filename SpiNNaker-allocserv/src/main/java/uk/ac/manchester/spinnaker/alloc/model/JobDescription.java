@@ -24,8 +24,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import uk.ac.manchester.spinnaker.machine.ValidMachineHeight;
 import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
@@ -34,22 +34,22 @@ import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
  * Descriptive detail for a job. Used for HTML generation, something like:
  *
  * <pre>
-     Job ID: 6037654
-      Owner: gorp
-      State: ready
- Start time: 11/07/2021 13:04:43
-  Keepalive: 60 seconds
- Owner host: 192.168.0.33
-    Request: Job(1)
- Allocation:  ___
-             / . \
-             \___/
-   Hostname: 10.11.12.13
-      Width: 8
-     Height: 8
- Num boards: 1
+	 Job ID: 6037654
+	  Owner: gorp
+	  State: ready
+Start time: 11/07/2021 13:04:43
+Keepalive: 60 seconds
+Owner host: 192.168.0.33
+	Request: Job(1)
+Allocation:  ___
+			 / . \
+			 \___/
+Hostname: 10.11.12.13
+	  Width: 8
+	 Height: 8
+Num boards: 1
 Board power: on
- Running on: SpiNNaker1M
+Running on: SpiNNaker1M
  * </pre>
  *
  * (That's actually slightly edited output from {@code spalloc-job -info})

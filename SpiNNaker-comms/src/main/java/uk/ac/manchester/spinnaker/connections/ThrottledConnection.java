@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.manchester.spinnaker.front_end.dse;
+package uk.ac.manchester.spinnaker.connections;
 
 import static java.lang.System.nanoTime;
-import static java.net.InetAddress.getByName;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -36,13 +35,12 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
-import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.messages.scp.IPTagSet;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -50,7 +48,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
-class ThrottledConnection implements Closeable {
+public class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
 
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
@@ -64,8 +62,6 @@ class ThrottledConnection implements Closeable {
 				THROTTLE_NS / NSEC_PER_USEC);
 	}
 
-	private final ChipLocation location;
-
 	private final SCPConnection connection;
 
 	private final AtomicBoolean closed = new AtomicBoolean();
@@ -76,10 +72,6 @@ class ThrottledConnection implements Closeable {
 	 * Create a throttled connection for talking to a board and point an IPTag
 	 * so that messages sent to it arrive on this connection.
 	 *
-	 * @param transceiver
-	 *            The SCP transceiver.
-	 * @param board
-	 *            The SpiNNaker board to talk to.
 	 * @param iptag
 	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
@@ -91,18 +83,19 @@ class ThrottledConnection implements Closeable {
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
-	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
-			IPTag iptag)
+	public ThrottledConnection(IPTag iptag)
 			throws IOException, ProcessException, InterruptedException {
-		location = board.location;
-		connection = transceiver.createScpConnection(location,
-				getByName(board.ethernetAddress));
-		log.info(
-				"created throttled connection to {} ({}) from {}:{}; "
+		connection = new SCPConnection(iptag.getDestination(), null, null,
+				iptag.getBoardAddress());
+		log.debug("created throttled connection to {} ({}) from {}:{}; "
 						+ "reprogramming tag #{} to point to this connection",
-				location, board.ethernetAddress, connection.getLocalIPAddress(),
+				iptag.getDestination(), iptag.getBoardAddress(),
+				connection.getLocalIPAddress(),
 				connection.getLocalPort(), iptag.getTag());
-		transceiver.setIPTag(iptag, connection);
+		var process = new TxrxProcess(new SingletonConnectionSelector<>(
+				connection), null);
+		process.call(new IPTagSet(connection.getChip(), null, 0,
+					iptag.getTag(), iptag.isStripSDP(), true));
 	}
 
 	/**
@@ -156,6 +149,11 @@ class ThrottledConnection implements Closeable {
 	}
 
 	public ChipLocation getLocation() {
-		return location;
+		return connection.getChip();
+	}
+
+	@Override
+	public String toString() {
+		return "Throttled: " + connection.toString();
 	}
 }

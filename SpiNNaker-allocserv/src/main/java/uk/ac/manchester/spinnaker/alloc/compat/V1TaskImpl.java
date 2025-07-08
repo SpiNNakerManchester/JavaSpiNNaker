@@ -44,10 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.Future;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,14 +259,14 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	@Override
-	protected final Optional<Integer> createJobNumBoards(int numBoards,
+	protected final int createJobNumBoards(int numBoards,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
 		var maxDead = parseDec(kwargs.get("max_dead_boards"));
 		return createJob(new CreateNumBoards(numBoards, maxDead), kwargs, cmd);
 	}
 
 	@Override
-	protected final Optional<Integer> createJobRectangle(int width, int height,
+	protected final int createJobRectangle(int width, int height,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
 		var maxDead = parseDec(kwargs.get("max_dead_boards"));
 		return createJob(new CreateDimensions(width, height, maxDead), kwargs,
@@ -275,7 +274,7 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	@Override
-	protected final Optional<Integer> createJobSpecificBoard(TriadCoords coords,
+	protected final int createJobSpecificBoard(TriadCoords coords,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
 		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd);
 	}
@@ -294,21 +293,18 @@ class V1TaskImpl extends V1CompatTask {
 		return owner;
 	}
 
-	private Optional<Integer> createJob(SpallocAPI.CreateDescriptor create,
+	private Integer createJob(SpallocAPI.CreateDescriptor create,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
 		var owner = getOwner(kwargs);
 		var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
 		var machineName = (String) kwargs.get("machine");
 		var ts = tags(kwargs.get("tags"), isNull(machineName));
-		var result = permit.authorize(() -> spalloc.createJobInGroup(
+		var job = permit.authorize(() -> spalloc.createJobInGroup(
 				permit.name, groupName, create, machineName, ts, keepalive,
 				cmd));
-		result.ifPresent(
-				j -> log.info(
-						"made compatibility-mode job {} "
-								+ "on behalf of claimed user {}",
-						j.getId(), owner));
-		return result.map(Job::getId);
+		log.info("made compatibility-mode job {} on behalf of claimed user {}",
+				job.getId(), owner);
+		return job.getId();
 	}
 
 	@Override

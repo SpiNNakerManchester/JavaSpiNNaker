@@ -18,10 +18,10 @@ package uk.ac.manchester.spinnaker.storage;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -33,25 +33,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * @author Donal Fellows
  */
 public interface BufferManagerStorage extends ProxyAwareStorage {
-	/**
-	 * Retrieves some bytes from the database. The bytes represent the contents
-	 * of a DSE region of a particular SpiNNaker core.
-	 *
-	 * @param region
-	 *            The region descriptor.
-	 * @return The region contents.
-	 * @throws IllegalArgumentException
-	 *             If there's no such saved region.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 * @throws UnsupportedOperationException
-	 *             This method is unsupported.
-	 * @deprecated Currently unsupported; underlying database structure absent
-	 */
-	@Deprecated
-	default byte[] getRegionContents(Region region) throws StorageException {
-		throw new UnsupportedOperationException();
-	}
 
 	/**
 	 * Retrieves some bytes from the database. The bytes represent the contents
@@ -65,7 +46,7 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	byte[] getRecordingRegionContents(Region region) throws StorageException;
+	byte[] getContents(Region region) throws StorageException;
 
 	/**
 	 * Removes some bytes from the database. The bytes represent the contents of
@@ -166,6 +147,14 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 		public final int finalIgnore;
 
 		/**
+		 * States is a recording region
+		 * True if this region is appended after every run/loop.
+		 * False is this region is overwritten aevery run.
+		 */
+		@NotNull
+		public final boolean isRecording;
+
+		/**
 		 * Create a region descriptor.
 		 *
 		 * @param core
@@ -180,9 +169,14 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 		 * @param size
 		 *            How much data should be downloaded? <em>This is not
 		 *            necessarily the size of the region.</em>
+		 * @param isRecording
+		 *            States is a recording region
+		 *            True if this region is appended after every run/loop.
+		 *            False is this region is overwritten aevery run.
+		 *
 		 */
 		public Region(HasCoreLocation core, int regionIndex,
-				MemoryLocation startLocation, int size) {
+				MemoryLocation startLocation, int size, boolean isRecording) {
 			this.core = core.asCoreLocation();
 			this.regionIndex = regionIndex;
 			realSize = size;
@@ -193,6 +187,7 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 			finalIgnore = (INT_SIZE - (size % INT_SIZE)) % INT_SIZE;
 			size += finalIgnore;
 			this.size = size;
+			this.isRecording = isRecording;
 		}
 
 		/**
@@ -257,7 +252,7 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	}
 
 	/**
-	 * Adds some bytes to the database. The bytes represent part of the contents
+	 * Extract some bytes to the database. The bytes represent the contents
 	 * of a recording region of a particular SpiNNaker core.
 	 *
 	 * @param region
@@ -267,24 +262,26 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	void appendRecordingContents(Region region, byte[] contents)
+	void addRecordingContents(Region region, byte[] contents)
 			throws StorageException;
 
+	void insertMockExtraction() throws StorageException;
+
 	/**
-	 * Adds some bytes to the database. The bytes represent part of the contents
+	 * Extract some bytes to the database. The bytes represent the contents
 	 * of a recording region of a particular SpiNNaker core.
 	 *
 	 * @param region
 	 *            The recording region that is being recorded.
 	 * @param contents
-	 *            The contents to append.
+	 *            The contents to extract.
 	 * @throws StorageException
 	 *             If anything goes wrong.
 	 */
-	default void appendRecordingContents(Region region, ByteBuffer contents)
+	default void addRecordingContents(Region region, ByteBuffer contents)
 			throws StorageException {
 		var ary = new byte[contents.remaining()];
 		contents.slice().get(ary);
-		appendRecordingContents(region, ary);
+		addRecordingContents(region, ary);
 	}
 }

@@ -21,10 +21,11 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
@@ -43,7 +44,6 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.utils.Ping;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -315,7 +315,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	@Override
-	public void powerOff(List<BMPBoard> boards)
+	public void powerOff(Collection<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
 		txrx.powerOff(boards);
 	}
@@ -348,7 +348,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void ping(List<BMPBoard> boards) {
 		boards.parallelStream().forEach(id -> {
 			var address = boardAddresses.get(id);
-			if (Ping.ping(address) != 0) {
+			if (txrx.pingBoard(address) != 0) {
 				log.warn(
 						"ARP fault? Board with address {} might not have "
 								+ "come up correctly", address);

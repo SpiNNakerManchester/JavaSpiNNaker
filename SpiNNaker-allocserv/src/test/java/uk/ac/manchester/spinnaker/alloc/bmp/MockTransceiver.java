@@ -35,8 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 
@@ -159,8 +159,10 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
 		var r = fpgaResults.pollFirst();
 		if (r != null) {
+			log.info("Returning {} from queue", r.value);
 			return r.value;
 		}
+		log.info("Returning {} from FPGA", fpga.value);
 		return fpga.value;
 	}
 
@@ -290,5 +292,11 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		var crc = new CRC32();
 		crc.update(slice(flash, baseAddress.address, length));
 		return (int) (crc.getValue() & CRC_MASK);
+	}
+
+	@Override
+	public int pingBoard(String address) {
+		log.info("pingBoard({})", address);
+		return 0;
 	}
 }

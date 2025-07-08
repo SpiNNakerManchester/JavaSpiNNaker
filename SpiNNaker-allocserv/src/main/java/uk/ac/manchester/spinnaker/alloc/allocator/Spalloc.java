@@ -36,6 +36,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_J
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -80,14 +82,24 @@ import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MachineVersion;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import uk.ac.manchester.spinnaker.protocols.FastDataIn;
+import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * The core implementation of the Spalloc service.
@@ -118,7 +130,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private AllocatorProperties props;
 
 	@Autowired
-	private ProxyRememberer rememberer;
+	private JobObjectRememberer rememberer;
 
 	@Autowired
 	private AllocatorTask allocator;
@@ -130,6 +142,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@GuardedBy("this")
 	private transient Map<String, List<DownLink>> downLinksCache =
 			new HashMap<>();
+
+	private boolean emergencyStop = false;
 
 	@Override
 	public Map<String, Machine> getMachines(boolean allowOutOfService) {
@@ -416,30 +430,36 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobInGroup(String owner, String groupName,
+	public Job createJobInGroup(String owner, String groupName,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
-			Duration keepaliveInterval, byte[] req) {
+			Duration keepaliveInterval, byte[] req)
+					throws IllegalArgumentException {
+		if (emergencyStop) {
+			throw new IllegalStateException(
+					"The Server has been stopped due to an emergency.");
+		}
 		return execute(conn -> {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new RuntimeException("no such user: " + owner));
 			int group = selectGroup(conn, owner, groupName);
 			if (!quotaManager.mayCreateJob(group)) {
 				// No quota left
-				return Optional.empty();
+				throw new IllegalArgumentException(
+						"quota exceeded in group " + group);
 			}
 
-			var m = selectMachine(conn, machineName, tags);
+			var m = selectMachine(conn, descriptor, machineName, tags);
 			if (!m.isPresent()) {
-				// Cannot find machine!
-				return Optional.empty();
+				throw new IllegalArgumentException(
+						"no machine available which matches allocation "
+						+ "request");
 			}
 			var machine = m.orElseThrow();
 
 			var id = insertJob(conn, machine, user, group, keepaliveInterval,
 					req);
 			if (!id.isPresent()) {
-				// Insert failed
-				return Optional.empty();
+				throw new RuntimeException("failed to create job");
 			}
 			int jobId = id.orElseThrow();
 
@@ -512,12 +532,13 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					machine.name, owner, numBoards);
 
 			allocator.scheduleAllocateNow();
-			return getJob(jobId, conn).map(ji -> (Job) ji);
+			return getJob(jobId, conn).map(ji -> (Job) ji).orElseThrow(
+					() -> new RuntimeException("Error creating job!"));
 		});
 	}
 
 	@Override
-	public Optional<Job> createJob(String owner, CreateDescriptor descriptor,
+	public Job createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
 		return execute(conn -> createJobInGroup(
@@ -526,52 +547,41 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJobInCollabSession(String owner,
+	public Job createJobInCollabSession(String owner,
 			String nmpiCollab, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
-		var quotaUnits = quotaManager.mayCreateNMPISession(nmpiCollab);
-		if (quotaUnits.isEmpty()) {
-			return Optional.empty();
-		}
+		var session = quotaManager.createSession(nmpiCollab, owner);
+		var quotaUnits = session.getResourceUsage().getUnits();
 
 		// Use the Collab name as the group, as it should exist
 		var job = execute(conn -> createJobInGroup(
 				owner, nmpiCollab, descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
-		// On failure to get job, just return; shouldn't happen as quota checked
-		// earlier, but just in case!
-		if (job.isEmpty()) {
-			return job;
-		}
 
-		quotaManager.associateNMPISession(
-				job.get().getId(), owner, nmpiCollab, quotaUnits.get());
+		quotaManager.associateNMPISession(job.getId(), session.getId(),
+				quotaUnits);
 
 		// Return the job created
 		return job;
 	}
 
 	@Override
-	public Optional<Job> createJobForNMPIJob(String owner, int nmpiJobId,
+	public Job createJobForNMPIJob(String owner, int nmpiJobId,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
 			Duration keepaliveInterval,	byte[] originalRequest) {
 		var collab = quotaManager.mayUseNMPIJob(owner, nmpiJobId);
 		if (collab.isEmpty()) {
-			return Optional.empty();
+			throw new IllegalArgumentException("User cannot create session in "
+					+ "NMPI job" + nmpiJobId);
 		}
 		var quotaDetails = collab.get();
 
 		var job = execute(conn -> createJobInGroup(
 				owner, quotaDetails.collabId, descriptor, machineName,
 				tags, keepaliveInterval, originalRequest));
-		// On failure to get job, just return; shouldn't happen as quota checked
-		// earlier, but just in case!
-		if (job.isEmpty()) {
-			return job;
-		}
 
-		quotaManager.associateNMPIJob(job.get().getId(), nmpiJobId,
+		quotaManager.associateNMPIJob(job.getId(), nmpiJobId,
 				quotaDetails.quotaUnits);
 
 		// Return the job created
@@ -691,23 +701,72 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private Optional<MachineImpl> selectMachine(Connection conn,
-			String machineName, List<String> tags) {
+			CreateDescriptor descriptor, String machineName,
+			List<String> tags) {
 		if (nonNull(machineName)) {
-			return getMachine(machineName, false, conn);
-		} else if (!tags.isEmpty()) {
+			var m = getMachine(machineName, false, conn);
+			if (m.isPresent() && isAllocPossible(conn, descriptor, m.get())) {
+				return m;
+			}
+			return Optional.empty();
+		}
+
+		if (!tags.isEmpty()) {
 			for (var m : getMachines(conn, false).values()) {
 				var mi = (MachineImpl) m;
-				if (mi.tags.containsAll(tags)) {
-					/*
-					 * Originally, spalloc checked if allocation was possible;
-					 * we just assume that it is because there really isn't ever
-					 * going to be that many different machines on one service.
-					 */
+				if (mi.tags.containsAll(tags)
+						&& isAllocPossible(conn, descriptor, mi)) {
 					return Optional.of(mi);
 				}
 			}
 		}
 		return Optional.empty();
+	}
+
+	private boolean isAllocPossible(final Connection conn,
+			final CreateDescriptor descriptor,
+			final MachineImpl m) {
+		return descriptor.visit(new CreateVisitor<Boolean>() {
+			@Override
+			public Boolean numBoards(CreateNumBoards nb) {
+				try (var getNBoards = conn.query(COUNT_FUNCTIONING_BOARDS)) {
+					var numBoards = getNBoards.call1(integer("c"), m.id)
+							.orElseThrow();
+					return numBoards >= nb.numBoards;
+				}
+			}
+
+			@Override
+			public Boolean dimensions(CreateDimensions d) {
+				try (var checkPossible = conn.query(checkRectangle)) {
+					return checkPossible.call1((r) -> true, d.width, d.height,
+							m.id, d.maxDead).isPresent();
+				}
+			}
+
+			@Override
+			public Boolean dimensionsAt(CreateDimensionsAt da) {
+				try (var checkPossible = conn.query(checkRectangleAt)) {
+					int board = locateBoard(conn, m.name, da, true);
+					return checkPossible.call1((r) -> true, board,
+							da.width, da.height, m.id, da.maxDead).isPresent();
+				} catch (IllegalArgumentException e) {
+					// This means the board doesn't exist on the given machine
+					return false;
+				}
+			}
+
+			@Override
+			public Boolean board(CreateBoard b) {
+				try (var check = conn.query(CHECK_LOCATION)) {
+					int board = locateBoard(conn, m.name, b, false);
+					return check.call1((r) -> true, m.id, board).isPresent();
+				} catch (IllegalArgumentException e) {
+					// This means the board doesn't exist on the given machine
+					return false;
+				}
+			}
+		});
 	}
 
 	@Override
@@ -845,6 +904,15 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				row.getInteger("board_2_b"), row.getString("board_2_addr"));
 		return new DownLink(board1, row.getEnum("dir_1", Direction.class),
 				board2, row.getEnum("dir_2", Direction.class));
+	}
+
+	public void emergencyStop(String commandCode) {
+		if (!commandCode.equals(props.getEmergencyStopCommandCode())) {
+			throw new IllegalArgumentException("Invalid emergency stop code");
+		}
+		allocator.emergencyStop();
+		emergencyStop = true;
+		log.warn("Emergency stop requested!");
 	}
 
 	private class MachineImpl implements Machine {
@@ -1394,7 +1462,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new PartialJobException();
 			}
 			powerController.destroyJob(id, reason);
-			rememberer.killProxies(id);
+			rememberer.closeJob(id);
 		}
 
 		@Override
@@ -1666,6 +1734,61 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public void forgetProxy(ProxyCore proxy) {
 			rememberer.removeProxyForJob(id, proxy);
+		}
+
+		@Override
+		@SuppressWarnings("MustBeClosed")
+		public TransceiverInterface getTransceiver() throws IOException,
+				InterruptedException, SpinnmanException {
+			var mac = getMachine();
+			if (mac.isEmpty()) {
+				throw new IllegalStateException(
+						"Job is not active!");
+			}
+			var txrx = rememberer.getTransceiverForJob(id);
+			if (nonNull(txrx)) {
+				return txrx;
+			}
+			List<uk.ac.manchester.spinnaker.connections.model.Connection>
+				connections = new ArrayList<>();
+			for (var conn : mac.get().getConnections()) {
+				connections.add(new SCPConnection(conn.getChip(),
+						null, null, InetAddress.getByName(conn.getHostname())));
+			}
+			txrx = new Transceiver(MachineVersion.FIVE, connections);
+			var unused = txrx.getMachineDetails();
+			rememberer.rememberTransceiverForJob(id, txrx);
+			return txrx;
+		}
+
+		@Override
+		@SuppressWarnings("MustBeClosed")
+		public FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
+				throws ProcessException, IOException, InterruptedException {
+			var fdi = rememberer.getFastDataIn(id, iptag.getDestination());
+			if (fdi != null) {
+				return fdi;
+			}
+			fdi = new FastDataIn(gathererCore, iptag);
+			rememberer.rememberFastDataIn(id, iptag.getDestination(), fdi);
+			return fdi;
+		}
+
+		@Override
+		@SuppressWarnings("MustBeClosed")
+		public Downloader getDownloader(IPTag iptag)
+				throws ProcessException, IOException, InterruptedException {
+			var downloader = rememberer.getDownloader(id,
+					iptag.getDestination());
+			if (downloader != null) {
+				// Ensure the downloader can be reuse
+				downloader.reuse();
+				return downloader;
+			}
+			downloader = new Downloader(iptag);
+			rememberer.rememberDownloader(id, iptag.getDestination(),
+					downloader);
+			return downloader;
 		}
 
 		@Override

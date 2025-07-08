@@ -19,6 +19,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
@@ -40,13 +42,16 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_PATH;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_PATH;
 
+import java.net.SocketTimeoutException;
 import java.security.Principal;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +80,10 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
+import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException.NoP2PRoute;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -120,6 +129,8 @@ public class SystemControllerImpl implements SystemController {
 	private static final String BASE_URI = "baseuri";
 
 	private static final long WAIT_FOR_POWER_SECONDS = 60;
+
+	private static final int N_CORES = 18;
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -363,15 +374,16 @@ public class SystemControllerImpl implements SystemController {
 	@Action("getting job details")
 	public ModelAndView getJobInfo(int id) {
 		var permit = new Permit(getContext());
-		var mach = spallocCore.getJobInfo(permit, id)
+		var job = spallocCore.getJobInfo(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-		if (nonNull(mach.getRequestBytes())) {
-			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
+		if (nonNull(job.getRequestBytes())) {
+			job.setRequest(new String(job.getRequestBytes(), UTF_8));
 		}
-		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
-		var mav = view(JOB_VIEW, ONE_JOB_OBJ, mach);
+		job.setMachineUrl(uri(self().getMachineInfo(job.getMachine())));
+		var mav = view(JOB_VIEW, ONE_JOB_OBJ, job);
 		mav.addObject("deleteUri", uri(self().destroyJob(id, null)));
 		mav.addObject("powerUri", uri(self().powerJob(id, false)));
+		mav.addObject("processUri", uri(self().listProcesses(id, 0, 0)));
 		return mav;
 	}
 
@@ -409,4 +421,45 @@ public class SystemControllerImpl implements SystemController {
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
 		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
 	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("getting job process listing")
+	public List<Process> listProcesses(int id, int x, int y) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJob(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		TransceiverInterface txrx = null;
+		try {
+			txrx = job.getTransceiver();
+			CoreSubsets cores = new CoreSubsets();
+			for (int i = 0; i < N_CORES; i++) {
+				cores.addCore(x, y, i);
+			}
+			var info = txrx.getCPUInformation(cores);
+			var response = new ArrayList<Process>();
+			for (var inf : info) {
+				response.add(new Process(inf));
+			}
+			return response;
+		} catch (NoP2PRoute e) {
+			throw new ResponseStatusException(NOT_FOUND, e.getMessage(), e);
+		} catch (ProcessException e) {
+			var cause = e.getCause();
+			if (cause instanceof SocketTimeoutException) {
+				throw new ResponseStatusException(GATEWAY_TIMEOUT,
+						"Timeout waiting for process information; "
+						+ "is the machine booted?",
+						cause);
+			} else {
+				throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+						"Error receiving process details", e);
+			}
+		} catch (Exception e) {
+			log.error("Error receiving process details", e);
+			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+					"Error receiving process details", e);
+		}
+	}
+
 }

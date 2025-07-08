@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.errorprone.annotations.MustBeClosed;
@@ -37,7 +36,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 
 /**
  * A data gatherer that can fetch DSE regions.
@@ -68,23 +67,24 @@ public class DirectDataGatherer extends DataGatherer {
 	/**
 	 * Create a data gatherer.
 	 *
-	 * @param transceiver
-	 *            How to talk to the machine.
 	 * @param database
 	 *            Where to put the retrieved data.
 	 * @param machine
 	 *            The description of the machine being talked to.
-	 * @throws ProcessException
-	 *             If we can't discover the machine details due to SpiNNaker
-	 *             rejecting messages
 	 * @throws IOException
-	 *             If we can't discover the machine details due to I/O problems
+	 *            If we can't discover the machine details due to I/O problems
+	 * @throws InterruptedException
+	 *            If communications are interrupted.
+	 * @throws SpinnmanException
+	 *            If the there is an error creating a transceiver.
+	 * @throws StorageException
+	 *           If the database access fails.
 	 */
 	@MustBeClosed
-	public DirectDataGatherer(TransceiverInterface transceiver, Machine machine,
-			BufferManagerStorage database)
-			throws IOException, ProcessException {
-		super(transceiver, machine);
+	public DirectDataGatherer(Machine machine, BufferManagerStorage database)
+			throws IOException, StorageException, SpinnmanException,
+			InterruptedException {
+		super(database, machine);
 		this.database = database;
 		coreTableCache = new HashMap<>();
 	}
@@ -132,14 +132,15 @@ public class DirectDataGatherer extends DataGatherer {
 	}
 
 	@Override
-	protected List<Region> getRegion(Placement placement, int regionID)
+	protected Region getRecordingRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, InterruptedException {
 		var b = getCoreRegionTable(placement.asCoreLocation(),
 				placement.getVertex());
 		// TODO This is wrong because of shared regions!
 		int size = b.get(regionID + 1) - b.get(regionID);
-		return List.of(new Region(placement, regionID,
-				new MemoryLocation(b.get(regionID)), size));
+		return new Region(
+			placement, regionID, new MemoryLocation(b.get(regionID)), size,
+			true);
 	}
 
 	@Override
