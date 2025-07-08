@@ -50,13 +50,15 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 class TestFrontEnd {
 
-	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-	private final PrintStream originalOut = System.out;
-	private final PrintStream originalErr = System.err;
+	private static final ByteArrayOutputStream outContent =
+			new ByteArrayOutputStream();
+	private static final ByteArrayOutputStream errContent =
+			new ByteArrayOutputStream();
+	private static final PrintStream originalOut = System.out;
+	private static final PrintStream originalErr = System.err;
 
 	@BeforeAll
-	public void setUpStreams() {
+	public static void setUpStreams() {
 		System.setOut(new PrintStream(outContent));
 		System.setErr(new PrintStream(errContent));
 	}
@@ -68,7 +70,7 @@ class TestFrontEnd {
 	}
 
 	@AfterAll
-	public void restoreStreams() {
+	public static void restoreStreams() {
 		System.setOut(originalOut);
 		System.setErr(originalErr);
 	}
