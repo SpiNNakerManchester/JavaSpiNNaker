@@ -24,10 +24,6 @@ updates:
     labels:
       - "bug"
       - "dependabot"
-    assignees:
-      - "rowleya"
-    reviewers:
-      - "Christian-B"
       
   # Actions are only checked on primary branch
   - package-ecosystem: "github-actions"
@@ -39,7 +35,3 @@ updates:
     labels:
       - "bug"
       - "dependabot"
-    assignees:
-      - "rowleya"
-    reviewers:
-      - "Christian-B"
