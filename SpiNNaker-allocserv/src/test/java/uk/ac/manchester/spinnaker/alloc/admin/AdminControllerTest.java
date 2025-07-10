@@ -26,7 +26,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import java.net.URI;
 import java.util.Base64;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

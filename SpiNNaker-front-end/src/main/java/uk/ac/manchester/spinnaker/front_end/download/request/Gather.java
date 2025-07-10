@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import java.io.IOException;
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

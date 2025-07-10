@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 import java.net.InetAddress;
 import java.util.Objects;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.google.errorprone.annotations.Immutable;
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2021 The University of Manchester
+# Copyright (c) 2025 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,26 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version: 2
-updates:
-  # Packages used by Java code: primary branch
-  - package-ecosystem: maven
-    directory: "/"
-    schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 10
-    labels:
-      - "bug"
-      - "dependabot"
-      
-  # Actions are only checked on primary branch
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 10
-    labels:
-      - "bug"
-      - "dependabot"
+# These owners will be the default owners for everything in the repo.
+# Unless a later match takes precedence, these users will be requested
+# for review when someone opens a pull request.
+*       @rowleya @Christian-B

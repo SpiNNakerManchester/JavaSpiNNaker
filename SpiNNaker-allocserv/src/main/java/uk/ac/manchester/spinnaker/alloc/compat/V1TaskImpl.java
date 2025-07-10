@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

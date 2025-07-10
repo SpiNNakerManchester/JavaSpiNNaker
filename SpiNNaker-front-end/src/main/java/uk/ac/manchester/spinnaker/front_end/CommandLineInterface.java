@@ -27,7 +27,7 @@ import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.GATHER_DE
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.IOBUF_DESC;
 import static uk.ac.manchester.spinnaker.front_end.CommandDescriptions.LISTEN_DESC;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
+import static uk.ac.manchester.spinnaker.front_end.LogControl.setLogfile;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DBFILE;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.DSFILE;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.GATHER;
@@ -35,7 +35,8 @@ import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MACHINE;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.MAP;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.PLACEMENT;
 import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.REPORT;
-import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.RUN;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.LOGFILE;
+import static uk.ac.manchester.spinnaker.front_end.ParamDescriptions.IOBUFDIR;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
@@ -127,6 +128,16 @@ public final class CommandLineInterface {
 		LocateConnectedMachineIPAddress.main();
 	}
 
+	protected static int run(String... args) {
+		var cmd = new CommandLine(new CommandLineInterface());
+		if (args.length == 0) {
+			cmd.usage(cmd.getErr());
+			return USAGE;
+		} else {
+			return cmd.execute(args);
+		}
+	}
+
 	/**
 	 * The main command line interface. Dispatches to other classes based on the
 	 * first argument, which is a command word.
@@ -135,13 +146,7 @@ public final class CommandLineInterface {
 	 *            The command line arguments.
 	 */
 	public static void main(String... args) {
-		var cmd = new CommandLine(new CommandLineInterface());
-		if (args.length == 0) {
-			cmd.usage(cmd.getErr());
-			System.exit(USAGE);
-		} else {
-			System.exit(cmd.execute(args));
-		}
+		System.exit(run(args));
 	}
 
 	static CommandSpec getSpec() {
@@ -152,20 +157,20 @@ public final class CommandLineInterface {
 	private void dseSystemCores(
 			@Mixin MachineParam machine,
 			@Mixin DsFileParam dsFile,
-			@Mixin RunFolderParam runFolder)
+			@Mixin LogfileParam logfile)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
-				runFolder.get(), false);
+				logfile.get(), false);
 	}
 
 	@Command(name = "dse_app", description = DSE_APP_DESC)
 	private void dseApplicationCores(
 			@Mixin MachineParam machine,
 			@Mixin DsFileParam dsFile,
-			@Mixin RunFolderParam runFolder)
+			@Mixin LogfileParam logfile)
 			throws Exception {
 		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
-				runFolder.get(), true);
+				logfile.get(), true);
 	}
 
 	@FunctionalInterface
@@ -204,8 +209,8 @@ public final class CommandLineInterface {
 	 *            Description of overall machine
 	 * @param dsFile
 	 *            Path to the dataspec database
-	 * @param runFolder
-	 *            Directory containing per-run information.
+	 * @param logfile
+	 *            The path where the log should write.
 	 * @param filterSystemCores
 	 *            If {@code true}, only run the DSE for application vertices. If
 	 *            {@code false}, only run the DSE for system vertices. If
@@ -224,10 +229,10 @@ public final class CommandLineInterface {
 	 *             If the proxy URI is provided but not valid.
 	 */
 	public void runDSEUploadingViaClassicTransfer(Machine machine,
-			File dsFile, File runFolder, Boolean filterSystemCores)
+			File dsFile, File logfile, Boolean filterSystemCores)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException, URISyntaxException {
-		setLoggerDir(runFolder);
+		setLogfile(logfile);
 		var db = getDataSpecDB(dsFile);
 
 		try (var dseExec = hostFactory.create(machine, db)) {
@@ -251,8 +256,8 @@ public final class CommandLineInterface {
 	 *            Description of overall machine.
 	 * @param dsFile
 	 *            Path to the dataspec database
-	 * @param runFolder
-	 *            Directory containing per-run information.
+	 * @param logfile
+	 *            The path where the log should write.
 	 * @param reportFolder
 	 *            Directory containing reports. If {@link Optional#empty()}, no
 	 *            report will be written.
@@ -274,12 +279,12 @@ public final class CommandLineInterface {
 			@Mixin GatherersParam gatherers,
 			@Mixin MachineParam machine,
 			@Mixin DsFileParam dsFile,
-			@Mixin RunFolderParam runFolder,
+			@Mixin LogfileParam logfile,
 			@Parameters(description = REPORT, arity = "0..1", index = "3")
 			Optional<File> reportFolder)
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException, URISyntaxException {
-		setLoggerDir(runFolder.get());
+		setLogfile(logfile.get());
 		var db = getDataSpecDB(dsFile.get());
 
 		try (var dseExec = fastFactory.create(machine.get(),
@@ -299,8 +304,10 @@ public final class CommandLineInterface {
 	 *            IOBUFs for.
 	 * @param dbFile
 	 *            The database that receives the output).
-	 * @param runFolder
-	 *            Directory containing per-run information (i.e., where to log).
+	 * @param logfile
+	 *            The path where the log should write.
+	 * @param iobufDir
+	 * 			  The path to the directory where the iobuff would be written
 	 * @throws IOException
 	 *             If the communications fail.
 	 * @throws SpinnmanException
@@ -312,20 +319,22 @@ public final class CommandLineInterface {
 	 * @throws StorageException
 	 *             If there is an error reading the database
 	 */
+	// see https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/1218
 	@Command(name = "iobuf", description = IOBUF_DESC)
 	public void retrieveIOBUFs(
 			@Mixin MachineParam machine,
 			@Mixin IobufMapParam iobuf,
 			@Mixin DbFileParam dbFile,
-			@Mixin RunFolderParam runFolder)
+			@Mixin LogfileParam logfile,
+			@Mixin IobufDirParam iobufDir)
 			throws IOException, SpinnmanException, InterruptedException,
 			StorageException, URISyntaxException {
-		setLoggerDir(runFolder.get());
+		setLogfile(logfile.get());
 		var db = getBufferManagerDB(dbFile.get());
 
 		try (var r = new IobufRetriever(db, machine.get(),
 						PARALLEL_SIZE)) {
-			var result = r.retrieveIobufContents(iobuf.get(), runFolder.get());
+			var result = r.retrieveIobufContents(iobuf.get(), iobufDir.get());
 			MAPPER.writeValue(System.out, result);
 		}
 	}
@@ -339,8 +348,8 @@ public final class CommandLineInterface {
 	 *            Description of overall machine.
 	 * @param dbFile
 	 *            The database that receives the output).
-	 * @param runFolder
-	 *            Directory containing per-run information (i.e., where to log).
+	 * @param logfile
+	 *            The path where the log should write.
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -357,10 +366,10 @@ public final class CommandLineInterface {
 			@Mixin PlacementsParam placements,
 			@Mixin MachineParam machine,
 			@Mixin DbFileParam dbFile,
-			@Mixin RunFolderParam runFolder)
+			@Mixin LogfileParam logfile)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
-		setLoggerDir(runFolder.get());
+		setLogfile(logfile.get());
 		var db = getBufferManagerDB(dbFile.get());
 
 		try (var r = new DataReceiver(machine.get(), db)) {
@@ -377,8 +386,8 @@ public final class CommandLineInterface {
 	 *            Description of overall machine.
 	 * @param dbFile
 	 *            The database that receives the output).
-	 * @param runFolder
-	 *            Directory containing per-run information (i.e., where to log).
+	 * @param logfile
+	 *            The path where the log should write.
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws SpinnmanException
@@ -396,10 +405,10 @@ public final class CommandLineInterface {
 			@Mixin GatherersParam gatherers,
 			@Mixin MachineParam machine,
 			@Mixin DbFileParam dbFile,
-			@Mixin RunFolderParam runFolder)
+			@Mixin LogfileParam logfile)
 			throws IOException, SpinnmanException, StorageException,
 			InterruptedException, URISyntaxException {
-		setLoggerDir(runFolder.get());
+		setLogfile(logfile.get());
 		var db = getBufferManagerDB(dbFile.get());
 
 		try (var r = new RecordingRegionDataGatherer(machine.get(),	db)) {
@@ -557,26 +566,26 @@ public final class CommandLineInterface {
 	}
 
 	/**
-	 * Argument handler for the {@code <runFolder>} parameter.
+	 * Argument handler for the {@code <logfile>} parameter.
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
-	 * @author Donal Fellows
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
-	public static class RunFolderParam implements Supplier<File> {
-		@Parameters(description = RUN, converter = Converter.class, arity = "1")
-		private ValueHolder<File> runFolder = new ValueHolder<>();
+	public static class LogfileParam implements Supplier<File> {
+		@Parameters(description = LOGFILE, converter = Converter.class,
+			arity = "1")
+		private ValueHolder<File> logfile = new ValueHolder<>();
 
 		/** @hidden */
-		public RunFolderParam() {
+		public LogfileParam() {
 		}
 
 		/** @return The folder for the run. */
 		@Override
 		public File get() {
-			return runFolder.getValue();
+			return logfile.getValue();
 		}
 
 		static class Converter implements ITypeConverter<ValueHolder<File>> {
@@ -584,9 +593,46 @@ public final class CommandLineInterface {
 			public ValueHolder<File> convert(String filename)
 					throws IOException {
 				var f = new File(filename);
+				if (f.isDirectory()) {
+					throw new TypeConversionException(
+						"<logfile> " + filename + " must not be a directory");
+				}
+				return new ValueHolder<>(f);
+			}
+		}
+	}
+
+	/**
+	 * Argument handler for the {@code <iobufDir>} parameter.
+	 * <p>
+	 * Do not make instances of this class yourself; leave that to picocli.
+	 *
+	 * @see ArgGroup
+	 * @see Parameters
+	 */
+	public static class IobufDirParam implements Supplier<File> {
+		@Parameters(description = IOBUFDIR, converter = Converter.class,
+			arity = "1")
+		private ValueHolder<File> iobufDir = new ValueHolder<>();
+
+		/** @hidden */
+		public IobufDirParam() {
+		}
+
+		/** @return The folder for the run. */
+		@Override
+		public File get() {
+			return iobufDir.getValue();
+		}
+
+		static class Converter implements ITypeConverter<ValueHolder<File>> {
+			@Override
+			public ValueHolder<File> convert(String filename)
+				throws IOException {
+				var f = new File(filename);
 				if (!f.isDirectory()) {
 					throw new TypeConversionException(
-							"<runFolder> must be a directory");
+						"<iobufDir> must be a directory");
 				}
 				return new ValueHolder<>(f);
 			}
@@ -750,6 +796,9 @@ interface ParamDescriptions {
 	/** Description of {@code dsFile} parameter. */
 	String DSFILE = "The path of the dataspec database.";
 
-	/** Description of {@code runFolder} parameter. */
-	String RUN = "The name of the run data folder.";
+	/** Description of {@code logfile} parameter. */
+	String LOGFILE = "The name of the logfile path.";
+
+	/** Description of {@code iobufDir} parameter. */
+	String IOBUFDIR = "The name of the iobuf folder.";
 }

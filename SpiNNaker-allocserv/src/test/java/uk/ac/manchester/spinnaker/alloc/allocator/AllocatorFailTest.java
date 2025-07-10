@@ -66,7 +66,7 @@ public class AllocatorFailTest extends TestSupport {
 		setupDB3();
 		this.txrxFactory = txrxFactory;
 		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare();
+		this.bmpCtrl.prepare(false);
 		this.bmpCtrl.clearBmpException();
 	}
 
@@ -123,6 +123,7 @@ public class AllocatorFailTest extends TestSupport {
 
 				// Make a transceiver that *doesn't* fail the requests
 				MockTransceiver.installIntoFactory(txrxFactory);
+				MockTransceiver.fpgaResults.clear();
 				this.bmpCtrl.resetTransceivers();
 
 				// So we should be able to reallocate the job to a new board

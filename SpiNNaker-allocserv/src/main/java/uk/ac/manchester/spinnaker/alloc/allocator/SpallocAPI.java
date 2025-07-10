@@ -32,11 +32,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -332,6 +332,8 @@ public interface SpallocAPI {
 	@UsedInJavadocOnly(HasCoreLocation.class)
 	void reportProblem(@IPAddress String address, HasChipLocation coreLocation,
 			String description, Permit permit);
+
+	void emergencyStop(String commandCode);
 
 	/**
 	 * Describes what sort of request to create a job this is.

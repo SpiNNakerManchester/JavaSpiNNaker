@@ -1038,4 +1038,37 @@ class DMLTest extends SimpleDBTestBase {
 			});
 		}
 	}
+
+	@Test
+	void destroyAllLiveJobs() {
+		assumeWritable(c);
+		try (var u = c.update(DESTROY_ALL_LIVE_JOBS)) {
+			c.transaction(() -> {
+				assertEquals(List.of("death_reason"), u.getParameters());
+				assertEquals(0, u.call(""));
+			});
+		}
+	}
+
+	@Test
+	void killAllJobAllocTask() {
+		assumeWritable(c);
+		try (var u = c.update(KILL_ALL_JOB_ALLOC_TASK)) {
+			c.transaction(() -> {
+				assertEquals(List.of(), u.getParameters());
+				assertEquals(0, u.call());
+			});
+		}
+	}
+
+	@Test
+	void setAllBoardsOff() {
+		assumeWritable(c);
+		try (var u = c.update(SET_ALL_BOARDS_OFF)) {
+			c.transaction(() -> {
+				assertEquals(List.of(), u.getParameters());
+				assertEquals(0, u.call());
+			});
+		}
+	}
 }

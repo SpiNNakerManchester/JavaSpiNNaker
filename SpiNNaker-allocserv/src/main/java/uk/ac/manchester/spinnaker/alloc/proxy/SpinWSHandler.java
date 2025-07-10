@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 import static java.lang.Integer.parseInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.concurrent.Executors.newCachedThreadPool;
-import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
+import static jakarta.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.proxy.Utils.getFieldFromTemplate;
 
@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

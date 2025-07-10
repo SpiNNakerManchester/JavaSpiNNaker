@@ -53,8 +53,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -91,7 +92,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @EnableWebSecurity
 @Role(ROLE_APPLICATION)
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 @UsedInJavadocOnly(PreAuthorize.class)
 public class SecurityConfig {
 	private static final Logger log = getLogger(SecurityConfig.class);
@@ -214,9 +215,9 @@ public class SecurityConfig {
 	 *             If anything goes wrong with setting up.
 	 */
 	private void defineAccessPolicy(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
+		http.authorizeHttpRequests((authorize) -> authorize
 				// Login process and static resources are available to all
-				.antMatchers(urlMaker.systemUrl("login*"),
+				.requestMatchers(urlMaker.systemUrl("login*"),
 						urlMaker.systemUrl("perform_*"), oidcPath("**"),
 						urlMaker.systemUrl("error"),
 						urlMaker.systemUrl("resources/*"),
@@ -225,7 +226,7 @@ public class SecurityConfig {
 						urlMaker.serviceUrl("index.css"))
 				.permitAll()
 				// Everything else requires post-login
-				.anyRequest().authenticated();
+				.anyRequest().authenticated());
 	}
 
 	/**
@@ -238,13 +239,14 @@ public class SecurityConfig {
 	 */
 	private void defineAPILoginRules(HttpSecurity http) throws Exception {
 		if (properties.isBasic()) {
-			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
+			http.httpBasic((authorize) -> authorize
+					.authenticationEntryPoint(authenticationEntryPoint));
 		}
 		if (properties.getOpenid().isEnable()) {
-			http.oauth2ResourceServer()
+			http.oauth2ResourceServer((authorize) -> authorize
 					.authenticationEntryPoint(authenticationEntryPoint)
-					.opaqueToken()
-					.introspector(new UserInfoOpaqueTokenIntrospector());
+					.opaqueToken(oauth2 -> oauth2
+						.introspector(new UserInfoOpaqueTokenIntrospector())));
 		}
 	}
 
@@ -266,20 +268,22 @@ public class SecurityConfig {
 			 * tools (especially within the collabratory and the Jupyter
 			 * notebook).
 			 */
-			http.oauth2Login().loginPage(loginUrl)
+			http.oauth2Login(oauth2 -> oauth2.loginPage(loginUrl)
 					.loginProcessingUrl(oidcPath("login/code/*"))
-					.authorizationEndpoint().baseUri(oidcPath("auth")).and()
+					.authorizationEndpoint(
+							auth -> auth.baseUri(oidcPath("auth")))
 					.defaultSuccessUrl(rootPage, true)
-					.failureUrl(loginUrl + "?error=true").userInfoEndpoint()
-					.userAuthoritiesMapper(userAuthoritiesMapper());
-			http.oauth2Client();
+					.failureUrl(loginUrl + "?error=true")
+					.userInfoEndpoint(auth -> auth
+						.userAuthoritiesMapper(userAuthoritiesMapper())));
+			http.oauth2Client(Customizer.withDefaults());
 		}
 		if (properties.isLocalForm()) {
-			http.formLogin().loginPage(loginUrl)
+			http.formLogin(auth -> auth.loginPage(loginUrl)
 					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
 					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true")
-					.failureHandler(authenticationFailureHandler);
+					.failureHandler(authenticationFailureHandler));
 		}
 	}
 
@@ -295,10 +299,10 @@ public class SecurityConfig {
 	 */
 	private void defineLogoutRules(HttpSecurity http) throws Exception {
 		var loginUrl = urlMaker.systemUrl("login.html");
-		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
+		http.logout(cust -> cust.logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.addLogoutHandler((req, resp, auth) -> clearToken(req))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
-				.logoutSuccessUrl(loginUrl);
+				.logoutSuccessUrl(loginUrl));
 	}
 
 	/**

@@ -22,8 +22,8 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 
 import java.net.URI;
 
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.springframework.security.web.csrf.CsrfToken;
 

@@ -17,7 +17,7 @@ package uk.ac.manchester.spinnaker.nmpi.status;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;

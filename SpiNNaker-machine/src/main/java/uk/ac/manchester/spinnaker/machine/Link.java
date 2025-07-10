@@ -20,7 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Objects;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 

@@ -25,7 +25,7 @@ limitations under the License.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>11</maven.compiler.release>
+		<maven.compiler.release>17</maven.compiler.release>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
@@ -35,14 +35,14 @@ limitations under the License.
 		<junit.version>5.10.0</junit.version>
 		<junit.platform.version>1.10.0</junit.platform.version>
 		<checkstyle.version>10.12.2</checkstyle.version>
-		<javadoc.version>3.6.0</javadoc.version>
-		<testing.version>3.1.2</testing.version>
+		<javadoc.version>3.11.2</javadoc.version>
+		<testing.version>3.5.3</testing.version>
 
 		<slf4j.version>2.0.9</slf4j.version>
-		<log4j.version>2.21.0</log4j.version>
+		<log4j.version>2.25.0</log4j.version>
 
-		<spring.version>5.3.39</spring.version>
-		<spring.boot.version>2.7.17</spring.boot.version>
+		<spring.version>6.2.8</spring.version>
+		<spring.boot.version>3.3.4</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		processor binding in Eclipse for SpiNNaker-allocserv:
@@ -52,21 +52,20 @@ limitations under the License.
 		Failure to do this leads to strange misbehaviour in tooltips when
 		editing application.yml
 		-->
-		<spring.security.version>5.8.14</spring.security.version>
+		<spring.security.version>6.5.1</spring.security.version>
 
-		<cxf.version>3.6.4</cxf.version>
-		<jackson.version>2.17.2</jackson.version>
+		<cxf.version>4.1.2</cxf.version>
+		<jackson.version>2.19.1</jackson.version>
 		<jackson.doc.version>2.14</jackson.doc.version>
 		<sqlite.version>3.43.0.0</sqlite.version>
-		<keycloak.version>23.0.3</keycloak.version>
-		<swagger.version>5.20.7</swagger.version>
-		<jsontaglib.version>1.0.5</jsontaglib.version>
+		<keycloak.version>26.3.0</keycloak.version>
+		<swagger.version>5.25.3</swagger.version>
 		<jython.version>2.7.3</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.5</picocli.version>
 		<mysql.version>8.2.0</mysql.version>
 		<testcontainers.version>1.19.3</testcontainers.version>
-		<javax.ws.version>2.1.1</javax.ws.version>
+		<jakarta.ws.version>4.0.0</jakarta.ws.version>
 		<resteasy.version>6.2.5.Final</resteasy.version>
 	</properties>
 
@@ -177,7 +176,7 @@ limitations under the License.
 			<dependency>
 				<!-- Explicitly override Spring Boot -->
 				<groupId>com.fasterxml.jackson.module</groupId>
-				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
@@ -206,14 +205,14 @@ limitations under the License.
 			</dependency>
 			<dependency>
 				<!-- Explicitly override Spring Boot -->
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+				<artifactId>jackson-jakarta-rs-json-provider</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<!-- Explicitly override Spring Boot -->
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-base</artifactId>
+				<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+				<artifactId>jackson-jakarta-rs-base</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
@@ -235,9 +234,9 @@ limitations under the License.
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.ws.rs</groupId>
-				<artifactId>javax.ws.rs-api</artifactId>
-				<version>${javax.ws.version}</version>
+				<groupId>jakarta.ws.rs</groupId>
+				<artifactId>jakarta.ws.rs-api</artifactId>
+				<version>${jakarta.ws.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
@@ -247,7 +246,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
 				<artifactId>jsonassert</artifactId>
-				<version>1.5.1</version>
+				<version>1.5.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -257,7 +256,7 @@ limitations under the License.
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.9.4</version>
+				<version>1.11.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -310,9 +309,9 @@ limitations under the License.
 				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>8.0.1</version>
+				<groupId>jakarta.platform</groupId>
+				<artifactId>jakarta.jakartaee-api</artifactId>
+				<version>10.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -341,11 +340,6 @@ limitations under the License.
 				<version>${swagger.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.livesense</groupId>
-				<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
-				<version>${jsontaglib.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.python</groupId>
 				<artifactId>jython-slim</artifactId>
 				<version>${jython.version}</version>
@@ -358,7 +352,7 @@ limitations under the License.
 			<dependency>
 				<groupId>jakarta.validation</groupId>
 				<artifactId>jakarta.validation-api</artifactId>
-				<version>2.0.2</version>
+				<version>3.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.errorprone</groupId>
@@ -368,8 +362,8 @@ limitations under the License.
 			<dependency>
 				<!-- Has to be this old version for Spring Boot to find it -->
 				<groupId>org.glassfish</groupId>
-				<artifactId>javax.el</artifactId>
-				<version>3.0.0</version>
+				<artifactId>jakarta.el</artifactId>
+				<version>4.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.mysql</groupId>
@@ -380,12 +374,6 @@ limitations under the License.
 				<groupId>org.hobsoft.spring</groupId>
 				<artifactId>spring-rest-template-logger</artifactId>
 				<version>2.0.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.github.stefanbirkner</groupId>
-				<artifactId>system-lambda</artifactId>
-				<version>1.2.1</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.rauschig</groupId>
@@ -400,7 +388,7 @@ limitations under the License.
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>1.16.0</version>
+				<version>1.18.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.ini4j</groupId>
@@ -410,7 +398,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.eclipse.jgit</groupId>
 				<artifactId>org.eclipse.jgit</artifactId>
-				<version>6.7.0.202309050840-r</version>
+				<version>7.3.0.202506031305-r</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.httpcomponents</groupId>
@@ -528,7 +516,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.6.0</version>
 					<configuration>
 						<configLocation>src/support/checkstyle/style.xml</configLocation>
 						<propertyExpansion>
@@ -592,12 +580,12 @@ limitations under the License.
 						<offlineLinks>
 							<!-- Internal property used below: See https://issues.apache.org/jira/browse/MNG-7038 and https://stackoverflow.com/a/41387133/301832 -->
 							<offlineLink>
-								<url>https://javadoc.io/doc/javax.validation/validation-api/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/javax.validation</location>
+								<url>https://javadoc.io/doc/jakarta.validation/validation-api/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/jakarta.validation</location>
 							</offlineLink>
 							<offlineLink>
-								<url>https://javadoc.io/doc/javax.ws.rs/javax.ws.rs-api/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/javax.ws.rs</location>
+								<url>https://javadoc.io/doc/jakarta.ws.rs/jakarta.ws.rs-api/latest/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/jakarta.ws.rs</location>
 							</offlineLink>
 							<offlineLink>
 								<url>https://javadoc.io/doc/org.keycloak/keycloak-client-registration-api/latest/</url>
@@ -646,14 +634,6 @@ limitations under the License.
 					<groupId>org.eluder.coveralls</groupId>
 					<artifactId>coveralls-maven-plugin</artifactId>
 					<version>4.3.0</version>
-					<dependencies>
-						<!-- Of course! -->
-						<dependency>
-							<groupId>javax.xml.bind</groupId>
-							<artifactId>jaxb-api</artifactId>
-							<version>2.3.1</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -696,9 +676,9 @@ limitations under the License.
 					<version>1.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.sling</groupId>
-					<artifactId>jspc-maven-plugin</artifactId>
-					<version>2.3.4</version>
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-jspc-maven-plugin</artifactId>
+					<version>11.0.25</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>
@@ -1199,6 +1179,7 @@ limitations under the License.
 											discovered on the regular -classpath; see also 'Using Error Prone
 											together with other annotation processors' below. -->
 										</annotationProcessorPaths>
+										<parameters>true</parameters>
 									</configuration>
 								</execution>
 								<execution>

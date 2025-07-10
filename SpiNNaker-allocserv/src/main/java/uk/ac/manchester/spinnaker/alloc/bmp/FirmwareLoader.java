@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.zip.CRC32;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

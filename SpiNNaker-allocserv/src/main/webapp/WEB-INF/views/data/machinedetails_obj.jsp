@@ -1,5 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%--
@@ -9,7 +8,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+		https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,84 +19,92 @@ limitations under the License.
 <c:if test="${ empty param.json }"><%-- Pass json=true to emit pure JSON --%>
 machine = (
 </c:if>
-<json:object>
-	<json:property name="name" value="${ machine.name }" />
-	<json:property name="width" value="${ machine.width }" />
-	<json:property name="height" value="${ machine.height }" />
-	<json:property name="num_in_use" value="${ machine.numInUse }" />
-	<json:array name="tags" items="${ machine.tags }" />
-	<json:array name="jobs" items="${ machine.jobs }" var="job">
-		<json:object>
-			<json:property name="id" value="${ job.id }" />
+{
+	"name": "${ machine.name }",
+	"width": ${ machine.width },
+	"height": ${ machine.height },
+	"num_in_use": ${ machine.numInUse },
+	"tags": [
+	<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
+		<c:out value="${ tag }" escapeXml="true" />
+		<c:if test="${ !loop.last }">,</c:if>
+	</c:forEach>],
+	"jobs": [
+	<c:forEach items="${ machine.jobs }" var="job" varStatus="loop">
+		{
+			"id": "${ job.id }",
 			<c:if test="${ job.owner.present }">
 				<spring:eval var="jobUrl" expression="job.url.get()" />
 				<spring:eval var="jobOwner" expression="job.owner.get()" />
-				<json:property name="url" value="${ jobUrl }" />
-				<json:property name="owner" value="${ jobOwner }" />
+				"url": "${ jobUrl }",
+				"owner": "${ jobOwner }",
 			</c:if>
-			<json:array name="boards" items="${ job.boards }" var="board">
-				<%-- board is a BoardCoords --%>
-				<json:object>
-					<json:object name="triad">
-						<json:property name="x" value="${ board.x }" />
-						<json:property name="y" value="${ board.y }" />
-						<json:property name="z" value="${ board.z }" />
-					</json:object>
-					<json:object name="physical">
-						<json:property name="cabinet" value="${ board.cabinet }" />
-						<json:property name="frame" value="${ board.frame }" />
-						<json:property name="board" value="${ board.board }" />
-					</json:object>
+			"boards": [
+			<c:forEach items="${ job.boards }" var="board" varStatus="boardLoop">
+				{
+					"triad": {
+						"x": ${ board.x },
+						"y": ${ board.y },
+						"z": ${ board.z }
+					},
+					"physical": {
+						"cabinet": "${ board.cabinet }",
+						"frame": "${ board.frame }",
+						"board": "${ board.board }"
+					},
 					<c:if test="${ job.owner.present }">
-						<json:object name="network">
-							<json:property name="address" value="${ board.address }" />
-						</json:object>
+						"network": {
+							"address": "${ board.address }"
+						}
 					</c:if>
-				</json:object>
-			</json:array>
-		</json:object>
-	</json:array>
-	<json:array name="live_boards" items="${ machine.live }" var="board">
+				}<c:if test="${ !boardLoop.last }">,</c:if>
+			</c:forEach>
+			]
+		}<c:if test="${ !loop.last }">,</c:if>
+	</c:forEach>],
+	"live_boards": [
+	<c:forEach items="${ machine.live }" var="board">
 		<%-- board is a BoardCoords --%>
-		<json:object>
-			<json:object name="triad">
-				<json:property name="x" value="${ board.x }" />
-				<json:property name="y" value="${ board.y }" />
-				<json:property name="z" value="${ board.z }" />
-			</json:object>
-			<json:object name="physical">
-				<json:property name="cabinet" value="${ board.cabinet }" />
-				<json:property name="frame" value="${ board.frame }" />
-				<json:property name="board" value="${ board.board }" />
-			</json:object>
+		{
+			"triad": {
+				"x": ${ board.x },
+				"y": ${ board.y },
+				"z": ${ board.z }
+			},
+			"physical": {
+				"cabinet": "${ board.cabinet }",
+				"frame": "${ board.frame }",
+				"board": "${ board.board }"
+			},
 			<sec:authorize access="hasRole('ADMIN')">
-				<json:object name="network">
-					<json:property name="address" value="${ board.address }" />
-				</json:object>
+				"network": {
+					"address": "${ board.address }"
+				}
 			</sec:authorize>
-		</json:object>
-	</json:array>
-	<json:array name="dead_boards" items="${ machine.dead }" var="board">
+		}<c:if test="${ !loop.last }">,</c:if>
+	</c:forEach>],
+	"dead_boards": [
+	<c:forEach items="${ machine.dead }" var="board">
 		<%-- board is a BoardCoords --%>
-		<json:object>
-			<json:object name="triad">
-				<json:property name="x" value="${ board.x }" />
-				<json:property name="y" value="${ board.y }" />
-				<json:property name="z" value="${ board.z }" />
-			</json:object>
-			<json:object name="physical">
-				<json:property name="cabinet" value="${ board.cabinet }" />
-				<json:property name="frame" value="${ board.frame }" />
-				<json:property name="board" value="${ board.board }" />
-			</json:object>
+		{
+			"triad": {
+				"x": ${ board.x },
+				"y": ${ board.y },
+				"z": ${ board.z }
+			},
+			"physical": {
+				"cabinet": "${ board.cabinet }",
+				"frame": "${ board.frame }",
+				"board": "${ board.board }"
+			},
 			<sec:authorize access="hasRole('ADMIN')">
-				<json:object name="network">
-					<json:property name="address" value="${ board.address }" />
-				</json:object>
+				"network": {
+					"address": "${ board.address }"
+				}
 			</sec:authorize>
-		</json:object>
-	</json:array>
-</json:object>
+		}<c:if test="${ !loop.last }">,</c:if>
+	</c:forEach>]
+}
 <c:if test="${ empty param.json }">
 );
 </c:if>

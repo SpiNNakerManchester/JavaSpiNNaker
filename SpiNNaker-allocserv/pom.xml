@@ -180,6 +180,7 @@ limitations under the License.
 								<version>${spring.boot.version}</version>
 							</annotationProcessorPath>
 						</annotationProcessorPaths>
+						<parameters>true</parameters>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -360,8 +361,8 @@ limitations under the License.
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+			<artifactId>jackson-jakarta-rs-json-provider</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -375,8 +376,8 @@ limitations under the License.
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -424,16 +425,12 @@ limitations under the License.
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.github.livesense</groupId>
-			<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -525,8 +522,8 @@ limitations under the License.
 				<plugins>
 					<plugin>
 						<!-- JSP syntax check via pre-compilation -->
-						<groupId>org.apache.sling</groupId>
-						<artifactId>jspc-maven-plugin</artifactId>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-jspc-maven-plugin</artifactId>
 						<executions>
 							<execution>
 								<goals>

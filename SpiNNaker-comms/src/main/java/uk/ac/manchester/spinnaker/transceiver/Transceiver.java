@@ -76,8 +76,8 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 
@@ -168,6 +168,7 @@ import uk.ac.manchester.spinnaker.protocols.download.Downloader;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
+import uk.ac.manchester.spinnaker.utils.Ping;
 
 /**
  * An encapsulation of various communications with the SpiNNaker board. Acts as
@@ -2780,5 +2781,10 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public BMPCoords getBoundBMP() {
 		return boundBMP;
+	}
+
+	@Override
+	public int pingBoard(String address) {
+		return Ping.ping(address);
 	}
 }
