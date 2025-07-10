@@ -216,15 +216,14 @@ public class SecurityConfig {
 	 */
 	private void defineAccessPolicy(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorize) -> authorize
-				// General metadata pages require ADMIN access
-				.requestMatchers(urlMaker.serviceUrl("info*"),
-						urlMaker.serviceUrl("info/**"))
-				.hasRole("ADMIN")
 				// Login process and static resources are available to all
 				.requestMatchers(urlMaker.systemUrl("login*"),
 						urlMaker.systemUrl("perform_*"), oidcPath("**"),
 						urlMaker.systemUrl("error"),
-						urlMaker.systemUrl("resources/*"))
+						urlMaker.systemUrl("resources/*"),
+						urlMaker.serviceUrl("openapi.json"),
+						urlMaker.serviceUrl("swagger*"),
+						urlMaker.serviceUrl("index.css"))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated());
