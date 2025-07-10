@@ -21,6 +21,7 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPO
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 import static org.springframework.util.StreamUtils.copyToByteArray;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
@@ -74,7 +75,10 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
+import jakarta.servlet.DispatcherType;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -211,20 +215,28 @@ public class SecurityConfig {
 	 *
 	 * @param http
 	 *            Where the configuration is applied to.
+	 * @param introspector
+	 *           The introspector used to build request matchers.
 	 * @throws Exception
 	 *             If anything goes wrong with setting up.
 	 */
-	private void defineAccessPolicy(HttpSecurity http) throws Exception {
+	private void defineAccessPolicy(HttpSecurity http,
+			HandlerMappingIntrospector introspector) throws Exception {
+		MvcRequestMatcher.Builder mvc =
+				new MvcRequestMatcher.Builder(introspector);
 		http.authorizeHttpRequests((authorize) -> authorize
+				// Allow forwarded requests
+				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
 				// General metadata pages require ADMIN access
-				.requestMatchers(urlMaker.serviceUrl("info*"),
-						urlMaker.serviceUrl("info/**"))
+				.requestMatchers(antMatcher(urlMaker.serviceUrl("info*")),
+						antMatcher(urlMaker.serviceUrl("info/**")))
 				.hasRole("ADMIN")
 				// Login process and static resources are available to all
-				.requestMatchers(urlMaker.systemUrl("login*"),
-						urlMaker.systemUrl("perform_*"), oidcPath("**"),
-						urlMaker.systemUrl("error"),
-						urlMaker.systemUrl("resources/*"))
+				.requestMatchers(antMatcher(urlMaker.systemUrl("login*")),
+						antMatcher(urlMaker.systemUrl("perform_*")),
+						antMatcher(oidcPath("**")),
+						antMatcher(urlMaker.systemUrl("error")),
+						antMatcher(urlMaker.systemUrl("resources/*")))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated());
@@ -311,15 +323,18 @@ public class SecurityConfig {
 	 *
 	 * @param http
 	 *            Used to build the filter chain.
+	 * @param introspector
+	 *            The introspector used to build request matchers.
 	 * @return The filter chain that implements the controls.
 	 * @throws Exception
 	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	@Bean
 	@Role(ROLE_SUPPORT)
-	public SecurityFilterChain securityFilter(HttpSecurity http)
+	public SecurityFilterChain securityFilter(HttpSecurity http,
+			HandlerMappingIntrospector introspector)
 			throws Exception {
-		defineAccessPolicy(http);
+		defineAccessPolicy(http, introspector);
 		defineAPILoginRules(http);
 		defineWebUILoginRules(http);
 		defineLogoutRules(http);
