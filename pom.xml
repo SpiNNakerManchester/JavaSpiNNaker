@@ -347,7 +347,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.java-websocket</groupId>
 				<artifactId>Java-WebSocket</artifactId>
-				<version>1.5.4</version>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.validation</groupId>
