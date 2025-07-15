@@ -75,7 +75,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import jakarta.servlet.DispatcherType;
@@ -222,8 +221,6 @@ public class SecurityConfig {
 	 */
 	private void defineAccessPolicy(HttpSecurity http,
 			HandlerMappingIntrospector introspector) throws Exception {
-		MvcRequestMatcher.Builder mvc =
-				new MvcRequestMatcher.Builder(introspector);
 		http.authorizeHttpRequests((authorize) -> authorize
 				// Allow forwarded requests
 				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
@@ -288,7 +285,8 @@ public class SecurityConfig {
 					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true")
 					.userInfoEndpoint(auth -> auth
-						.userAuthoritiesMapper(userAuthoritiesMapper())));
+						.userAuthoritiesMapper(userAuthoritiesMapper()))
+					.permitAll());
 			http.oauth2Client(Customizer.withDefaults());
 		}
 		if (properties.isLocalForm()) {
@@ -296,7 +294,8 @@ public class SecurityConfig {
 					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
 					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true")
-					.failureHandler(authenticationFailureHandler));
+					.failureHandler(authenticationFailureHandler)
+					.permitAll());
 		}
 	}
 
