@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /** Utilities to support MVC controllers. */
 public abstract class ControllerUtils {
+
 	private ControllerUtils() {
 	}
 
@@ -55,9 +56,14 @@ public abstract class ControllerUtils {
 	 */
 	@UsedInJavadocOnly(MvcUriComponentsBuilder.class)
 	public static URI uri(Object selfCall, Object... objects) {
+
 		var b = fromMethodCall(selfCall);
 		// Force some dumb stuff to be right
-		b.query(null).scheme("https");
+		if (!System.getenv().containsKey("spalloc_use_http")) {
+			b.query(null).scheme("https");
+		} else {
+			b.query(null).scheme("http");
+		}
 		return b.buildAndExpand(objects).toUri();
 	}
 
