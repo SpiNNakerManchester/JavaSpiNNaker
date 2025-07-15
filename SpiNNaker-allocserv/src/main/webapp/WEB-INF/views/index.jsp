@@ -35,11 +35,11 @@ Build: ${ build }
 <sec:authorize access="hasRole('READER')">
 	<h2>SpiNNaker Machines</h2>
 	<p>
-		<a href="<c:url value="list_machines/"/>">List</a>
+		<a href="<c:url value="list_machines"/>">List</a>
 	</p>
 	<h2>SpiNNaker Jobs</h2>
 	<p>
-		<a href="<c:url value="list_jobs/"/>">List</a>
+		<a href="<c:url value="list_jobs"/>">List</a>
 	</p>
 </sec:authorize>
 
