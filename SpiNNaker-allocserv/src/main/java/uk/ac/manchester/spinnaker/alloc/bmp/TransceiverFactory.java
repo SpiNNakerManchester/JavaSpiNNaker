@@ -104,6 +104,7 @@ public class TransceiverFactory
 
 	@PostConstruct
 	private void setup() {
+		log.info("Transceiver factory {} initialised", this);
 		// Whenever the useDummyBMP property is changed, flush the cache
 		control.addUseDummyBMPListener(e -> {
 			synchronized (txrxMap) {
@@ -158,9 +159,11 @@ public class TransceiverFactory
 		var connData = makeConnectionData(machineDescription, bmp);
 		try {
 			if (testFactory != null) {
+				log.info("Using test transceiver factory in {}", this);
 				return testFactory.create(machineDescription.getName(),
 						connData, setBlacklist);
 			} else {
+				log.info("Useing real transceiver factory in {}", this);
 				return makeTransceiver(connData);
 			}
 		} catch (IOException | SpinnmanException | InterruptedException e) {
@@ -294,6 +297,8 @@ public class TransceiverFactory
 
 			@Override
 			public void setFactory(TestTransceiverFactory factory) {
+				log.info("Setting test transceiver factory in {} to {}",
+						TransceiverFactory.this, factory);
 				testFactory = factory;
 				synchronized (txrxMap) {
 					txrxMap.clear();

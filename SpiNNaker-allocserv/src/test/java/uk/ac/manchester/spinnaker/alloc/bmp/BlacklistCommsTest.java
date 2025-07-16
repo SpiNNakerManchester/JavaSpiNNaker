@@ -87,7 +87,6 @@ class BlacklistCommsTest extends TestSupport {
 
 	@AfterEach
 	void stopExecutor() {
-		this.bmpCtrl.prepare(false);
 		exec.shutdown();
 		var exn = bmpCtrl.getBmpException();
 		assertDoesNotThrow(() -> {
