@@ -78,6 +78,9 @@ class SpallocCoreTest extends TestSupport {
 		killDB();
 		setupDB1();
 		bmpTester = bmpController.getTestAPI();
+		bmpTester.prepare(true);
+		bmpTester.resetTransceivers();
+		bmpTester.clearBmpException();
 	}
 
 	// The actual tests

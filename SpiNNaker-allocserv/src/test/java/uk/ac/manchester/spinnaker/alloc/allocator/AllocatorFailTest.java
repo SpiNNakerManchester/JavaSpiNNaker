@@ -67,6 +67,7 @@ public class AllocatorFailTest extends TestSupport {
 		this.txrxFactory = txrxFactory;
 		this.bmpCtrl = bmpCtrl.getTestAPI();
 		this.bmpCtrl.prepare(false);
+		this.bmpCtrl.resetTransceivers();
 		this.bmpCtrl.clearBmpException();
 	}
 

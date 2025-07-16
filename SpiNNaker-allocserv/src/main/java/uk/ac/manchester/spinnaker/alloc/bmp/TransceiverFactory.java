@@ -163,7 +163,7 @@ public class TransceiverFactory
 				return testFactory.create(machineDescription.getName(),
 						connData, setBlacklist);
 			} else {
-				log.info("Useing real transceiver factory in {}", this);
+				log.info("Using real transceiver factory in {}", this);
 				return makeTransceiver(connData);
 			}
 		} catch (IOException | SpinnmanException | InterruptedException e) {
