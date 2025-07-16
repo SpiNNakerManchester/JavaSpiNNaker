@@ -631,9 +631,9 @@ limitations under the License.
 					<version>3.12.1</version>
 				</plugin>
 				<plugin>
-					<groupId>org.eluder.coveralls</groupId>
+					<groupId>com.github.hazendaz.maven</groupId>
 					<artifactId>coveralls-maven-plugin</artifactId>
-					<version>4.3.0</version>
+					<version>4.7.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -792,7 +792,7 @@ limitations under the License.
 
 		<plugins>
 			<plugin>
-				<groupId>org.eluder.coveralls</groupId>
+				<groupId>com.github.hazendaz.maven</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
