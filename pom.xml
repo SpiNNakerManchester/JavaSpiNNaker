@@ -810,6 +810,7 @@ limitations under the License.
 					<excludes>
 						<exclude>jsp/**/*.class</exclude>
 						<exclude>views/**/*.class</exclude>
+						<exclude>org/apache/jsp/WEB_002dINF/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
