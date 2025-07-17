@@ -60,7 +60,6 @@ limitations under the License.
 		<sqlite.version>3.43.0.0</sqlite.version>
 		<keycloak.version>26.3.0</keycloak.version>
 		<swagger.version>5.25.3</swagger.version>
-		<jython.version>2.7.4</jython.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.7</picocli.version>
 		<mysql.version>8.4.0</mysql.version>
@@ -350,11 +349,6 @@ limitations under the License.
 				<version>${swagger.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.python</groupId>
-				<artifactId>jython-slim</artifactId>
-				<version>${jython.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.java-websocket</groupId>
 				<artifactId>Java-WebSocket</artifactId>
 				<version>1.6.0</version>
@@ -558,7 +552,7 @@ limitations under the License.
 							</group>
 							<group>
 								<title>Utilities</title>
-								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*:uk.ac.manchester.spinnaker.py2json</packages>
+								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*</packages>
 							</group>
 							<group>
 								<title>Allocation Service</title>
@@ -859,7 +853,6 @@ limitations under the License.
 		<module>SpiNNaker-pacman</module>
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
-		<module>SpiNNaker-py2json</module>
 		<module>SpiNNaker-nmpiserv</module>
 		<module>SpiNNaker-nmpimodel</module>
 		<module>SpiNNaker-nmpiexec</module>
