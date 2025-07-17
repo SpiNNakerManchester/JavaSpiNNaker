@@ -26,7 +26,7 @@ logging:
 
     # Next, two loggers that are unacceptably noisy by default
     "[org.apache.jasper.servlet.TldScanner]": WARN
-    "[javax.persistence.spi]": ERROR
+    "[jakarta.persistence.spi]": ERROR
 
 spring:
   main:

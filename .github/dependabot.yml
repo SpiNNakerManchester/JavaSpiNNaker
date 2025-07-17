@@ -24,22 +24,6 @@ updates:
     labels:
       - "bug"
       - "dependabot"
-    assignees:
-      - "rowleya"
-    reviewers:
-      - "Christian-B"
-  # The next two are branches that need to be kept current
-  - package-ecosystem: maven
-    directory: "/"
-    schedule:
-      interval: weekly
-      day: tuesday
-    labels:
-      - "bug"
-      - "dependabot"
-    target-branch: "java-17"
-    assignees:
-      - "rowleya"
       
   # Actions are only checked on primary branch
   - package-ecosystem: "github-actions"
@@ -51,7 +35,3 @@ updates:
     labels:
       - "bug"
       - "dependabot"
-    assignees:
-      - "rowleya"
-    reviewers:
-      - "Christian-B"

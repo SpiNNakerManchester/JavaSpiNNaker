@@ -108,7 +108,7 @@ jobs:
       continue-on-error: true
     - name: Submit Dependency Snapshot
       if: matrix.java == 11
-      uses: advanced-security/maven-dependency-submission-action@v4
+      uses: advanced-security/maven-dependency-submission-action@v5
       continue-on-error: true
 
   validate:
@@ -153,6 +153,6 @@ jobs:
     - name: "Check: copyright declarations"
       run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
     - name: "Check: CITATION.cff validity"
-      uses: dieghernan/cff-validator@v3
+      uses: dieghernan/cff-validator@v4
       with:
         install-r: true
