@@ -16,9 +16,6 @@
 package uk.ac.manchester.spinnaker.nmpiexec.job_parameters;
 
 import static java.util.Objects.nonNull;
-import static org.rauschig.jarchivelib.ArchiverFactory.createArchiver;
-import static org.rauschig.jarchivelib.CompressionType.BZIP2;
-import static org.rauschig.jarchivelib.CompressionType.GZIP;
 import static uk.ac.manchester.spinnaker.nmpiexec.utils.FileDownloader.downloadFile;
 import static uk.ac.manchester.spinnaker.nmpiexec.utils.Log.log;
 
@@ -27,8 +24,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.rauschig.jarchivelib.ArchiveFormat;
-import org.rauschig.jarchivelib.CompressionType;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.examples.Expander;
 
 import uk.ac.manchester.spinnaker.nmpi.model.job.JobParameters;
 import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
@@ -62,20 +59,12 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 		// Try to get the file and extract it
 		try {
 			return constructParameters(job, workingDirectory, url, setupScript);
-		} catch (final IOException e) {
-			log(e);
-			throw new JobParametersFactoryException(
-					"Error in communication or extraction", e);
 		} catch (final Throwable e) {
 			log(e);
 			throw new JobParametersFactoryException(
-					"General error with zip extraction", e);
+					"Error with zip extraction", e);
 		}
 	}
-
-	/** The supported compression types. */
-	private static final CompressionType[] SUPPORTED_TYPES =
-			new CompressionType[]{BZIP2, GZIP};
 
 	/**
 	 * Extract an archive using auto-detection for the format.
@@ -87,64 +76,11 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	 * @return True if extracted, False if failed
 	 * @throws IOException
 	 *             If there is a general error in extraction
+	 * @throws ArchiveException
 	 */
-	private boolean extractAutodetectedArchive(final File output,
-			final File workingDirectory) throws IOException {
-		try {
-			final var archiver = createArchiver(output);
-			archiver.extract(output, workingDirectory);
-			return true;
-		} catch (final IllegalArgumentException e) {
-			return false;
-		}
-	}
-
-	/**
-	 * Extract an archive by trying known archive types.
-	 *
-	 * @param workingDirectory
-	 *            The directory to extract into
-	 * @param output
-	 *            The archive to extract
-	 * @return True if the archive was extracted, False otherwise
-	 */
-	private boolean extractArchiveUsingKnownFormats(final File workingDirectory,
-			final File output) {
-		for (final var format : ArchiveFormat.values()) {
-			try {
-				final var archiver = createArchiver(format);
-				archiver.extract(output, workingDirectory);
-				return true;
-			} catch (final IOException e) {
-				// Ignore - try the next
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Extract an archive by trying internal list of archive types.
-	 *
-	 * @param workingDirectory
-	 *            The directory to extract into
-	 * @param output
-	 *            The archive to extract
-	 * @return True if the archive was extracted, False otherwise
-	 */
-	private boolean extractTypedArchive(final File workingDirectory,
-			final File output) {
-		for (final var format : ArchiveFormat.values()) {
-			for (final var type : SUPPORTED_TYPES) {
-				try {
-					final var archiver = createArchiver(format, type);
-					archiver.extract(output, workingDirectory);
-					return true;
-				} catch (final IOException e) {
-					// Ignore - try the next
-				}
-			}
-		}
-		return false;
+	private void extractAutodetectedArchive(final File output,
+			final File workingDirectory) throws IOException, ArchiveException {
+		new Expander().expand(output, workingDirectory);
 	}
 
 	/**
@@ -161,46 +97,17 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	 * @return The constructed parameters
 	 * @throws IOException
 	 *             If there is an error with the file
-	 * @throws JobParametersFactoryException
-	 *             If no way to uncompress the file could be found
+	 * @throws ArchiveException
+	 *            If there is an error with the archive
 	 */
 	private JobParameters constructParameters(final Job job,
 			final File workingDirectory, final URL url,
 			final String setupScript)
-			throws IOException, JobParametersFactoryException {
+			throws IOException, ArchiveException {
 		final var output = downloadFile(url, workingDirectory, null);
 
 		/* Test if there is a recognised archive */
-		boolean archiveExtracted =
-				extractAutodetectedArchive(output, workingDirectory);
-
-		/*
-		 * If the archive wasn't extracted by the last line, try the known
-		 * formats
-		 */
-		if (!archiveExtracted) {
-			archiveExtracted =
-					extractArchiveUsingKnownFormats(workingDirectory, output);
-		}
-
-		/*
-		 * If the archive was still not extracted, try again with different
-		 * compression types
-		 */
-		if (!archiveExtracted) {
-			archiveExtracted = extractTypedArchive(workingDirectory, output);
-		}
-
-		// Delete the archive
-		if (!output.delete()) {
-			log("Warning, could not delete file " + output);
-		}
-
-		// If the archive wasn't extracted, throw an error
-		if (!archiveExtracted) {
-			throw new JobParametersFactoryException(
-					"The URL could not be decompressed with any known method");
-		}
+		extractAutodetectedArchive(output, workingDirectory);
 
 		var script = DEFAULT_SCRIPT_NAME + SYSTEM_ARG;
 		final var command = job.getCommand();

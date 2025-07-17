@@ -1298,7 +1298,6 @@ public class BMPController extends DatabaseAwareBean {
 			@Override
 			public void prepare(boolean useDummyCommsParam) {
 				useDummyComms = useDummyCommsParam;
-				makeWorkers();
 			}
 
 			@Override
