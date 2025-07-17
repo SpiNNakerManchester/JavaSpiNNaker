@@ -230,7 +230,7 @@ public class SecurityConfig {
 						antMatcher(oidcPath("**")),
 						antMatcher(urlMaker.systemUrl("error")),
 						antMatcher(urlMaker.systemUrl("resources/*")),
-            antMatcher(urlMaker.serviceUrl("openapi.json")),
+						antMatcher(urlMaker.serviceUrl("openapi.json")),
 						antMatcher(urlMaker.serviceUrl("swagger*")),
 						antMatcher(urlMaker.serviceUrl("index.css")))
 				.permitAll()
