@@ -59,10 +59,10 @@ public abstract class ControllerUtils {
 
 		var b = fromMethodCall(selfCall);
 		// Force some dumb stuff to be right
-		if (!System.getenv().containsKey("spalloc_use_http")) {
-			b.query(null).scheme("https");
-		} else {
+		if (System.getenv().containsKey("spalloc_use_http")) {
 			b.query(null).scheme("http");
+		} else {
+			b.query(null).scheme("https");
 		}
 		return b.buildAndExpand(objects).toUri();
 	}
