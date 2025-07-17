@@ -184,7 +184,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			final var cfgFile = new File(workingDirectory, "spynnaker.cfg");
 			final var ini = new INIConfiguration();
 			if (cfgFile.exists()) {
-				try (final var reader = new FileReader(cfgFile)) {
+				try (var reader = new FileReader(cfgFile)) {
 					ini.read(reader);
 				}
 			}
@@ -201,7 +201,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			} else {
 				section.addProperty("remote_spinnaker_url", machineUrl);
 			}
-			try (final var writer = new FileWriter(cfgFile)) {
+			try (var writer = new FileWriter(cfgFile)) {
 				ini.write(writer);
 			}
 
