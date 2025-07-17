@@ -26,7 +26,7 @@ machine = (
 	"num_in_use": ${ machine.numInUse },
 	"tags": [
 	<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
-		<c:out value="${ tag }" escapeXml="true" />
+		"<c:out value="${ tag }" escapeXml="true" />"
 		<c:if test="${ !loop.last }">,</c:if>
 	</c:forEach>],
 	"jobs": [

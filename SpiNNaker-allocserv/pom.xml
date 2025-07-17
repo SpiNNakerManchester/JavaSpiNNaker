@@ -231,13 +231,6 @@ limitations under the License.
 						<truststoreFormat>PKCS12</truststoreFormat>
 					</configuration>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.sling</groupId>
-					<artifactId>jspc-maven-plugin</artifactId>
-					<configuration>
-						<sourceDirectory>${project.basedir}/src/main/webapp/WEB-INF</sourceDirectory>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
