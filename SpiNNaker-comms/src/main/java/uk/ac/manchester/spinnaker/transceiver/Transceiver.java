@@ -196,7 +196,7 @@ public class Transceiver extends UDPTransceiver
 
 	private static final String SCAMP_NAME = "SC&MP";
 
-	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
+	private static final Version SCAMP_VERSION = new Version(4, 0, 0);
 
 	private static final String BMP_NAME = "BC&MP";
 
