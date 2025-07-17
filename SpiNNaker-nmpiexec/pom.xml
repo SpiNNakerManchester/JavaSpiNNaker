@@ -53,8 +53,8 @@
 			<artifactId>SpiNNaker-utils</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.ini4j</groupId>
-			<artifactId>ini4j</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-configuration2</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>

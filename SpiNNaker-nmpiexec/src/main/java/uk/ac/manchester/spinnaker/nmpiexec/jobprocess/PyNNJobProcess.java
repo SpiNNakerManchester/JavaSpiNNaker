@@ -34,6 +34,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -50,10 +52,9 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.configuration2.INIConfiguration;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.ini4j.Ini;
-import org.ini4j.Profile.Section;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -102,14 +103,6 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 		IGNORED_DIRECTORIES.add("application_generated_data_files");
 		IGNORED_DIRECTORIES.add("reports");
 	}
-
-	/** Provenance data items to be added to final provenance data. */
-	private static final String[] PROVENANCE_ITEMS_TO_ADD = new String[]{
-		"version_data/.*", "router_provenance/total_multi_cast_sent_packets",
-		"router_provenance/total_created_packets",
-		"router_provenance/total_dropped_packets",
-		"router_provenance/total_missed_dropped_packets",
-		"router_provenance/total_lost_dropped_packets"};
 
 	/** The directory where the process is executed. */
 	private File workingDirectory = null;
@@ -187,36 +180,30 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 						+ setupValue + ")");
 			}
 
-			// Create a spynnaker config file
+			// Create a spynnaker config file, or read the existing one
 			final var cfgFile = new File(workingDirectory, "spynnaker.cfg");
+			final var ini = new INIConfiguration();
+			if (cfgFile.exists()) {
+				try (final var reader = new FileReader(cfgFile)) {
+					ini.read(reader);
+				}
+			}
 
 			// Add the details of the machine
-			final var ini = new Ini();
-			final var config = ini.getConfig();
-			config.setEscape(false);
-			config.setLowerCaseSection(false);
-			config.setLowerCaseOption(false);
-			if (cfgFile.exists()) {
-				ini.load(cfgFile);
-			}
-
-			final Section section;
-			if (!ini.containsKey(SECTION)) {
-				section = ini.add(SECTION);
-			} else {
-				section = ini.get(SECTION);
-			}
+			final var section = ini.getSection(SECTION);
 			if (nonNull(machine)) {
-				section.put("machine_name", machine.getMachineName());
-				section.put("version", machine.getVersion());
+				section.addProperty("machine_name", machine.getMachineName());
+				section.addProperty("version", machine.getVersion());
 				final var bmpDetails = machine.getBmpDetails();
 				if (nonNull(bmpDetails)) {
-					section.put("bmp_names", bmpDetails);
+					section.addProperty("bmp_names", bmpDetails);
 				}
 			} else {
-				section.put("remote_spinnaker_url", machineUrl);
+				section.addProperty("remote_spinnaker_url", machineUrl);
 			}
-			ini.store(cfgFile);
+			try (final var writer = new FileWriter(cfgFile)) {
+				ini.write(writer);
+			}
 
 			// Keep existing files to compare to later
 			final var existingFiles = gatherFiles(workingDirectory);
