@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"uk.ac.manchester.spinnaker.py2json","l":"Configuration"},{"p":"uk.ac.manchester.spinnaker.py2json","l":"Link"},{"p":"uk.ac.manchester.spinnaker.py2json","l":"Machine"},{"p":"uk.ac.manchester.spinnaker.py2json","l":"MachineDefinitionConverter"}];updateSearchResults();

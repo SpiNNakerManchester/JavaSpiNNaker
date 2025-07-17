@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"uk.ac.manchester.spinnaker.py2json"}];updateSearchResults();
