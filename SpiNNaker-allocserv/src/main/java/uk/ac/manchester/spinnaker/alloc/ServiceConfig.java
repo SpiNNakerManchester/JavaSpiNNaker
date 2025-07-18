@@ -49,6 +49,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
+import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -292,6 +293,16 @@ public class ServiceConfig extends Application {
 		}
 	}
 
+	@Bean
+	OpenApiFeature openApiFeature() {
+		var openApiFeature = new OpenApiFeature();
+		openApiFeature.setSwaggerUiConfig(
+				new SwaggerUiConfig().url("openapi.json")
+				.queryConfigEnabled(false));
+		openApiFeature.setUseContextBasedConfig(true);
+		return openApiFeature;
+	}
+
 	/**
 	 * The JAX-RS interface. Note that this is only used when not in test mode.
 	 *
@@ -305,6 +316,8 @@ public class ServiceConfig extends Application {
 	 *            The Spring bus (think VengaBus but without the music)
 	 * @param protocolCorrector
 	 *            Attempts to make the protocol work correctly
+	 * @param openApiFeature
+	 *           The OpenAPI feature for generating documentation
 	 * @return The REST service core, configured.
 	 */
 	@Bean(destroyMethod = "destroy")
@@ -312,15 +325,16 @@ public class ServiceConfig extends Application {
 	@DependsOn("JSONProvider")
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
 			Executor executor, SpringBus bus,
-			ProtocolUpgraderInterceptor protocolCorrector) {
+			ProtocolUpgraderInterceptor protocolCorrector,
+			OpenApiFeature openApiFeature) {
 		var factory = new JAXRSServerFactoryBean();
 		factory.setServiceBeans(List.of(service, adminService));
 		factory.setStaticSubresourceResolution(true);
-		factory.setAddress("/");
 		factory.setBus(bus);
+		factory.setAddress("/");
 		factory.setProviders(List.of(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
-		factory.setFeatures(List.of(new OpenApiFeature()));
+		factory.setFeatures(List.of(openApiFeature));
 		factory.setInInterceptors(List.of(
 				new JAXRSBeanValidationInInterceptor(), protocolCorrector));
 		var s = factory.create();
