@@ -92,6 +92,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
+import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.alloc.security.SecurityConfig;
 import uk.ac.manchester.spinnaker.alloc.web.MvcConfig;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
@@ -230,6 +231,39 @@ public class ServiceConfig extends Application {
 	}
 
 	/**
+	 * A factory for JAX-RS servers. This is a <em>prototype</em> bean; you get
+	 * a new instance each time.
+	 * <p>
+	 * You should call {@link JAXRSServerFactoryBean#setServiceBeans(List)
+	 * setServiceBeans(...)} on it, and then
+	 * {@link JAXRSServerFactoryBean#create() create()}. You might also need to
+	 * call {@link JAXRSServerFactoryBean#setAddress(String) setAddress(...)}.
+	 *
+	 * @param bus
+	 *            The CXF bus.
+	 * @param protocolCorrector
+	 *            How to correct the protocol
+	 * @return A factory instance
+	 */
+	@Bean
+	@Prototype
+	@Role(ROLE_INFRASTRUCTURE)
+	JAXRSServerFactoryBean rawFactory(SpringBus bus,
+			ProtocolUpgraderInterceptor protocolCorrector,
+			OpenApiFeature openApiFeature) {
+		var factory = new JAXRSServerFactoryBean();
+		factory.setStaticSubresourceResolution(true);
+		factory.setAddress("/");
+		factory.setBus(bus);
+		factory.setProviders(List.of(
+				ctx.getBeansWithAnnotation(Provider.class).values()));
+		factory.setFeatures(List.of(openApiFeature));
+		factory.setInInterceptors(List
+				.of(new JAXRSBeanValidationInInterceptor(), protocolCorrector));
+		return factory;
+	}
+
+	/**
 	 * Handles the upgrade of the CXF endpoint protocol to HTTPS when the
 	 * service is behind a reverse proxy like nginx which might be handling
 	 * SSL/TLS for us. In theory, CXF should do this itself; this is the kind of
@@ -312,31 +346,16 @@ public class ServiceConfig extends Application {
 	 *            The admin service
 	 * @param executor
 	 *            The thread pool
-	 * @param bus
-	 *            The Spring bus (think VengaBus but without the music)
-	 * @param protocolCorrector
-	 *            Attempts to make the protocol work correctly
-	 * @param openApiFeature
-	 *           The OpenAPI feature for generating documentation
+	 * @param factory
+	 *            A factory used to make servers.
 	 * @return The REST service core, configured.
 	 */
 	@Bean(destroyMethod = "destroy")
 	@ConditionalOnWebApplication
 	@DependsOn("JSONProvider")
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
-			Executor executor, SpringBus bus,
-			ProtocolUpgraderInterceptor protocolCorrector,
-			OpenApiFeature openApiFeature) {
-		var factory = new JAXRSServerFactoryBean();
+			Executor executor, JAXRSServerFactoryBean factory) {
 		factory.setServiceBeans(List.of(service, adminService));
-		factory.setStaticSubresourceResolution(true);
-		factory.setBus(bus);
-		factory.setAddress("/");
-		factory.setProviders(List.of(
-				ctx.getBeansWithAnnotation(Provider.class).values()));
-		factory.setFeatures(List.of(openApiFeature));
-		factory.setInInterceptors(List.of(
-				new JAXRSBeanValidationInInterceptor(), protocolCorrector));
 		var s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
