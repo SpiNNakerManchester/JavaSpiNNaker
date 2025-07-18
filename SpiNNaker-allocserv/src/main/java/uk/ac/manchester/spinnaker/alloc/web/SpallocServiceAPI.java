@@ -173,8 +173,8 @@ public interface SpallocServiceAPI {
 	@Description("Operations on a specific machine.")
 	@PreAuthorize(IS_READER)
 	MachineAPI getMachine(
-			@Description("The name of the machine.")
-			@Parameter(description="The name of the machine.") @PathParam(NAME)
+			@Description("The name of the machine.") @PathParam(NAME)
+			@Parameter(description = "The name of the machine.")
 			@NotBlank(message = "machine name must not be blank") String name,
 			@Context UriInfo ui, @Context SecurityContext security);
 

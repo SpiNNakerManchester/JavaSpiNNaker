@@ -243,6 +243,8 @@ public class ServiceConfig extends Application {
 	 *            The CXF bus.
 	 * @param protocolCorrector
 	 *            How to correct the protocol
+	 * @param openApiFeature
+	 *            The Open API configuration
 	 * @return A factory instance
 	 */
 	@Bean
