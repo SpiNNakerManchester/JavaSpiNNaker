@@ -224,16 +224,15 @@ public class SecurityConfig {
 		http.authorizeHttpRequests((authorize) -> authorize
 				// Allow forwarded requests
 				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-				// General metadata pages require ADMIN access
-				.requestMatchers(antMatcher(urlMaker.serviceUrl("info*")),
-						antMatcher(urlMaker.serviceUrl("info/**")))
-				.hasRole("ADMIN")
 				// Login process and static resources are available to all
 				.requestMatchers(antMatcher(urlMaker.systemUrl("login*")),
 						antMatcher(urlMaker.systemUrl("perform_*")),
 						antMatcher(oidcPath("**")),
 						antMatcher(urlMaker.systemUrl("error")),
-						antMatcher(urlMaker.systemUrl("resources/*")))
+						antMatcher(urlMaker.systemUrl("resources/*")),
+						antMatcher(urlMaker.serviceUrl("openapi.json")),
+						antMatcher(urlMaker.serviceUrl("swagger*")),
+						antMatcher(urlMaker.serviceUrl("index.css")))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated());

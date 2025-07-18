@@ -49,6 +49,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
+import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -242,20 +243,23 @@ public class ServiceConfig extends Application {
 	 *            The CXF bus.
 	 * @param protocolCorrector
 	 *            How to correct the protocol
+	 * @param openApiFeature
+	 *            The Open API configuration
 	 * @return A factory instance
 	 */
 	@Bean
 	@Prototype
 	@Role(ROLE_INFRASTRUCTURE)
 	JAXRSServerFactoryBean rawFactory(SpringBus bus,
-			ProtocolUpgraderInterceptor protocolCorrector) {
+			ProtocolUpgraderInterceptor protocolCorrector,
+			OpenApiFeature openApiFeature) {
 		var factory = new JAXRSServerFactoryBean();
 		factory.setStaticSubresourceResolution(true);
 		factory.setAddress("/");
 		factory.setBus(bus);
 		factory.setProviders(List.of(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
-		factory.setFeatures(List.of(new OpenApiFeature()));
+		factory.setFeatures(List.of(openApiFeature));
 		factory.setInInterceptors(List
 				.of(new JAXRSBeanValidationInInterceptor(), protocolCorrector));
 		return factory;
@@ -323,6 +327,16 @@ public class ServiceConfig extends Application {
 			var message = exception.getMessage().replaceAll(".*:\\s*", "");
 			return status(BAD_REQUEST).type(TEXT_PLAIN).entity(message).build();
 		}
+	}
+
+	@Bean
+	OpenApiFeature openApiFeature() {
+		var openApiFeature = new OpenApiFeature();
+		openApiFeature.setSwaggerUiConfig(
+				new SwaggerUiConfig().url("openapi.json")
+				.queryConfigEnabled(false));
+		openApiFeature.setUseContextBasedConfig(true);
+		return openApiFeature;
 	}
 
 	/**
