@@ -78,7 +78,8 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="SpallocServiceImpl.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceImpl</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">SpallocServiceAPI</span></div>
+<div class="type-signature"><span class="annotations">@Path("spalloc")
+</span><span class="modifiers">public interface </span><span class="element-name type-name-label">SpallocServiceAPI</span></div>
 <div class="block">The REST API for the SpiNNaker machine allocation service.</div>
 </section>
 <section class="summary">
@@ -186,6 +187,7 @@ loadScripts(document, 'script');</script>
 <h3>describeService</h3>
 <div class="member-signature"><span class="annotations">@GET
 @Produces("application/json")
+@Path("")
 </span><span class="return-type"><a href="ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></span>&nbsp;<span class="element-name">describeService</span><wbr><span class="parameters">(@Context
  jakarta.ws.rs.core.UriInfo&nbsp;ui,
  @Context
