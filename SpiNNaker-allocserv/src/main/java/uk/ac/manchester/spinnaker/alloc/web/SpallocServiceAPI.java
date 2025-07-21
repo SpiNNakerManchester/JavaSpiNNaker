@@ -15,7 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -87,7 +86,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import uk.ac.manchester.spinnaker.machine.ValidP;
 import uk.ac.manchester.spinnaker.machine.ValidX;
@@ -107,7 +105,8 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 	@Tag(name = T_TOP, description = "Operations at the service level"),
 	@Tag(name = T_MCH, description = "Operations on SpiNNaker machines"),
 	@Tag(name = T_JOB, description = "Operations on Spalloc jobs")
-}, servers = @Server(url = SERV))
+})
+@Path(SERV)
 public interface SpallocServiceAPI {
 	/*
 	 * When adding to this interface, an operation should be implemented in an
@@ -135,6 +134,7 @@ public interface SpallocServiceAPI {
 	@Operation(tags = T_TOP, summary = "Describe the overall service",
 			description = "Get a description of the overall service.")
 	@Produces(APPLICATION_JSON)
+	@Path("")
 	ServiceDescription describeService(@Context UriInfo ui,
 			@Context SecurityContext security,
 			@Context HttpServletRequest request);
@@ -174,6 +174,7 @@ public interface SpallocServiceAPI {
 	@PreAuthorize(IS_READER)
 	MachineAPI getMachine(
 			@Description("The name of the machine.") @PathParam(NAME)
+			@Parameter(description = "The name of the machine.")
 			@NotBlank(message = "machine name must not be blank") String name,
 			@Context UriInfo ui, @Context SecurityContext security);
 
@@ -195,11 +196,11 @@ public interface SpallocServiceAPI {
 	 */
 	@GET
 	@Description("List the jobs.")
-	@Operation(tags = T_JOB, summary = "List jobs",
+	@Operation(tags = T_JOB, summary = "List the jobs.",
 			description = "List jobs known to the service. Supports paging. "
-					+ "Supports long queries",
-			responses = @ApiResponse(content = @Content(
-					schema = @Schema(implementation = ListJobsResponse.class))))
+					+ "Supports long queries")
+	@ApiResponse(content = @Content(schema = @Schema(
+			implementation = ListJobsResponse.class)))
 	@Path(JOB)
 	@Produces(APPLICATION_JSON)
 	@PreAuthorize(IS_READER)
@@ -210,11 +211,14 @@ public interface SpallocServiceAPI {
 					+ "to 30 seconds) before returning")
 			@QueryParam(WAIT) @DefaultValue("false") boolean wait,
 			@Description("Whether to also return destroyed jobs.")
+			@Parameter(description = "Whether to also return destroyed jobs.")
 			@QueryParam("deleted") @DefaultValue("false") boolean destroyed,
 			@Description("Paging support: max records to return.")
+			@Parameter(description = "Paging support: max records to return.")
 			@QueryParam("limit") @DefaultValue("100")
 			@Positive(message = "limit must be at least 1") int limit,
 			@Description("Paging support: offset to start at.")
+			@Parameter(description = "Paging support: offset to start at.")
 			@QueryParam("start") @DefaultValue("0")
 			@PositiveOrZero(message = "start must be at least 0") int start,
 			@Context UriInfo ui, @Suspended AsyncResponse response);
@@ -234,15 +238,16 @@ public interface SpallocServiceAPI {
 	@POST
 	@Description("Create a new job.")
 	@Operation(tags = T_JOB, summary = "Create job",
-			description = "Create a Spalloc job.",
-			responses = @ApiResponse(content = @Content(schema = @Schema(
-					implementation = CreateJobResponse.class))))
+			description = "Create a Spalloc job.")
+	@ApiResponse(content = @Content(schema = @Schema(
+			implementation = CreateJobResponse.class)))
 	@Path(JOB)
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
 	@PreAuthorize(IS_USER)
 	void createJob(
 			@Description("What sort of job should be created?") @NotNull
+			@Parameter(description = "What sort of job should be created?")
 			@Valid CreateJobRequest req, @Context UriInfo ui,
 			@Context SecurityContext security,
 			@Suspended AsyncResponse response);
@@ -261,12 +266,12 @@ public interface SpallocServiceAPI {
 	 * @return The sub-resource
 	 */
 	@Description("Operations on a specific job.")
-	@Operation(tags = T_JOB)
 	@Path(JOB + "/{id}")
 	@Produces(APPLICATION_JSON)
 	@PreAuthorize(IS_USER)
 	JobAPI getJob(
 			@Description("ID of the job.") @PathParam(ID)
+			@Parameter(description = "ID of the job.")
 			@Positive(message = "job ID must be positive") int id,
 			@Context UriInfo ui, @Context HttpServletRequest request,
 			@Context SecurityContext security);
@@ -280,8 +285,12 @@ public interface SpallocServiceAPI {
 	@GET
 	@Description("Immediately stop all jobs and power down all boards,"
 			+ " and stop accepting new jobs.")
+	@Operation(tags = T_TOP, summary = "Emergency stop",
+				description = "Immediately stop all jobs and power down"
+					+ " all boards, and stop accepting new jobs.")
 	@Path("/emergencyStop")
 	void emergencyStop(@Description("Code to validate the request.")
+			@Parameter(description = "Code to validate the request.")
 			@QueryParam("commandCode") String commandCode,
 			@Suspended AsyncResponse response);
 
@@ -290,7 +299,6 @@ public interface SpallocServiceAPI {
 	 *
 	 * @author Donal Fellows
 	 */
-	@Path(MACH + "/{name}")
 	interface MachineAPI {
 		/**
 		 * Describe the basic info about a machine.
@@ -303,21 +311,16 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description("Describe basic details of a machine.")
 		@Operation(tags = T_MCH, summary = "Describe a machine",
-				description = "Describes the basic info about a machine.",
-				parameters = @Parameter(in = PATH, name = NAME,
-						description = "Machine name",
-						schema = @Schema(implementation = String.class)),
-				responses = {
-					@ApiResponse(content = @Content(schema = @Schema(
-							implementation = MachineResponse.class))),
-					@ApiResponse(responseCode = "404",
-							content = @Content(mediaType = "*/*"))
-				})
+				description = "Describes the basic info about a machine.")
+		@ApiResponse(content = @Content(schema = @Schema(
+				implementation = MachineResponse.class)))
 		@Path("/")
 		@Produces(APPLICATION_JSON)
 		void describeMachine(
 				@Description("Whether to wait for a change (for up "
 						+ "to 30 seconds) before returning.")
+				@Parameter(description = "Whether to wait for a change (for up "
+						+ "to 30 seconds) before returning")
 				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
 				@Suspended AsyncResponse response);
 
@@ -337,18 +340,19 @@ public interface SpallocServiceAPI {
 				+ "a description of a board.")
 		@Operation(tags = T_MCH, summary = "Find board by logical coordinates",
 				description = "Get the location description of a board given "
-						+ "its logical coordinates.",
-				parameters = @Parameter(in = PATH, name = NAME,
-						description = "Machine name",
-						schema = @Schema(implementation = String.class)))
+						+ "its logical coordinates.")
 		@Path(MACH_BOARD_BY_LOGICAL)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsLogicalPosition(
 				@Description("Triad X coordinate") @QueryParam("x")
+				@Parameter(description = "Triad X coordinate")
 				@ValidTriadX int x,
 				@Description("Triad Y coordinate") @QueryParam("y")
+				@Parameter(description = "Triad Y coordinate")
 				@ValidTriadY int y,
 				@Description("Triad Z (internal member select) coordinate")
+				@Parameter(description =
+						"Triad Z (internal member select) coordinate")
 				@QueryParam("z") @DefaultValue("0")
 				@ValidTriadZ int z);
 
@@ -366,18 +370,18 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description("Map from physical coordinates to "
 				+ "a description of a board.")
-		@Operation(tags = T_MCH, summary = "Find board by physical coordinates",
-				parameters = @Parameter(in = PATH, name = NAME,
-						description = "Machine name",
-						schema = @Schema(implementation = String.class)))
+		@Operation(tags = T_MCH, summary = "Find board by physical coordinates")
 		@Path(MACH_BOARD_BY_PHYSICAL)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsPhysicalPosition(
 				@Description("Cabinet number") @QueryParam("cabinet")
+				@Parameter(description = "Cabinet number")
 				@DefaultValue("0") @ValidCabinetNumber int cabinet,
 				@Description("Frame number") @QueryParam("frame")
+				@Parameter(description = "Frame number")
 				@DefaultValue("0") @ValidFrameNumber int frame,
 				@Description("Board number") @QueryParam("board")
+				@Parameter(description = "Board number")
 				@ValidBoardNumber int board);
 
 		/**
@@ -393,16 +397,15 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description("Map from global chip coordinates to "
 				+ "a description of a board.")
-		@Operation(tags = T_MCH, summary = "Find board holding a chip",
-				parameters = @Parameter(in = PATH, name = NAME,
-						description = "Machine name",
-						schema = @Schema(implementation = String.class)))
+		@Operation(tags = T_MCH, summary = "Find board holding a chip")
 		@Path(MACH_BOARD_BY_CHIP)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse whereIsMachineChipLocation(
 				@Description("Global chip X coordinate") @QueryParam(CHIP_X)
+				@Parameter(description = "Global chip X coordinate")
 				@ValidX int x,
 				@Description("Global chip Y coordinate") @QueryParam(CHIP_Y)
+				@Parameter(description = "Global chip Y coordinate")
 				@ValidY int y);
 
 		/**
@@ -417,14 +420,12 @@ public interface SpallocServiceAPI {
 		@Description("Map from IP address to a description of a board.")
 		@Operation(tags = T_MCH, summary = "Find board by IP address",
 				description = "Get the location description of a board given "
-						+ "its ethernet chip's IP address.",
-				parameters = @Parameter(in = PATH, name = NAME,
-						description = "Machine name",
-						schema = @Schema(implementation = String.class)))
+						+ "its ethernet chip's IP address.")
 		@Path(MACH_BOARD_BY_ADDRESS)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse
 				whereIsIPAddress(@Description("Ethernet chip IP address")
+				@Parameter(description = "Ethernet chip IP address")
 				@QueryParam("address") @IPAddress String address);
 	}
 
@@ -433,7 +434,6 @@ public interface SpallocServiceAPI {
 	 *
 	 * @author Donal Fellows
 	 */
-	@Path(JOB + "/{id}")
 	interface JobAPI {
 		/**
 		 * Describe the basic info about a job.
@@ -446,17 +446,16 @@ public interface SpallocServiceAPI {
 		@GET
 		@Description("Describe basic details of a machine.")
 		@Operation(tags = T_JOB, operationId = "describeJob",
-				summary = "Describe a job",
-				parameters = @Parameter(in = PATH, name = ID,
-						description = "Job identifier",
-						schema = @Schema(implementation = Integer.class)),
-				responses = @ApiResponse(content = @Content(schema = @Schema(
-						implementation = JobStateResponse.class))))
+				summary = "Describe a job")
+		@ApiResponse(content = @Content(schema = @Schema(
+				implementation = JobStateResponse.class)))
 		@Path("/")
 		@Produces(APPLICATION_JSON)
 		void getState(
 				@Description("Whether to wait for a change (for up "
 						+ "to 30 seconds) before returning.")
+				@Parameter(description = "Whether to wait for a change (for up "
+						+ "to 30 seconds) before returning")
 				@QueryParam(WAIT) @DefaultValue("false") boolean wait,
 				@Suspended AsyncResponse response);
 
@@ -469,14 +468,13 @@ public interface SpallocServiceAPI {
 		 */
 		@PUT
 		@Description("Keep the job alive. Must be called regularly.")
-		@Operation(tags = T_JOB, summary = "Keep a job alive",
-				parameters = @Parameter(in = PATH, name = ID,
-						description = "Job identifier",
-						schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Keep a job alive")
 		@Path(JOB_KEEPALIVE)
 		@Consumes(TEXT_PLAIN)
 		@Produces(TEXT_PLAIN)
-		String keepAlive(@Description("Arbitrary string; ignored") String req);
+		String keepAlive(@Description("Arbitrary string; ignored")
+				@Parameter(description = "Arbitrary string; ignored")
+				String req);
 
 		/**
 		 * Delete the job, or at least mark it as destroyed.
@@ -487,14 +485,13 @@ public interface SpallocServiceAPI {
 		 */
 		@DELETE
 		@Description("Delete a job.")
-		@Operation(tags = T_JOB, summary = "Delete a job",
-				parameters = @Parameter(in = PATH, name = ID,
-						description = "Job identifier",
-						schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Delete a job")
 		@Path("/")
 		@Produces(APPLICATION_JSON)
 		Response deleteJob(
 				@Description("Some indication of why the delete is being done.")
+				@Parameter(description =
+						"Some indication of why the delete is being done.")
 				@QueryParam("reason") @DefaultValue("") String reason);
 
 		/**
@@ -504,10 +501,7 @@ public interface SpallocServiceAPI {
 		 */
 		@GET
 		@Description("Describe a job's machine allocation.")
-		@Operation(tags = T_JOB, summary = "Describe the job's resources",
-				parameters = @Parameter(in = PATH, name = ID,
-						description = "Job identifier",
-						schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Describe the job's resources")
 		@Path(JOB_MACHINE)
 		@Produces(APPLICATION_JSON)
 		SubMachineResponse getMachine();
@@ -519,10 +513,7 @@ public interface SpallocServiceAPI {
 		 */
 		@GET
 		@Description("Get the power status of a job.")
-		@Operation(tags = T_JOB, summary = "Get the job's power status",
-				parameters = @Parameter(in = PATH, name = ID,
-						description = "Job identifier",
-						schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Get the job's power status")
 		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Produces(APPLICATION_JSON)
 		MachinePower getMachinePower();
@@ -538,17 +529,15 @@ public interface SpallocServiceAPI {
 		 */
 		@POST
 		@Description("Set the power status of a job.")
-		@Operation(tags = T_JOB, summary = "Set the job's power status",
-				parameters = @Parameter(in = PATH, name = ID,
-						description = "Job identifier",
-						schema = @Schema(implementation = Integer.class)),
-				responses = @ApiResponse(content = @Content(
-						schema = @Schema(implementation = MachinePower.class))))
+		@Operation(tags = T_JOB, summary = "Set the job's power status")
+		@ApiResponse(content = @Content(schema = @Schema(
+				implementation = MachinePower.class)))
 		@Path(JOB_MACHINE + "/" + JOB_MACHINE_POWER)
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
 		void setMachinePower(//
 				@Description("What to set the power status to.") @NotNull
+				@Parameter(description = "What to set the power status to.")
 				@Valid MachinePower req, @Suspended AsyncResponse response);
 
 		/**
@@ -565,16 +554,17 @@ public interface SpallocServiceAPI {
 		@Description("Describe a board in an allocation by "
 				+ "a chip on that board.")
 		@Operation(tags = T_JOB,
-				summary = "Get location info within job's allocation",
-				parameters = @Parameter(in = PATH, name = ID,
-						description = "Job identifier",
-						schema = @Schema(implementation = Integer.class)))
+				summary = "Get location info within job's allocation")
 		@Path(JOB_BOARD_BY_CHIP)
 		@Produces(APPLICATION_JSON)
 		WhereIsResponse getJobChipLocation(
 				@Description("X coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"X coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"Y coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y);
 
 		/**
@@ -587,9 +577,9 @@ public interface SpallocServiceAPI {
 		 */
 		@POST
 		@Description("Report an issue with some boards.")
-		@Operation(tags = T_JOB, summary = "Report an issue with some boards.",
-				responses = @ApiResponse(content = @Content(schema = @Schema(
-						implementation = IssueReportResponse.class))))
+		@Operation(tags = T_JOB, summary = "Report an issue with some boards.")
+		@ApiResponse(content = @Content(schema = @Schema(
+				implementation = IssueReportResponse.class)))
 		@Path(REPORT_ISSUE)
 		@Consumes(APPLICATION_JSON)
 		@Produces(APPLICATION_JSON)
@@ -607,18 +597,20 @@ public interface SpallocServiceAPI {
 		 */
 		@POST
 		@Description("Write data to job boards.")
-		@Operation(tags = T_JOB, summary = "Write data to job boards.",
-				parameters = @Parameter(in = PATH, name = ID,
-				description = "Job identifier",
-				schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Write data to job boards.")
 		@Path(MEMORY)
 		@Consumes(APPLICATION_OCTET_STREAM)
 		void writeDataToJob(
 				@Description("X coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"X coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"Y coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
 				@Description("The address to write the data to")
+				@Parameter(description = "The address to write the data to")
 				@QueryParam(ADDRESS) long address,
 				byte[] bytes,
 				@Suspended AsyncResponse response);
@@ -634,19 +626,27 @@ public interface SpallocServiceAPI {
 		 */
 		@GET
 		@Description("Read data from job boards.")
-		@Operation(tags = T_JOB, summary = "Read data from job boards.",
-				parameters = @Parameter(in = PATH, name = ID,
-				description = "Job identifier",
-				schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Read data from job boards.")
+		@ApiResponse(content = @Content(schema = @Schema(
+				implementation = byte[].class)))
 		@Path(MEMORY)
 		@Produces(APPLICATION_OCTET_STREAM)
 		void readDataFromJob(
 				@Description("X coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"X coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"Y coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
 				@Description("The address to write the data to")
-				@QueryParam(ADDRESS) long address, @QueryParam(SIZE) int size,
+				@Parameter(description =
+						"The address to write the data to")
+				@QueryParam(ADDRESS) long address,
+				@Description("Number of bytes to read")
+				@Parameter(description = "Number of bytes to read")
+				@QueryParam(SIZE) int size,
 				@Suspended AsyncResponse response);
 
 		/**
@@ -669,34 +669,45 @@ public interface SpallocServiceAPI {
 		 */
 		@POST
 		@Description("Write data to job boards using the fast data protocol.")
-		@Operation(tags = T_JOB,
-				summary = "Write data to job boards.",
-				parameters = @Parameter(in = PATH, name = ID,
-				description = "Job identifier",
-				schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Write data to job boards.")
 		@Path(FAST_DATA_WRITE)
 		@Consumes(APPLICATION_OCTET_STREAM)
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		void fastDataWrite(
 				@Description("X coordinate of the gather core")
+				@Parameter(description = "X coordinate of the gather core")
 				@QueryParam(GATHER_X) @ValidX int gatherX,
 				@Description("Y coordinate of the gather core")
+				@Parameter(description = "Y coordinate of the gather core")
 				@QueryParam(GATHER_Y) @ValidY int gatherY,
 				@Description("Processor ID of the gather core")
+				@Parameter(description = "Processor ID of the gather core")
 				@QueryParam(GATHER_P) @Positive int gatherP,
 				@Description("X coordinate of the Ethernet chip of x, y")
+				@Parameter(description =
+						"X coordinate of the Ethernet chip of x, y")
 				@QueryParam(ETH_X) @DefaultValue("0") @ValidX int ethX,
 				@Description("Y coordinate of the Ethernet chip of x, y")
+				@Parameter(description =
+						"Y coordinate of the Ethernet chip of x, y")
 				@QueryParam(ETH_Y) @DefaultValue("0") @ValidY int ethY,
 				@Description("The Ethernet address of the Ethernet chip")
+				@Parameter(description =
+						"The Ethernet address of the Ethernet chip")
 				@QueryParam(ETH_ADDRESS) @IPAddress String ethAddress,
 				@Description("The IPTag to use for the write")
+				@Parameter(description = "The IPTag to use for the write")
 				@QueryParam(IPTAG) int iptag,
 				@Description("X coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"X coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"Y coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
 				@Description("The address to write the data to")
+				@Parameter(description = "The address to write the data to")
 				@QueryParam(ADDRESS) long address, byte[] bytes,
 				@Suspended AsyncResponse response);
 
@@ -720,34 +731,51 @@ public interface SpallocServiceAPI {
 		 */
 		@GET
 		@Description("Read data from job boards using the fast data protocol.")
-		@Operation(tags = T_JOB, summary = "Read data from job boards.",
-				parameters = @Parameter(in = PATH, name = ID,
-				description = "Job identifier",
-				schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Read data from job boards.")
+		@ApiResponse(content = @Content(schema = @Schema(
+				implementation = byte[].class)))
 		@Path(FAST_DATA_READ)
 		@Produces(APPLICATION_OCTET_STREAM)
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		void fastDataRead(
 				@Description("X coordinate of the gather core")
+				@Parameter(description = "X coordinate of the gather core")
 				@QueryParam(GATHER_X) @ValidX int gatherX,
 				@Description("Y coordinate of the gather core")
+				@Parameter(description = "Y coordinate of the gather core")
 				@QueryParam(GATHER_Y) @ValidY int gatherY,
 				@Description("X coordinate of the Ethernet chip of x, y")
+				@Parameter(description =
+						"X coordinate of the Ethernet chip of x, y")
 				@QueryParam(ETH_X) @DefaultValue("0") @ValidX int ethX,
 				@Description("Y coordinate of the Ethernet chip of x, y")
+				@Parameter(description =
+						"Y coordinate of the Ethernet chip of x, y")
 				@QueryParam(ETH_Y) @DefaultValue("0") @ValidY int ethY,
 				@Description("The Ethernet address of the Ethernet chip")
+				@Parameter(description =
+						"The Ethernet address of the Ethernet chip")
 				@QueryParam(ETH_ADDRESS) @IPAddress String ethAddress,
 				@Description("The IPTag to use for the write")
+				@Parameter(description = "The IPTag to use for the write")
 				@QueryParam(IPTAG) int iptag,
 				@Description("X coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"X coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_X) @DefaultValue("0") @ValidX int x,
 				@Description("Y coordinate of chip within job's allocation.")
+				@Parameter(description =
+						"Y coordinate of chip within job's allocation.")
 				@QueryParam(CHIP_Y) @DefaultValue("0") @ValidY int y,
 				@Description("Processor id of monitor core on chip.")
+				@Parameter(description =
+						"Processor id of monitor core on chip.")
 				@QueryParam(CHIP_P) @DefaultValue("0") @ValidP int p,
 				@Description("The address to write the data to")
+				@Parameter(description = "The address to write the data to")
 				@QueryParam(ADDRESS) long address,
+				@Description("Number of bytes to read")
+				@Parameter(description = "Number of bytes to read")
 				@QueryParam(SIZE) int size, @Suspended AsyncResponse response);
 
 		/**
@@ -762,10 +790,9 @@ public interface SpallocServiceAPI {
 		 */
 		@DELETE
 		@Description("Clear routes, reset counters and install counters needed")
-		@Operation(tags = T_JOB, summary = "Read data from job boards.",
-				parameters = @Parameter(in = PATH, name = ID,
-				description = "Job identifier",
-				schema = @Schema(implementation = Integer.class)))
+		@Operation(tags = T_JOB, summary = "Prepare routing tables",
+				description = "Clear routes, reset counters and install "
+						+ "counters needed.")
 		@Path("/router")
 		void prepareRoutingTables(@Context UriInfo uriInfo,
 				@Suspended AsyncResponse response);
