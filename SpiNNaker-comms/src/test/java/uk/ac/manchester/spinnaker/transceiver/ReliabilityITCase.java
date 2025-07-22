@@ -69,8 +69,7 @@ class ReliabilityITCase {
 				assertNull(jsonMachine.difference(machine));
 			} catch (ProcessException e) {
 				if (e.getCause() instanceof SocketTimeoutException) {
-					log.info("ignoring timeout from " + e.getCause());
-					abort("ignoring timeout from " + e.getCause());
+					abort("Timeout from " + e.getCause());
 				} else {
 					throw e;
 				}
