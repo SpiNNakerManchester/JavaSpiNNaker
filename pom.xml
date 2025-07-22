@@ -32,7 +32,7 @@ limitations under the License.
 		<!-- What does the CheckForFIXME profile look for? -->
 		<forbidden.keywords.re>\bFIXME\b|Auto-generated method stub</forbidden.keywords.re>
 
-		<junit.version>5.10.0</junit.version>
+		<junit.version>5.13.4</junit.version>
 		<junit.platform.version>1.10.0</junit.platform.version>
 		<checkstyle.version>10.12.2</checkstyle.version>
 		<javadoc.version>3.11.2</javadoc.version>
