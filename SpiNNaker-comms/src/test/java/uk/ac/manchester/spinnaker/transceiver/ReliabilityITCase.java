@@ -17,6 +17,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.net.InetAddress.getByName;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.abort;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
@@ -68,7 +69,7 @@ class ReliabilityITCase {
 				assertNull(jsonMachine.difference(machine));
 			} catch (ProcessException e) {
 				if (e.getCause() instanceof SocketTimeoutException) {
-					log.info("ignoring timeout from " + e.getCause());
+					abort("Timeout from " + e.getCause());
 				} else {
 					throw e;
 				}
