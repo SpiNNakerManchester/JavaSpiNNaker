@@ -181,7 +181,7 @@ public abstract class SpallocConnection implements Closeable {
 
 		if (connectNeeded) {
 			sock.setSoTimeout(timeout != null ? timeout : 0);
-			if (!doConnect(sock)) {
+			if (!doConnect(sock, timeout != null ? timeout * 1000: 0)) {
 				closeThreadConnection(key);
 				return null;
 			}
@@ -189,10 +189,10 @@ public abstract class SpallocConnection implements Closeable {
 		return sock;
 	}
 
-	private boolean doConnect(Socket sock) throws IOException {
+	private boolean doConnect(Socket sock, int timeout) throws IOException {
 		boolean success = false;
 		try {
-			sock.connect(addr);
+			sock.connect(addr, timeout);
 			success = true;
 		} catch (IOException e) {
 			if (!e.getMessage().contains("EISCONN")) {
