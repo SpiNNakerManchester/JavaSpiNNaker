@@ -63,6 +63,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
 public abstract class SpallocConnection implements Closeable {
 	private static final Logger log = getLogger(SpallocConnection.class);
 
+	private static final int MS_PER_SECOND = 1000;
+
 	/**
 	 * The hostname and port of the spalloc server.
 	 */
@@ -181,7 +183,8 @@ public abstract class SpallocConnection implements Closeable {
 
 		if (connectNeeded) {
 			sock.setSoTimeout(timeout != null ? timeout : 0);
-			if (!doConnect(sock, timeout != null ? timeout * 1000: 0)) {
+			if (!doConnect(sock,
+					timeout != null ? timeout * MS_PER_SECOND : 0)) {
 				closeThreadConnection(key);
 				return null;
 			}
