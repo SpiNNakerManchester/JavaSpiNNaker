@@ -267,6 +267,10 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	private abstract class Request {
+
+		/**
+		 * The BMP ID that this request is for.
+		 */
 		final int bmpId;
 
 		private int numTries = 0;
@@ -1035,23 +1039,23 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	private class PowerChange {
-		final Integer changeId;
+		private final Integer changeId;
 
-		final int jobId;
+		private final int jobId;
 
-		final Integer boardId;
+		private final Integer boardId;
 
-		final Integer boardNum;
+		private final Integer boardNum;
 
-		final Instant powerOffTime;
+		private final Instant powerOffTime;
 
-		final boolean power;
+		private final boolean power;
 
-		final JobState from;
+		private final JobState from;
 
-		final JobState to;
+		private final JobState to;
 
-		final List<Direction> offLinks;
+		private final List<Direction> offLinks;
 
 		PowerChange(Row row) {
 			changeId = row.getInteger("change_id");

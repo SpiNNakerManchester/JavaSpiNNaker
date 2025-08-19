@@ -44,7 +44,6 @@ public interface EIEIOMessageHandler
 	 */
 	void handleCommand(EIEIOCommandMessage message);
 
-
 	/**
 	 * Handle an EIEIO data message.
 	 *

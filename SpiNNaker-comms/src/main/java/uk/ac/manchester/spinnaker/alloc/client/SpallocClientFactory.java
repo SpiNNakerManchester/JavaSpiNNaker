@@ -360,6 +360,7 @@ public class SpallocClientFactory {
 	private abstract static class Common {
 		private final SpallocClient client;
 
+		/** The client used to access the server. */
 		final Session s;
 
 		Common(SpallocClient client, Session s) {

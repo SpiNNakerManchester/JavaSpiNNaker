@@ -218,7 +218,7 @@ public class FirmwareLoader {
 	}
 
 	private static class FlashDataSector {
-		final ByteBuffer buf;
+		private final ByteBuffer buf;
 
 		FlashDataSector() {
 			buf = ByteBuffer.allocate(DATA_SECTOR_LENGTH);

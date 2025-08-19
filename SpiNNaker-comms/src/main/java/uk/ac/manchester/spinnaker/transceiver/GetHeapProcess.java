@@ -221,16 +221,16 @@ final class GetHeapProcess extends TxrxProcess {
 	@SARKStruct("heap_t")
 	private static class HeapHeader {
 		@SARKField("free")
-		final MemoryLocation free;
+		private final MemoryLocation free;
 
 		@SARKField("first")
-		final MemoryLocation first;
+		private final MemoryLocation first;
 
 		@SARKField("last")
-		final MemoryLocation last;
+		private final MemoryLocation last;
 
 		@SARKField("free_bytes")
-		final int freeBytes;
+		private final int freeBytes;
 
 		HeapHeader(IntBuffer data) {
 			free = new MemoryLocation(data.get());
@@ -244,10 +244,10 @@ final class GetHeapProcess extends TxrxProcess {
 	@SARKStruct("block_t")
 	private static class BlockHeader {
 		@SARKField("next")
-		final MemoryLocation next;
+		private final MemoryLocation next;
 
 		@SARKField("free")
-		final MemoryLocation free;
+		private final MemoryLocation free;
 
 		BlockHeader(IntBuffer data) {
 			next = new MemoryLocation(data.get());

@@ -476,7 +476,6 @@ public interface DatabaseAPI {
 		// @formatter:on
 		Query query(SQL sql, boolean lockType);
 
-
 		// @formatter:off
 		/**
 		 * Create a new update. Usage pattern:

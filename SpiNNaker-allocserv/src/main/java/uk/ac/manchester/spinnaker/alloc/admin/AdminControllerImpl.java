@@ -169,9 +169,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private URLPathMaker urlMaker;
 
 	private class MachineName {
-		String name;
+		private String name;
 
-		boolean inService;
+		private boolean inService;
 
 		MachineName(Row row) {
 			name = row.getString("machine_name");

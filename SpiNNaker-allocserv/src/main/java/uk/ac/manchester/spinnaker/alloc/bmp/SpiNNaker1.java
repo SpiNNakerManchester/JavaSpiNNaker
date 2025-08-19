@@ -151,7 +151,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private static class FPGAReloadRequired extends Exception {
 		private static final long serialVersionUID = 1L;
 
-		final BMPBoard board;
+		private final BMPBoard board;
 
 		FPGAReloadRequired(BMPBoard board) {
 			this.board = board;

@@ -309,11 +309,11 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		private class Target {
-			final Object quotaUsed;
+			private final Object quotaUsed;
 
-			final int groupId;
+			private final int groupId;
 
-			final int jobId;
+			private final int jobId;
 
 			Target(Row row) {
 				quotaUsed = row.getObject("quota_used");
@@ -521,11 +521,11 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	/** Results of database queries. */
 	private static final class FinishInfo {
-		Optional<Long> quota;
+		private Optional<Long> quota;
 
-		Optional<Session> session;
+		private Optional<Session> session;
 
-		Optional<NMPIJob> job;
+		private Optional<NMPIJob> job;
 	}
 
 	private FinishInfo getFinishingInfo(int jobId) {

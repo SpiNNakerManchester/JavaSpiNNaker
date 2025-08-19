@@ -139,13 +139,6 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 		/** Whether a rollback has been requested on a transaction. */
 		private boolean doRollback = false;
 
-		/** The JdbcTemplate to use. */
-		private final JdbcTemplate connectionJdbcTemplate;
-
-		ConnectionImpl(JdbcTemplate connectionJdbcTemplate) {
-			this.connectionJdbcTemplate = connectionJdbcTemplate;
-		}
-
 		@Override
 		public void close() {
 			// Does nothing
@@ -153,32 +146,32 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 		@Override
 		public Query query(String sql) {
-			return new QueryImpl(sql, connectionJdbcTemplate);
+			return new QueryImpl(sql);
 		}
 
 		@Override
 		public Query query(Resource sqlResource) {
-			return new QueryImpl(readSQL(sqlResource), connectionJdbcTemplate);
+			return new QueryImpl(readSQL(sqlResource));
 		}
 
 		@Override
 		public Query query(SQL sql) {
-			return new QueryImpl(sql.getSQL(), connectionJdbcTemplate);
+			return new QueryImpl(sql.getSQL());
 		}
 
 		@Override
 		public Update update(String sql) {
-			return new UpdateImpl(sql, connectionJdbcTemplate);
+			return new UpdateImpl(sql);
 		}
 
 		@Override
 		public Update update(SQL sql) {
-			return new UpdateImpl(sql.getSQL(), connectionJdbcTemplate);
+			return new UpdateImpl(sql.getSQL());
 		}
 
 		@Override
 		public Update update(Resource sqlResource) {
-			return new UpdateImpl(readSQL(sqlResource), connectionJdbcTemplate);
+			return new UpdateImpl(readSQL(sqlResource));
 		}
 
 		@Override
@@ -244,14 +237,14 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	private abstract class StatementImpl implements StatementCommon {
 		private final String originalSql;
 
+		/**
+		 * The SQL statement, with parameters replaced by their names.
+		 */
 		final String sql;
 
-		final JdbcTemplate jdbcTemplate;
-
-		StatementImpl(String sql, JdbcTemplate jdbcTemplate) {
+		StatementImpl(String sql) {
 			this.originalSql = sql;
 			this.sql = parseSqlStatementIntoString(sql);
-			this.jdbcTemplate = jdbcTemplate;
 		}
 
 		@Override
@@ -298,8 +291,8 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	}
 
 	private final class QueryImpl extends StatementImpl implements Query {
-		QueryImpl(String sql, JdbcTemplate queryJdbcTemplate) {
-			super(sql, queryJdbcTemplate);
+		QueryImpl(String sql) {
+			super(sql);
 		}
 
 		@Override
@@ -341,8 +334,8 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	}
 
 	private final class UpdateImpl extends StatementImpl implements Update {
-		UpdateImpl(String sql, JdbcTemplate updateJdbcTemplate) {
-			super(sql, updateJdbcTemplate);
+		UpdateImpl(String sql) {
+			super(sql);
 		}
 
 		@Override
@@ -388,7 +381,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	@Override
 	public Connection getConnection() {
-		return new ConnectionImpl(jdbcTemplate);
+		return new ConnectionImpl();
 	}
 
 	@Override
@@ -398,7 +391,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 
 	@Override
 	public Connection getHistoricalConnection() {
-		return new ConnectionImpl(tombstoneJdbcTemplate);
+		return new ConnectionImpl();
 	}
 
 	@Override

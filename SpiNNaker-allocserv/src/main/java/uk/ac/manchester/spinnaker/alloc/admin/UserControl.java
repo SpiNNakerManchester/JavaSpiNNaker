@@ -600,9 +600,9 @@ public class UserControl extends DatabaseAwareBean {
 	 * by Java 11).
 	 */
 	private static class GetUserResult {
-		final PasswordChangeRecord baseUser;
+		private final PasswordChangeRecord baseUser;
 
-		final String oldEncPass;
+		private final String oldEncPass;
 
 		GetUserResult(Row row) {
 			baseUser = passChange(row);

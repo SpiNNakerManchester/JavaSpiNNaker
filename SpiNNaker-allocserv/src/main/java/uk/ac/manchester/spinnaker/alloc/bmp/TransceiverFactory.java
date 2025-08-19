@@ -69,9 +69,9 @@ public class TransceiverFactory
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
 	private static final class Key {
-		final String machine;
+		private final String machine;
 
-		final BMPCoords bmp;
+		private final BMPCoords bmp;
 
 		Key(String machine, BMPCoords bmp) {
 			this.machine = machine;

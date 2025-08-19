@@ -387,9 +387,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	private class MachineNameId {
-		int id;
+		private int id;
 
-		String name;
+		private String name;
 
 		MachineNameId(Row row) {
 			id = row.getInt("machine_id");
