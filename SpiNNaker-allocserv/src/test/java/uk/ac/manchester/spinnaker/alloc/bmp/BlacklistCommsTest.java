@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
@@ -46,6 +47,7 @@ import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
+@NotThreadSafe
 class BlacklistCommsTest extends TestSupport {
 
 	/** Timeouts on individual tests, in seconds. */
