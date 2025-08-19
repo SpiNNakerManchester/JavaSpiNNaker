@@ -129,7 +129,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			}
 			if (stmt.length() != 0) {
 				var statement = stmt.toString();
-				log.debug("Executing DDL Statement: {}", statement);
+				log.trace("Executing DDL Statement: {}", statement);
 				template.execute(statement);
 			}
 		}
