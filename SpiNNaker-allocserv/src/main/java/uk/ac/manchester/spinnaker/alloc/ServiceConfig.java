@@ -486,8 +486,8 @@ public class ServiceConfig extends Application {
 	 * framework. Useful for debugging!
 	 */
 	private void logBeans() {
-		if (log.isDebugEnabled()) {
-			log.debug("beans defined: {}",
+		if (log.isTraceEnabled()) {
+			log.trace("beans defined: {}",
 					List.of(ctx.getBeanDefinitionNames()));
 		}
 	}
