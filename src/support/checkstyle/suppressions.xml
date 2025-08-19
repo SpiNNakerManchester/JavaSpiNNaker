@@ -27,5 +27,4 @@ limitations under the License.
 	<suppress message=".*org\.junit\.jupiter\.api\.Assertions.*" files=".*(Test|ITCase).*"/>
 	<suppress message=".*org\.hamcrest\.Matcher.*" files=".*(Test|ITCase).*"/>
 	<suppress files=".*[\\/]src[\\/]test[\\/].*" message=".*package-info\.java.*" />
-	<suppress message=".*JavadocType: Unknown tag 'hidden'." />
 </suppressions>
