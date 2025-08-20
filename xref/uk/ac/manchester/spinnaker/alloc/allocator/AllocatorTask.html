@@ -321,12 +321,12 @@
 <a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">	 * @author Donal Fellows</em>
 <a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L315" href="#L315">315</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Rectangle {
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> width;
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> width;
 <a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> height;
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> height;
 <a class="jxr_linenumber" name="L319" href="#L319">319</a> 
 <a class="jxr_linenumber" name="L320" href="#L320">320</a> 		<em class="jxr_javadoccomment">/** Depth of rectangle. 1 or 3 */</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> depth;
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> depth;
 <a class="jxr_linenumber" name="L322" href="#L322">322</a> 
 <a class="jxr_linenumber" name="L323" href="#L323">323</a> 		<strong class="jxr_keyword">private</strong> Rectangle(<strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height, <strong class="jxr_keyword">int</strong> depth) {
 <a class="jxr_linenumber" name="L324" href="#L324">324</a> 			<strong class="jxr_keyword">this</strong>.width = width;
@@ -385,9 +385,9 @@
 <a class="jxr_linenumber" name="L377" href="#L377">377</a> 	}
 <a class="jxr_linenumber" name="L378" href="#L378">378</a> 
 <a class="jxr_linenumber" name="L379" href="#L379">379</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> Perimeter {
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 		<strong class="jxr_keyword">int</strong> boardId;
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> boardId;
 <a class="jxr_linenumber" name="L381" href="#L381">381</a> 
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> 		Direction direction;
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 		<strong class="jxr_keyword">private</strong> <a name="Direction" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/Direction.html#Direction">Direction</a> direction;
 <a class="jxr_linenumber" name="L383" href="#L383">383</a> 
 <a class="jxr_linenumber" name="L384" href="#L384">384</a> 		Perimeter(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
 <a class="jxr_linenumber" name="L385" href="#L385">385</a> 			boardId = row.getInt(<span class="jxr_string">"board_id"</span>);
@@ -566,25 +566,25 @@
 <a class="jxr_linenumber" name="L558" href="#L558">558</a> 	}
 <a class="jxr_linenumber" name="L559" href="#L559">559</a> 
 <a class="jxr_linenumber" name="L560" href="#L560">560</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> AllocTask {
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> id;
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> id;
 <a class="jxr_linenumber" name="L562" href="#L562">562</a> 
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> importance;
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> importance;
 <a class="jxr_linenumber" name="L564" href="#L564">564</a> 
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> jobId;
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> jobId;
 <a class="jxr_linenumber" name="L566" href="#L566">566</a> 
-<a class="jxr_linenumber" name="L567" href="#L567">567</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> machineId;
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> machineId;
 <a class="jxr_linenumber" name="L568" href="#L568">568</a> 
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> 		<strong class="jxr_keyword">final</strong> Rectangle max;
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Rectangle max;
 <a class="jxr_linenumber" name="L570" href="#L570">570</a> 
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maxDeadBoards;
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maxDeadBoards;
 <a class="jxr_linenumber" name="L572" href="#L572">572</a> 
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> 		<strong class="jxr_keyword">final</strong> Integer numBoards;
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Integer numBoards;
 <a class="jxr_linenumber" name="L574" href="#L574">574</a> 
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> 		<strong class="jxr_keyword">final</strong> Integer width;
+<a class="jxr_linenumber" name="L575" href="#L575">575</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Integer width;
 <a class="jxr_linenumber" name="L576" href="#L576">576</a> 
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> 		<strong class="jxr_keyword">final</strong> Integer height;
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Integer height;
 <a class="jxr_linenumber" name="L578" href="#L578">578</a> 
-<a class="jxr_linenumber" name="L579" href="#L579">579</a> 		<strong class="jxr_keyword">final</strong> Integer root;
+<a class="jxr_linenumber" name="L579" href="#L579">579</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Integer root;
 <a class="jxr_linenumber" name="L580" href="#L580">580</a> 
 <a class="jxr_linenumber" name="L581" href="#L581">581</a> 		AllocTask(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
 <a class="jxr_linenumber" name="L582" href="#L582">582</a> 			id = row.getInt(<span class="jxr_string">"req_id"</span>);
@@ -859,13 +859,13 @@
 <a class="jxr_linenumber" name="L851" href="#L851">851</a> 	}
 <a class="jxr_linenumber" name="L852" href="#L852">852</a> 
 <a class="jxr_linenumber" name="L853" href="#L853">853</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> HistoricalAlloc {
-<a class="jxr_linenumber" name="L854" href="#L854">854</a> 		<strong class="jxr_keyword">int</strong> allocId;
+<a class="jxr_linenumber" name="L854" href="#L854">854</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> allocId;
 <a class="jxr_linenumber" name="L855" href="#L855">855</a> 
-<a class="jxr_linenumber" name="L856" href="#L856">856</a> 		<strong class="jxr_keyword">int</strong> jobId;
+<a class="jxr_linenumber" name="L856" href="#L856">856</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> jobId;
 <a class="jxr_linenumber" name="L857" href="#L857">857</a> 
-<a class="jxr_linenumber" name="L858" href="#L858">858</a> 		<strong class="jxr_keyword">int</strong> boardId;
+<a class="jxr_linenumber" name="L858" href="#L858">858</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> boardId;
 <a class="jxr_linenumber" name="L859" href="#L859">859</a> 
-<a class="jxr_linenumber" name="L860" href="#L860">860</a> 		Instant allocTimestamp;
+<a class="jxr_linenumber" name="L860" href="#L860">860</a> 		<strong class="jxr_keyword">private</strong> Instant allocTimestamp;
 <a class="jxr_linenumber" name="L861" href="#L861">861</a> 
 <a class="jxr_linenumber" name="L862" href="#L862">862</a> 		HistoricalAlloc(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
 <a class="jxr_linenumber" name="L863" href="#L863">863</a> 			allocId = row.getInt(<span class="jxr_string">"alloc_id"</span>);
@@ -882,47 +882,47 @@
 <a class="jxr_linenumber" name="L874" href="#L874">874</a> 	}
 <a class="jxr_linenumber" name="L875" href="#L875">875</a> 
 <a class="jxr_linenumber" name="L876" href="#L876">876</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> HistoricalJob {
-<a class="jxr_linenumber" name="L877" href="#L877">877</a> 		<strong class="jxr_keyword">int</strong> jobId;
+<a class="jxr_linenumber" name="L877" href="#L877">877</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> jobId;
 <a class="jxr_linenumber" name="L878" href="#L878">878</a> 
-<a class="jxr_linenumber" name="L879" href="#L879">879</a> 		<strong class="jxr_keyword">int</strong> machineId;
+<a class="jxr_linenumber" name="L879" href="#L879">879</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> machineId;
 <a class="jxr_linenumber" name="L880" href="#L880">880</a> 
-<a class="jxr_linenumber" name="L881" href="#L881">881</a> 		String owner;
+<a class="jxr_linenumber" name="L881" href="#L881">881</a> 		<strong class="jxr_keyword">private</strong> String owner;
 <a class="jxr_linenumber" name="L882" href="#L882">882</a> 
-<a class="jxr_linenumber" name="L883" href="#L883">883</a> 		Instant createTimestamp;
+<a class="jxr_linenumber" name="L883" href="#L883">883</a> 		<strong class="jxr_keyword">private</strong> Instant createTimestamp;
 <a class="jxr_linenumber" name="L884" href="#L884">884</a> 
-<a class="jxr_linenumber" name="L885" href="#L885">885</a> 		<strong class="jxr_keyword">int</strong> width;
+<a class="jxr_linenumber" name="L885" href="#L885">885</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> width;
 <a class="jxr_linenumber" name="L886" href="#L886">886</a> 
-<a class="jxr_linenumber" name="L887" href="#L887">887</a> 		<strong class="jxr_keyword">int</strong> height;
+<a class="jxr_linenumber" name="L887" href="#L887">887</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> height;
 <a class="jxr_linenumber" name="L888" href="#L888">888</a> 
-<a class="jxr_linenumber" name="L889" href="#L889">889</a> 		<strong class="jxr_keyword">int</strong> depth;
+<a class="jxr_linenumber" name="L889" href="#L889">889</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> depth;
 <a class="jxr_linenumber" name="L890" href="#L890">890</a> 
-<a class="jxr_linenumber" name="L891" href="#L891">891</a> 		<strong class="jxr_keyword">int</strong> allocatedRoot;
+<a class="jxr_linenumber" name="L891" href="#L891">891</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> allocatedRoot;
 <a class="jxr_linenumber" name="L892" href="#L892">892</a> 
-<a class="jxr_linenumber" name="L893" href="#L893">893</a> 		Instant keepaliveInterval;
+<a class="jxr_linenumber" name="L893" href="#L893">893</a> 		<strong class="jxr_keyword">private</strong> Instant keepaliveInterval;
 <a class="jxr_linenumber" name="L894" href="#L894">894</a> 
-<a class="jxr_linenumber" name="L895" href="#L895">895</a> 		String keepaliveHost;
+<a class="jxr_linenumber" name="L895" href="#L895">895</a> 		<strong class="jxr_keyword">private</strong> String keepaliveHost;
 <a class="jxr_linenumber" name="L896" href="#L896">896</a> 
-<a class="jxr_linenumber" name="L897" href="#L897">897</a> 		String deathReason;
+<a class="jxr_linenumber" name="L897" href="#L897">897</a> 		<strong class="jxr_keyword">private</strong> String deathReason;
 <a class="jxr_linenumber" name="L898" href="#L898">898</a> 
-<a class="jxr_linenumber" name="L899" href="#L899">899</a> 		Instant deathTimestamp;
+<a class="jxr_linenumber" name="L899" href="#L899">899</a> 		<strong class="jxr_keyword">private</strong> Instant deathTimestamp;
 <a class="jxr_linenumber" name="L900" href="#L900">900</a> 
-<a class="jxr_linenumber" name="L901" href="#L901">901</a> 		byte[] originalRequest;
+<a class="jxr_linenumber" name="L901" href="#L901">901</a> 		<strong class="jxr_keyword">private</strong> byte[] originalRequest;
 <a class="jxr_linenumber" name="L902" href="#L902">902</a> 
-<a class="jxr_linenumber" name="L903" href="#L903">903</a> 		Instant allocationTimestamp;
+<a class="jxr_linenumber" name="L903" href="#L903">903</a> 		<strong class="jxr_keyword">private</strong> Instant allocationTimestamp;
 <a class="jxr_linenumber" name="L904" href="#L904">904</a> 
-<a class="jxr_linenumber" name="L905" href="#L905">905</a> 		<strong class="jxr_keyword">int</strong> allocationSize;
+<a class="jxr_linenumber" name="L905" href="#L905">905</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> allocationSize;
 <a class="jxr_linenumber" name="L906" href="#L906">906</a> 
-<a class="jxr_linenumber" name="L907" href="#L907">907</a> 		String machineName;
+<a class="jxr_linenumber" name="L907" href="#L907">907</a> 		<strong class="jxr_keyword">private</strong> String machineName;
 <a class="jxr_linenumber" name="L908" href="#L908">908</a> 
-<a class="jxr_linenumber" name="L909" href="#L909">909</a> 		String userName;
+<a class="jxr_linenumber" name="L909" href="#L909">909</a> 		<strong class="jxr_keyword">private</strong> String userName;
 <a class="jxr_linenumber" name="L910" href="#L910">910</a> 
-<a class="jxr_linenumber" name="L911" href="#L911">911</a> 		<strong class="jxr_keyword">int</strong> groupId;
+<a class="jxr_linenumber" name="L911" href="#L911">911</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> groupId;
 <a class="jxr_linenumber" name="L912" href="#L912">912</a> 
-<a class="jxr_linenumber" name="L913" href="#L913">913</a> 		String groupName;
+<a class="jxr_linenumber" name="L913" href="#L913">913</a> 		<strong class="jxr_keyword">private</strong> String groupName;
 <a class="jxr_linenumber" name="L914" href="#L914">914</a> 
-<a class="jxr_linenumber" name="L915" href="#L915">915</a> 		Integer nmpiJobId;
+<a class="jxr_linenumber" name="L915" href="#L915">915</a> 		<strong class="jxr_keyword">private</strong> Integer nmpiJobId;
 <a class="jxr_linenumber" name="L916" href="#L916">916</a> 
-<a class="jxr_linenumber" name="L917" href="#L917">917</a> 		Integer nmpiSessionId;
+<a class="jxr_linenumber" name="L917" href="#L917">917</a> 		<strong class="jxr_keyword">private</strong> Integer nmpiSessionId;
 <a class="jxr_linenumber" name="L918" href="#L918">918</a> 
 <a class="jxr_linenumber" name="L919" href="#L919">919</a> 		HistoricalJob(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
 <a class="jxr_linenumber" name="L920" href="#L920">920</a> 			jobId = row.getInt(<span class="jxr_string">"job_id"</span>);
@@ -1476,83 +1476,82 @@
 <a class="jxr_linenumber" name="L1468" href="#L1468">1468</a> 	@ForTestingOnly
 <a class="jxr_linenumber" name="L1469" href="#L1469">1469</a> 	<strong class="jxr_keyword">interface</strong> HistTestAPI {
 <a class="jxr_linenumber" name="L1470" href="#L1470">1470</a> 
-<a class="jxr_linenumber" name="L1471" href="#L1471">1471</a> 
-<a class="jxr_linenumber" name="L1472" href="#L1472">1472</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1473" href="#L1473">1473</a> <em class="jxr_javadoccomment">		 * Implementation of {@link AllocatorTask#tombstone()}.</em>
-<a class="jxr_linenumber" name="L1474" href="#L1474">1474</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L1475" href="#L1475">1475</a> <em class="jxr_javadoccomment">		 * @return Description of the tombstoned IDs</em>
-<a class="jxr_linenumber" name="L1476" href="#L1476">1476</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L1477" href="#L1477">1477</a> 		Copied tombstone();
-<a class="jxr_linenumber" name="L1478" href="#L1478">1478</a> 	}
-<a class="jxr_linenumber" name="L1479" href="#L1479">1479</a> 
-<a class="jxr_linenumber" name="L1480" href="#L1480">1480</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1481" href="#L1481">1481</a> <em class="jxr_javadoccomment">	 * @param conn</em>
-<a class="jxr_linenumber" name="L1482" href="#L1482">1482</a> <em class="jxr_javadoccomment">	 *            The DB connection</em>
-<a class="jxr_linenumber" name="L1483" href="#L1483">1483</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L1484" href="#L1484">1484</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L1485" href="#L1485">1485</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L1486" href="#L1486">1486</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1487" href="#L1487">1487</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L1488" href="#L1488">1488</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L1489" href="#L1489">1489</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L1490" href="#L1490">1490</a> 	@Deprecated
-<a class="jxr_linenumber" name="L1491" href="#L1491">1491</a> 	TestAPI getTestAPI(Connection conn) {
-<a class="jxr_linenumber" name="L1492" href="#L1492">1492</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L1493" href="#L1493">1493</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L1494" href="#L1494">1494</a> 			@Override
-<a class="jxr_linenumber" name="L1495" href="#L1495">1495</a> 			<strong class="jxr_keyword">public</strong> Allocations allocate() {
-<a class="jxr_linenumber" name="L1496" href="#L1496">1496</a> 				<strong class="jxr_keyword">return</strong> AllocatorTask.<strong class="jxr_keyword">this</strong>.allocate(conn);
-<a class="jxr_linenumber" name="L1497" href="#L1497">1497</a> 			}
-<a class="jxr_linenumber" name="L1498" href="#L1498">1498</a> 
-<a class="jxr_linenumber" name="L1499" href="#L1499">1499</a> 			@Override
-<a class="jxr_linenumber" name="L1500" href="#L1500">1500</a> 			<strong class="jxr_keyword">public</strong> Allocations destroyJob(<strong class="jxr_keyword">int</strong> id, String reason) {
-<a class="jxr_linenumber" name="L1501" href="#L1501">1501</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Allocations(id,
-<a class="jxr_linenumber" name="L1502" href="#L1502">1502</a> 						AllocatorTask.<strong class="jxr_keyword">this</strong>.destroyJob(conn, id, reason));
-<a class="jxr_linenumber" name="L1503" href="#L1503">1503</a> 			}
-<a class="jxr_linenumber" name="L1504" href="#L1504">1504</a> 
-<a class="jxr_linenumber" name="L1505" href="#L1505">1505</a> 			@Override
-<a class="jxr_linenumber" name="L1506" href="#L1506">1506</a> 			<strong class="jxr_keyword">public</strong> Allocations expireJobs() {
-<a class="jxr_linenumber" name="L1507" href="#L1507">1507</a> 				<strong class="jxr_keyword">return</strong> AllocatorTask.<strong class="jxr_keyword">this</strong>.expireJobs(conn);
-<a class="jxr_linenumber" name="L1508" href="#L1508">1508</a> 			}
-<a class="jxr_linenumber" name="L1509" href="#L1509">1509</a> 
-<a class="jxr_linenumber" name="L1510" href="#L1510">1510</a> 			@Override
-<a class="jxr_linenumber" name="L1511" href="#L1511">1511</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> emergencyStop() {
-<a class="jxr_linenumber" name="L1512" href="#L1512">1512</a> 				AllocatorTask.<strong class="jxr_keyword">this</strong>.emergencyStop();
-<a class="jxr_linenumber" name="L1513" href="#L1513">1513</a> 			}
-<a class="jxr_linenumber" name="L1514" href="#L1514">1514</a> 
-<a class="jxr_linenumber" name="L1515" href="#L1515">1515</a> 			@Override
-<a class="jxr_linenumber" name="L1516" href="#L1516">1516</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> restartAfterStop() {
-<a class="jxr_linenumber" name="L1517" href="#L1517">1517</a> 				<strong class="jxr_keyword">synchronized</strong> (AllocatorTask.<strong class="jxr_keyword">this</strong>.futures) {
-<a class="jxr_linenumber" name="L1518" href="#L1518">1518</a> 					AllocatorTask.<strong class="jxr_keyword">this</strong>.emergencyStop = false;
-<a class="jxr_linenumber" name="L1519" href="#L1519">1519</a> 					AllocatorTask.<strong class="jxr_keyword">this</strong>.futures.clear();
-<a class="jxr_linenumber" name="L1520" href="#L1520">1520</a> 					AllocatorTask.<strong class="jxr_keyword">this</strong>.init();
-<a class="jxr_linenumber" name="L1521" href="#L1521">1521</a> 				}
-<a class="jxr_linenumber" name="L1522" href="#L1522">1522</a> 			}
-<a class="jxr_linenumber" name="L1523" href="#L1523">1523</a> 		};
-<a class="jxr_linenumber" name="L1524" href="#L1524">1524</a> 	}
-<a class="jxr_linenumber" name="L1525" href="#L1525">1525</a> 
-<a class="jxr_linenumber" name="L1526" href="#L1526">1526</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1527" href="#L1527">1527</a> <em class="jxr_javadoccomment">	 * @param conn</em>
-<a class="jxr_linenumber" name="L1528" href="#L1528">1528</a> <em class="jxr_javadoccomment">	 *            The DB connection</em>
-<a class="jxr_linenumber" name="L1529" href="#L1529">1529</a> <em class="jxr_javadoccomment">	 * @param histConn</em>
-<a class="jxr_linenumber" name="L1530" href="#L1530">1530</a> <em class="jxr_javadoccomment">	 *            The historical DB connection</em>
-<a class="jxr_linenumber" name="L1531" href="#L1531">1531</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L1532" href="#L1532">1532</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L1533" href="#L1533">1533</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1534" href="#L1534">1534</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L1535" href="#L1535">1535</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L1536" href="#L1536">1536</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L1537" href="#L1537">1537</a> 	@Deprecated
-<a class="jxr_linenumber" name="L1538" href="#L1538">1538</a> 	HistTestAPI getHistTestAPI(Connection conn, Connection histConn) {
-<a class="jxr_linenumber" name="L1539" href="#L1539">1539</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L1540" href="#L1540">1540</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HistTestAPI() {
-<a class="jxr_linenumber" name="L1541" href="#L1541">1541</a> 			@Override
-<a class="jxr_linenumber" name="L1542" href="#L1542">1542</a> 			<strong class="jxr_keyword">public</strong> Copied tombstone() {
-<a class="jxr_linenumber" name="L1543" href="#L1543">1543</a> 				<strong class="jxr_keyword">return</strong> AllocatorTask.<strong class="jxr_keyword">this</strong>.tombstone(conn, histConn);
-<a class="jxr_linenumber" name="L1544" href="#L1544">1544</a> 			}
-<a class="jxr_linenumber" name="L1545" href="#L1545">1545</a> 		};
-<a class="jxr_linenumber" name="L1546" href="#L1546">1546</a> 	}
-<a class="jxr_linenumber" name="L1547" href="#L1547">1547</a> }
+<a class="jxr_linenumber" name="L1471" href="#L1471">1471</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1472" href="#L1472">1472</a> <em class="jxr_javadoccomment">		 * Implementation of {@link AllocatorTask#tombstone()}.</em>
+<a class="jxr_linenumber" name="L1473" href="#L1473">1473</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L1474" href="#L1474">1474</a> <em class="jxr_javadoccomment">		 * @return Description of the tombstoned IDs</em>
+<a class="jxr_linenumber" name="L1475" href="#L1475">1475</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L1476" href="#L1476">1476</a> 		Copied tombstone();
+<a class="jxr_linenumber" name="L1477" href="#L1477">1477</a> 	}
+<a class="jxr_linenumber" name="L1478" href="#L1478">1478</a> 
+<a class="jxr_linenumber" name="L1479" href="#L1479">1479</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1480" href="#L1480">1480</a> <em class="jxr_javadoccomment">	 * @param conn</em>
+<a class="jxr_linenumber" name="L1481" href="#L1481">1481</a> <em class="jxr_javadoccomment">	 *            The DB connection</em>
+<a class="jxr_linenumber" name="L1482" href="#L1482">1482</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L1483" href="#L1483">1483</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L1484" href="#L1484">1484</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L1485" href="#L1485">1485</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1486" href="#L1486">1486</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L1487" href="#L1487">1487</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L1488" href="#L1488">1488</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L1489" href="#L1489">1489</a> 	@Deprecated
+<a class="jxr_linenumber" name="L1490" href="#L1490">1490</a> 	TestAPI getTestAPI(Connection conn) {
+<a class="jxr_linenumber" name="L1491" href="#L1491">1491</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L1492" href="#L1492">1492</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L1493" href="#L1493">1493</a> 			@Override
+<a class="jxr_linenumber" name="L1494" href="#L1494">1494</a> 			<strong class="jxr_keyword">public</strong> Allocations allocate() {
+<a class="jxr_linenumber" name="L1495" href="#L1495">1495</a> 				<strong class="jxr_keyword">return</strong> AllocatorTask.<strong class="jxr_keyword">this</strong>.allocate(conn);
+<a class="jxr_linenumber" name="L1496" href="#L1496">1496</a> 			}
+<a class="jxr_linenumber" name="L1497" href="#L1497">1497</a> 
+<a class="jxr_linenumber" name="L1498" href="#L1498">1498</a> 			@Override
+<a class="jxr_linenumber" name="L1499" href="#L1499">1499</a> 			<strong class="jxr_keyword">public</strong> Allocations destroyJob(<strong class="jxr_keyword">int</strong> id, String reason) {
+<a class="jxr_linenumber" name="L1500" href="#L1500">1500</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Allocations(id,
+<a class="jxr_linenumber" name="L1501" href="#L1501">1501</a> 						AllocatorTask.<strong class="jxr_keyword">this</strong>.destroyJob(conn, id, reason));
+<a class="jxr_linenumber" name="L1502" href="#L1502">1502</a> 			}
+<a class="jxr_linenumber" name="L1503" href="#L1503">1503</a> 
+<a class="jxr_linenumber" name="L1504" href="#L1504">1504</a> 			@Override
+<a class="jxr_linenumber" name="L1505" href="#L1505">1505</a> 			<strong class="jxr_keyword">public</strong> Allocations expireJobs() {
+<a class="jxr_linenumber" name="L1506" href="#L1506">1506</a> 				<strong class="jxr_keyword">return</strong> AllocatorTask.<strong class="jxr_keyword">this</strong>.expireJobs(conn);
+<a class="jxr_linenumber" name="L1507" href="#L1507">1507</a> 			}
+<a class="jxr_linenumber" name="L1508" href="#L1508">1508</a> 
+<a class="jxr_linenumber" name="L1509" href="#L1509">1509</a> 			@Override
+<a class="jxr_linenumber" name="L1510" href="#L1510">1510</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> emergencyStop() {
+<a class="jxr_linenumber" name="L1511" href="#L1511">1511</a> 				AllocatorTask.<strong class="jxr_keyword">this</strong>.emergencyStop();
+<a class="jxr_linenumber" name="L1512" href="#L1512">1512</a> 			}
+<a class="jxr_linenumber" name="L1513" href="#L1513">1513</a> 
+<a class="jxr_linenumber" name="L1514" href="#L1514">1514</a> 			@Override
+<a class="jxr_linenumber" name="L1515" href="#L1515">1515</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> restartAfterStop() {
+<a class="jxr_linenumber" name="L1516" href="#L1516">1516</a> 				<strong class="jxr_keyword">synchronized</strong> (AllocatorTask.<strong class="jxr_keyword">this</strong>.futures) {
+<a class="jxr_linenumber" name="L1517" href="#L1517">1517</a> 					AllocatorTask.<strong class="jxr_keyword">this</strong>.emergencyStop = false;
+<a class="jxr_linenumber" name="L1518" href="#L1518">1518</a> 					AllocatorTask.<strong class="jxr_keyword">this</strong>.futures.clear();
+<a class="jxr_linenumber" name="L1519" href="#L1519">1519</a> 					AllocatorTask.<strong class="jxr_keyword">this</strong>.init();
+<a class="jxr_linenumber" name="L1520" href="#L1520">1520</a> 				}
+<a class="jxr_linenumber" name="L1521" href="#L1521">1521</a> 			}
+<a class="jxr_linenumber" name="L1522" href="#L1522">1522</a> 		};
+<a class="jxr_linenumber" name="L1523" href="#L1523">1523</a> 	}
+<a class="jxr_linenumber" name="L1524" href="#L1524">1524</a> 
+<a class="jxr_linenumber" name="L1525" href="#L1525">1525</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1526" href="#L1526">1526</a> <em class="jxr_javadoccomment">	 * @param conn</em>
+<a class="jxr_linenumber" name="L1527" href="#L1527">1527</a> <em class="jxr_javadoccomment">	 *            The DB connection</em>
+<a class="jxr_linenumber" name="L1528" href="#L1528">1528</a> <em class="jxr_javadoccomment">	 * @param histConn</em>
+<a class="jxr_linenumber" name="L1529" href="#L1529">1529</a> <em class="jxr_javadoccomment">	 *            The historical DB connection</em>
+<a class="jxr_linenumber" name="L1530" href="#L1530">1530</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L1531" href="#L1531">1531</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L1532" href="#L1532">1532</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1533" href="#L1533">1533</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L1534" href="#L1534">1534</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L1535" href="#L1535">1535</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L1536" href="#L1536">1536</a> 	@Deprecated
+<a class="jxr_linenumber" name="L1537" href="#L1537">1537</a> 	HistTestAPI getHistTestAPI(Connection conn, Connection histConn) {
+<a class="jxr_linenumber" name="L1538" href="#L1538">1538</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L1539" href="#L1539">1539</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HistTestAPI() {
+<a class="jxr_linenumber" name="L1540" href="#L1540">1540</a> 			@Override
+<a class="jxr_linenumber" name="L1541" href="#L1541">1541</a> 			<strong class="jxr_keyword">public</strong> Copied tombstone() {
+<a class="jxr_linenumber" name="L1542" href="#L1542">1542</a> 				<strong class="jxr_keyword">return</strong> AllocatorTask.<strong class="jxr_keyword">this</strong>.tombstone(conn, histConn);
+<a class="jxr_linenumber" name="L1543" href="#L1543">1543</a> 			}
+<a class="jxr_linenumber" name="L1544" href="#L1544">1544</a> 		};
+<a class="jxr_linenumber" name="L1545" href="#L1545">1545</a> 	}
+<a class="jxr_linenumber" name="L1546" href="#L1546">1546</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2025 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

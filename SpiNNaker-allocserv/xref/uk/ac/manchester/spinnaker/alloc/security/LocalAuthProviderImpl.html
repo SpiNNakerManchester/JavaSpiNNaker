@@ -858,11 +858,11 @@
 <a class="jxr_linenumber" name="L850" href="#L850">850</a> 
 <a class="jxr_linenumber" name="L851" href="#L851">851</a> 	@Immutable
 <a class="jxr_linenumber" name="L852" href="#L852">852</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> LocalAuthResult {
-<a class="jxr_linenumber" name="L853" href="#L853">853</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> userId;
+<a class="jxr_linenumber" name="L853" href="#L853">853</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> userId;
 <a class="jxr_linenumber" name="L854" href="#L854">854</a> 
-<a class="jxr_linenumber" name="L855" href="#L855">855</a> 		<strong class="jxr_keyword">final</strong> <a name="TrustLevel" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/TrustLevel.html#TrustLevel">TrustLevel</a> trustLevel;
+<a class="jxr_linenumber" name="L855" href="#L855">855</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="TrustLevel" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/TrustLevel.html#TrustLevel">TrustLevel</a> trustLevel;
 <a class="jxr_linenumber" name="L856" href="#L856">856</a> 
-<a class="jxr_linenumber" name="L857" href="#L857">857</a> 		<strong class="jxr_keyword">final</strong> String passInfo;
+<a class="jxr_linenumber" name="L857" href="#L857">857</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String passInfo;
 <a class="jxr_linenumber" name="L858" href="#L858">858</a> 
 <a class="jxr_linenumber" name="L859" href="#L859">859</a> 		<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L860" href="#L860">860</a> <em class="jxr_javadoccomment">		 * Auth succeeded.</em>
@@ -922,11 +922,11 @@
 <a class="jxr_linenumber" name="L914" href="#L914">914</a> 
 <a class="jxr_linenumber" name="L915" href="#L915">915</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> AuthInfo {
 <a class="jxr_linenumber" name="L916" href="#L916">916</a> 
-<a class="jxr_linenumber" name="L917" href="#L917">917</a> 		<strong class="jxr_keyword">final</strong> String encryptedPassword;
+<a class="jxr_linenumber" name="L917" href="#L917">917</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String encryptedPassword;
 <a class="jxr_linenumber" name="L918" href="#L918">918</a> 
-<a class="jxr_linenumber" name="L919" href="#L919">919</a> 		<strong class="jxr_keyword">final</strong> <a name="TrustLevel" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/TrustLevel.html#TrustLevel">TrustLevel</a> trustLevel;
+<a class="jxr_linenumber" name="L919" href="#L919">919</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="TrustLevel" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/TrustLevel.html#TrustLevel">TrustLevel</a> trustLevel;
 <a class="jxr_linenumber" name="L920" href="#L920">920</a> 
-<a class="jxr_linenumber" name="L921" href="#L921">921</a> 		<strong class="jxr_keyword">final</strong> String openIdSubject;
+<a class="jxr_linenumber" name="L921" href="#L921">921</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String openIdSubject;
 <a class="jxr_linenumber" name="L922" href="#L922">922</a> 
 <a class="jxr_linenumber" name="L923" href="#L923">923</a> 		AuthInfo(<a name="Row" href="../../../../../../uk/ac/manchester/spinnaker/alloc/db/Row.html#Row">Row</a> row) {
 <a class="jxr_linenumber" name="L924" href="#L924">924</a> 			encryptedPassword = row.getString(<span class="jxr_string">"encrypted_password"</span>);

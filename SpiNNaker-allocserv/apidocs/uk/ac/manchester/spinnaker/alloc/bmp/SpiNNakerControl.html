@@ -123,45 +123,50 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#ping(java.util.List)" class="member-name-link">ping</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Ping the given boards.</div>
+<div class="block">Close the controller and release any resources it holds.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#powerOff(java.util.Collection)" class="member-name-link">powerOff</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#ping(java.util.List)" class="member-name-link">ping</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Turn off boards managed by a BMP.</div>
+<div class="block">Ping the given boards.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#powerOnAndCheck(java.util.List)" class="member-name-link">powerOnAndCheck</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#powerOff(java.util.Collection)" class="member-name-link">powerOff</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Turn off boards managed by a BMP.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#powerOnAndCheck(java.util.List)" class="member-name-link">powerOnAndCheck</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;uk.ac.manchester.spinnaker.machine.board.BMPBoard&gt;&nbsp;boards)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Switch on a collection of boards managed by a BMP on a machine and check
  that they've come up correctly.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="external-link">Blacklist</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">readBlacklist</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="external-link">Blacklist</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">readBlacklist</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read a blacklist from the given board.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readSerial(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">readSerial</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readSerial(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">readSerial</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read a BMP serial number from the given board.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="external-link">ADCInfo</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">readTemp</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/ADCInfo.html" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="external-link">ADCInfo</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readTemp(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">readTemp</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read the temperature data from the given board.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setLinkOff(uk.ac.manchester.spinnaker.alloc.bmp.Link)" class="member-name-link">setLinkOff</a><wbr>(<a href="Link.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">Link</a>&nbsp;link)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setLinkOff(uk.ac.manchester.spinnaker.alloc.bmp.Link)" class="member-name-link">setLinkOff</a><wbr>(<a href="Link.html" title="class in uk.ac.manchester.spinnaker.alloc.bmp">Link</a>&nbsp;link)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Turns a link off.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#writeBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)" class="member-name-link">writeBlacklist</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#writeBlacklist(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)" class="member-name-link">writeBlacklist</a><wbr>(uk.ac.manchester.spinnaker.machine.board.BMPBoard&nbsp;board,
  <a href="https://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Blacklist.html" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="external-link">Blacklist</a>&nbsp;blacklist)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Write a blacklist to the given board.</div>
 </div>
 </div>
@@ -326,6 +331,13 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>boards</code> - The boards to ping.</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
+<div class="block">Close the controller and release any resources it holds.</div>
 </section>
 </li>
 </ul>

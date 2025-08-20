@@ -159,7 +159,7 @@
 <a class="jxr_linenumber" name="L151" href="#L151">151</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> FPGAReloadRequired <strong class="jxr_keyword">extends</strong> Exception {
 <a class="jxr_linenumber" name="L152" href="#L152">152</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 1L;
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> 
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> 		<strong class="jxr_keyword">final</strong> BMPBoard board;
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> BMPBoard board;
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> 
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 		FPGAReloadRequired(BMPBoard board) {
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> 			<strong class="jxr_keyword">this</strong>.board = board;
@@ -363,7 +363,17 @@
 <a class="jxr_linenumber" name="L355" href="#L355">355</a> 			}
 <a class="jxr_linenumber" name="L356" href="#L356">356</a> 		});
 <a class="jxr_linenumber" name="L357" href="#L357">357</a> 	}
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> }
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> 	@Override
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 			txrx.close();
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> 			log.warn(<span class="jxr_string">"Exception closing BMP transceiver for {}: {}"</span>,
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 					machine.getName(), e.getMessage(), e);
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> 		}
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 	}
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2025 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
