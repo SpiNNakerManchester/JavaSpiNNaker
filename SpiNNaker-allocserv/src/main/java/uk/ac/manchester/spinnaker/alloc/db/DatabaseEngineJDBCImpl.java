@@ -129,7 +129,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 			}
 			if (stmt.length() != 0) {
 				var statement = stmt.toString();
-				log.debug("Executing DDL Statement: {}", statement);
+				log.trace("Executing DDL Statement: {}", statement);
 				template.execute(statement);
 			}
 		}
@@ -244,8 +244,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	private abstract class StatementImpl implements StatementCommon {
 		private final String originalSql;
 
+		/** The SQL statement with parameters replaced by ? */
 		final String sql;
 
+		/** The JdbcTemplate to use for this statement. */
 		final JdbcTemplate jdbcTemplate;
 
 		StatementImpl(String sql, JdbcTemplate jdbcTemplate) {

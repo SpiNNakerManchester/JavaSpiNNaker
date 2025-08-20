@@ -850,11 +850,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Immutable
 	private static final class LocalAuthResult {
-		final int userId;
+		private final int userId;
 
-		final TrustLevel trustLevel;
+		private final TrustLevel trustLevel;
 
-		final String passInfo;
+		private final String passInfo;
 
 		/**
 		 * Auth succeeded.
@@ -914,11 +914,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private static class AuthInfo {
 
-		final String encryptedPassword;
+		private final String encryptedPassword;
 
-		final TrustLevel trustLevel;
+		private final TrustLevel trustLevel;
 
-		final String openIdSubject;
+		private final String openIdSubject;
 
 		AuthInfo(Row row) {
 			encryptedPassword = row.getString("encrypted_password");

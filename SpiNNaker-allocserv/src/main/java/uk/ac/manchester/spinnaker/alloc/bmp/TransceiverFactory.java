@@ -69,9 +69,9 @@ public class TransceiverFactory
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
 	private static final class Key {
-		final String machine;
+		private final String machine;
 
-		final BMPCoords bmp;
+		private final BMPCoords bmp;
 
 		Key(String machine, BMPCoords bmp) {
 			this.machine = machine;
@@ -158,9 +158,13 @@ public class TransceiverFactory
 		var connData = makeConnectionData(machineDescription, bmp);
 		try {
 			if (testFactory != null) {
+				log.debug("using test transceiver factory {}", testFactory);
 				return testFactory.create(machineDescription.getName(),
 						connData, setBlacklist);
 			} else {
+				log.debug("using real transceiver factory for {} at {}",
+						machineDescription.getName(),
+						connData.ipAddress);
 				return makeTransceiver(connData);
 			}
 		} catch (IOException | SpinnmanException | InterruptedException e) {

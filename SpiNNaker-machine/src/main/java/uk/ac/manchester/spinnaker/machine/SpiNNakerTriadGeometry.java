@@ -329,9 +329,9 @@ public final class SpiNNakerTriadGeometry {
 	 * Local class with x and y values that can be negative.
 	 */
 	private static final class Location {
-		final int x;
+		private final int x;
 
-		final int y;
+		private final int y;
 
 		Location(ChipLocation chip, int dx, int dy) {
 			this.x = chip.getX() - dx;

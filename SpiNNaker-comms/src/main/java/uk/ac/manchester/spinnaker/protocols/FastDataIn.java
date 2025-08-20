@@ -340,9 +340,9 @@ public class FastDataIn implements AutoCloseable {
 	 * @author Alan Stokes
 	 */
 	private static final class SeenFlags {
-		boolean seenEnd;
+		private boolean seenEnd;
 
-		boolean seenAll;
+		private boolean seenAll;
 	}
 
 	private SDPHeader header() {

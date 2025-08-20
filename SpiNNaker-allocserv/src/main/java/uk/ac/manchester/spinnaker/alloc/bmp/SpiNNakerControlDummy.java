@@ -87,4 +87,9 @@ public class SpiNNakerControlDummy implements SpiNNakerControl {
 		// Do Nothing
 	}
 
+	@Override
+	public void close() {
+		// Do Nothing
+	}
+
 }

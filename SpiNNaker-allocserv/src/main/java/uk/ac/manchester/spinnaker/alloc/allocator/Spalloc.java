@@ -229,21 +229,22 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private final class DescribeMachineSQL extends AbstractSQL {
-		final Query namedMachine = conn.query(GET_NAMED_MACHINE);
+		private final Query namedMachine = conn.query(GET_NAMED_MACHINE);
 
-		final Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
+		private final Query countMachineThings = conn.query(
+				COUNT_MACHINE_THINGS);
 
-		final Query getTags = conn.query(GET_TAGS);
+		private final Query getTags = conn.query(GET_TAGS);
 
-		final Query getJobs = conn.query(GET_MACHINE_JOBS);
+		private final Query getJobs = conn.query(GET_MACHINE_JOBS);
 
-		final Query getCoords = conn.query(GET_JOB_BOARD_COORDS);
+		private final Query getCoords = conn.query(GET_JOB_BOARD_COORDS);
 
-		final Query getLive = conn.query(GET_LIVE_BOARDS);
+		private final Query getLive = conn.query(GET_LIVE_BOARDS);
 
-		final Query getDead = conn.query(GET_DEAD_BOARDS);
+		private final Query getDead = conn.query(GET_DEAD_BOARDS);
 
-		final Query getQuota = conn.query(GET_USER_QUOTA);
+		private final Query getQuota = conn.query(GET_USER_QUOTA);
 
 		@Override
 		public void close() {
@@ -637,9 +638,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private class BoardLocated {
-		int boardId;
+		private int boardId;
 
-		int z;
+		private int z;
 
 		BoardLocated(Row row) {
 			boardId = row.getInt("board_id");
@@ -794,9 +795,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private class Problem {
-		int boardId;
+		private int boardId;
 
-		Integer jobId;
+		private Integer jobId;
 
 		Problem(Row row) {
 			boardId = row.getInt("board_id");
@@ -844,17 +845,17 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private class Reported {
-		int boardId;
+		private int boardId;
 
-		int x;
+		private int x;
 
-		int y;
+		private int y;
 
-		int z;
+		private int z;
 
-		String address;
+		private String address;
 
-		int numReports;
+		private int numReports;
 
 		Reported(Row row) {
 			boardId = row.getInt("board_id");
@@ -1249,21 +1250,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private final class BoardReportSQL extends AbstractSQL {
-		final Query findBoardByChip = conn.query(findBoardByJobChip);
+		private final Query findBoardByChip = conn.query(findBoardByJobChip);
 
-		final Query findBoardByTriad = conn.query(findBoardByLogicalCoords);
+		private final Query findBoardByTriad = conn.query(
+				findBoardByLogicalCoords);
 
-		final Query findBoardPhys = conn.query(findBoardByPhysicalCoords);
+		private final Query findBoardPhys = conn.query(
+				findBoardByPhysicalCoords);
 
-		final Query findBoardNet = conn.query(findBoardByIPAddress);
+		private final Query findBoardNet = conn.query(findBoardByIPAddress);
 
-		final Update insertReport = conn.update(INSERT_BOARD_REPORT);
+		private final Update insertReport = conn.update(INSERT_BOARD_REPORT);
 
-		final Query getReported = conn.query(getReportedBoards);
+		private final Query getReported = conn.query(getReportedBoards);
 
-		final Update setFunctioning = conn.update(SET_FUNCTIONING_FIELD);
+		private final Update setFunctioning = conn.update(
+				SET_FUNCTIONING_FIELD);
 
-		final Query getNamedMachine = conn.query(GET_NAMED_MACHINE);
+		private final Query getNamedMachine = conn.query(GET_NAMED_MACHINE);
 
 		@Override
 		public void close() {

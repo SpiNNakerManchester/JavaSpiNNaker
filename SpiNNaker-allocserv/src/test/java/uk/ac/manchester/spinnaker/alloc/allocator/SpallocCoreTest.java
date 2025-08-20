@@ -40,6 +40,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
@@ -62,6 +63,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
+@NotThreadSafe
 class SpallocCoreTest extends TestSupport {
 
 	private static final String BAD_USER = "user_foo";
