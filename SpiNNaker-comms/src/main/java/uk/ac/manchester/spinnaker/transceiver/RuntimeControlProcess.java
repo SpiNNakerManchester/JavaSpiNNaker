@@ -295,13 +295,13 @@ class RuntimeControlProcess extends TxrxProcess {
 	}
 
 	private static class NextRead {
-		final CoreLocation core;
+		private final CoreLocation core;
 
-		final int blockID;
+		private final int blockID;
 
-		final MemoryLocation base;
+		private final MemoryLocation base;
 
-		final int size;
+		private final int size;
 
 		NextRead(CoreLocation core, int blockID, MemoryLocation base,
 				int size) {
@@ -320,15 +320,15 @@ class RuntimeControlProcess extends TxrxProcess {
 	}
 
 	private static class ExtraRead {
-		final CoreLocation core;
+		private final CoreLocation core;
 
-		final int blockID;
+		private final int blockID;
 
-		final MemoryLocation base;
+		private final MemoryLocation base;
 
-		final int size;
+		private final int size;
 
-		final int offset;
+		private final int offset;
 
 		ExtraRead(NextRead head, MemoryLocation base, int size, int offset) {
 			this.core = head.core;

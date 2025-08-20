@@ -62,9 +62,9 @@ public class BlacklistStore extends DatabaseAwareBean {
 	}
 
 	private class DeadLink {
-		ChipLocation location;
+		private ChipLocation location;
 
-		Direction direction;
+		private Direction direction;
 
 		DeadLink(Row row) {
 			location = new ChipLocation(row.getInt("x"), row.getInt("y"));

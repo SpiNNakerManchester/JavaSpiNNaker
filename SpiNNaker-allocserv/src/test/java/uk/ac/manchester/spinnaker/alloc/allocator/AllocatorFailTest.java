@@ -31,6 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
@@ -47,6 +48,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 	"spalloc.sqlite.lock-note-threshold=2200ms",
 	"spalloc.sqlite.lock-warn-threshold=3s"
 })
+@NotThreadSafe
 public class AllocatorFailTest extends TestSupport {
 
 	@Autowired

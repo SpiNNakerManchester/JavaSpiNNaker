@@ -165,9 +165,9 @@ public class HostDataRead extends EIEIOCommandMessage {
 	 */
 	private static class Header {
 		// Range: 0-7
-		final byte numRequests;
+		private final byte numRequests;
 
-		final byte sequenceNumber;
+		private final byte sequenceNumber;
 
 		Header(byte numRequests, byte sequenceNumber) {
 			this.numRequests = numRequests;
@@ -177,11 +177,11 @@ public class HostDataRead extends EIEIOCommandMessage {
 
 	/** Contains a set of acks which refer to each of the channels read. */
 	private static class Ack {
-		final byte[] channel;
+		private final byte[] channel;
 
-		final byte[] regionID;
+		private final byte[] regionID;
 
-		final int[] spaceRead;
+		private final int[] spaceRead;
 
 		Ack(int numRequests, byte[] channel, byte[] regionID, int[] spaceRead) {
 			if (channel.length != numRequests || regionID.length != numRequests

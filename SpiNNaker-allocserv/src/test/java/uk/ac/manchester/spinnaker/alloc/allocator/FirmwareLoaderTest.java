@@ -34,6 +34,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
@@ -49,6 +50,7 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 @TestPropertySource(properties = {
 	"spalloc.transceiver.fpga-reload=true" // Enable reloading!
 })
+@NotThreadSafe
 class FirmwareLoaderTest extends TestSupport {
 
 	private static final int TEST_TIMEOUT = 10;

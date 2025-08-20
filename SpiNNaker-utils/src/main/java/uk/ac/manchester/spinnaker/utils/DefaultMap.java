@@ -113,7 +113,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 */
 	private static final class Marker {
 		// Nothing interesting
-		static final Marker INSTANCE = new Marker();
+		private static final Marker INSTANCE = new Marker();
 	}
 
 	/**

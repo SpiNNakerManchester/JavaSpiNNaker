@@ -33,6 +33,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -191,27 +192,39 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
-	private List<Worker> makeWorkers() {
+	private void makeWorkers() {
 		// Make workers
 		try (var c = getConnection();
 				var getBmps = c.query(GET_ALL_BMPS);
 				var getBoards = c.query(GET_ALL_BMP_BOARDS)) {
-			return c.transaction(false, () -> getBmps.call(row -> {
+			var foundBmpIds = c.transaction(false, () -> getBmps.call(row -> {
 				var m = spallocCore.getMachine(row.getString("machine_name"),
 						true);
 				var coords = new BMPCoords(row.getInt("cabinet"),
 						row.getInt("frame"));
 				var boards = new HashMap<BMPBoard, String>();
 				var bmpId = row.getInt("bmp_id");
+				var worker = workers.get(bmpId);
+				if (worker != null) {
+					return bmpId;
+				}
 				getBoards.call(r -> {
 					boards.put(new BMPBoard(r.getInt("board_num")),
 							r.getString("address"));
 					return null;
 				}, bmpId);
-				var worker = new Worker(m.get(), coords, boards, bmpId);
+				worker = new Worker(m.get(), coords, boards, bmpId);
 				workers.put(row.getInt("bmp_id"), worker);
-				return worker;
+				return bmpId;
 			}));
+
+			// Remove any workers for BMPs that no longer exist
+			var toRemove = new HashSet<>(workers.keySet());
+			toRemove.removeAll(foundBmpIds);
+			for (var bmpId : toRemove) {
+				log.info("Removing worker for BMP {}", bmpId);
+				workers.remove(bmpId).shutdown();
+			}
 		}
 	}
 
@@ -267,6 +280,10 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	private abstract class Request {
+
+		/**
+		 * The BMP ID that this request is for.
+		 */
 		final int bmpId;
 
 		private int numTries = 0;
@@ -1035,23 +1052,23 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	private class PowerChange {
-		final Integer changeId;
+		private final Integer changeId;
 
-		final int jobId;
+		private final int jobId;
 
-		final Integer boardId;
+		private final Integer boardId;
 
-		final Integer boardNum;
+		private final Integer boardNum;
 
-		final Instant powerOffTime;
+		private final Instant powerOffTime;
 
-		final boolean power;
+		private final boolean power;
 
-		final JobState from;
+		private final JobState from;
 
-		final JobState to;
+		private final JobState to;
 
-		final List<Direction> offLinks;
+		private final List<Direction> offLinks;
 
 		PowerChange(Row row) {
 			changeId = row.getInteger("change_id");
@@ -1208,6 +1225,13 @@ public class BMPController extends DatabaseAwareBean {
 			}
 			return requests;
 		}
+
+		private void shutdown() {
+			log.debug("Shutting down worker for BMP {}", bmpId);
+			if (control != null) {
+				control.close();
+			}
+		}
 	}
 
 	/**
@@ -1305,6 +1329,8 @@ public class BMPController extends DatabaseAwareBean {
 				for (var worker : workers.values()) {
 					worker.control = null;
 				}
+				// Recreate in case of new data
+				makeWorkers();
 			}
 
 			@Override

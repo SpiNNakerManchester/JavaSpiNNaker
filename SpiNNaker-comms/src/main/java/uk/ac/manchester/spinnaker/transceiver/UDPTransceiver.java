@@ -103,7 +103,7 @@ public abstract class UDPTransceiver implements Closeable {
 	}
 
 	private final class Pair<T> implements AutoCloseable {
-		final UDPConnection<T> connection;
+		private final UDPConnection<T> connection;
 
 		private ConnectionListener<T> listener;
 

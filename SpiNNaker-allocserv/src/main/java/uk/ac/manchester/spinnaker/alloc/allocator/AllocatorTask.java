@@ -313,12 +313,12 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @author Donal Fellows
 	 */
 	private static final class Rectangle {
-		final int width;
+		private final int width;
 
-		final int height;
+		private final int height;
 
 		/** Depth of rectangle. 1 or 3 */
-		final int depth;
+		private final int depth;
 
 		private Rectangle(int width, int height, int depth) {
 			this.width = width;
@@ -377,9 +377,9 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	private class Perimeter {
-		int boardId;
+		private int boardId;
 
-		Direction direction;
+		private Direction direction;
 
 		Perimeter(Row row) {
 			boardId = row.getInt("board_id");
@@ -558,25 +558,25 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	private class AllocTask {
-		final int id;
+		private final int id;
 
-		final int importance;
+		private final int importance;
 
-		final int jobId;
+		private final int jobId;
 
-		final int machineId;
+		private final int machineId;
 
-		final Rectangle max;
+		private final Rectangle max;
 
-		final int maxDeadBoards;
+		private final int maxDeadBoards;
 
-		final Integer numBoards;
+		private final Integer numBoards;
 
-		final Integer width;
+		private final Integer width;
 
-		final Integer height;
+		private final Integer height;
 
-		final Integer root;
+		private final Integer root;
 
 		AllocTask(Row row) {
 			id = row.getInt("req_id");
@@ -851,13 +851,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	private class HistoricalAlloc {
-		int allocId;
+		private int allocId;
 
-		int jobId;
+		private int jobId;
 
-		int boardId;
+		private int boardId;
 
-		Instant allocTimestamp;
+		private Instant allocTimestamp;
 
 		HistoricalAlloc(Row row) {
 			allocId = row.getInt("alloc_id");
@@ -874,47 +874,47 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	private class HistoricalJob {
-		int jobId;
+		private int jobId;
 
-		int machineId;
+		private int machineId;
 
-		String owner;
+		private String owner;
 
-		Instant createTimestamp;
+		private Instant createTimestamp;
 
-		int width;
+		private int width;
 
-		int height;
+		private int height;
 
-		int depth;
+		private int depth;
 
-		int allocatedRoot;
+		private int allocatedRoot;
 
-		Instant keepaliveInterval;
+		private Instant keepaliveInterval;
 
-		String keepaliveHost;
+		private String keepaliveHost;
 
-		String deathReason;
+		private String deathReason;
 
-		Instant deathTimestamp;
+		private Instant deathTimestamp;
 
-		byte[] originalRequest;
+		private byte[] originalRequest;
 
-		Instant allocationTimestamp;
+		private Instant allocationTimestamp;
 
-		int allocationSize;
+		private int allocationSize;
 
-		String machineName;
+		private String machineName;
 
-		String userName;
+		private String userName;
 
-		int groupId;
+		private int groupId;
 
-		String groupName;
+		private String groupName;
 
-		Integer nmpiJobId;
+		private Integer nmpiJobId;
 
-		Integer nmpiSessionId;
+		private Integer nmpiSessionId;
 
 		HistoricalJob(Row row) {
 			jobId = row.getInt("job_id");
@@ -1467,7 +1467,6 @@ public class AllocatorTask extends DatabaseAwareBean
 	/** Operations for testing historical database only. */
 	@ForTestingOnly
 	interface HistTestAPI {
-
 
 		/**
 		 * Implementation of {@link AllocatorTask#tombstone()}.

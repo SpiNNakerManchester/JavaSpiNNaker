@@ -151,7 +151,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private static class FPGAReloadRequired extends Exception {
 		private static final long serialVersionUID = 1L;
 
-		final BMPBoard board;
+		private final BMPBoard board;
 
 		FPGAReloadRequired(BMPBoard board) {
 			this.board = board;
@@ -354,5 +354,15 @@ class SpiNNaker1 implements SpiNNakerControl {
 								+ "come up correctly", address);
 			}
 		});
+	}
+
+	@Override
+	public void close() {
+		try {
+			txrx.close();
+		} catch (IOException e) {
+			log.warn("Exception closing BMP transceiver for {}: {}",
+					machine.getName(), e.getMessage(), e);
+		}
 	}
 }
