@@ -158,11 +158,11 @@ public class TransceiverFactory
 		var connData = makeConnectionData(machineDescription, bmp);
 		try {
 			if (testFactory != null) {
-				log.info("using test transceiver factory {}", testFactory);
+				log.debug("using test transceiver factory {}", testFactory);
 				return testFactory.create(machineDescription.getName(),
 						connData, setBlacklist);
 			} else {
-				log.info("using real transceiver factory for {} at {}",
+				log.debug("using real transceiver factory for {} at {}",
 						machineDescription.getName(),
 						connData.ipAddress);
 				return makeTransceiver(connData);
