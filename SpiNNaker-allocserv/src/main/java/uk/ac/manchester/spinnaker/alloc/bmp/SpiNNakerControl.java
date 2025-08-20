@@ -166,6 +166,11 @@ public interface SpiNNakerControl {
 	void ping(List<BMPBoard> boards);
 
 	/**
+	 * Close the controller and release any resources it holds.
+	 */
+	void close();
+
+	/**
 	 * A guide for how to make a BMP controller.
 	 *
 	 * @author Donal Fellows

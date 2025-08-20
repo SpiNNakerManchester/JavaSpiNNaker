@@ -355,4 +355,14 @@ class SpiNNaker1 implements SpiNNakerControl {
 			}
 		});
 	}
+
+	@Override
+	public void close() {
+		try {
+			txrx.close();
+		} catch (IOException e) {
+			log.warn("Exception closing BMP transceiver for {}: {}",
+					machine.getName(), e.getMessage(), e);
+		}
+	}
 }
