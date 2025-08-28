@@ -465,6 +465,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					new SimpleGrantedAuthority(GRANT_USER)));
 			this.who = who;
 			this.credential = credential;
+			setAuthenticated(true);
 		}
 
 		@Override
