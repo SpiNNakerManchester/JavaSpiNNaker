@@ -1063,6 +1063,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}, username).isPresent();
 
 		if (ok) {
+			log.debug("OpenID User {} is authorized", username);
 			return true;
 		}
 
@@ -1073,6 +1074,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		return ifElse(queries.createUser(username, null, USER, subject),
 				id -> {
+					log.debug("Created OpenID user {} with id {}",
+							username, id);
 					synchExternalGroups(username, id, orgs, collabs,
 							queries);
 					return true;
@@ -1162,9 +1165,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		try (var synch = new GroupSynch(queries)) {
 			for (var org : orgs) {
+				log.debug("defining org {} for {} with id {}",
+						org, username, userId);
 				synch.define(org, ORGANISATION);
 			}
 			for (var collab : collabs) {
+				log.debug("defining collab {} for {} with id {}",
+						collab, username, userId);
 				synch.define(collab, COLLABRATORY);
 			}
 			synch.apply(userId);
