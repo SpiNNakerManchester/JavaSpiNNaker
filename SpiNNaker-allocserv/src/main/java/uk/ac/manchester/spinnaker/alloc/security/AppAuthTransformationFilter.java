@@ -67,7 +67,8 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 		var a = SecurityContextHolder.getContext().getAuthentication();
 		log.debug("Current authentication: {}", a);
 		if (nonNull(a)) {
-			log.debug("Is unsupported? {}", isUnsupportedAuthTokenClass(a.getClass()));
+			log.debug("Is unsupported? {}", isUnsupportedAuthTokenClass(
+					a.getClass()));
 		}
 		return isNull(a) || isUnsupportedAuthTokenClass(a.getClass());
 	}
