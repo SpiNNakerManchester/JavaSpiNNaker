@@ -704,6 +704,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (added > 0 || removed > 0) {
 				log.info("changed count of groups for user {}: +{}/-{}", userId,
 						added, removed);
+			} else {
+				log.debug("no change to groups for user {}", userId);
 			}
 		}
 	}
