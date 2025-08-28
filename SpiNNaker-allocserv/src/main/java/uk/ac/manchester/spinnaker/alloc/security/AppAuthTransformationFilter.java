@@ -73,9 +73,12 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 			HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		var s = request.getSession(false);
+		log.debug("Session ID: {}", isNull(s) ? null : s.getId());
 		var ctx = SecurityContextHolder.getContext();
 		var savedAuth = getSavedToken(s);
+		log.debug("Saved authentication: {}", savedAuth);
 		var originalAuth = ctx.getAuthentication();
+		log.debug("Original authentication: {}", originalAuth);
 		if (nonNull(savedAuth)) {
 			ctx.setAuthentication(savedAuth);
 		} else {
