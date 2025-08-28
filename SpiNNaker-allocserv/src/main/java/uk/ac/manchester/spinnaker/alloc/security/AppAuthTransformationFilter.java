@@ -65,6 +65,10 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	protected boolean shouldNotFilter(HttpServletRequest request)
 			throws ServletException {
 		var a = SecurityContextHolder.getContext().getAuthentication();
+		log.debug("Current authentication: {}", a);
+		if (nonNull(a)) {
+			log.debug("Is unsupported? {}", isUnsupportedAuthTokenClass(a.getClass()));
+		}
 		return isNull(a) || isUnsupportedAuthTokenClass(a.getClass());
 	}
 
