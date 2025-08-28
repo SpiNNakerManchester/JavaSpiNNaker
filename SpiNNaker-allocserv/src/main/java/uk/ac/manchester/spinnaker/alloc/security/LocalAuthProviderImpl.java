@@ -762,6 +762,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		var seen = new HashSet<>();
 		for (var collab : claim) {
+			log.debug("Collab claim {}", collab);
 			var reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
 			if (!seen.contains(reduced)) {
 				results.add(new CollabratoryAuthority(reduced));
@@ -791,6 +792,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No special processing required; orgs start with / in name and are
 			 * already guaranteed to be unique.
 			 */
+			log.debug("Org claim {}", org);
 			results.add(new OrganisationAuthority(org));
 		}
 		return true;
