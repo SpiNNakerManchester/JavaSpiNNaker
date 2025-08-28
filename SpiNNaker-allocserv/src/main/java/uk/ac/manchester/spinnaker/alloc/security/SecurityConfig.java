@@ -338,6 +338,8 @@ public class SecurityConfig {
 		defineLogoutRules(http);
 		http.addFilterAfter(authApplicationFilter,
 				BasicAuthenticationFilter.class);
+		http.securityContext((securityContext) ->
+				securityContext.requireExplicitSave(false));
 		return http.build();
 	}
 
