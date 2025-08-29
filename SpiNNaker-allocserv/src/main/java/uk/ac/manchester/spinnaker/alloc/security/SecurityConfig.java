@@ -18,9 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 import static org.springframework.util.StreamUtils.copyToByteArray;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
@@ -352,8 +351,9 @@ public class SecurityConfig {
 		private UserInfoOpaqueTokenIntrospector() {
 			var p = properties.getOpenid();
 
-			delegate = new SpringOpaqueTokenIntrospector(p.getIntrospection(),
-					p.getId(), p.getSecret());
+			delegate = SpringOpaqueTokenIntrospector
+					.withIntrospectionUri(p.getIntrospection())
+					.clientId(p.getId()).clientSecret(p.getSecret()).build();
 			userInfoUri = p.getUserinfo();
 		}
 
@@ -374,11 +374,12 @@ public class SecurityConfig {
 		}
 
 		private Map<String, Object> userinfo(String token) {
+			log.debug("Fetching user info from {}", userInfoUri);
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			var request = new RequestEntity<>(ACCESS_TOKEN + "=" + token,
-					headers, POST, URI.create(userInfoUri));
+			headers.setBearerAuth(token);
+			var request = new RequestEntity<>(headers, GET,
+					URI.create(userInfoUri));
 
 			var restLog = LogFactory.getLog(LoggingCustomizer.class);
 			var restTemplate = new RestTemplateBuilder().customizers(
