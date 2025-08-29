@@ -101,6 +101,12 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 @Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider<LocalAuthProviderImpl.TestAPI> {
+
+	/** The username prefix used to identify an OpenID user fake
+	 *  collaboratory.
+	 */
+	public static final String PRIVATE_COLLAB_PREFIX = "private-";
+
 	private static final Logger log = getLogger(LocalAuthProviderImpl.class);
 
 	@Autowired
@@ -1179,6 +1185,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						collab, username, userId);
 				synch.define(collab, COLLABRATORY);
 			}
+			// Also add a fake collab called private-<username>
+			synch.define(PRIVATE_COLLAB_PREFIX + username, COLLABRATORY);
 			synch.apply(userId);
 		} catch (RuntimeException e) {
 			log.warn("problem when synchronizing group memberships for {}",
