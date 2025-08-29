@@ -619,6 +619,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				(row) -> row.getBoolean("is_internal"), user).orElse(true);
 
 		// OIDC users can use a private group
+		log.info("User {} is {}internal", user, isInternal ? "" : "not ");
 		if (!isInternal) {
 			return PRIVATE_COLLAB_PREFIX + user;
 		}
