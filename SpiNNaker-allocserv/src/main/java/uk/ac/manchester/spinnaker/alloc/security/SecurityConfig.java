@@ -20,7 +20,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 import static org.springframework.util.StreamUtils.copyToByteArray;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
@@ -223,14 +222,14 @@ public class SecurityConfig {
 				// Allow forwarded requests
 				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
 				// Login process and static resources are available to all
-				.requestMatchers(antMatcher(urlMaker.systemUrl("login*")),
-						antMatcher(urlMaker.systemUrl("perform_*")),
-						antMatcher(oidcPath("**")),
-						antMatcher(urlMaker.systemUrl("error")),
-						antMatcher(urlMaker.systemUrl("resources/*")),
-						antMatcher(urlMaker.serviceUrl("openapi.json")),
-						antMatcher(urlMaker.serviceUrl("swagger*")),
-						antMatcher(urlMaker.serviceUrl("index.css")))
+				.requestMatchers(urlMaker.systemUrl("login*"),
+						urlMaker.systemUrl("perform_*"),
+						oidcPath("**"),
+						urlMaker.systemUrl("error"),
+						urlMaker.systemUrl("resources/*"),
+						urlMaker.serviceUrl("openapi.json"),
+						urlMaker.serviceUrl("swagger*"),
+						urlMaker.serviceUrl("index.css"))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated());
