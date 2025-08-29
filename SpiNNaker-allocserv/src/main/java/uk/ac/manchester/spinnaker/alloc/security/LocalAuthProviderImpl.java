@@ -1039,6 +1039,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		var collabs = new ArrayList<String>();
 		var orgs = new ArrayList<String>();
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
+
+		// Also add a fake collab called private-<username>
+		inflateGroup(
+				new CollabratoryAuthority(PRIVATE_COLLAB_PREFIX + username),
+				collabs, orgs, queries);
 		boolean ok = queries.getUserBlocked.call1(userInfo -> {
 			int userId = userInfo.getInt("user_id");
 			log.info("Found user " + username + " in database with id "
@@ -1185,8 +1190,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						collab, username, userId);
 				synch.define(collab, COLLABRATORY);
 			}
-			// Also add a fake collab called private-<username>
-			synch.define(PRIVATE_COLLAB_PREFIX + username, COLLABRATORY);
 			synch.apply(userId);
 		} catch (RuntimeException e) {
 			log.warn("problem when synchronizing group memberships for {}",
