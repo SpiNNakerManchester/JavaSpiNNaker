@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.chip;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.PRIVATE_COLLAB_PREFIX;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
@@ -614,6 +615,14 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private String getOnlyGroup(Connection conn, String user) {
+		var isInternal = conn.query(GET_USER_DETAILS).call1(
+				(row) -> row.getBoolean("is_internal"), user).orElse(true);
+
+		// OIDC users can use a private group
+		if (!isInternal) {
+			return PRIVATE_COLLAB_PREFIX + user;
+		}
+
 		try (var listGroups = conn.query(GET_GROUP_NAMES_OF_USER)) {
 			// No name given; need to guess.
 			var groups = listGroups.call(row -> row.getString("group_name"),
