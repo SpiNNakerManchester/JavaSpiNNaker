@@ -835,6 +835,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private void mapAuthorities(String source, ClaimAccessor claimSet,
 			Collection<GrantedAuthority> results) {
+		log.debug("claims from {}: {}", source, claimSet.getClaims());
 		if (!collabToAuthority(getTeamsFromClaim(claimSet.getClaim("roles")),
 				results)) {
 			log.warn("no team in {}", source);
