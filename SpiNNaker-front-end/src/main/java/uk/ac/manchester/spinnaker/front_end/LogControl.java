@@ -64,9 +64,6 @@ public final class LogControl {
 
 		/** UDP low-level logging level property. */
 		String UDP_LOGGING = "logging.udp";
-
-		/** Executor low-level logging level property. */
-		String EXECUTOR_LOGGING = "logging.executor";
 	}
 
 	/** The names of actual loggers (class names). */
@@ -126,11 +123,6 @@ public final class LogControl {
 
 	private LogControl() {
 		builder = newConfigurationBuilder();
-	}
-
-	private FilterComponentBuilder filter(Level level) {
-		return builder.newFilter("ThresholdFilter", ACCEPT, DENY)
-				.addAttribute(Attrs.LEVEL, level);
 	}
 
 	private FilterComponentBuilder filter(String level) {

@@ -19,7 +19,6 @@ import static java.net.InetAddress.getByName;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.abort;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
@@ -41,8 +39,6 @@ import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 @NotThreadSafe
 class ReliabilityITCase {
 	private static Machine jsonMachine;
-
-	private static final Logger log = getLogger(ReliabilityITCase.class);
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
