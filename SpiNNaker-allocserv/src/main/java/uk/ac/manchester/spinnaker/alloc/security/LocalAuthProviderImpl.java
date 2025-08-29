@@ -1035,8 +1035,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
 		boolean ok = queries.getUserBlocked.call1(userInfo -> {
 			int userId = userInfo.getInt("user_id");
-			log.info("Found user " + username + " in database with id " +
-					userId);
+			log.info("Found user " + username + " in database with id "
+					+ userId);
 			synchExternalGroups(username, userId, orgs, collabs, queries);
 			if (userInfo.getBoolean("disabled")) {
 				log.info("user {} has a disabled account", username);
