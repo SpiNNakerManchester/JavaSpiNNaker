@@ -543,9 +543,22 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public Job createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
-		return execute(conn -> createJobInGroup(
+		return execute(conn -> {
+			var isInternal = conn.query(GET_USER_DETAILS_BY_NAME).call1(
+					(row) -> row.getInt("is_internal") == 1, owner)
+					.orElseThrow();
+
+			// OIDC users can use a private group
+			log.info("User {} is {}internal", owner, isInternal ? "" : "not ");
+			if (!isInternal) {
+				return createJobInCollabSession(
+						owner, PRIVATE_COLLAB_PREFIX + owner, descriptor,
+						machineName, tags, keepaliveInterval, originalRequest);
+			}
+			return createJobInGroup(
 				owner, getOnlyGroup(conn, owner), descriptor, machineName,
-				tags, keepaliveInterval, originalRequest));
+				tags, keepaliveInterval, originalRequest);
+		});
 	}
 
 	@Override
