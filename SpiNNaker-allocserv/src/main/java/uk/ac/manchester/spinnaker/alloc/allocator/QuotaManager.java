@@ -395,7 +395,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		return Optional.empty();
 	}
 
-	private final String getNMPIUser(String user) {
+	private String getNMPIUser(String user) {
 		var oidPrefix = authProps.getOpenid().getUsernamePrefix();
 		if (user.startsWith(oidPrefix)) {
 			return user.substring(oidPrefix.length());
