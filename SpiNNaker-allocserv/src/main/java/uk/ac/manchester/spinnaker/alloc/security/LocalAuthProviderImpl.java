@@ -1041,8 +1041,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
 
 		// Also add a fake collab called private-<username>
+		var oidUser = username.substring(
+				authProps.getOpenid().getUsernamePrefix().length());
 		inflateGroup(
-				new CollabratoryAuthority(PRIVATE_COLLAB_PREFIX + username),
+				new CollabratoryAuthority(PRIVATE_COLLAB_PREFIX + oidUser),
 				collabs, orgs, queries);
 		boolean ok = queries.getUserBlocked.call1(userInfo -> {
 			int userId = userInfo.getInt("user_id");

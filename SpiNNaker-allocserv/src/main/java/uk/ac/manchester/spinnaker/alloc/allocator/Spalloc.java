@@ -61,6 +61,7 @@ import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
@@ -129,6 +130,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Autowired
 	private AllocatorProperties props;
+
+	@Autowired
+	private AuthProperties authProps;
 
 	@Autowired
 	private JobObjectRememberer rememberer;
@@ -551,6 +555,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			// OIDC users can use a private group
 			log.info("User {} is {}internal", owner, isInternal ? "" : "not ");
 			if (!isInternal) {
+				var oidUser = owner.substring(
+						authProps.getOpenid().getUsernamePrefix().length());
 				return createJobInCollabSession(
 						owner, PRIVATE_COLLAB_PREFIX + owner, descriptor,
 						machineName, tags, keepaliveInterval, originalRequest);
