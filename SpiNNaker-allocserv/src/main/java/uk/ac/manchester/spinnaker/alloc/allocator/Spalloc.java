@@ -628,15 +628,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	private String getOnlyGroup(Connection conn, String user) {
-		var isInternal = conn.query(GET_USER_DETAILS_BY_NAME).call1(
-				(row) -> row.getInt("is_internal") == 1, user).orElseThrow();
-
-		// OIDC users can use a private group
-		log.info("User {} is {}internal", user, isInternal ? "" : "not ");
-		if (!isInternal) {
-			return PRIVATE_COLLAB_PREFIX + user;
-		}
-
 		try (var listGroups = conn.query(GET_GROUP_NAMES_OF_USER)) {
 			// No name given; need to guess.
 			var groups = listGroups.call(row -> row.getString("group_name"),
