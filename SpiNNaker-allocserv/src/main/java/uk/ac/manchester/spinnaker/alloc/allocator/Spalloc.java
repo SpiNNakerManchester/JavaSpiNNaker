@@ -553,7 +553,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					.orElseThrow();
 
 			// OIDC users can use a private group
-			log.info("User {} is {}internal", owner, isInternal ? "" : "not ");
+			log.debug("User {} is {}internal", owner, isInternal ? "" : "not ");
 			if (!isInternal) {
 				var oidUser = owner.substring(
 						authProps.getOpenid().getUsernamePrefix().length());
