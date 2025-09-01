@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.chip;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.PRIVATE_COLLAB_PREFIX;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.copy;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
@@ -60,6 +61,7 @@ import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
@@ -128,6 +130,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Autowired
 	private AllocatorProperties props;
+
+	@Autowired
+	private AuthProperties authProps;
 
 	@Autowired
 	private JobObjectRememberer rememberer;
@@ -542,9 +547,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	public Job createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			byte[] originalRequest) {
-		return execute(conn -> createJobInGroup(
+		return execute(conn -> {
+			var isInternal = conn.query(GET_USER_DETAILS_BY_NAME).call1(
+					(row) -> row.getInt("is_internal") == 1, owner)
+					.orElseThrow();
+
+			// OIDC users can use a private group
+			log.debug("User {} is {}internal", owner, isInternal ? "" : "not ");
+			if (!isInternal) {
+				var oidUser = owner.substring(
+						authProps.getOpenid().getUsernamePrefix().length());
+				return createJobInCollabSession(
+						owner, PRIVATE_COLLAB_PREFIX + oidUser, descriptor,
+						machineName, tags, keepaliveInterval, originalRequest);
+			}
+			return createJobInGroup(
 				owner, getOnlyGroup(conn, owner), descriptor, machineName,
-				tags, keepaliveInterval, originalRequest));
+				tags, keepaliveInterval, originalRequest);
+		});
 	}
 
 	@Override

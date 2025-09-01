@@ -101,6 +101,12 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 @Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider<LocalAuthProviderImpl.TestAPI> {
+
+	/** The username prefix used to identify an OpenID user fake
+	 *  collaboratory.
+	 */
+	public static final String PRIVATE_COLLAB_PREFIX = "private-";
+
 	private static final Logger log = getLogger(LocalAuthProviderImpl.class);
 
 	@Autowired
@@ -1033,6 +1039,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		var collabs = new ArrayList<String>();
 		var orgs = new ArrayList<String>();
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
+
+		// Also add a fake collab called private-<username>
+		var oidUser = username.substring(
+				authProps.getOpenid().getUsernamePrefix().length());
+		inflateGroup(
+				new CollabratoryAuthority(PRIVATE_COLLAB_PREFIX + oidUser),
+				collabs, orgs, queries);
 		boolean ok = queries.getUserBlocked.call1(userInfo -> {
 			int userId = userInfo.getInt("user_id");
 			log.info("Found user " + username + " in database with id "

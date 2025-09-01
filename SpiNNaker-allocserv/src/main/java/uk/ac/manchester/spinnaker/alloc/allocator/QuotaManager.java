@@ -40,6 +40,7 @@ import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Query;
@@ -84,6 +85,9 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	@Autowired
 	private QuotaProperties quotaProps;
+
+	@Autowired
+	private AuthProperties authProps;
 
 	/** The wrapped NMPI proxy, bound to the API key. */
 	private NMPI nmpi;
@@ -391,8 +395,16 @@ public class QuotaManager extends DatabaseAwareBean {
 		return Optional.empty();
 	}
 
+	private String getNMPIUser(String user) {
+		var oidPrefix = authProps.getOpenid().getUsernamePrefix();
+		if (user.startsWith(oidPrefix)) {
+			return user.substring(oidPrefix.length());
+		}
+		return user;
+	}
+
 	final SessionResponse createSession(String collab, String user) {
-		var session = nmpi.createSession(collab, user);
+		var session = nmpi.createSession(collab, getNMPIUser(user));
 		checkQuota(collab);
 		return session;
 	}
