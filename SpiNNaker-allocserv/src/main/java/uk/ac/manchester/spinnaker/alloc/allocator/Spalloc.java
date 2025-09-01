@@ -558,7 +558,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var oidUser = owner.substring(
 						authProps.getOpenid().getUsernamePrefix().length());
 				return createJobInCollabSession(
-						owner, PRIVATE_COLLAB_PREFIX + owner, descriptor,
+						owner, PRIVATE_COLLAB_PREFIX + oidUser, descriptor,
 						machineName, tags, keepaliveInterval, originalRequest);
 			}
 			return createJobInGroup(
