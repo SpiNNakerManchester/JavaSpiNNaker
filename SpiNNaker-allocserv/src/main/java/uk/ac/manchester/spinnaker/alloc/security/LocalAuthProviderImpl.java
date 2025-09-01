@@ -465,6 +465,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					new SimpleGrantedAuthority(GRANT_USER)));
 			this.who = who;
 			this.credential = credential;
+			setAuthenticated(true);
 		}
 
 		@Override
@@ -703,6 +704,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (added > 0 || removed > 0) {
 				log.info("changed count of groups for user {}: +{}/-{}", userId,
 						added, removed);
+			} else {
+				log.debug("no change to groups for user {}", userId);
 			}
 		}
 	}
@@ -759,6 +762,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		var seen = new HashSet<>();
 		for (var collab : claim) {
+			log.debug("Collab claim {}", collab);
 			var reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
 			if (!seen.contains(reduced)) {
 				results.add(new CollabratoryAuthority(reduced));
@@ -788,6 +792,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No special processing required; orgs start with / in name and are
 			 * already guaranteed to be unique.
 			 */
+			log.debug("Org claim {}", org);
 			results.add(new OrganisationAuthority(org));
 		}
 		return true;
@@ -830,6 +835,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private void mapAuthorities(String source, ClaimAccessor claimSet,
 			Collection<GrantedAuthority> results) {
+		log.debug("claims from {}: {}", source, claimSet.getClaims());
 		if (!collabToAuthority(getTeamsFromClaim(claimSet.getClaim("roles")),
 				results)) {
 			log.warn("no team in {}", source);
@@ -1028,8 +1034,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		var orgs = new ArrayList<String>();
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
 		boolean ok = queries.getUserBlocked.call1(userInfo -> {
-			log.info("Found user " + username + " in database");
 			int userId = userInfo.getInt("user_id");
+			log.info("Found user " + username + " in database with id "
+					+ userId);
 			synchExternalGroups(username, userId, orgs, collabs, queries);
 			if (userInfo.getBoolean("disabled")) {
 				log.info("user {} has a disabled account", username);
@@ -1061,6 +1068,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}, username).isPresent();
 
 		if (ok) {
+			log.debug("OpenID User {} is authorized", username);
 			return true;
 		}
 
@@ -1071,6 +1079,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		return ifElse(queries.createUser(username, null, USER, subject),
 				id -> {
+					log.debug("Created OpenID user {} with id {}",
+							username, id);
 					synchExternalGroups(username, id, orgs, collabs,
 							queries);
 					return true;
@@ -1160,9 +1170,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		try (var synch = new GroupSynch(queries)) {
 			for (var org : orgs) {
+				log.debug("defining org {} for {} with id {}",
+						org, username, userId);
 				synch.define(org, ORGANISATION);
 			}
 			for (var collab : collabs) {
+				log.debug("defining collab {} for {} with id {}",
+						collab, username, userId);
 				synch.define(collab, COLLABRATORY);
 			}
 			synch.apply(userId);
