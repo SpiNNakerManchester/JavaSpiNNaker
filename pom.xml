@@ -54,8 +54,8 @@ limitations under the License.
 		<spring.security.version>6.5.1</spring.security.version>
 
 		<cxf.version>4.1.3</cxf.version>
-		<jackson.version>2.19.2</jackson.version>
-		<jackson.doc.version>2.14</jackson.doc.version>
+		<jackson.version>2.20.0</jackson.version>
+		<jackson.annotations.version>2.20</jackson.annotations.version>
 		<sqlite.version>3.50.3.0</sqlite.version>
 		<keycloak.version>26.3.2</keycloak.version>
 		<swagger.version>5.28.0</swagger.version>
@@ -181,7 +181,7 @@ limitations under the License.
 				<!-- Explicitly override Spring Boot -->
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
+				<version>${jackson.annotations.version}</version>
 			</dependency>
 			<dependency>
 				<!-- Explicitly override Spring Boot -->
