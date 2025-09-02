@@ -33,7 +33,7 @@ limitations under the License.
 		<forbidden.keywords.re>\bFIXME\b|Auto-generated method stub</forbidden.keywords.re>
 
 		<junit.version>5.13.4</junit.version>
-		<checkstyle.version>11.0.0</checkstyle.version>
+		<checkstyle.version>11.0.1</checkstyle.version>
 		<javadoc.version>3.11.3</javadoc.version>
 		<testing.version>3.5.3</testing.version>
 
