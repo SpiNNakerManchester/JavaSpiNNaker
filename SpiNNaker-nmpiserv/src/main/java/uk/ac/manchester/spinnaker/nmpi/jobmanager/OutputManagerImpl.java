@@ -220,8 +220,23 @@ public class OutputManagerImpl implements OutputManager {
 		return new File(resultsDirectory, name);
 	}
 
-	@Override
-	public List<DataItem> addOutputs(final String projectId, final int id,
+	/**
+	 * Adds outputs to be hosted for a given id, returning a matching list of
+	 * URLs on which the files are hosted.
+	 *
+	 * @param projectId
+	 *            The id of the project
+	 * @param id
+	 *            The id of the job
+	 * @param rootFile
+	 *            The root directory containing all the files
+	 * @param outputs
+	 *            The files to add
+	 * @return A list of DataItem instances for adding to the job
+	 * @throws IOException
+	 *            If anything goes wrong.
+	 */
+	List<DataItem> addOutputs(final String projectId, final int id,
 			final File baseDirectory, final Collection<File> outputs)
 			throws IOException {
 		if (isNull(outputs)) {

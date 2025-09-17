@@ -230,7 +230,7 @@ public class RemoteSpinnakerBeans {
 	 * @return bean
 	 */
 	@Bean
-	public OutputManager outputManager() {
+	public OutputManagerImpl outputManager() {
 		// Pass this, as it is non-trivial constructed value
 		return new OutputManagerImpl(baseServerUrl);
 	}

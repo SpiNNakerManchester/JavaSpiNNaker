@@ -39,24 +39,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
  */
 @Path("/output")
 public interface OutputManager {
-	/**
-	 * Adds outputs to be hosted for a given id, returning a matching list of
-	 * URLs on which the files are hosted.
-	 *
-	 * @param projectId
-	 *            The id of the project
-	 * @param id
-	 *            The id of the job
-	 * @param rootFile
-	 *            The root directory containing all the files
-	 * @param outputs
-	 *            The files to add
-	 * @return A list of DataItem instances for adding to the job
-	 * @throws IOException
-	 *            If anything goes wrong.
-	 */
-	List<DataItem> addOutputs(String projectId, int id, File rootFile,
-			Collection<File> outputs) throws IOException;
 
 	/**
 	 * Gets a results file.
