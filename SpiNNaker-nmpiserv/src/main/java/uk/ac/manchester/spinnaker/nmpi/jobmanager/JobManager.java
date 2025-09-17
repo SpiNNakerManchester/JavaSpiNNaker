@@ -74,7 +74,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.ChipCoordinates;
 import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueListener;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager;
-import uk.ac.manchester.spinnaker.nmpi.rest.OutputManager;
 import uk.ac.manchester.spinnaker.nmpi.status.StatusMonitorManager;
 
 /**
@@ -112,7 +111,7 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 
 	/** The output manager. */
 	@Autowired
-	private OutputManager outputManager;
+	private OutputManagerImpl outputManager;
 
 	/** The status updater. */
 	@Autowired
@@ -503,6 +502,20 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		queueManager.appendJobLog(id, requireNonNull(logToAppend));
 	}
 
+	static void checkFileIsInFolder(final File folder, final File file) {
+		try {
+			if (!file.getCanonicalPath().startsWith(
+					folder.getCanonicalPath() + File.separator)) {
+				logger.error("File {} is not in folder {}", file, folder);
+				throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+			}
+		} catch (final IOException e) {
+			logger.error("Error checking if file {} is in folder {}",
+					file, folder, e);
+			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@Override
 	public void addOutput(final String projectId, final int id,
 			final String output, final InputStream input) {
@@ -521,7 +534,9 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
 		}
 
-		final var outputFile = new File(jobOutputTempFiles.get(id), output);
+		final var folder = jobOutputTempFiles.get(id);
+		final var outputFile = new File(folder, output);
+		checkFileIsInFolder(folder, outputFile);
 		try {
 			forceMkdirParent(outputFile);
 			copyInputStreamToFile(input, outputFile);
@@ -588,8 +603,8 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 				if (subNode instanceof ObjectNode) {
 					current = (ObjectNode) subNode;
 
-				// If the item exists and is not an ObjectNode, this is an
-				// error as a non-object can't contain values
+					// If the item exists and is not an ObjectNode, this is an
+					// error as a non-object can't contain values
 				} else {
 					add = false;
 					logger.warn("Could not add provenance item {} to job {}: "

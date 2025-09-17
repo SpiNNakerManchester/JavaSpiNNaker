@@ -50,7 +50,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerV3;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManagerCompat;
-import uk.ac.manchester.spinnaker.nmpi.rest.OutputManager;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.NullExceptionMapper;
 import uk.ac.manchester.spinnaker.nmpi.status.Icinga2StatusMonitorManagerImpl;
 import uk.ac.manchester.spinnaker.nmpi.status.NullStatusMonitorManagerImpl;
@@ -230,7 +229,7 @@ public class RemoteSpinnakerBeans {
 	 * @return bean
 	 */
 	@Bean
-	public OutputManager outputManager() {
+	public OutputManagerImpl outputManager() {
 		// Pass this, as it is non-trivial constructed value
 		return new OutputManagerImpl(baseServerUrl);
 	}

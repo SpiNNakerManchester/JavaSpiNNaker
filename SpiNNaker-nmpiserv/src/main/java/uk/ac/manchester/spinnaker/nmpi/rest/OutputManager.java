@@ -18,11 +18,6 @@ package uk.ac.manchester.spinnaker.nmpi.rest;
 import static jakarta.ws.rs.core.MediaType.MEDIA_TYPE_WILDCARD;
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -32,31 +27,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
-
 /**
  * The REST API for the output manager.
  */
 @Path("/output")
 public interface OutputManager {
-	/**
-	 * Adds outputs to be hosted for a given id, returning a matching list of
-	 * URLs on which the files are hosted.
-	 *
-	 * @param projectId
-	 *            The id of the project
-	 * @param id
-	 *            The id of the job
-	 * @param rootFile
-	 *            The root directory containing all the files
-	 * @param outputs
-	 *            The files to add
-	 * @return A list of DataItem instances for adding to the job
-	 * @throws IOException
-	 *            If anything goes wrong.
-	 */
-	List<DataItem> addOutputs(String projectId, int id, File rootFile,
-			Collection<File> outputs) throws IOException;
 
 	/**
 	 * Gets a results file.
