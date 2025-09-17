@@ -303,6 +303,7 @@ public class OutputManagerImpl implements OutputManager {
 			final String filename, final boolean download) {
 		final var resultFile = new File(idDirectory, filename);
 		final var purgeFile = getPurgeFile(idDirectory);
+		JobManager.checkFileIsInFolder(idDirectory, resultFile);
 
 		try (var op = new JobLock(idDirectory)) {
 			if (purgeFile.exists()) {
