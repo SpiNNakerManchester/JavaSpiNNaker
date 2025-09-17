@@ -18,11 +18,6 @@ package uk.ac.manchester.spinnaker.nmpi.rest;
 import static jakarta.ws.rs.core.MediaType.MEDIA_TYPE_WILDCARD;
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -31,8 +26,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
-
-import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
 
 /**
  * The REST API for the output manager.

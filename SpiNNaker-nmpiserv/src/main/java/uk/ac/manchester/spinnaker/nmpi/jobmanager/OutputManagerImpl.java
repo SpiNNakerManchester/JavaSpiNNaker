@@ -228,7 +228,7 @@ public class OutputManagerImpl implements OutputManager {
 	 *            The id of the project
 	 * @param id
 	 *            The id of the job
-	 * @param rootFile
+	 * @param baseDirectory
 	 *            The root directory containing all the files
 	 * @param outputs
 	 *            The files to add

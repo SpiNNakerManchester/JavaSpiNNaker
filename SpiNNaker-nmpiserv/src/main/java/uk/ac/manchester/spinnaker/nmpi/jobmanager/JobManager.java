@@ -74,7 +74,6 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.ChipCoordinates;
 import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueListener;
 import uk.ac.manchester.spinnaker.nmpi.nmpi.NMPIQueueManager;
-import uk.ac.manchester.spinnaker.nmpi.rest.OutputManager;
 import uk.ac.manchester.spinnaker.nmpi.status.StatusMonitorManager;
 
 /**
