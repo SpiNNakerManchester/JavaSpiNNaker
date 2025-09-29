@@ -64,7 +64,7 @@ limitations under the License.
 		<mysql.version>9.4.0</mysql.version>
 		<testcontainers.version>1.21.3</testcontainers.version>
 		<jakarta.ws.version>4.0.0</jakarta.ws.version>
-		<resteasy.version>6.2.12.Final</resteasy.version>
+		<resteasy.version>7.0.0.Final</resteasy.version>
 	</properties>
 
 	<dependencyManagement>
