@@ -62,7 +62,7 @@ limitations under the License.
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.7</picocli.version>
 		<mysql.version>9.4.0</mysql.version>
-		<testcontainers.version>1.21.3</testcontainers.version>
+		<testcontainers.version>2.0.1</testcontainers.version>
 		<jakarta.ws.version>4.0.0</jakarta.ws.version>
 		<resteasy.version>7.0.0.Final</resteasy.version>
 	</properties>
