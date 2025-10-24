@@ -68,6 +68,9 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 	@Value("${docker.maxVms}")
 	private int maxNVirtualMachines;
 
+	@Value("${docker.networkName:}")
+	private String networkName;
+
 	/** The current number of VMs. */
 	private int nVirtualMachines = 0;
 
@@ -173,7 +176,7 @@ public class DockerExecutorFactory implements JobExecuterFactory {
 		public void startExecuter() {
 			logger.info("Starting docker with image {}", image);
 			var response = dockerApi.create(
-					new DockerCreateRequest(image, args));
+					new DockerCreateRequest(image, args, networkName));
 			id = response.getId();
 			logger.info("Created docker container {}, warnings: {}", id);
 			dockerApi.start(id);
