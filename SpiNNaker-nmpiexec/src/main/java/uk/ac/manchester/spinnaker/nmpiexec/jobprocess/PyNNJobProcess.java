@@ -200,6 +200,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 				}
 			} else {
 				section.addProperty("remote_spinnaker_url", machineUrl);
+section.addProperty("version", "5");
 			}
 			try (var writer = new FileWriter(cfgFile)) {
 				ini.write(writer);
