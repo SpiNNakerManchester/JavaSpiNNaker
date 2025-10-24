@@ -16,7 +16,9 @@
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -103,9 +105,9 @@ public class DockerCreateRequest {
 			this.networkID = networkName;
 		}
 
-		@JsonProperty("NetworkID")
-		public String getNetworkID() {
-			return networkID;
+		@JsonAnyGetter
+		public Map<String, Object> getDynamicProperties() {
+			return Map.of(networkID, Map.of("NetworkID", networkID));
 		}
 	}
 }
