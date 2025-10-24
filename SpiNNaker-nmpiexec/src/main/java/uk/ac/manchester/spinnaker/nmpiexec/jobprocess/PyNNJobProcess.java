@@ -193,7 +193,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			final var section = ini.getSection(SECTION);
 			if (nonNull(machine)) {
 				section.addProperty("machine_name", machine.getMachineName());
-				section.addProperty("version", machine.getVersion());
+				section.addProperty("version", "5");
 				final var bmpDetails = machine.getBmpDetails();
 				if (nonNull(bmpDetails)) {
 					section.addProperty("bmp_names", bmpDetails);
