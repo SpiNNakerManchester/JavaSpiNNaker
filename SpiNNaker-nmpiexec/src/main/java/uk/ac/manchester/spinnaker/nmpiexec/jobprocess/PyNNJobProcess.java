@@ -193,14 +193,13 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 			final var section = ini.getSection(SECTION);
 			if (nonNull(machine)) {
 				section.addProperty("machine_name", machine.getMachineName());
-				section.addProperty("version", 5);
+				section.addProperty("version", machine.getVersion());
 				final var bmpDetails = machine.getBmpDetails();
 				if (nonNull(bmpDetails)) {
 					section.addProperty("bmp_names", bmpDetails);
 				}
 			} else {
 				section.addProperty("remote_spinnaker_url", machineUrl);
-				section.addProperty("version", 5);
 			}
 			try (var writer = new FileWriter(cfgFile)) {
 				ini.write(writer);
