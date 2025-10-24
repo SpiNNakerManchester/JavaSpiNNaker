@@ -28,9 +28,9 @@ echo "URL is $url"
 if [ $url ]
 then
 	echo "Starting NMPI Client from $url"
-	cd /home/spinnaker/
+	cd $HOME
 	/usr/bin/wget $url
-	/home/spinnaker/run_executor.sh $@
+	$HOME/run_executor.sh $@
 	echo "Simulation Complete - exiting"
 else
 	echo "NMPI URL missing - not starting"
