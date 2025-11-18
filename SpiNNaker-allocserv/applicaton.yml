@@ -1,0 +1,72 @@
+# Copyright (c) 2025 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+spalloc:
+  working-directory: /app
+  auth:
+    add-dummy-user: false
+    dummy-random-pass: false
+    openid:
+      id: ${EBRAINS_OPENID_CLIENT_ID}
+      secret: ${EBRAINS_OPENID_CLIENT_SECRET}
+      redirect: https://${SPRING_SERVER_HOST}/spalloc/system/perform_oidc/{action}/code/{registrationId}
+  sqlite:
+    performance-log: true
+  compat:
+    enable: true
+    host: 0.0.0.0
+    port: 22244
+    # This user and group needs to be created
+    service-user: ${SPALLOC_COMPAT_USER}
+    service-group: ${SPALLOC_COMPAT_GROUP}
+  transceiver:
+    period: 3s
+    # dummy: true
+  datasource:
+    jdbc-url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  allocator:
+    importance-span: 1200
+    emergencyStopCommandCode: ${SPALLOC_EMERGENCY_STOP_CODE}
+  historical-data:
+    datasource:
+      jdbc-url: ${SPRING_HISTORICAL_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
+  quota:
+    nmpi-url: https://nmpi-v3.hbpneuromorphic.eu/
+    nmpi-api-key: ${SPALLOC_NMPI_API_KEY}
+    nmpi-platform: SpiNNaker
+  proxy:
+    local-host: ${SPALLOC_PROXY_LOCAL_HOST}
+
+server:
+  port: 9091
+
+logging:
+  file:
+    name: spalloc.log
+    path: ${spalloc.working-directory}
+  level:
+    root: INFO
+
+spring:
+  mvc:
+    servlet:
+      path: /spalloc
+
+cxf:
+  path: /spalloc/srv
