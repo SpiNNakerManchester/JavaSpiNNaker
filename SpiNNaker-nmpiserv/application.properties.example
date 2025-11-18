@@ -1,0 +1,47 @@
+# Copyright (c) 2025 The University of Manchester
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+spalloc.enabled = True
+spalloc.use_java = False
+spalloc.port = 22244
+spalloc.server = <SPALLOC_SERVER_HOST>
+spalloc.user.name = NMPI
+nmpi.compat = False
+nmpi.url = https://nmpi-v3.hbpneuromorphic.eu/
+nmpi.apiKey =
+nmpi.hardware = SpiNNaker
+results.directory = /mnt/data/nmpi-outputs
+baseserver.url = https://<SPALLOC_SERVER_HOST>
+localbaseserver.url = http://nmpi:9090
+cxf.path = /services
+cxf.rest.path = /rest
+callback.path = /callback
+deleteJobsOnExit = true
+liveUploadOutput = true
+requestSpiNNakerMachine = false
+oidc.clientId = <EBRAINS_OPENID_CLIENT_ID>
+oidc.secret = <EBRAINS_OPENID_CLIENT_SECRET>
+oidc.discovery.uri = https://services.humanbrainproject.eu/oidc/.well-known/openid-configuration
+collab.service.uri = https://services.humanbrainproject.eu/
+document.service.uri = https://services.humanbrainproject.eu/
+results.purge.days = 100
+docker.enabled = true
+docker.image = nmpiexec
+docker.uri = http://nginx/
+docker.networkName = nmpi-network
+docker.maxVms = 10
+xen.server.enabled = false
+restartJobExecutorOnFailure = false
+setupScript = file:/app/execute_pynn.bash
+status.update = false
