@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-source /home/spinnaker/spinnaker/bin/activate
+source $HOME/spinnaker/bin/activate
 echo $VIRTUAL_ENV
 echo $@
 /usr/bin/java -Djava.awt.headless=true $@

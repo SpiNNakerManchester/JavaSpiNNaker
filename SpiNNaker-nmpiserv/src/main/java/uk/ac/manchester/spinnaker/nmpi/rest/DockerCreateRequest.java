@@ -16,7 +16,9 @@
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -27,15 +29,23 @@ public class DockerCreateRequest {
 
 	private List<String> cmd;
 
+	private NetworkingConfig networkingConfig;
+
 	/**
 	 * @param image
 	 *            The image to instantiate.
 	 * @param cmd
 	 *            The command to run (as list of arguments).
+	 * @param networkName
+	 * 		      The name of the network to connect to, or null for default
 	 */
-	public DockerCreateRequest(String image, List<String> cmd) {
+	public DockerCreateRequest(String image, List<String> cmd,
+			String networkName) {
 		this.image = image;
 		this.cmd = cmd;
+		if (networkName != null && !networkName.isBlank()) {
+			this.networkingConfig = new NetworkingConfig(networkName);
+		}
 	}
 
 	/**
@@ -68,5 +78,36 @@ public class DockerCreateRequest {
 	 */
 	public void setCmd(List<String> cmd) {
 		this.cmd = cmd;
+	}
+
+	@JsonProperty("NetworkingConfig")
+	public NetworkingConfig getNetworkingConfig() {
+		return networkingConfig;
+	}
+
+	public static final class NetworkingConfig {
+		private final EndpointsConfig endpointsConfig;
+
+		public NetworkingConfig(final String networkName) {
+			this.endpointsConfig = new EndpointsConfig(networkName);
+		}
+
+		@JsonProperty("EndpointsConfig")
+		public EndpointsConfig getEndpointsConfig() {
+			return endpointsConfig;
+		}
+	}
+
+	public static final class EndpointsConfig {
+		private final String networkID;
+
+		private EndpointsConfig(final String networkName) {
+			this.networkID = networkName;
+		}
+
+		@JsonAnyGetter
+		public Map<String, Object> getDynamicProperties() {
+			return Map.of(networkID, Map.of("NetworkID", networkID));
+		}
 	}
 }

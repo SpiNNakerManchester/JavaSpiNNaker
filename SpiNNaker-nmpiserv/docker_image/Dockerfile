@@ -12,53 +12,65 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:jammy
+FROM quay.io/jupyter/minimal-notebook
+
+LABEL maintainer="SpiNNaker Team"
+
+ENV USER="${NB_USER}" \
+    SHELL=/bin/bash \
+    SSL_CERT_DIR=/etc/ssl/certs \
+    XDG_CACHE_HOME=/tmp/cache/ \
+    LAB_IMAGE_NAME=SpiNNaker
 
 USER root
 
-RUN apt-get update -qq && apt-get install -yq --no-install-recommends software-properties-common gpg-agent
-RUN add-apt-repository ppa:openjdk-r/ppa
-RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get update -qq && \
-	DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-	ca-certificates curl git python3.10 python3.10-tk python3-distutils gcc-arm-none-eabi libnewlib-arm-none-eabi make \
-	openjdk-11-jdk maven locales locales-all iputils-ping tzdata graphviz libsqlite3-dev freeglut3-dev \
-	rsync g++ libstring-crc32-perl binutils lib32z1 netbase wget jq unzip
+# Set the UK timezone (necessary to make r-base install noninteractive)
+RUN ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
 
-RUN locale-gen en_GB.UTF-8
-ENV LANG C.UTF-8
-ENV TZ="Etc/UTC"
-RUN update-locale LANG=en_GB.UTF-8
+# Set to noninteractive for install
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update --yes && \
+    apt-get install --yes \
+    gcc \
+    lsof \
+    gcc-arm-none-eabi \
+    openjdk-17-jdk \
+    maven \
+    ffmpeg \
+    curl \
+    make \
+    vim  && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-RUN curl -O https://bootstrap.pypa.io/get-pip.py
-RUN python3.10 get-pip.py
-RUN pip3.10 install virtualenv
-RUN addgroup --gid 115 spinnaker
-RUN adduser --uid 112 --gid 115 spinnaker
-RUN ln -s /usr/bin/python3.10 /usr/bin/python
-RUN ln -s /usr/bin/pip3.10 /usr/bin/pip
+# Install nodejs
+ENV NODE_VERSION=16.13.0
+ENV NVM_DIR=/root/.nvm
+RUN mkdir $NVM_DIR && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
+RUN . "$NVM_DIR/nvm.sh" && \
+    nvm install ${NODE_VERSION} && \
+    nvm use v${NODE_VERSION} && \
+    nvm alias default v${NODE_VERSION}
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 
-USER spinnaker
-WORKDIR /home/spinnaker
-RUN python -m virtualenv spinnaker
-ADD --chown=spinnaker:spinnaker activate /home/spinnaker/spinnaker/bin/
-WORKDIR /home/spinnaker/spinnaker
-RUN git clone https://github.com/SpiNNakerManchester/SupportScripts.git support
-RUN support/install.sh 8 -y
-RUN git clone https://github.com/SpiNNakerManchester/JavaSpiNNaker
-RUN support/gitcheckout.sh quota_remotespinnaker_docker
-RUN /bin/bash -c "source bin/activate && pip install 'numpy == 1.21.6' 'scipy == 1.10.0'"
-RUN /bin/bash -c "source bin/activate && cd SpiNNUtils && python setup.py develop"
-RUN /bin/bash -c "source bin/activate && pip install matplotlib"
-RUN /bin/bash -c "source bin/activate && support/automatic_make.sh"
-RUN /bin/bash -c "source bin/activate && support/setup.sh"
-RUN /bin/bash -c "source bin/activate && python -m spynnaker.pyNN.setup_pynn"
-RUN mvn -f JavaSpiNNaker -pl -SpiNNaker-allocserv -DskipTests package
+# disable core dumps
+RUN echo "* - core 0" >> /etc/security/limits.conf
 
-ADD --chown=spinnaker:spinnaker --chmod=0755 run_executor.sh /home/spinnaker/run_executor.sh
-ADD --chown=spinnaker:spinnaker --chmod=0755 start_simulation.sh /home/spinnaker/start_simulation.sh
-ADD --chown=spinnaker:spinnaker --chmod=0644 .spynnaker.cfg /home/spinnaker/.spynnaker.cfg
+# Setup install scripts
+RUN mkdir -p /opt/spinnaker
+COPY --chmod=755 activate /opt/spinnaker/activate
+COPY --chmod=755 install_spinnaker_git.sh /opt/spinnaker/install_spinnaker_git.sh
 
-WORKDIR /home/spinnaker
-ENTRYPOINT [ "/home/spinnaker/start_simulation.sh" ]
+WORKDIR $HOME
+USER ${NB_UID}
+
+ENV MPLCONFIGDIR=$HOME/.config/matplotlib
+RUN mkdir -p $MPLCONFIGDIR
+
+# Install git kernel
+RUN /opt/spinnaker/install_spinnaker_git.sh
+
+ADD --chown=spinnaker:spinnaker --chmod=0755 run_executor.sh $HOME/run_executor.sh
+ADD --chown=spinnaker:spinnaker --chmod=0755 start_simulation.sh $HOME/start_simulation.sh
+ADD --chown=spinnaker:spinnaker --chmod=0644 .spynnaker.cfg $HOME/.spynnaker.cfg
+
+ENTRYPOINT [ "./start_simulation.sh" ]

@@ -1,5 +1,5 @@
-#!/bin/bash
-# Copyright (c) 2023 The University of Manchester
+#!/usr/bin/env bash
+# Copyright (c) 2025 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,26 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-if [ -f "already_run" ]; then
-	echo "Not running again"
-	while :
-	do
-		sleep 3600
-	done
-fi
 
-echo "run" >> already_run
-url=$1
-shift
-echo "URL is $url"
+set -e
 
-if [ $url ]
-then
-	echo "Starting NMPI Client from $url"
-	cd $HOME
-	/usr/bin/wget $url
-	$HOME/run_executor.sh $@
-	echo "Simulation Complete - exiting"
-else
-	echo "NMPI URL missing - not starting"
-fi
+mysql -u root -p"${MYSQL_ROOT_PASSWORD}" spalloc <<-EOSQL
+    CREATE USER IF NOT EXISTS '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';
+    GRANT ALL PRIVILEGES ON spalloc.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';
+    GRANT ALL PRIVILEGES ON spalloc_history.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';
+    GRANT SUPER ON *.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';
+    FLUSH PRIVILEGES;
+EOSQL
