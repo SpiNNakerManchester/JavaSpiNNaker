@@ -33,7 +33,7 @@ limitations under the License.
 		<forbidden.keywords.re>\bFIXME\b|Auto-generated method stub</forbidden.keywords.re>
 
 		<junit.version>6.0.1</junit.version>
-		<checkstyle.version>12.1.2</checkstyle.version>
+		<checkstyle.version>12.2.0</checkstyle.version>
 		<javadoc.version>3.12.0</javadoc.version>
 		<testing.version>3.5.4</testing.version>
 
@@ -56,9 +56,9 @@ limitations under the License.
 		<cxf.version>4.1.4</cxf.version>
 		<jackson.version>2.20.1</jackson.version>
 		<jackson.annotations.version>2.20</jackson.annotations.version>
-		<sqlite.version>3.51.0.0</sqlite.version>
+		<sqlite.version>3.51.1.0</sqlite.version>
 		<keycloak.version>26.4.5</keycloak.version>
-		<swagger.version>5.30.2</swagger.version>
+		<swagger.version>5.30.3</swagger.version>
 		<error-prone.version>2.18.0</error-prone.version>
 		<picocli.version>4.7.7</picocli.version>
 		<mysql.version>9.5.0</mysql.version>
@@ -243,7 +243,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-configuration2</artifactId>
-				<version>2.12.0</version>
+				<version>2.13.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
@@ -437,7 +437,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.3.1</version>
+					<version>3.4.0</version>
 					<configuration>
 						<!-- This is weird, but needed. -->
 						<propertiesEncoding>ISO-8859-1</propertiesEncoding>
@@ -503,7 +503,7 @@ limitations under the License.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>3.5.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
