@@ -20,12 +20,11 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-import static org.springframework.util.StreamUtils.copyToByteArray;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
+import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.pathPattern;
 
 import java.io.IOException;
 import java.net.URI;
@@ -38,19 +37,14 @@ import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.logging.LogFactory;
-import org.hobsoft.spring.resttemplatelogger.LogFormatter;
-import org.hobsoft.spring.resttemplatelogger.LoggingCustomizer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -223,14 +217,14 @@ public class SecurityConfig {
 				// Allow forwarded requests
 				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
 				// Login process and static resources are available to all
-				.requestMatchers(antMatcher(urlMaker.systemUrl("login*")),
-						antMatcher(urlMaker.systemUrl("perform_*")),
-						antMatcher(oidcPath("**")),
-						antMatcher(urlMaker.systemUrl("error")),
-						antMatcher(urlMaker.systemUrl("resources/*")),
-						antMatcher(urlMaker.serviceUrl("openapi.json")),
-						antMatcher(urlMaker.serviceUrl("swagger*")),
-						antMatcher(urlMaker.serviceUrl("index.css")))
+				.requestMatchers(pathPattern(urlMaker.systemUrl("login*")),
+						pathPattern(urlMaker.systemUrl("perform_*")),
+						pathPattern(oidcPath("**")),
+						pathPattern(urlMaker.systemUrl("error")),
+						pathPattern(urlMaker.systemUrl("resources/*")),
+						pathPattern(urlMaker.serviceUrl("openapi.json")),
+						pathPattern(urlMaker.serviceUrl("swagger*")),
+						pathPattern(urlMaker.serviceUrl("index.css")))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated());
@@ -380,35 +374,12 @@ public class SecurityConfig {
 			var request = new RequestEntity<>(headers, GET,
 					URI.create(userInfoUri));
 
-			var restLog = LogFactory.getLog(LoggingCustomizer.class);
-			var restTemplate = new RestTemplateBuilder().customizers(
-					new LoggingCustomizer(restLog, new Formatter())).build();
+			var restTemplate = new RestTemplateBuilder().build();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 			var response =
 					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
 
 			return response.getBody();
-		}
-	}
-
-	private final class Formatter implements LogFormatter {
-
-		@Override
-		public String formatResponse(ClientHttpResponse response)
-				throws IOException {
-			return String.format("Response:\n    Headers: %s\n    Body: %s",
-					response.getHeaders(),
-					new String(copyToByteArray(response.getBody())));
-		}
-
-		@Override
-		public String formatRequest(HttpRequest request, byte[] body) {
-			return String.format(
-					"%s Request to %s:\n"
-					+ "    Headers: %s\n"
-					+ "    Body: %s",
-					request.getMethod(), request.getURI(), request.getHeaders(),
-					new String(body));
 		}
 	}
 
