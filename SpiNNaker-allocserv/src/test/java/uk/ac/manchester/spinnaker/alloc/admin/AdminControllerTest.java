@@ -18,7 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminController.BASE_PATH;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminController.CREATE_USER_PATH;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminController.USERS_PATH;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -30,8 +31,8 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
