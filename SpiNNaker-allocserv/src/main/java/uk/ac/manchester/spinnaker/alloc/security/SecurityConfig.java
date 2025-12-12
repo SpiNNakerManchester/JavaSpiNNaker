@@ -20,7 +20,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.util.StreamUtils.copyToByteArray;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
@@ -38,7 +37,6 @@ import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.RestTemplateBuilder;
@@ -46,9 +44,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -377,7 +373,7 @@ public class SecurityConfig {
 			headers.setBearerAuth(token);
 			var request = new RequestEntity<>(headers, GET,
 					URI.create(userInfoUri));
-					
+
 			var restTemplate = new RestTemplateBuilder().build();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 			var response =
