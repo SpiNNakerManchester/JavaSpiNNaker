@@ -47,7 +47,7 @@ jobs:
         java-version: ${{ matrix.java }}
         cache: 'maven'
     - name: "Set up node cache"
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: '~/.m2/repository/com/github/eirslett/node'
         key: ${{ runner.os }}-node-${{ hashFiles('SpiNNaker-allocserv/pom.xml') }}
@@ -100,7 +100,7 @@ jobs:
       continue-on-error: true
     - name: Upload Build (JDK 11 only)
       if: matrix.java == 11
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: spinnaker-exe.jar
         path: SpiNNaker-front-end/target/spinnaker-exe.jar
