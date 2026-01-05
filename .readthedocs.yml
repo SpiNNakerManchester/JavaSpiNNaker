@@ -17,10 +17,10 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+    jq: "latest"
   jobs:
     build:
       html:
-        - pip install jq
         - export MAVEN_VERSION=$(curl -s https://api.github.com/repos/apache/maven/releases/latest | jq -r ".name")
         - curl --output jdk.tar.gz https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
         - tar zxvf jdk.tar.gz
