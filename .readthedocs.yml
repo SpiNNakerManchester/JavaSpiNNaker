@@ -34,6 +34,7 @@ build:
         - ln -s $PWD/apache-maven-$(cat .MAVEN_VERSION)/bin/mvn ${READTHEDOCS_VIRTUALENV_PATH}/bin/mvn
         - echo "jdk-17.0.2/**" >> .gitignore
         - echo "apache-maven-$(cat .MAVEN_VERSION)/**" >> .gitignore
+        - echo ".MAVEN_VERSION" >> .gitignore
         - JAVA_HOME=$PWD/jdk-17.0.2/ mvn install --settings .github/settings.xml -DskipTests=true -Dmaven.javadoc.skip=true
         - JAVA_HOME=$PWD/jdk-17.0.2/ mvn site site:stage --settings .github/settings.xml -P "!jsp-precompile"
         - mkdir -p ${READTHEDOCS_OUTPUT}html/
