@@ -1147,8 +1147,8 @@ limitations under the License.
 									<configuration>
 										<compilerArgs>
 											<arg>-XDcompilePolicy=simple</arg>
-											<!-- Options to EP must go in same arg. Ugh. -->
 											<arg>--should-stop=ifError=FLOW</arg>
+											<!-- Options to EP must go in same arg. Ugh. -->
 											<arg>
 												-Xplugin:ErrorProne
 												<!-- Disable the MissingSummary check; we use an abbreviated
@@ -1177,6 +1177,7 @@ limitations under the License.
 									<configuration>
 										<compilerArgs>
 											<arg>-XDcompilePolicy=simple</arg>
+											<arg>--should-stop=ifError=FLOW</arg>
 											<!-- Options to EP must go in same arg. Ugh. -->
 											<arg>
 												-Xplugin:ErrorProne
