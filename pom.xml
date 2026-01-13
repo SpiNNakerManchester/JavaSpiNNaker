@@ -57,7 +57,7 @@ limitations under the License.
 		<jackson.version>2.20.1</jackson.version>
 		<jackson.annotations.version>2.20</jackson.annotations.version>
 		<sqlite.version>3.51.1.0</sqlite.version>
-		<keycloak.version>26.4.7</keycloak.version>
+		<keycloak.version>26.5.0</keycloak.version>
 		<swagger.version>5.31.0</swagger.version>
 		<error-prone.version>2.45.0</error-prone.version>
 		<picocli.version>4.7.7</picocli.version>
@@ -560,33 +560,19 @@ limitations under the License.
 						<links>
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
-							<link>https://docs.spring.io/spring-boot/docs/2.7.17/api/</link>
+							<link>https://docs.spring.io/spring-boot/api/java/</link>
 							<!-- This isn't modular so javadoc 14 gets snooty
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 							-->
-							<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
+							<link>https://jakarta.ee/specifications/servlet/6.1/apidocs/</link>
 							<link>https://errorprone.info/api/latest/</link>
-							<link>https://www.slf4j.org/api/</link>
 							<link>https://www.joda.org/joda-time/apidocs/</link>
+							<link>https://jakarta.ee/specifications/bean-validation/3.1/apidocs/</link>
+							<link>https://jakarta.ee/specifications/restful-ws/4.0/apidocs/</link>
+							<link>https://www.keycloak.org/docs-api/latest/javadocs/</link>
 						</links>
 						<offlineLinks>
 							<!-- Internal property used below: See https://issues.apache.org/jira/browse/MNG-7038 and https://stackoverflow.com/a/41387133/301832 -->
-							<offlineLink>
-								<url>https://javadoc.io/doc/jakarta.validation/validation-api/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/jakarta.validation</location>
-							</offlineLink>
-							<offlineLink>
-								<url>https://javadoc.io/doc/jakarta.ws.rs/jakarta.ws.rs-api/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/jakarta.ws.rs</location>
-							</offlineLink>
-							<offlineLink>
-								<url>https://javadoc.io/doc/org.keycloak/keycloak-client-registration-api/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/org.keycloak.client</location>
-							</offlineLink>
-							<offlineLink>
-								<url>https://javadoc.io/doc/org.keycloak/keycloak-core/latest/</url>
-								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/org.keycloak.core</location>
-							</offlineLink>
 							<offlineLink>
 								<url>https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/latest/</url>
 								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/com.fasterxml.jackson.core</location>
@@ -1125,7 +1111,6 @@ limitations under the License.
 								<link>https://jakarta.ee/specifications/servlet/4.0/apidocs/</link>
 								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
 								<link>https://errorprone.info/api/latest/</link>
-								<link>https://www.slf4j.org/api/</link>
 								<link>https://www.joda.org/joda-time/apidocs/</link>
 							</links>
 						</configuration>
