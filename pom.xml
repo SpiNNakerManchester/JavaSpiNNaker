@@ -581,6 +581,10 @@ limitations under the License.
 								<url>https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/latest/</url>
 								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/com.fasterxml.jackson.databind</location>
 							</offlineLink>
+							<offlineLink>
+							    <url>https://www.slf4j.org/apidocs/</url>
+								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/org.slf4j</location>
+							</offlineLink>
 						</offlineLinks>
 						<doclint>all</doclint>
 						<notimestamp>true</notimestamp>
