@@ -72,10 +72,8 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 public abstract class DataGatherer extends BoardLocalSupport
 		implements AutoCloseable {
-	/**
-	 * Logger for the gatherer.
-	 */
-	protected static final Logger log = getLogger(DataGatherer.class);
+
+	private static final Logger log = getLogger(DataGatherer.class);
 
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
 			getProperty("spinnaker.compare.download");
