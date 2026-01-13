@@ -102,7 +102,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>@NotNull <a href="../IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first even-row-color"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocProperties.ProxyProperties.</span><code><a href="../../../alloc/SpallocProperties.ProxyProperties.html#getLocalHost()" class="member-name-link">getLocalHost</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
@@ -117,13 +117,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../../../alloc/admin/MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">MachineStateControl.</span><code><a href="../../../alloc/admin/MachineStateControl.html#findIP(java.lang.String,java.lang.String)" class="member-name-link">findIP</a><wbr>(@NotBlank <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;machine,
+<div class="col-second even-row-color"><span class="type-name-label">MachineStateControl.</span><code><a href="../../../alloc/admin/MachineStateControl.html#findIP(java.lang.String,java.lang.String)" class="member-name-link">findIP</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;machine,
  <a href="../IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;address)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Look up a board for management.</div>
 </div>
 <div class="col-first odd-row-color"><code>default boolean</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AdminAPI.</span><code><a href="../../../alloc/admin/AdminAPI.html#getBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String)" class="member-name-link">getBoardState</a><wbr>(@NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;machineName,
+<div class="col-second odd-row-color"><span class="type-name-label">AdminAPI.</span><code><a href="../../../alloc/admin/AdminAPI.html#getBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String)" class="member-name-link">getBoardState</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="machine name is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;machineName,
  <a href="../../../machine/board/ValidTriadX.html" title="annotation interface in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;x,
  <a href="../../../machine/board/ValidTriadY.html" title="annotation interface in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;y,
  <a href="../../../machine/board/ValidTriadZ.html" title="annotation interface in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;z,
@@ -141,7 +141,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Find board by IP address and return its state.</div>
 </div>
 <div class="col-first odd-row-color"><code>default boolean</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AdminAPI.</span><code><a href="../../../alloc/admin/AdminAPI.html#setBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,boolean)" class="member-name-link">setBoardState</a><wbr>(@NotBlank(message="machine name is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;machineName,
+<div class="col-second odd-row-color"><span class="type-name-label">AdminAPI.</span><code><a href="../../../alloc/admin/AdminAPI.html#setBoardState(java.lang.String,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,boolean)" class="member-name-link">setBoardState</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="machine name is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;machineName,
  <a href="../../../machine/board/ValidTriadX.html" title="annotation interface in uk.ac.manchester.spinnaker.machine.board">@ValidTriadX</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;x,
  <a href="../../../machine/board/ValidTriadY.html" title="annotation interface in uk.ac.manchester.spinnaker.machine.board">@ValidTriadY</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;y,
  <a href="../../../machine/board/ValidTriadZ.html" title="annotation interface in uk.ac.manchester.spinnaker.machine.board">@ValidTriadZ</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;z,
@@ -154,7 +154,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Enable or disable a board.</div>
 </div>
 <div class="col-first even-row-color"><code>boolean</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AdminAPI.</span><code><a href="../../../alloc/admin/AdminAPI.html#setBoardStateAddress(java.lang.String,java.lang.String,boolean)" class="member-name-link">setBoardStateAddress</a><wbr>(@NotBlank <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second even-row-color"><span class="type-name-label">AdminAPI.</span><code><a href="../../../alloc/admin/AdminAPI.html#setBoardStateAddress(java.lang.String,java.lang.String,boolean)" class="member-name-link">setBoardStateAddress</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;address,
  boolean&nbsp;enabled)</code></div>
 <div class="col-last even-row-color">
@@ -183,7 +183,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">SpallocAPI.Job.</span><code><a href="../../../alloc/allocator/SpallocAPI.Job.html#access(java.lang.String)" class="member-name-link">access</a><wbr>(@NotNull <a href="../IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;keepaliveAddress)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SpallocAPI.Job.</span><code><a href="../../../alloc/allocator/SpallocAPI.Job.html#access(java.lang.String)" class="member-name-link">access</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;keepaliveAddress)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Update the keepalive.</div>
 </div>
@@ -282,7 +282,7 @@ loadScripts(document, 'script');</script>
  @uk.ac.manchester.spinnaker.machine.ValidP int&nbsp;p,
  long&nbsp;address,
  int&nbsp;size,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Read data from job boards using the fast data download protocol.</div>
 </div>
@@ -298,7 +298,7 @@ loadScripts(document, 'script');</script>
  @uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y,
  long&nbsp;address,
  byte[]&nbsp;bytes,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Write data to job boards using the fast data protocol.</div>
 </div>

@@ -114,7 +114,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>final @Valid <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">CoreLocation</a></code></div>
+<div class="col-first even-row-color"><code>final <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">CoreLocation</a></code></div>
 <div class="col-second even-row-color"><code><a href="#core" class="member-name-link">core</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">What core owned the region?</div>
@@ -153,7 +153,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">How much data should be downloaded?</div>
 </div>
-<div class="col-first odd-row-color"><code>final @NotNull <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">MemoryLocation</a></code></div>
+<div class="col-first odd-row-color"><code>final <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#startAddress" class="member-name-link">startAddress</a></code></div>
 <div class="col-last odd-row-color">
 <div class="block">Where should the data be downloaded from?</div>
@@ -220,8 +220,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="core">
 <h3>core</h3>
-<div class="member-signature"><span class="annotations">@Valid
-</span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@Valid <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">CoreLocation</a></span>&nbsp;<span class="element-name">core</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">CoreLocation</a></span>&nbsp;<span class="element-name">core</span></div>
 <div class="block">What core owned the region? Note that the region might be retrieved
  from another core of the same chip.</div>
 </section>
@@ -237,8 +237,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="startAddress">
 <h3>startAddress</h3>
-<div class="member-signature"><span class="annotations">@NotNull
-</span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NotNull <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">MemoryLocation</a></span>&nbsp;<span class="element-name">startAddress</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
+</span><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">MemoryLocation</a></span>&nbsp;<span class="element-name">startAddress</span></div>
 <div class="block">Where should the data be downloaded from? <em>This is not necessarily
  the start of the region.</em></div>
 </section>
@@ -246,7 +246,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="size">
 <h3>size</h3>
-<div class="member-signature"><span class="annotations">@Positive
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">size</span></div>
 <div class="block">How much data should be downloaded? <em>This is not necessarily the
  size of the region.</em></div>
@@ -255,7 +255,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="realSize">
 <h3>realSize</h3>
-<div class="member-signature"><span class="annotations">@Positive
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">realSize</span></div>
 <div class="block">How much data was originally requested?</div>
 </section>
@@ -263,7 +263,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="initialIgnore">
 <h3>initialIgnore</h3>
-<div class="member-signature"><span class="annotations">@PositiveOrZero
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html" title="class or interface in jakarta.validation.constraints" class="external-link">@PositiveOrZero</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="element-name">initialIgnore</span></div>
 <div class="block">How many extra bytes are being read at the start of the region in
  order to get an aligned read?</div>
@@ -272,7 +272,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="finalIgnore">
 <h3>finalIgnore</h3>
-<div class="member-signature"><span class="annotations">@PositiveOrZero
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html" title="class or interface in jakarta.validation.constraints" class="external-link">@PositiveOrZero</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="element-name">finalIgnore</span></div>
 <div class="block">How many extra bytes are being read at the end of the region in order
  to get an aligned read?</div>
@@ -281,7 +281,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="isRecording">
 <h3>isRecording</h3>
-<div class="member-signature"><span class="annotations">@NotNull
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.NotNull boolean</span>&nbsp;<span class="element-name">isRecording</span></div>
 <div class="block">States is a recording region
  True if this region is appended after every run/loop.

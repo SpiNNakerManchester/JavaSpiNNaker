@@ -88,7 +88,7 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <hr>
-<div class="type-signature"><span class="annotations">@Path("/")
+<div class="type-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/")
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">NMPIv3API</span></div>
 <div class="block">The REST API for the NMPI Service.</div>
 </section>
@@ -160,12 +160,12 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getJob(java.lang.String,int)">
 <h3>getJob</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Path("jobs/{job_id}")
-@Produces("application/json")
-</span><span class="return-type"><a href="Job.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">Job</a></span>&nbsp;<span class="element-name">getJob</span><wbr><span class="parameters">(@HeaderParam("x-api-key")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("jobs/{job_id}")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type"><a href="Job.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">Job</a></span>&nbsp;<span class="element-name">getJob</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/HeaderParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@HeaderParam</a>("x-api-key")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;apiKey,
- @PathParam("job_id")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("job_id")
  int&nbsp;jobId)</span></div>
 <div class="block">Get an NMPI Job.</div>
 <dl class="notes">
@@ -180,12 +180,12 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setJobResources(java.lang.String,int,uk.ac.manchester.spinnaker.alloc.nmpi.JobResourceUpdate)">
 <h3>setJobResources</h3>
-<div class="member-signature"><span class="annotations">@PUT
-@Path("jobs/{job_id}")
-@Consumes("application/json")
-</span><span class="return-type">void</span>&nbsp;<span class="element-name">setJobResources</span><wbr><span class="parameters">(@HeaderParam("x-api-key")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PUT.html" title="class or interface in jakarta.ws.rs" class="external-link">@PUT</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("jobs/{job_id}")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Consumes.html" title="class or interface in jakarta.ws.rs" class="external-link">@Consumes</a>("application/json")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">setJobResources</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/HeaderParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@HeaderParam</a>("x-api-key")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;apiKey,
- @PathParam("job_id")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("job_id")
  int&nbsp;jobId,
  <a href="JobResourceUpdate.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">JobResourceUpdate</a>&nbsp;resources)</span></div>
 <div class="block">Update the resources of a Job.</div>
@@ -200,14 +200,14 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getProjects(java.lang.String,java.lang.String,java.lang.String)">
 <h3>getProjects</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Path("projects/")
-@Produces("application/json")
-</span><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Project.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">Project</a>&gt;</span>&nbsp;<span class="element-name">getProjects</span><wbr><span class="parameters">(@HeaderParam("x-api-key")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("projects/")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Project.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">Project</a>&gt;</span>&nbsp;<span class="element-name">getProjects</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/HeaderParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@HeaderParam</a>("x-api-key")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;apiKey,
- @QueryParam("status")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("status")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;status,
- @QueryParam("collab")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("collab")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;collab)</span></div>
 <div class="block">Get a list of projects that match the parameters.</div>
 <dl class="notes">
@@ -223,11 +223,11 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="createSession(java.lang.String,uk.ac.manchester.spinnaker.alloc.nmpi.SessionRequest)">
 <h3>createSession</h3>
-<div class="member-signature"><span class="annotations">@POST
-@Path("sessions/")
-@Consumes("application/json")
-@Produces("application/json")
-</span><span class="return-type"><a href="SessionResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">SessionResponse</a></span>&nbsp;<span class="element-name">createSession</span><wbr><span class="parameters">(@HeaderParam("x-api-key")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/POST.html" title="class or interface in jakarta.ws.rs" class="external-link">@POST</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("sessions/")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Consumes.html" title="class or interface in jakarta.ws.rs" class="external-link">@Consumes</a>("application/json")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type"><a href="SessionResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">SessionResponse</a></span>&nbsp;<span class="element-name">createSession</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/HeaderParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@HeaderParam</a>("x-api-key")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;apiKey,
  <a href="SessionRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">SessionRequest</a>&nbsp;session)</span></div>
 <div class="block">Create a new session.</div>
@@ -243,12 +243,12 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setSessionStatusAndResources(java.lang.String,int,uk.ac.manchester.spinnaker.alloc.nmpi.SessionResourceUpdate)">
 <h3>setSessionStatusAndResources</h3>
-<div class="member-signature"><span class="annotations">@PUT
-@Path("sessions/{session_id}")
-@Consumes("application/json")
-</span><span class="return-type">void</span>&nbsp;<span class="element-name">setSessionStatusAndResources</span><wbr><span class="parameters">(@HeaderParam("x-api-key")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PUT.html" title="class or interface in jakarta.ws.rs" class="external-link">@PUT</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("sessions/{session_id}")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Consumes.html" title="class or interface in jakarta.ws.rs" class="external-link">@Consumes</a>("application/json")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">setSessionStatusAndResources</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/HeaderParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@HeaderParam</a>("x-api-key")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;apiKey,
- @PathParam("session_id")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("session_id")
  int&nbsp;sessionId,
  <a href="SessionResourceUpdate.html" title="class in uk.ac.manchester.spinnaker.alloc.nmpi">SessionResourceUpdate</a>&nbsp;resources)</span></div>
 <div class="block">Update a session.</div>

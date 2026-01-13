@@ -241,10 +241,10 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="create(uk.ac.manchester.spinnaker.nmpi.rest.DockerCreateRequest)">
 <h3>create</h3>
-<div class="member-signature"><span class="annotations">@Produces("application/json")
-@Consumes("application/json")
-@POST
-@Path("/containers/create")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Consumes.html" title="class or interface in jakarta.ws.rs" class="external-link">@Consumes</a>("application/json")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/POST.html" title="class or interface in jakarta.ws.rs" class="external-link">@POST</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/containers/create")
 </span><span class="return-type"><a href="DockerCreateResponse.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerCreateResponse</a></span>&nbsp;<span class="element-name">create</span><wbr><span class="parameters">(<a href="DockerCreateRequest.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerCreateRequest</a>&nbsp;request)</span></div>
 <div class="block">Create a new Docker container.</div>
 <dl class="notes">
@@ -258,9 +258,9 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="start(java.lang.String)">
 <h3>start</h3>
-<div class="member-signature"><span class="annotations">@POST
-@Path("/containers/{id}/start")
-</span><span class="return-type">void</span>&nbsp;<span class="element-name">start</span><wbr><span class="parameters">(@PathParam("id")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/POST.html" title="class or interface in jakarta.ws.rs" class="external-link">@POST</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/containers/{id}/start")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">start</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("id")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</span></div>
 <div class="block">Start a Docker container.</div>
 <dl class="notes">
@@ -272,10 +272,10 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="inspect(java.lang.String)">
 <h3>inspect</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Produces("application/json")
-@Path("/containers/{id}/json")
-</span><span class="return-type"><a href="DockerInspectResponse.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse</a></span>&nbsp;<span class="element-name">inspect</span><wbr><span class="parameters">(@PathParam("id")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/containers/{id}/json")
+</span><span class="return-type"><a href="DockerInspectResponse.html" title="class in uk.ac.manchester.spinnaker.nmpi.rest">DockerInspectResponse</a></span>&nbsp;<span class="element-name">inspect</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("id")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</span></div>
 <div class="block">Get the state of a container.</div>
 <dl class="notes">
@@ -289,11 +289,11 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="wait(java.lang.String,uk.ac.manchester.spinnaker.nmpi.rest.DockerAPI.WaitCondition)">
 <h3>wait</h3>
-<div class="member-signature"><span class="annotations">@POST
-@Path("/containers/{id}/wait")
-</span><span class="return-type">void</span>&nbsp;<span class="element-name">wait</span><wbr><span class="parameters">(@PathParam("id")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/POST.html" title="class or interface in jakarta.ws.rs" class="external-link">@POST</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/containers/{id}/wait")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">wait</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("id")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id,
- @QueryParam("condition")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("condition")
  <a href="DockerAPI.WaitCondition.html" title="enum class in uk.ac.manchester.spinnaker.nmpi.rest">DockerAPI.WaitCondition</a>&nbsp;condition)</span></div>
 <div class="block">Wait for a Docker container to exit.</div>
 <dl class="notes">
@@ -306,9 +306,9 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="delete(java.lang.String)">
 <h3>delete</h3>
-<div class="member-signature"><span class="annotations">@DELETE
-@Path("/containers/{id}")
-</span><span class="return-type">void</span>&nbsp;<span class="element-name">delete</span><wbr><span class="parameters">(@PathParam("id")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/DELETE.html" title="class or interface in jakarta.ws.rs" class="external-link">@DELETE</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/containers/{id}")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">delete</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("id")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</span></div>
 <div class="block">Delete a Docker container.</div>
 <dl class="notes">
@@ -320,14 +320,14 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getLog(java.lang.String,boolean,boolean)">
 <h3>getLog</h3>
-<div class="member-signature"><span class="annotations">@Produces("application/vnd.docker.raw-stream")
-@GET
-@Path("/containers/{id}/logs")
-</span><span class="return-type">byte[]</span>&nbsp;<span class="element-name">getLog</span><wbr><span class="parameters">(@PathParam("id")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/vnd.docker.raw-stream")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/containers/{id}/logs")
+</span><span class="return-type">byte[]</span>&nbsp;<span class="element-name">getLog</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("id")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id,
- @QueryParam("stdout")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("stdout")
  boolean&nbsp;stdout,
- @QueryParam("stderr")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("stderr")
  boolean&nbsp;stderr)</span></div>
 <div class="block">Get the raw logs of the container.</div>
 <dl class="notes">

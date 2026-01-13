@@ -114,7 +114,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#describeMachine(boolean,jakarta.ws.rs.container.AsyncResponse)" class="member-name-link">describeMachine</a><wbr>(boolean&nbsp;wait,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Describe the basic info about a machine.</div>
 </div>
@@ -162,13 +162,13 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="describeMachine(boolean,jakarta.ws.rs.container.AsyncResponse)">
 <h3>describeMachine</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Path("/")
-@Produces("application/json")
-</span><span class="return-type">void</span>&nbsp;<span class="element-name">describeMachine</span><wbr><span class="parameters">(@QueryParam("wait") @DefaultValue("false")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">describeMachine</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("wait") <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/DefaultValue.html" title="class or interface in jakarta.ws.rs" class="external-link">@DefaultValue</a>("false")
  boolean&nbsp;wait,
- @Suspended
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/Suspended.html" title="class or interface in jakarta.ws.rs.container" class="external-link">@Suspended</a>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</span></div>
 <div class="block">Describe the basic info about a machine.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -180,14 +180,14 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="whereIsLogicalPosition(int,int,int)">
 <h3>whereIsLogicalPosition</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Path("logical-board")
-@Produces("application/json")
-</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsLogicalPosition</span><wbr><span class="parameters">(@QueryParam("x") @ValidTriadX
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("logical-board")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsLogicalPosition</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("x") @ValidTriadX
  @uk.ac.manchester.spinnaker.machine.board.ValidTriadX int&nbsp;x,
- @QueryParam("y") @ValidTriadY
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("y") @ValidTriadY
  @uk.ac.manchester.spinnaker.machine.board.ValidTriadY int&nbsp;y,
- @QueryParam("z") @DefaultValue("0") @ValidTriadZ
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("z") <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/DefaultValue.html" title="class or interface in jakarta.ws.rs" class="external-link">@DefaultValue</a>("0") @ValidTriadZ
  @uk.ac.manchester.spinnaker.machine.board.ValidTriadZ int&nbsp;z)</span></div>
 <div class="block">Get the location description of a board given its logical coords.</div>
 <dl class="notes">
@@ -203,14 +203,14 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="whereIsPhysicalPosition(int,int,int)">
 <h3>whereIsPhysicalPosition</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Path("physical-board")
-@Produces("application/json")
-</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsPhysicalPosition</span><wbr><span class="parameters">(@QueryParam("cabinet") @DefaultValue("0") @ValidCabinetNumber
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("physical-board")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsPhysicalPosition</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("cabinet") <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/DefaultValue.html" title="class or interface in jakarta.ws.rs" class="external-link">@DefaultValue</a>("0") @ValidCabinetNumber
  @uk.ac.manchester.spinnaker.machine.board.ValidCabinetNumber int&nbsp;cabinet,
- @QueryParam("frame") @DefaultValue("0") @ValidFrameNumber
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("frame") <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/DefaultValue.html" title="class or interface in jakarta.ws.rs" class="external-link">@DefaultValue</a>("0") @ValidFrameNumber
  @uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber int&nbsp;frame,
- @QueryParam("board") @ValidBoardNumber
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("board") @ValidBoardNumber
  @uk.ac.manchester.spinnaker.machine.board.ValidBoardNumber int&nbsp;board)</span></div>
 <div class="block">Get the location description of a board given its physical coords.</div>
 <dl class="notes">
@@ -226,12 +226,12 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="whereIsMachineChipLocation(int,int)">
 <h3>whereIsMachineChipLocation</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Path("chip")
-@Produces("application/json")
-</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsMachineChipLocation</span><wbr><span class="parameters">(@QueryParam("x") @ValidX
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("chip")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsMachineChipLocation</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("x") @ValidX
  @uk.ac.manchester.spinnaker.machine.ValidX int&nbsp;x,
- @QueryParam("y") @ValidY
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("y") @ValidY
  @uk.ac.manchester.spinnaker.machine.ValidY int&nbsp;y)</span></div>
 <div class="block">Get the location description of a board given the global coordinates
  of a chip on the board.</div>
@@ -247,10 +247,10 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="whereIsIPAddress(java.lang.String)">
 <h3>whereIsIPAddress</h3>
-<div class="member-signature"><span class="annotations">@GET
-@Path("board-ip")
-@Produces("application/json")
-</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsIPAddress</span><wbr><span class="parameters">(@QueryParam("address") @IPAddress
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/GET.html" title="class or interface in jakarta.ws.rs" class="external-link">@GET</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("board-ip")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Produces.html" title="class or interface in jakarta.ws.rs" class="external-link">@Produces</a>("application/json")
+</span><span class="return-type"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="element-name">whereIsIPAddress</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/QueryParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@QueryParam</a>("address") @IPAddress
  @IPAddress <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;address)</span></div>
 <div class="block">Get the location description of a board given its ethernet chip's IP
  address.</div>

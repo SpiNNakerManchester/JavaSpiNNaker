@@ -132,12 +132,12 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>@Valid <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></code></div>
+<div class="col-first even-row-color"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></code></div>
 <div class="col-second even-row-color"><code><a href="#board" class="member-name-link">board</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The specific board to allocate.</div>
 </div>
-<div class="col-first odd-row-color"><code>@Valid <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></code></div>
+<div class="col-first odd-row-color"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#dimensions" class="member-name-link">dimensions</a></code></div>
 <div class="col-last odd-row-color">
 <div class="block">The dimensions of rectangle of triads of boards to allocate.</div>
@@ -148,7 +148,7 @@ loadScripts(document, 'script');</script>
 <div class="block">What group will the job be accounted against; the owner <em>must</em> be
  a member of the group.</div>
 </div>
-<div class="col-first odd-row-color"><code>@NotNull(message="keepalive-interval is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
+<div class="col-first odd-row-color"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="keepalive-interval is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#keepaliveInterval" class="member-name-link">keepaliveInterval</a></code></div>
 <div class="col-last odd-row-color">
 <div class="block">How long after a keepalive message will the job be auto-deleted?</div>
@@ -158,7 +158,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Which machine to allocate on.</div>
 </div>
-<div class="col-first odd-row-color"><code>@PositiveOrZero(message="max-dead-boards may not be negative") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
+<div class="col-first odd-row-color"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html" title="class or interface in jakarta.validation.constraints" class="external-link">@PositiveOrZero</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="max-dead-boards may not be negative") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#maxDeadBoards" class="member-name-link">maxDeadBoards</a></code></div>
 <div class="col-last odd-row-color">
 <div class="block">The maximum number of dead boards allowed in a rectangular allocation.</div>
@@ -175,7 +175,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Which NMPI Job the job will be accounted against; the owner <em>must</em>
  be able to update the NMPI Job.</div>
 </div>
-<div class="col-first even-row-color"><code>@Positive(message="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
+<div class="col-first even-row-color"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
 <div class="col-second even-row-color"><code><a href="#numBoards" class="member-name-link">numBoards</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The number of boards to allocate.</div>
@@ -185,7 +185,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Who owns the job.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;@NotBlank(message="tags must not be blank") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="tags must not be blank") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="#tags" class="member-name-link">tags</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The tags to select which machine to allocate on.</div>
@@ -267,8 +267,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="keepaliveInterval">
 <h3>keepaliveInterval</h3>
-<div class="member-signature"><span class="annotations">@NotNull(message="keepalive-interval is required")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@NotNull(message="keepalive-interval is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">keepaliveInterval</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="keepalive-interval is required")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="keepalive-interval is required") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">keepaliveInterval</span></div>
 <div class="block">How long after a keepalive message will the job be auto-deleted?
  <em>Required.</em> Must be between 30 and 300 seconds.</div>
 </section>
@@ -276,8 +276,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="numBoards">
 <h3>numBoards</h3>
-<div class="member-signature"><span class="annotations">@Positive(message="number of boards must be at least 1 if given")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Positive(message="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">numBoards</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="number of boards must be at least 1 if given")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">numBoards</span></div>
 <div class="block">The number of boards to allocate. May be <code>null</code> to either use the
  default (1) or to let one of the other selectors (<a href="#dimensions"><code>dimensions</code></a>,
  <a href="#board"><code>board</code></a>) make the choice.</div>
@@ -286,8 +286,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="dimensions">
 <h3>dimensions</h3>
-<div class="member-signature"><span class="annotations">@Valid
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Valid <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></span>&nbsp;<span class="element-name">dimensions</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></span>&nbsp;<span class="element-name">dimensions</span></div>
 <div class="block">The dimensions of rectangle of triads of boards to allocate. May be
  <code>null</code> to let one of the other selectors (<a href="#numBoards"><code>numBoards</code></a>,
  <a href="#board"><code>board</code></a>) make the choice.</div>
@@ -296,8 +296,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="board">
 <h3>board</h3>
-<div class="member-signature"><span class="annotations">@Valid
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Valid <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></span>&nbsp;<span class="element-name">board</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></span>&nbsp;<span class="element-name">board</span></div>
 <div class="block">The specific board to allocate. May be <code>null</code> to let one of the
  other selectors (<a href="#numBoards"><code>numBoards</code></a>, <a href="#dimensions"><code>dimensions</code></a>) make the
  choice.</div>
@@ -314,7 +314,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="tags">
 <h3>tags</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;@NotBlank(message="tags must not be blank") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">tags</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="tags must not be blank") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">tags</span></div>
 <div class="block">The tags to select which machine to allocate on. This and
  <a href="#machineName"><code>machineName</code></a> are mutually exclusive, but at least one must be
  given.</div>
@@ -323,8 +323,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="maxDeadBoards">
 <h3>maxDeadBoards</h3>
-<div class="member-signature"><span class="annotations">@PositiveOrZero(message="max-dead-boards may not be negative")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@PositiveOrZero(message="max-dead-boards may not be negative") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">maxDeadBoards</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html" title="class or interface in jakarta.validation.constraints" class="external-link">@PositiveOrZero</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="max-dead-boards may not be negative")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html" title="class or interface in jakarta.validation.constraints" class="external-link">@PositiveOrZero</a>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html#message()" title="class or interface in jakarta.validation.constraints" class="external-link">message</a>="max-dead-boards may not be negative") <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">maxDeadBoards</span></div>
 <div class="block">The maximum number of dead boards allowed in a rectangular allocation.
  Note that the allocation engine might increase this if it decides to
  overallocate. Defaults to <code>0</code>.</div>

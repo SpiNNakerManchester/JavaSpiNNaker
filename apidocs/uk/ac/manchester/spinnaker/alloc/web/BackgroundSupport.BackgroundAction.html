@@ -151,7 +151,7 @@ loadScripts(document, 'script');</script>
          generic 404 with no special message. Custom messages should
          be supported by throwing a suitable
          <a href="RequestFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.web"><code>RequestFailedException</code></a>. If the result is not a
-         <code>Response</code> and not a <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link"><code>Throwable</code></a>, it will be
+         <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/Response.html" title="class or interface in jakarta.ws.rs.core" class="external-link"><code>Response</code></a> and not a <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link"><code>Throwable</code></a>, it will be
          returned as the entity that populates a <code>200 OK</code> (and
          so must be convertible to JSON).</dd>
 <dt>Throws:</dt>

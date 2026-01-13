@@ -88,7 +88,7 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <hr>
-<div class="type-signature"><span class="annotations">@Path("/storages")
+<div class="type-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("/storages")
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">UnicoreFileClient</span></div>
 <div class="block">An interface to the UNICORE storage REST API.</div>
 </section>
@@ -135,17 +135,17 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="upload(java.lang.String,java.lang.String,java.lang.String,java.io.InputStream)">
 <h3>upload</h3>
-<div class="member-signature"><span class="annotations">@PUT
-@Path("{id}/files/{filePath}")
-@Consumes("application/octet-stream")
-</span><span class="return-type">void</span>&nbsp;<span class="element-name">upload</span><wbr><span class="parameters">(@HeaderParam("Authorization")
+<div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PUT.html" title="class or interface in jakarta.ws.rs" class="external-link">@PUT</a>
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("{id}/files/{filePath}")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Consumes.html" title="class or interface in jakarta.ws.rs" class="external-link">@Consumes</a>("application/octet-stream")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">upload</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/HeaderParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@HeaderParam</a>("Authorization")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;authHeader,
- @PathParam("id")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("id")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id,
- @PathParam("filePath")
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/PathParam.html" title="class or interface in jakarta.ws.rs" class="external-link">@PathParam</a>("filePath")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;filePath,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;input)</span>
-     throws <span class="exceptions">jakarta.ws.rs.WebApplicationException</span></div>
+     throws <span class="exceptions"><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/WebApplicationException.html" title="class or interface in jakarta.ws.rs" class="external-link">WebApplicationException</a></span></div>
 <div class="block">Upload a file.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -155,7 +155,7 @@ loadScripts(document, 'script');</script>
             automatically created).</dd>
 <dd><code>input</code> - The input stream containing the file to upload.</dd>
 <dt>Throws:</dt>
-<dd><code>jakarta.ws.rs.WebApplicationException</code> - If anything goes wrong.</dd>
+<dd><code><a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/WebApplicationException.html" title="class or interface in jakarta.ws.rs" class="external-link">WebApplicationException</a></code> - If anything goes wrong.</dd>
 </dl>
 </section>
 </li>

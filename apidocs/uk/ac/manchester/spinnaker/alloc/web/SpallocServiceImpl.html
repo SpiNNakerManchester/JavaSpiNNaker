@@ -98,7 +98,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html" title="class or interface in org.springframework.stereotype" class="external-link">@Service</a>("service")
-@Path("spalloc")
+<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/Path.html" title="class or interface in jakarta.ws.rs" class="external-link">@Path</a>("spalloc")
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">SpallocServiceImpl</span>
 <span class="extends-implements">extends <a href="BackgroundSupport.html" title="class in uk.ac.manchester.spinnaker.alloc.web">BackgroundSupport</a>
 implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></span></div>
@@ -152,42 +152,42 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createJob(uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext,jakarta.ws.rs.container.AsyncResponse)" class="member-name-link">createJob</a><wbr>(<a href="CreateJobRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest</a>&nbsp;req,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.core.SecurityContext&nbsp;security,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;security,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a job.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#describeService(jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">describeService</a><wbr>(jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.core.SecurityContext&nbsp;sec,
- jakarta.servlet.http.HttpServletRequest&nbsp;req)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#describeService(jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext,jakarta.servlet.http.HttpServletRequest)" class="member-name-link">describeService</a><wbr>(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;sec,
+ <a href="https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/HttpServletRequest.html" title="class or interface in jakarta.servlet.http" class="external-link">HttpServletRequest</a>&nbsp;req)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get a description of the overall service.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#emergencyStop(java.lang.String,jakarta.ws.rs.container.AsyncResponse)" class="member-name-link">emergencyStop</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;commandCode,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Immediately stop all jobs and power down all boards.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpallocServiceAPI.JobAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.JobAPI</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getJob(int,jakarta.ws.rs.core.UriInfo,jakarta.servlet.http.HttpServletRequest,jakarta.ws.rs.core.SecurityContext)" class="member-name-link">getJob</a><wbr>(int&nbsp;id,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.servlet.http.HttpServletRequest&nbsp;req,
- jakarta.ws.rs.core.SecurityContext&nbsp;security)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/HttpServletRequest.html" title="class or interface in jakarta.servlet.http" class="external-link">HttpServletRequest</a>&nbsp;req,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;security)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get a sub-resource for managing a job.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpallocServiceAPI.MachineAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.MachineAPI</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMachine(java.lang.String,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext)" class="member-name-link">getMachine</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.core.SecurityContext&nbsp;sec)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;sec)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get a sub-resource for managing a machine.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="MachinesResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinesResponse</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMachines(jakarta.ws.rs.core.UriInfo)" class="member-name-link">getMachines</a><wbr>(jakarta.ws.rs.core.UriInfo&nbsp;ui)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMachines(jakarta.ws.rs.core.UriInfo)" class="member-name-link">getMachines</a><wbr>(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get a description of the machines.</div>
 </div>
@@ -196,8 +196,8 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
  boolean&nbsp;destroyed,
  int&nbsp;limit,
  int&nbsp;start,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</code></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">List jobs.</div>
 </div>
@@ -238,9 +238,9 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <li>
 <section class="detail" id="describeService(jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext,jakarta.servlet.http.HttpServletRequest)">
 <h3>describeService</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></span>&nbsp;<span class="element-name">describeService</span><wbr><span class="parameters">(jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.core.SecurityContext&nbsp;sec,
- jakarta.servlet.http.HttpServletRequest&nbsp;req)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></span>&nbsp;<span class="element-name">describeService</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;sec,
+ <a href="https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/HttpServletRequest.html" title="class or interface in jakarta.servlet.http" class="external-link">HttpServletRequest</a>&nbsp;req)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#describeService(jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext,jakarta.servlet.http.HttpServletRequest)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a description of the overall service.</div>
 <dl class="notes">
@@ -258,7 +258,7 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <li>
 <section class="detail" id="getMachines(jakarta.ws.rs.core.UriInfo)">
 <h3>getMachines</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="MachinesResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinesResponse</a></span>&nbsp;<span class="element-name">getMachines</span><wbr><span class="parameters">(jakarta.ws.rs.core.UriInfo&nbsp;ui)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="MachinesResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinesResponse</a></span>&nbsp;<span class="element-name">getMachines</span><wbr><span class="parameters">(<a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#getMachines(jakarta.ws.rs.core.UriInfo)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a description of the machines.</div>
 <dl class="notes">
@@ -275,8 +275,8 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <section class="detail" id="getMachine(java.lang.String,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext)">
 <h3>getMachine</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpallocServiceAPI.MachineAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.MachineAPI</a></span>&nbsp;<span class="element-name">getMachine</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.core.SecurityContext&nbsp;sec)</span></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;sec)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#getMachine(java.lang.String,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a sub-resource for managing a machine.</div>
 <dl class="notes">
@@ -295,9 +295,9 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <section class="detail" id="getJob(int,jakarta.ws.rs.core.UriInfo,jakarta.servlet.http.HttpServletRequest,jakarta.ws.rs.core.SecurityContext)">
 <h3>getJob</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpallocServiceAPI.JobAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.JobAPI</a></span>&nbsp;<span class="element-name">getJob</span><wbr><span class="parameters">(int&nbsp;id,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.servlet.http.HttpServletRequest&nbsp;req,
- jakarta.ws.rs.core.SecurityContext&nbsp;security)</span></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/HttpServletRequest.html" title="class or interface in jakarta.servlet.http" class="external-link">HttpServletRequest</a>&nbsp;req,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;security)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#getJob(int,jakarta.ws.rs.core.UriInfo,jakarta.servlet.http.HttpServletRequest,jakarta.ws.rs.core.SecurityContext)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a sub-resource for managing a job.</div>
 <dl class="notes">
@@ -320,8 +320,8 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
  boolean&nbsp;destroyed,
  int&nbsp;limit,
  int&nbsp;start,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#listJobs(boolean,boolean,int,int,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.container.AsyncResponse)">SpallocServiceAPI</a></code></span></div>
 <div class="block">List jobs.</div>
 <dl class="notes">
@@ -341,9 +341,9 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <section class="detail" id="createJob(uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext,jakarta.ws.rs.container.AsyncResponse)">
 <h3>createJob</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">createJob</span><wbr><span class="parameters">(<a href="CreateJobRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest</a>&nbsp;req,
- jakarta.ws.rs.core.UriInfo&nbsp;ui,
- jakarta.ws.rs.core.SecurityContext&nbsp;security,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/SecurityContext.html" title="class or interface in jakarta.ws.rs.core" class="external-link">SecurityContext</a>&nbsp;security,
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#createJob(uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext,jakarta.ws.rs.container.AsyncResponse)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Create a job.</div>
 <dl class="notes">
@@ -361,7 +361,7 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <section class="detail" id="emergencyStop(java.lang.String,jakarta.ws.rs.container.AsyncResponse)">
 <h3>emergencyStop</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">emergencyStop</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;commandCode,
- jakarta.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
+ <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/container/AsyncResponse.html" title="class or interface in jakarta.ws.rs.container" class="external-link">AsyncResponse</a>&nbsp;response)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#emergencyStop(java.lang.String,jakarta.ws.rs.container.AsyncResponse)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Immediately stop all jobs and power down all boards.</div>
 <dl class="notes">
