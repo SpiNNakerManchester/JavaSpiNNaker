@@ -15,30 +15,29 @@
  */
 package uk.ac.manchester.spinnaker.protocols.download;
 
+import java.io.IOException;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
-import static java.nio.ByteBuffer.allocate;
-import static java.util.stream.Collectors.toUnmodifiableList;
-import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.protocols.download.MissingSequenceNumbersMessage.createMessages;
-import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
-
-import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import static java.nio.ByteBuffer.allocate;
 import java.util.BitSet;
 import java.util.List;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
+import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.protocols.download.MissingSequenceNumbersMessage.createMessages;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 /**
  * Class used to manage a download. Every instance <em>must only</em> ever
@@ -85,10 +84,7 @@ public class Downloader implements AutoCloseable {
 	private static final String TIMEOUT_MESSAGE = "failed to hear from the "
 			+ "machine (please try removing firewalls)";
 
-	/**
-	 * Logger for the gatherer.
-	 */
-	protected static final Logger log = getLogger(Downloader.class);
+	private static final Logger log = getLogger(Downloader.class);
 
 	private final GatherDownloadConnection conn;
 
