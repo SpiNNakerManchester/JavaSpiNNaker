@@ -582,7 +582,7 @@ limitations under the License.
 								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/com.fasterxml.jackson.databind</location>
 							</offlineLink>
 							<offlineLink>
-							    <url>https://www.slf4j.org/apidocs/</url>
+							    <url>https://www.slf4j.org/api/</url>
 								<location>${maven.multiModuleProjectDirectory}/src/support/javadoc/org.slf4j</location>
 							</offlineLink>
 						</offlineLinks>
