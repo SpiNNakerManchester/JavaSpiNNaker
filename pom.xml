@@ -61,7 +61,7 @@ limitations under the License.
 		<swagger.version>5.31.0</swagger.version>
 		<error-prone.version>2.45.0</error-prone.version>
 		<picocli.version>4.7.7</picocli.version>
-		<mysql.version>9.5.0</mysql.version>
+		<mysql.version>9.6.0</mysql.version>
 		<testcontainers.version>2.0.3</testcontainers.version>
 		<jakarta.ws.version>4.0.0</jakarta.ws.version>
 		<resteasy.version>7.0.1.Final</resteasy.version>
