@@ -149,7 +149,7 @@ jobs:
         cache: 'maven'
 
     - name: "Check: No FIXMEs left"
-      run: mvn exec:exec@check-for-fixme --settings $SETTINGS_FILE -P CheckForFIXME
+      run: mvn install exec:exec@check-for-fixme --settings $SETTINGS_FILE -P CheckForFIXME
     - name: "Check: copyright declarations"
       run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
     - name: "Check: CITATION.cff validity"
