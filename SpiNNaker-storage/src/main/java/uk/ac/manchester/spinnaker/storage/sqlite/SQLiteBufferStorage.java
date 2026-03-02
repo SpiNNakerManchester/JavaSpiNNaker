@@ -81,7 +81,7 @@ public class SQLiteBufferStorage
 			}
 		}
 		throw new IllegalStateException(
-			"could not find last extraction id");
+				"could not find last extraction id");
 	}
 
 	private static int getRecordingCore(Connection conn, CoreLocation core)
@@ -153,7 +153,7 @@ public class SQLiteBufferStorage
 			}
 		}
 		throw new IllegalStateException(
-			"could not make or find recording region record");
+				"could not make or find recording region record");
 	}
 
 	private static int getExistingRecordingRegion(
@@ -168,7 +168,7 @@ public class SQLiteBufferStorage
 			}
 		}
 		throw new IllegalStateException(
-			"could not find recording region record");
+				"could not find recording region record");
 	}
 
 	private static int getExistingDownloadRegion(
@@ -183,7 +183,7 @@ public class SQLiteBufferStorage
 			}
 		}
 		throw new IllegalStateException(
-			"could not find recording region record");
+				"could not find recording region record");
 	}
 
 	private static int insertMockExtraction(Connection conn)
@@ -197,7 +197,7 @@ public class SQLiteBufferStorage
 			}
 		}
 		throw new IllegalStateException(
-			"could not mock an extraction record");
+				"could not mock an extraction record");
 	}
 
 	public void insertMockExtraction() throws StorageException {
