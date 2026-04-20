@@ -15,7 +15,7 @@
 # Use Ubuntu
 FROM ubuntu:noble
 
-RUN apt update && apt install -y openjdk-21-jdk-headless maven git ping
+RUN apt update && apt install -y openjdk-21-jdk-headless maven git iputils-ping
 
 # Set the working directory in the container
 WORKDIR /app

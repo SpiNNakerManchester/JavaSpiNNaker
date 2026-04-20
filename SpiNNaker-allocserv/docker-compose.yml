@@ -16,12 +16,15 @@ services:
   spalloc-mysql-db:
     image: mysql:8.0
     container_name: spalloc-mysql-container
-    env_file: spalloc.env
+    environment:
+      SPRING_DATASOURCE_USERNAME: spalloc
+      SPRING_DATASOURCE_PASSWORD: spalloc
+      MYSQL_ROOT_PASSWORD: spalloc-root
     healthcheck:
-        test: ["CMD", "/usr/bin/mysql", "--database=spalloc_history", "--user=$$SPRING_DATASOURCE_USERNAME",  "--password=$$SPRING_DATASOURCE_PASSWORD", "--execute", "SHOW DATABASES;"]
-        interval: 2s
-        timeout: 2s
-        retries: 100
+      test: ["CMD", "/usr/bin/mysql", "--database=spalloc_history", "--user=spalloc",  "--password=spalloc", "--execute", "SHOW DATABASES;"]
+      interval: 2s
+      timeout: 2s
+      retries: 100
     ports:
       - "3306:3306"
     networks:
@@ -29,6 +32,7 @@ services:
     volumes:
       - spalloc-mysql-data:/var/lib/mysql
       - ./spalloc-mysql/init:/docker-entrypoint-initdb.d
+    restart: always
 
   spalloc:
     build:
@@ -45,10 +49,13 @@ services:
         condition: service_healthy
     env_file: spalloc.env
     environment:
+      SPRING_DATASOURCE_USERNAME: spalloc
+      SPRING_DATASOURCE_PASSWORD: spalloc
       SPRING_DATASOURCE_URL: jdbc:mysql://spalloc-mysql-container:3306/spalloc?autoReconnect=true&useSSL=false
       SPRING_HISTORICAL_DATASOURCE_URL: jdbc:mysql://spalloc-mysql-container:3306/spalloc_history?autoReconnect=true&useSSL=false
     volumes:
       - ./application.yml:/app/application.yml
+    restart: always
 
 networks:
   spalloc-mysql:
