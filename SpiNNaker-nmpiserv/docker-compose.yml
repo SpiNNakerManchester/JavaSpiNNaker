@@ -17,7 +17,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
+        USER_ID: ${USER_ID}
     container_name: nmpi-host
+    env_file: .env
     ports:
       - "9090:9090"
     networks:
@@ -25,16 +29,8 @@ services:
     volumes:
       - ./nmpi.properties:/app/nmpi.properties
       - ./execute_pynn.bash:/app/execute_pynn.bash
-      - <DATA_PATH>:/mnt/data/
-
-  nginx:
-    image: nginx
-    container_name: nmpi-nginx
-    networks:
-      - nmpi-network
-    volumes:
-      - <DOCKER_SOCK_PATH>/docker.sock:/docker.sock
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $DATA_PATH:/mnt/data/
 
 networks:
   nmpi-network:

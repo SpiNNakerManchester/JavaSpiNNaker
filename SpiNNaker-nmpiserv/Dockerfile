@@ -15,7 +15,17 @@
 # Use Ubuntu
 FROM ubuntu:noble
 
-RUN apt update && apt install -y openjdk-21-jdk-headless maven git libltdl7
+ARG DOCKER_GROUP_ID
+ARG USER_ID
+ENV DOCKER_GROUP_ID $DOCKER_GROUP_ID
+ENV USER_ID $USER_ID
+
+RUN apt update && apt install -y openjdk-21-jdk-headless maven git libltdl7 nginx
+
+COPY --chown=www-data nginx.conf /etc/nginx/nginx.conf
+
+RUN groupadd -g $DOCKER_GROUP_ID docker
+RUN usermod -a -G docker www-data
 
 # Set the working directory in the container
 WORKDIR /app
@@ -29,5 +39,7 @@ RUN mvn -f JavaSpiNNaker -DskipTests=true -pl SpiNNaker-nmpiserv -am package
 # Get the binary into place
 RUN cp JavaSpiNNaker/SpiNNaker-nmpiserv/target/SpiNNakerNMPI.war .
 
+COPY --chmod=0755 startup.sh /app/startup.sh
+
 # Specify the command to start things
-CMD [ "java", "-Djava.net.preferIPv4Stack=true", "-Djava.awt.headless=true", "-jar", "SpiNNakerNMPI.war", "--spring.config.location=/app/nmpi.properties", "-" , "--server.port=9090" ]
+CMD [ "/app/startup.sh" ]
