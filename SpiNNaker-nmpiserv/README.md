@@ -12,7 +12,7 @@ This folder contains configuration which can be used to set up a docker compose 
  3. Rename ``env.example`` to ``.env``
  4. Update ``.env`` with valid values for your environment
  5. Run ``docker compose build`` to build the docker environment
- 6. Run ``docker compose start -d`` to start the services
+ 6. Run ``docker compose up -d`` to start the services
 
 ### Viewing logs
 You can view the logs of the spalloc server with:
