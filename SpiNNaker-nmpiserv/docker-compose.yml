@@ -30,7 +30,7 @@ services:
       - ./nmpi.properties:/app/nmpi.properties
       - ./execute_pynn.bash:/app/execute_pynn.bash
       - /var/run/docker.sock:/var/run/docker.sock
-      - $DATA_PATH:/mnt/data/
+      - ${DATA_PATH}:/mnt/data/
 
 networks:
   nmpi-network:
