@@ -15,7 +15,7 @@ This folder contains configuration which can be used to set up a docker compose 
  6. Run ``docker compose up -d`` to start the services
 
 ### Viewing logs
-You can view the logs of the spalloc server with:
+You can view the logs of the NMPI service with:
 ```
 docker compose logs -f nmpi
 ```
