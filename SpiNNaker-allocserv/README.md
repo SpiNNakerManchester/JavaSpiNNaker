@@ -23,6 +23,5 @@ docker logs -f spalloc-spring-container
 ### Connecting to docker compose SQL server
 You can connect to the spalloc database with:
 ```
-docker exec -it spalloc-mysql-container /usr/bin/mysql -D spalloc -u <SPRING_DATASOURCE_USERNAME> -p
+docker exec -it spalloc-mysql-container /usr/bin/mysql -D spalloc -u spalloc -pspalloc
 ```
-replacing the value of ``<SPRING_DATASOURCE_USERNAME>`` with the username in the env file, and followed by entering the value of ``SPRING_DATASOURCE_PASSWORD`` when asked for a password.

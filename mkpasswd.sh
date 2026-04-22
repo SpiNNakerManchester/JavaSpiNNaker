@@ -29,10 +29,5 @@ while true; do
 done
 
 ENCPW=$(htpasswd -bnBC 10 "" $PASSWORD | tr -d ':\n' | sed 's/$2y/$2a/')
-echo $ENCPW
 
-read -p "MySQL database: " MYSQLDB
-read -p "MySQL username: " MYSQLUSER
-read -p "MySQL password: " -s MYSQLPASS
-
-mysql -D $MYSQLDB -u $MYSQLUSER -p$MYSQLPASS -e "INSERT INTO user_info(user_name, encrypted_password, trust_level) VALUES ('$USERNAME', '$ENCPW', $USERTRUST);"
+docker exec -it spalloc-mysql-container /usr/bin/mysql -D spalloc -u spalloc -pspalloc -e "INSERT INTO user_info(user_name, encrypted_password, trust_level) VALUES ('$USERNAME', '$ENCPW', $USERTRUST);"

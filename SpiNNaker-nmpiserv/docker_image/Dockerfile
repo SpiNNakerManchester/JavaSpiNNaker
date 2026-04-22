@@ -34,7 +34,7 @@ RUN apt-get update --yes && \
     gcc \
     lsof \
     gcc-arm-none-eabi \
-    openjdk-17-jdk \
+    openjdk-21-jdk \
     maven \
     ffmpeg \
     curl \
