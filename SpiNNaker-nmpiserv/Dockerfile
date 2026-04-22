@@ -16,9 +16,7 @@
 FROM ubuntu:noble
 
 ARG DOCKER_GROUP_ID
-ARG USER_ID
 ENV DOCKER_GROUP_ID $DOCKER_GROUP_ID
-ENV USER_ID $USER_ID
 
 RUN apt update && apt install -y openjdk-21-jdk-headless maven git libltdl7 nginx
 

@@ -19,7 +19,6 @@ services:
       dockerfile: Dockerfile
       args:
         DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
-        USER_ID: ${USER_ID}
     container_name: nmpi-host
     env_file: .env
     ports:
