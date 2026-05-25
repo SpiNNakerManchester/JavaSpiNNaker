@@ -53,7 +53,7 @@ limitations under the License.
 		-->
 		<spring.security.version>7.0.5</spring.security.version>
 
-		<cxf.version>4.2.0</cxf.version>
+		<cxf.version>4.2.1</cxf.version>
 		<jackson.version>2.21.3</jackson.version>
 		<jackson.annotations.version>2.21</jackson.annotations.version>
 		<sqlite.version>3.53.1.0</sqlite.version>
