@@ -55,7 +55,7 @@ limitations under the License.
 
 		<cxf.version>4.2.1</cxf.version>
 		<jackson.version>2.21.4</jackson.version>
-		<jackson.annotations.version>2.21</jackson.annotations.version>
+		<jackson.annotations.version>2.22</jackson.annotations.version>
 		<sqlite.version>3.53.1.0</sqlite.version>
 		<keycloak.version>26.6.2</keycloak.version>
 		<swagger.version>5.32.5</swagger.version>
