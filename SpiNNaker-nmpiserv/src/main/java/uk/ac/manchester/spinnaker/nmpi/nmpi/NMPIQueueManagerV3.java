@@ -211,13 +211,10 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 	 */
 	@Override
 	public void appendJobLog(final int id, final String logToAppend) {
-		var existingLog = jobLog.computeIfAbsent(
-				id, ignored -> new StringBuilder());
-		existingLog.append(logToAppend);
 		logger.debug("Job {} log is being updated", id);
 		try {
-			queue.updateJobLog(nmpiApiKey, id,
-					new JobLogOnly(existingLog.toString()));
+			queue.appendJobLog(nmpiApiKey, id,
+					new JobLogOnly(logToAppend));
 		} catch (WebApplicationException e) {
 			handleWebAppError(e, "updating job log");
 		}

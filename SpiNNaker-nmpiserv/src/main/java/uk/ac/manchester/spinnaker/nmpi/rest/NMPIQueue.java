@@ -22,6 +22,7 @@ import java.util.List;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -76,6 +77,22 @@ public interface NMPIQueue {
 	@Produces("application/json")
 	QueueNextResponse getNextJob(@HeaderParam("x-api-key") String apiKey,
 			@PathParam("hardware") String hardware);
+
+	/**
+	 * Append the log of a job.
+	 *
+	 * @param apiKey
+	 *            The API key to use.
+	 * @param id
+	 *            The queue ID
+	 * @param log
+	 *            the Job Log.
+	 */
+	@PATCH
+	@Path("jobs/{id}")
+	@Consumes("application/json")
+	void appendJobLog(@HeaderParam("x-api-key") String apiKey,
+			@PathParam("id") int id, JobLogOnly log);
 
 	/**
 	 * Update the log of a job.
