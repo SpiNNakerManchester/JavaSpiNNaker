@@ -645,10 +645,6 @@ public class BMPTransceiver implements BMPTransceiverInterface, RetryTracker {
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *
-	 * @param closeOriginalConnections
-	 *            If True, the original connections passed to the transceiver in
-	 *            the constructor are also closed. If False, only newly
-	 *            discovered connections are closed.
 	 * @param powerOffMachine
 	 *            if true, the machine is sent a power down command via its BMP
 	 *            (if it has one)
