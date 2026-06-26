@@ -46,10 +46,10 @@ import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
+import uk.ac.manchester.spinnaker.transceiver.BMPTransceiver;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -202,13 +202,13 @@ public class TransceiverFactory
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
 	 */
-	private Transceiver makeTransceiver(BMPConnectionData data)
+	private BMPTransceiver makeTransceiver(BMPConnectionData data)
 			throws IOException, SpinnmanException, InterruptedException {
 		int count = 0;
 		while (true) {
 			try {
-				return new Transceiver(null, List.of(new BMPConnection(data)),
-						null, null, null, null, null);
+				return new BMPTransceiver(
+						List.of(new BMPConnection(data)));
 			} catch (ProcessException e) {
 				if (e.getCause() instanceof BMPSendTimedOutException
 						&& ++count > props.getBuildAttempts()) {

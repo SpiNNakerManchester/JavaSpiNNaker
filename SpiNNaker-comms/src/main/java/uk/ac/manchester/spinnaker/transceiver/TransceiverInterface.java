@@ -112,7 +112,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  *
  * @author Donal Fellows
  */
-public interface TransceiverInterface extends BMPTransceiverInterface {
+public interface TransceiverInterface extends AutoCloseable {
 	/**
 	 * Delay between starting a program on a core and checking to see if the
 	 * core is ready for operational use. In milliseconds.
@@ -4278,4 +4278,6 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If the communications were interrupted.	 */
 	void resetRouting(Map<Integer, DiagnosticFilter> customFilters)
 			throws ProcessException, IOException, InterruptedException;
+
+	void close() throws IOException;
 }

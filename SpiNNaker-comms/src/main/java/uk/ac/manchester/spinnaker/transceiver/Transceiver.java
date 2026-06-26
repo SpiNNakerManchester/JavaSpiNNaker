@@ -198,10 +198,6 @@ public class Transceiver extends UDPTransceiver
 
 	private static final Version SCAMP_VERSION = new Version(4, 0, 0);
 
-	private static final String BMP_NAME = "BC&MP";
-
-	private static final Set<Integer> BMP_MAJOR_VERSIONS = Set.of(1, 2);
-
 	/** How many times do we try to find SCAMP? */
 	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
 
@@ -303,13 +299,6 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private final List<SCPConnection> scpConnections = new ArrayList<>();
 
-	/** The BMP connections. */
-	private final List<BMPConnection> bmpConnections = new ArrayList<>();
-
-	/** Connection selectors for the BMP processes. */
-	private final Map<BMPCoords,
-			ConnectionSelector<BMPConnection>> bmpSelectors = new HashMap<>();
-
 	/** Connection selectors for the SCP processes. */
 	private final ConnectionSelector<SCPConnection> scpSelector;
 
@@ -343,13 +332,13 @@ public class Transceiver extends UDPTransceiver
 
 	private long retryCount = 0L;
 
-	private BMPCoords boundBMP = new BMPCoords(0, 0);
-
 	@GuardedBy("itself")
 	private Map<ChipLocation, FastDataIn> cachedDataIn = new HashMap<>();
 
 	@GuardedBy("itself")
 	private Map<ChipLocation, Downloader> cachedDownloaders = new HashMap<>();
+
+	private final BMPTransceiver bmpTransceiver;
 
 	/**
 	 * Create a Transceiver by creating a UDPConnection to the given hostname on
@@ -415,28 +404,6 @@ public class Transceiver extends UDPTransceiver
 				"SpiNNaker machine host name must be not null"));
 		var connections = new ArrayList<Connection>();
 
-		/*
-		 * if no BMP has been supplied, but the board is a spinn4 or a spinn5
-		 * machine, then an assumption can be made that the BMP is at -1 on the
-		 * final value of the IP address
-		 */
-		if (version != null && !version.isFourChip && autodetectBMP
-				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
-			bmpConnectionData =
-					List.of(defaultBMPforMachine(host, numberOfBoards));
-		}
-
-		// handle BMP connections
-		if (bmpConnectionData != null) {
-			var bmpIPs = new ArrayList<>();
-			for (var connData : bmpConnectionData) {
-				var connection = new BMPConnection(connData);
-				connections.add(connection);
-				bmpIPs.add(connection.getRemoteIPAddress());
-			}
-			log.info("Transceiver using BMPs: {}", bmpIPs);
-		}
-
 		// handle the SpiNNaker connection
 		if (scampConnections == null) {
 			scampConnections = List.of();
@@ -471,11 +438,34 @@ public class Transceiver extends UDPTransceiver
 			}
 			connections.add(createScpConnection(desc.chip, desc.hostname));
 		}
+
 		for (Connection conn : connections) {
-			identifyConnection(conn);
+			// Note we pass null here as the BMP connection array.  This will
+			// result in an exception if a BMP connection is found, which should
+			// not be possible from here since we made the list of connections
+			// without any BMP connection!
+			identifyConnection(conn, null);
 		}
 		scpSelector = makeConnectionSelector();
-		checkBMPConnections();
+
+		/*
+		 * if no BMP has been supplied, but the board is a spinn4 or a spinn5
+		 * machine, then an assumption can be made that the BMP is at -1 on the
+		 * final value of the IP address
+		 */
+		if (version != null && !version.isFourChip && autodetectBMP
+				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
+			bmpConnectionData =
+					List.of(defaultBMPforMachine(host, numberOfBoards));
+		}
+
+		// handle BMP connections
+		if (bmpConnectionData != null) {
+			bmpTransceiver = BMPTransceiver.createBMPTransceiver(
+					bmpConnectionData);
+		} else {
+			bmpTransceiver = null;
+		}
 	}
 
 	/**
@@ -621,11 +611,16 @@ public class Transceiver extends UDPTransceiver
 				connections.add(createScpConnection(desc.chip, desc.hostname));
 			}
 		}
+		var bmpConnections = new ArrayList<BMPConnection>();
 		for (Connection conn : connections) {
-			identifyConnection(conn);
+			identifyConnection(conn, bmpConnections);
 		}
 		scpSelector = makeConnectionSelector();
-		checkBMPConnections();
+		if (bmpConnections.isEmpty()) {
+			bmpTransceiver = null;
+		} else {
+			bmpTransceiver = new BMPTransceiver(bmpConnections);
+		}
 	}
 
 	@Override
@@ -646,7 +641,8 @@ public class Transceiver extends UDPTransceiver
 	 * @param conn
 	 *            The connection to be handled.
 	 */
-	private void identifyConnection(Connection conn) {
+	private void identifyConnection(Connection conn,
+			List<BMPConnection> bmpConnections) {
 		// locate the only boot send conn
 		if (conn instanceof BootConnection) {
 			if (bootConnection != null) {
@@ -671,8 +667,6 @@ public class Transceiver extends UDPTransceiver
 		if (conn instanceof BMPConnection) {
 			var bmpc = (BMPConnection) conn;
 			bmpConnections.add(bmpc);
-			bmpSelectors.put(bmpc.getCoords(),
-					new SingletonConnectionSelector<>(bmpc));
 		} else if (conn instanceof SCPConnection) {
 			var scpc = (SCPConnection) conn;
 			scpConnections.add(scpc);
@@ -743,15 +737,6 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
-	private ConnectionSelector<BMPConnection> bmpConnection(BMPCoords bmp) {
-		if (!bmpSelectors.containsKey(bmp)) {
-			throw new IllegalArgumentException(
-					"Unknown combination of cabinet (" + bmp.getCabinet()
-							+ ") and frame (" + bmp.getFrame() + ")");
-		}
-		return bmpSelectors.get(bmp);
-	}
-
 	private byte getNextNearestNeighbourID() {
 		synchronized (nearestNeighbourLock) {
 			int next = (nearestNeighbourID + 1) & NNID_MAX;
@@ -785,48 +770,6 @@ public class Transceiver extends UDPTransceiver
 		}
 		int idx = ThreadLocalRandom.current().nextInt(0, connections.size());
 		return connections.get(idx);
-	}
-
-	/** Check that the BMP connections are actually connected to valid BMPs. */
-	private void checkBMPConnections()
-			throws IOException, SpinnmanException, InterruptedException {
-		/*
-		 * Check that the UDP BMP conn is actually connected to a BMP via the
-		 * SVER command
-		 */
-		for (var conn : bmpConnections) {
-			// try to send a BMP SVER to check if it responds as expected
-			try {
-				var versionInfo = readBMPVersion(conn.getCoords(), conn.boards);
-				if (!BMP_NAME.equals(versionInfo.name) || !BMP_MAJOR_VERSIONS
-						.contains(versionInfo.versionNumber.majorVersion)) {
-					throw new IOException(format(
-							"The BMP at %s is running %s %s which is "
-									+ "incompatible with this transceiver, "
-									+ "required version is %s %s",
-							conn.getRemoteIPAddress(), versionInfo.name,
-							versionInfo.versionString, BMP_NAME,
-							BMP_MAJOR_VERSIONS));
-				}
-
-				log.info("Using BMP at {} with version {} {}",
-						conn.getRemoteIPAddress(), versionInfo.name,
-						versionInfo.versionString);
-			} catch (SocketTimeoutException e) {
-				/*
-				 * If it fails to respond due to timeout, maybe that the
-				 * connection isn't valid.
-				 */
-				throw new SpinnmanException(
-						format("BMP connection to %s is not responding",
-								conn.getRemoteIPAddress()),
-						e);
-			} catch (ProcessException e) {
-				log.error("Failed to speak to BMP at {}",
-						conn.getRemoteIPAddress(), e);
-				throw e;
-			}
-		}
 	}
 
 	@Override
@@ -1247,10 +1190,10 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// If we fail to get a SCAMP version this time, try other things
-		if (versionInfo == null && !bmpConnections.isEmpty()) {
+		if (versionInfo == null && bmpTransceiver != null) {
 			// start by powering up each BMP connection
 			log.info("Attempting to power on machine");
-			powerOnMachine();
+			bmpTransceiver.powerOnMachine();
 
 			// Sleep a bit to let things get going
 			sleep(POST_POWER_ON_DELAY);
@@ -1657,339 +1600,6 @@ public class Transceiver extends UDPTransceiver
 			new ApplicationRunProcess(scpSelector, this).run(appID, coreSubsets,
 					wait);
 		}
-	}
-
-	/**
-	 * Call a BMP operation on a BMP.
-	 *
-	 * @param <T>
-	 *            The type of the response.
-	 * @param bmp
-	 *            The BMP to call.
-	 * @param request
-	 *            The request to make.
-	 * @return The response from the request.
-	 * @throws IOException
-	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted.
-	 */
-	private <T extends BMPRequest.BMPResponse> T call(BMPCoords bmp,
-			BMPRequest<T> request)
-			throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess(bmpConnection(bmp), this).execute(request);
-	}
-
-	/**
-	 * Call a BMP operation on a BMP.
-	 *
-	 * @param <T>
-	 *            The type of the response.
-	 * @param bmp
-	 *            The BMP to call.
-	 * @param timeout
-	 *            The timeout, in milliseconds.
-	 * @param retries
-	 *            The number of times to retry the call on a transient failure.
-	 * @param request
-	 *            The request to make.
-	 * @return The response from the request.
-	 * @throws IOException
-	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted.
-	 */
-	private <T extends BMPRequest.BMPResponse> T call(BMPCoords bmp,
-			int timeout, int retries, BMPRequest<T> request)
-					throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess(bmpConnection(bmp), timeout, this)
-				.execute(request, retries);
-	}
-
-	/**
-	 * Call a BMP operation on a BMP and return the parsed payload of the
-	 * response.
-	 *
-	 * @param <T>
-	 *            The type of the parsed payload.
-	 * @param <R>
-	 *            The type of the response.
-	 * @param bmp
-	 *            The BMP to call.
-	 * @param request
-	 *            The request to make.
-	 * @return The response from the request.
-	 * @throws IOException
-	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted.
-	 */
-	private <T, R extends BMPRequest.PayloadedResponse<T>> T get(BMPCoords bmp,
-			BMPRequest<R> request)
-			throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess(bmpConnection(bmp), this).call(request);
-	}
-
-	/**
-	 * Call a BMP operation on a BMP and return the parsed payload of the
-	 * response.
-	 *
-	 * @param <T>
-	 *            The type of the parsed payload.
-	 * @param <R>
-	 *            The type of the response.
-	 * @param bmp
-	 *            The BMP to call.
-	 * @param timeout
-	 *            The timeout, in milliseconds.
-	 * @param retries
-	 *            The number of times to retry the call on a transient failure.
-	 * @param request
-	 *            The request to make.
-	 * @return The response from the request.
-	 * @throws IOException
-	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted.
-	 */
-	private <T, R extends BMPRequest.PayloadedResponse<T>> T get(BMPCoords bmp,
-			int timeout, int retries, BMPRequest<R> request)
-			throws IOException, ProcessException, InterruptedException {
-		return new BMPCommandProcess(bmpConnection(bmp), timeout, this)
-				.execute(request, retries).get();
-	}
-
-	@Override
-	@ParallelUnsafe
-	public void powerOnMachine()
-			throws InterruptedException, IOException, ProcessException {
-		if (bmpConnections.isEmpty()) {
-			log.warn("No BMP connections, so can't power on");
-		}
-		for (var connection : bmpConnections) {
-			power(POWER_ON, connection.getCoords(), connection.boards);
-		}
-	}
-
-	@Override
-	@ParallelUnsafe
-	public void powerOffMachine()
-			throws InterruptedException, IOException, ProcessException {
-		if (bmpConnections.isEmpty()) {
-			log.warn("No BMP connections, so can't power off");
-		}
-		for (var connection : bmpConnections) {
-			power(POWER_OFF, connection.getCoords(), connection.boards);
-		}
-	}
-
-	@Override
-	@ParallelUnsafe
-	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<BMPBoard> boards)
-			throws InterruptedException, IOException, ProcessException {
-		int timeout = (int) (MSEC_PER_SEC
-				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
-						: BMP_TIMEOUT));
-		requireNonNull(call(bmp, timeout, 0,
-				new SetPower(powerCommand, boards, 0.0)));
-		machineOff = powerCommand == POWER_OFF;
-
-		// Sleep for 5 seconds if the machine has just been powered on
-		if (!machineOff) {
-			sleep((int) (BMP_POST_POWER_ON_SLEEP_TIME * MSEC_PER_SEC));
-		}
-	}
-
-	@Override
-	@ParallelUnsafe
-	public void setLED(Collection<Integer> leds, LEDAction action,
-			BMPCoords bmp, Collection<BMPBoard> board)
-			throws IOException, ProcessException, InterruptedException {
-		call(bmp, new BMPSetLED(leds, action, board));
-	}
-
-	@Override
-	@CheckReturnValue
-	@ParallelUnsafe
-	public int readFPGARegister(FPGA fpga, MemoryLocation register,
-			BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new ReadFPGARegister(fpga, register, board));
-	}
-
-	@Override
-	@ParallelUnsafe
-	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
-			BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException, InterruptedException {
-		call(bmp, new WriteFPGARegister(fpga, register, value, board));
-	}
-
-	@Override
-	@CheckReturnValue
-	@ParallelUnsafe
-	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new ReadADC(board));
-	}
-
-	@Override
-	@CheckReturnValue
-	@ParallelUnsafe
-	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new GetBMPVersion(board));
-	}
-
-	@Override
-	@CheckReturnValue
-	@ParallelSafeWithCare
-	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
-			throws ProcessException, IOException, InterruptedException {
-		return new BMPReadMemoryProcess(bmpConnection(bmp), this).read(board,
-				baseAddress, length);
-	}
-
-	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, ByteBuffer data)
-			throws IOException, ProcessException, InterruptedException {
-		new BMPWriteMemoryProcess(bmpConnection(bmp), this).writeMemory(board,
-				baseAddress, data);
-	}
-
-	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, File file)
-			throws IOException, ProcessException, InterruptedException {
-		var wmp = new BMPWriteMemoryProcess(bmpConnection(bmp), this);
-		try (var f = buffer(new FileInputStream(file))) {
-			// The file had better fit...
-			wmp.writeMemory(board, baseAddress, f, (int) file.length());
-		}
-	}
-
-	@Override
-	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new ReadSerialVector(board)).getFlashBuffer();
-	}
-
-	@Override
-	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException, InterruptedException {
-		var serialNumber = new int[SERIAL_LENGTH];
-		get(bmp, new ReadSerialVector(board)).getSerialNumber()
-				.get(serialNumber);
-		return format("%08x-%08x-%08x-%08x",
-				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
-	}
-
-	@Override
-	@CheckReturnValue
-	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
-			throws IOException, ProcessException, InterruptedException {
-		return new BMPReadSerialFlashProcess(bmpConnection(bmp), this)
-				.read(board, baseAddress, length);
-	}
-
-	// CRC calculations of megabytes can take a bit
-	private static final int CRC_TIMEOUT = 2000;
-
-	@Override
-	@CheckReturnValue
-	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
-			MemoryLocation address, int length)
-			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, CRC_TIMEOUT, BMP_RETRIES /* =default */,
-				new ReadSerialFlashCRC(board, address, length));
-	}
-
-	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, ByteBuffer data)
-			throws ProcessException, IOException, InterruptedException {
-		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
-				baseAddress, data);
-	}
-
-	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size, InputStream stream)
-			throws ProcessException, IOException, InterruptedException {
-		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
-				baseAddress, stream, size);
-	}
-
-	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, File file)
-			throws ProcessException, IOException, InterruptedException {
-		try (var f = buffer(new FileInputStream(file))) {
-			// The file had better fit...
-			new BMPWriteSerialFlashProcess(bmpConnection(bmp), this)
-					.write(board, baseAddress, f, (int) file.length());
-		}
-	}
-
-	@Override
-	public void writeBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation address)
-			throws IOException, ProcessException, InterruptedException {
-		call(bmp, new WriteFlashBuffer(board, address, true));
-	}
-
-	@Override
-	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws ProcessException, IOException, InterruptedException {
-		if (!data.hasRemaining()) {
-			// Zero length write?
-			log.warn("zero length write to flash ignored");
-			return;
-		}
-
-		var serialVector = get(bmp, new ReadSerialVector(board));
-		var workingBuffer = serialVector.getFlashBuffer();
-		var targetAddr = baseAddress;
-		for (var buf : sliceUp(data, FLASH_CHUNK_SIZE)) {
-			writeBMPMemory(bmp, board, workingBuffer, buf);
-			call(bmp, new WriteFlashBuffer(board, targetAddr, true));
-			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
-		}
-	}
-
-	@Override
-	@ParallelSafe
-	public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new GetFPGAResetStatus(board));
-	}
-
-	@Override
-	@ParallelSafe
-	public void resetFPGA(BMPCoords bmp, BMPBoard board,
-			FPGAResetType resetType)
-			throws IOException, ProcessException, InterruptedException {
-		call(bmp, new ResetFPGA(board, resetType));
-	}
-
-	@Override
-	@CheckReturnValue
-	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
-			throws IOException, ProcessException, InterruptedException {
-		return get(bmp, new ReadCANStatus());
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {
@@ -2698,9 +2308,9 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
 			throws IOException, InterruptedException {
-		if (powerOffMachine && !bmpConnections.isEmpty()) {
+		if (powerOffMachine && bmpTransceiver != null) {
 			try {
-				powerOffMachine();
+				bmpTransceiver.powerOffMachine();
 			} catch (ProcessException e) {
 				log.warn("failed to power off machine", e);
 			}
@@ -2716,12 +2326,6 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		log.info("total retries used: {}", retryCount);
-	}
-
-	/** @return The connection selectors used for BMP connections. */
-	public Map<BMPCoords,
-			ConnectionSelector<BMPConnection>> getBMPConnection() {
-		return bmpSelectors;
 	}
 
 	/** A simple description of a connection to create. */
@@ -2771,20 +2375,5 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	protected void addConnection(Connection connection) {
 		this.allConnections.add(connection);
-	}
-
-	@Override
-	public void bind(BMPCoords bmp) {
-		boundBMP = bmp;
-	}
-
-	@Override
-	public BMPCoords getBoundBMP() {
-		return boundBMP;
-	}
-
-	@Override
-	public int pingBoard(String address) {
-		return Ping.ping(address);
 	}
 }
