@@ -58,7 +58,7 @@ limitations under the License.
 		<jackson.annotations.version>2.22</jackson.annotations.version>
 		<sqlite.version>3.53.2.0</sqlite.version>
 		<keycloak.version>26.6.3</keycloak.version>
-		<swagger.version>5.32.6</swagger.version>
+		<swagger.version>5.32.8</swagger.version>
 		<error-prone.version>2.45.0</error-prone.version>
 		<picocli.version>4.7.7</picocli.version>
 		<mysql.version>9.7.0</mysql.version>
