@@ -47,7 +47,6 @@ limitations under the License.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
-		<module name="SummaryJavadoc" />
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
 		<module name="RegexpSinglelineJava">
@@ -73,7 +72,7 @@ limitations under the License.
 			<property name="accessModifiers" value="package" />
 			<property name="ignoreNamePattern" value="log|logger" />
 		</module>
-		<module name="JavadocStyle" />
+		<module name="SummaryJavadoc" />
 		<module name="ConstantName">
 			<property name="format"
 				value="^(log(ger)?|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" />
