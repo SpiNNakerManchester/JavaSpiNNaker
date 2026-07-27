@@ -19,7 +19,7 @@ limitations under the License.
 -->
 <module name="Checker">
 	<property name="fileExtensions" value="java, properties, xml" />
-	<module name="JavadocPackage" />
+	<module name="SummaryJavadoc" />
 	<module name="NewlineAtEndOfFile" />
 	<module name="Translation" />
 	<module name="FileLength">
