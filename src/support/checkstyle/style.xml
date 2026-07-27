@@ -19,7 +19,6 @@ limitations under the License.
 -->
 <module name="Checker">
 	<property name="fileExtensions" value="java, properties, xml" />
-	<module name="SummaryJavadoc" />
 	<module name="NewlineAtEndOfFile" />
 	<module name="Translation" />
 	<module name="FileLength">
@@ -48,6 +47,7 @@ limitations under the License.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
+		<module name="SummaryJavadoc" />
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
 		<module name="RegexpSinglelineJava">
