@@ -569,7 +569,7 @@ limitations under the License.
 							<link>https://www.joda.org/joda-time/apidocs/</link>
 							<link>https://jakarta.ee/specifications/bean-validation/3.1/apidocs/</link>
 							<link>https://jakarta.ee/specifications/restful-ws/4.0/apidocs/</link>
-							<link>https://www.keycloak.org/docs-api/latest/javadocs/</link>
+							<link>https://www.keycloak.org/docs-api/26.6.4/javadocs/</link>
 						</links>
 						<offlineLinks>
 							<!-- Internal property used below: See https://issues.apache.org/jira/browse/MNG-7038 and https://stackoverflow.com/a/41387133/301832 -->
