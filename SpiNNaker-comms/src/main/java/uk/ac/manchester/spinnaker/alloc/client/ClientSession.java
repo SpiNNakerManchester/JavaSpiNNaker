@@ -100,7 +100,7 @@ final class ClientSession implements Session {
 	 * Expression: {@code name="_csrf" value="([-a-z0-9]+)"}
 	 */
 	private static final Pattern CSRF_ID_RE =
-			Pattern.compile("name=\"_csrf\" value=\"([-a-z0-9]+)\"");
+			Pattern.compile("name=\"_csrf\" value=\"([-_A-Za-z0-9]+)\"");
 
 	private final URI baseUri;
 
