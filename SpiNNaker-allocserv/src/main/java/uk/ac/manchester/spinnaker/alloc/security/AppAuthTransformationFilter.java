@@ -95,8 +95,8 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 		log.trace("Full Saved authentication: {}", savedAuth);
 		var originalAuth = ctx.getAuthentication();
 		log.debug("Original authentication: {}",
-				isNull(originalAuth) ? null :
-					originalAuth.getClass().getName());
+				isNull(originalAuth) ? null
+						: originalAuth.getClass().getName());
 		log.trace("Full Original authentication: {}", originalAuth);
 		if (nonNull(savedAuth)) {
 			ctx.setAuthentication(savedAuth);
