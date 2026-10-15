@@ -397,6 +397,14 @@ public class ServiceConfig extends Application {
 			return prefix + suffix;
 		}
 
+		public String baseUrl(String suffix) {
+			var prefix = mvcServletPath;
+			if (!prefix.endsWith("/")) {
+				prefix += "/";
+			}
+			return prefix + suffix;
+		}
+
 		/**
 		 * Create a full local URL for web service components, bearing in mind
 		 * the deployment configuration.
