@@ -33,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -61,11 +63,18 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	@Autowired
 	private LocalAuthenticationProvider<?> localAuthProvider;
 
+	/**
+	 * The repository to use for saving the security context.
+	 */
+	final SecurityContextRepository securityContextRepository =
+		new HttpSessionSecurityContextRepository();
+
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request)
 			throws ServletException {
 		var a = SecurityContextHolder.getContext().getAuthentication();
-		log.debug("Current authentication: {}", a);
+		log.debug("Current authentication: {}",
+				isNull(a) ? null : a.getClass().getName());
 		if (nonNull(a)) {
 			log.debug("Is unsupported? {}", isUnsupportedAuthTokenClass(
 					a.getClass()));
@@ -81,14 +90,22 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 		log.debug("Session ID: {}", isNull(s) ? null : s.getId());
 		var ctx = SecurityContextHolder.getContext();
 		var savedAuth = getSavedToken(s);
-		log.debug("Saved authentication: {}", savedAuth);
+		log.debug("Saved authentication: {}",
+				isNull(savedAuth) ? null : savedAuth.getClass().getName());
+		log.trace("Full Saved authentication: {}", savedAuth);
 		var originalAuth = ctx.getAuthentication();
-		log.debug("Original authentication: {}", originalAuth);
+		log.debug("Original authentication: {}",
+				isNull(originalAuth) ? null
+						: originalAuth.getClass().getName());
+		log.trace("Full Original authentication: {}", originalAuth);
 		if (nonNull(savedAuth)) {
 			ctx.setAuthentication(savedAuth);
 		} else {
 			var a = localAuthProvider.updateAuthentication(request, ctx);
 			if (nonNull(a)) {
+				if (s == null) {
+					s = request.getSession(true);
+				}
 				saveToken(s, a);
 			}
 		}
@@ -96,6 +113,8 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 			chain.doFilter(request, response);
 		} finally {
 			ctx.setAuthentication(originalAuth);
+			securityContextRepository.saveContext(
+					SecurityContextHolder.getContext(), request, response);
 		}
 	}
 
