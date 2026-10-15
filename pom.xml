@@ -53,12 +53,12 @@ limitations under the License.
 		-->
 		<spring.security.version>7.1.1</spring.security.version>
 
-		<cxf.version>4.2.3</cxf.version>
+		<cxf.version>4.2.4</cxf.version>
 		<jackson.version>2.22.3</jackson.version>
 		<jackson.annotations.version>2.22</jackson.annotations.version>
 		<sqlite.version>3.53.4.0</sqlite.version>
 		<keycloak.version>26.8.0</keycloak.version>
-		<swagger.version>5.32.15</swagger.version>
+		<swagger.version>5.33.1</swagger.version>
 		<error-prone.version>2.45.0</error-prone.version>
 		<picocli.version>4.7.7</picocli.version>
 		<mysql.version>26.7.0</mysql.version>
@@ -385,7 +385,7 @@ limitations under the License.
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>1.22.1</version>
+				<version>1.23.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jgit</groupId>
