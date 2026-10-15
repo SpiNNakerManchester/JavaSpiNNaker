@@ -113,7 +113,8 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 			chain.doFilter(request, response);
 		} finally {
 			ctx.setAuthentication(originalAuth);
-			securityContextRepository.saveContext(ctx, request, response);
+			securityContextRepository.saveContext(
+					SecurityContextHolder.getContext(), request, response);
 		}
 	}
 
