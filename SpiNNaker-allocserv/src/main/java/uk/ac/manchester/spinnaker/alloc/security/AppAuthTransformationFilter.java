@@ -63,6 +63,9 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	@Autowired
 	private LocalAuthenticationProvider<?> localAuthProvider;
 
+	/**
+	 * The repository to use for saving the security context.
+	 */
 	final SecurityContextRepository securityContextRepository =
 		new HttpSessionSecurityContextRepository();
 
@@ -71,7 +74,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 			throws ServletException {
 		var a = SecurityContextHolder.getContext().getAuthentication();
 		log.debug("Current authentication: {}",
-				isNull(a)? null: a.getClass().getName());
+				isNull(a) ? null : a.getClass().getName());
 		if (nonNull(a)) {
 			log.debug("Is unsupported? {}", isUnsupportedAuthTokenClass(
 					a.getClass()));
@@ -88,11 +91,11 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 		var ctx = SecurityContextHolder.getContext();
 		var savedAuth = getSavedToken(s);
 		log.debug("Saved authentication: {}",
-				isNull(savedAuth)? null : savedAuth.getClass().getName());
+				isNull(savedAuth) ? null : savedAuth.getClass().getName());
 		log.trace("Full Saved authentication: {}", savedAuth);
 		var originalAuth = ctx.getAuthentication();
 		log.debug("Original authentication: {}",
-				isNull(originalAuth)? null : originalAuth.getClass().getName());
+				isNull(originalAuth) ? null : originalAuth.getClass().getName());
 		log.trace("Full Original authentication: {}", originalAuth);
 		if (nonNull(savedAuth)) {
 			ctx.setAuthentication(savedAuth);
