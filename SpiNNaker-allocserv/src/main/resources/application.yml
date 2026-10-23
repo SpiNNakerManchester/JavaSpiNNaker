@@ -62,7 +62,7 @@ server:
       # NOTE: Make sure this is longer than spalloc.keepalive.max
       timeout: 30m
   error:
-    include-message: always  
+    include-message: always
 
 cxf:
   path: /spalloc/srv
@@ -273,6 +273,7 @@ spring:
       client:
         registration:
           hbp-ebrains:
+            client-name: HBP / EBRAINS
             client-id: ${spalloc.auth.openid.id}
             client-secret: ${spalloc.auth.openid.secret}
             # Repeated from spalloc.auth.openid.scopes, but can't share!
