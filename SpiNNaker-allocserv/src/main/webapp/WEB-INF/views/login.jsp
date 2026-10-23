@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-	https://www.apache.org/licenses/LICENSE-2.0
+    https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,38 +17,39 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="Log in" name="title"/>
+    <jsp:param value="Log in" name="title"/>
 </jsp:include>
 <body>
 
 <h1>Login</h1>
 <c:if test="${ error != null }">
-	<p>Please try again...</p>
+    <p>Please try again...</p>
 </c:if>
 <form name="f" method="POST"
-		action="${ loginUri }">
-	<sec:csrfInput />
-	<table>
-		<tr>
-			<td>User:</td>
-			<td><input type="text" name="username" value=""></td>
-		</tr>
-		<tr>
-			<td>Password:</td>
-			<td><input type="password" name="password" /></td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				<input name="submit" type="submit" value="Log In" />
-			</td>
-		</tr>
-	</table>
+        action="${ loginUri }">
+    <sec:csrfInput />
+    <table>
+        <tr>
+            <td>User:</td>
+            <td><input type="text" name="username" value=""></td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td><input type="password" name="password" /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input name="submit" type="submit" value="Log In" />
+            </td>
+        </tr>
+    </table>
 </form>
 <p>
-<form method="GET"
-		action="${ loginOidcUri }">
-	Alternatively, <input type="submit" value="log in with HBP/EBRAINS">
-</form>
+<c:forEach var="entry" items="${ loginOidcProviders}">
+  <form method="GET" action="${ entry.value }">
+    <input type="submit" value="Log in with ${entry.key}"/>
+  </form>
+</c:forEach>
 
 </body>
 </html>
