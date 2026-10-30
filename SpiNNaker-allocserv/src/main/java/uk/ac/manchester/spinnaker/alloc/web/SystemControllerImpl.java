@@ -94,383 +94,383 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @Controller("mvc.mainUI")
 public class SystemControllerImpl implements SystemController {
-    private static final Logger log = getLogger(SystemControllerImpl.class);
+	private static final Logger log = getLogger(SystemControllerImpl.class);
 
-    private static final ViewFactory MAIN_VIEW = new ViewFactory("index");
+	private static final ViewFactory MAIN_VIEW = new ViewFactory("index");
 
-    private static final ViewFactory LOGIN_VIEW = new ViewFactory("login");
+	private static final ViewFactory LOGIN_VIEW = new ViewFactory("login");
 
-    private static final ViewFactory PASSWORD_CHANGE_VIEW =
-            new ViewFactory("password");
+	private static final ViewFactory PASSWORD_CHANGE_VIEW =
+			new ViewFactory("password");
 
-    private static final ViewFactory MACHINE_LIST_VIEW =
-            new ViewFactory("listmachines");
+	private static final ViewFactory MACHINE_LIST_VIEW =
+			new ViewFactory("listmachines");
 
-    private static final ViewFactory MACHINE_VIEW =
-            new ViewFactory("machinedetails");
+	private static final ViewFactory MACHINE_VIEW =
+			new ViewFactory("machinedetails");
 
-    private static final ViewFactory JOB_LIST_VIEW =
-            new ViewFactory("listjobs");
+	private static final ViewFactory JOB_LIST_VIEW =
+			new ViewFactory("listjobs");
 
-    private static final ViewFactory JOB_VIEW = new ViewFactory("jobdetails");
+	private static final ViewFactory JOB_VIEW = new ViewFactory("jobdetails");
 
-    // Must match what views expect
-    private static final String VERSION_OBJ = "version";
+	// Must match what views expect
+	private static final String VERSION_OBJ = "version";
 
-    private static final String BUILD_OBJ = "build";
+	private static final String BUILD_OBJ = "build";
 
-    private static final String JOBS_OBJ = "jobList";
+	private static final String JOBS_OBJ = "jobList";
 
-    private static final String ONE_JOB_OBJ = "job";
+	private static final String ONE_JOB_OBJ = "job";
 
-    private static final String MACHINES_OBJ = "machineList";
+	private static final String MACHINES_OBJ = "machineList";
 
-    private static final String ONE_MACHINE_OBJ = "machine";
+	private static final String ONE_MACHINE_OBJ = "machine";
 
-    private static final String BASE_URI = "baseuri";
+	private static final String BASE_URI = "baseuri";
 
-    private static final long WAIT_FOR_POWER_SECONDS = 60;
+	private static final long WAIT_FOR_POWER_SECONDS = 60;
 
-    private static final int N_CORES = 18;
+	private static final int N_CORES = 18;
 
-    @Autowired
-    private SpallocAPI spallocCore;
+	@Autowired
+	private SpallocAPI spallocCore;
 
-    @Autowired
-    private LogoutHandler logoutHandler;
+	@Autowired
+	private LogoutHandler logoutHandler;
 
-    @Autowired
-    private UserControl userManager;
+	@Autowired
+	private UserControl userManager;
 
-    @Autowired
-    private URLPathMaker urlMaker;
+	@Autowired
+	private URLPathMaker urlMaker;
 
-    @Autowired
-    private ServiceVersion version;
+	@Autowired
+	private ServiceVersion version;
 
-    @Autowired(required = false)
-    private InMemoryClientRegistrationRepository oauth2Providers;
+	@Autowired(required = false)
+	private InMemoryClientRegistrationRepository oauth2Providers;
 
-    /**
-     * All models should contain a common set of attributes that describe where
-     * the view is rendering and where other parts of the admin interface are.
-     * Only call from
-     * {@link #addStandardContext(ModelAndView, RedirectAttributes)}.
-     *
-     * @param model
-     *            The base model to add to. This may be the real model or the
-     *            flash attributes.
-     */
-    private void addStandardContextAttrs(Map<String, Object> model) {
-        var auth = getContext().getAuthentication();
-        boolean mayChangePassword =
-                auth instanceof UsernamePasswordAuthenticationToken;
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 * Only call from
+	 * {@link #addStandardContext(ModelAndView, RedirectAttributes)}.
+	 *
+	 * @param model
+	 *            The base model to add to. This may be the real model or the
+	 *            flash attributes.
+	 */
+	private void addStandardContextAttrs(Map<String, Object> model) {
+		var auth = getContext().getAuthentication();
+		boolean mayChangePassword =
+				auth instanceof UsernamePasswordAuthenticationToken;
 
-        model.put(BASE_URI, fromCurrentRequestUri().toUriString());
-        model.put(MAIN_URI, uri(self().index()));
-        model.put(CHANGE_PASSWORD_URI, urlMaker.systemUrl(
-                CHANGE_PASSWORD_PATH));
-        model.put(LOGOUT_URI, urlMaker.systemUrl(LOGOUT_PATH));
-        model.put(SPALLOC_CSS_URI, urlMaker.systemUrl(SPALLOC_CSS_PATH));
-        model.put(SPALLOC_JS_URI, urlMaker.systemUrl(SPALLOC_JS_PATH));
-        model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
-    }
+		model.put(BASE_URI, fromCurrentRequestUri().toUriString());
+		model.put(MAIN_URI, uri(self().index()));
+		model.put(CHANGE_PASSWORD_URI, urlMaker.systemUrl(
+				CHANGE_PASSWORD_PATH));
+		model.put(LOGOUT_URI, urlMaker.systemUrl(LOGOUT_PATH));
+		model.put(SPALLOC_CSS_URI, urlMaker.systemUrl(SPALLOC_CSS_PATH));
+		model.put(SPALLOC_JS_URI, urlMaker.systemUrl(SPALLOC_JS_PATH));
+		model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
+	}
 
-    /**
-     * All models should contain a common set of attributes that describe where
-     * the view is rendering and where other parts of the admin interface are.
-     *
-     * @param mav
-     *            The model-and-view.
-     * @param attrs
-     *            The redirect attributes, or {@code null} if this is not a
-     *            redirect.
-     * @return The enhanced model-and-view.
-     */
-    private ModelAndView addStandardContext(ModelAndView mav,
-            RedirectAttributes attrs) {
-        addStandardContextAttrs(nonNull(attrs)
-                // Real implementation of flash attrs is always a ModelMap
-                ? (ModelMap) attrs.getFlashAttributes()
-                : mav.getModel());
-        return mav;
-    }
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param mav
+	 *            The model-and-view.
+	 * @param attrs
+	 *            The redirect attributes, or {@code null} if this is not a
+	 *            redirect.
+	 * @return The enhanced model-and-view.
+	 */
+	private ModelAndView addStandardContext(ModelAndView mav,
+			RedirectAttributes attrs) {
+		addStandardContextAttrs(nonNull(attrs)
+				// Real implementation of flash attrs is always a ModelMap
+				? (ModelMap) attrs.getFlashAttributes()
+				: mav.getModel());
+		return mav;
+	}
 
-    /**
-     * All models should contain a common set of attributes that describe where
-     * the view is rendering and where other parts of the admin interface are.
-     *
-     * @param mav
-     *            The model-and-view.
-     * @return The enhanced model-and-view.
-     */
-    private ModelAndView addStandardContext(ModelAndView mav) {
-        return addStandardContext(mav, null);
-    }
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param mav
+	 *            The model-and-view.
+	 * @return The enhanced model-and-view.
+	 */
+	private ModelAndView addStandardContext(ModelAndView mav) {
+		return addStandardContext(mav, null);
+	}
 
-    private ModelAndView view(ViewFactory name, String key, Object value) {
-        var mav = name.view();
-        mav.addObject(key, value);
-        return addStandardContext(mav);
-    }
+	private ModelAndView view(ViewFactory name, String key, Object value) {
+		var mav = name.view();
+		mav.addObject(key, value);
+		return addStandardContext(mav);
+	}
 
-    @Override
-    @GetMapping("/")
-    public ModelAndView index() {
-        return addStandardContext(MAIN_VIEW.view())
-                .addObject(VERSION_OBJ, version.getFullVersion())
-                .addObject(BUILD_OBJ, version.getBuildTimestamp());
-    }
+	@Override
+	@GetMapping("/")
+	public ModelAndView index() {
+		return addStandardContext(MAIN_VIEW.view())
+				.addObject(VERSION_OBJ, version.getFullVersion())
+				.addObject(BUILD_OBJ, version.getBuildTimestamp());
+	}
 
-    @Override
-    @GetMapping("/login.html")
-    public ModelAndView login() {
-        var mav = LOGIN_VIEW.view();
-        var model = mav.getModel();
-        Map<String, String> providers = new java.util.HashMap<>();
-        if (nonNull(oauth2Providers)) {
-            oauth2Providers.forEach(reg -> providers.put(
-                    reg.getClientName(),
-                    urlMaker.systemUrl(
-                            LOGIN_OIDC_PATH + reg.getRegistrationId())));
-        }
-        model.put(LOGIN_URI, urlMaker.systemUrl(LOGIN_PATH));
-        model.put(LOGIN_OIDC_PROVIDERS, providers);
-        return mav;
-    }
+	@Override
+	@GetMapping("/login.html")
+	public ModelAndView login() {
+		var mav = LOGIN_VIEW.view();
+		var model = mav.getModel();
+		Map<String, String> providers = new java.util.HashMap<>();
+		if (nonNull(oauth2Providers)) {
+			oauth2Providers.forEach(reg -> providers.put(
+					reg.getClientName(),
+					urlMaker.systemUrl(
+							LOGIN_OIDC_PATH + reg.getRegistrationId())));
+		}
+		model.put(LOGIN_URI, urlMaker.systemUrl(LOGIN_PATH));
+		model.put(LOGIN_OIDC_PROVIDERS, providers);
+		return mav;
+	}
 
-    @Override
-    @GetMapping("/change_password")
-    @Action("preparing for password change")
-    public ModelAndView getPasswordChangeForm(Principal principal) {
-        return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
-                userManager.getUser(principal));
-    }
+	@Override
+	@GetMapping("/change_password")
+	@Action("preparing for password change")
+	public ModelAndView getPasswordChangeForm(Principal principal) {
+		return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
+				userManager.getUser(principal));
+	}
 
-    /**
-     * Handle {@linkplain Valid invalid} arguments.
-     *
-     * @param result
-     *            The result of validation.
-     * @return How to render this to the user.
-     */
-    @Keep
-    @ExceptionHandler(BindException.class)
-    @UsedInJavadocOnly(Valid.class)
-    private ModelAndView bindingError(BindException result) {
-        if (result.hasGlobalErrors()) {
-            log.debug("binding problem", result);
-            return error(errorMessage(result.getGlobalError()));
-        } else if (result.hasFieldErrors()) {
-            log.debug("binding problem", result);
-            return error(errorMessage(result.getFieldError()));
-        } else {
-            log.error("unknown binding error", result);
-            return error("unknown error");
-        }
-    }
+	/**
+	 * Handle {@linkplain Valid invalid} arguments.
+	 *
+	 * @param result
+	 *            The result of validation.
+	 * @return How to render this to the user.
+	 */
+	@Keep
+	@ExceptionHandler(BindException.class)
+	@UsedInJavadocOnly(Valid.class)
+	private ModelAndView bindingError(BindException result) {
+		if (result.hasGlobalErrors()) {
+			log.debug("binding problem", result);
+			return error(errorMessage(result.getGlobalError()));
+		} else if (result.hasFieldErrors()) {
+			log.debug("binding problem", result);
+			return error(errorMessage(result.getFieldError()));
+		} else {
+			log.error("unknown binding error", result);
+			return error("unknown error");
+		}
+	}
 
-    /**
-     * Handle database and auth exceptions flowing out through this controller.
-     *
-     * @param e
-     *            The exception that happened.
-     * @param hm
-     *            What was happening to cause a problem.
-     * @return View to describe what's going on to the user.
-     */
-    @Keep
-    @ExceptionHandler({
-        AuthenticationException.class, DataAccessException.class
-    })
-    private ModelAndView dbError(RuntimeException e, HandlerMethod hm) {
-        var a = hm.getMethodAnnotation(Action.class);
-        String message;
-        if (e instanceof AuthenticationException) {
-            message = "authentication problem";
-            if (nonNull(a)) {
-                log.error("auth problem when {}", a.value(), e);
-            } else {
-                log.error("general authentication problem", e);
-            }
-        } else if (e instanceof DataAccessException) {
-            message = "database problem";
-            if (nonNull(a)) {
-                log.error("database problem when {}", a.value(), e);
-            } else {
-                log.error("general database problem", e);
-            }
-        } else {
-            message = "general problem";
-            log.error("general problem", e);
-        }
-        if (new Permit(getContext()).admin) {
-            return error(message + ": " + e.getMessage());
-        } else {
-            return error(message);
-        }
-    }
+	/**
+	 * Handle database and auth exceptions flowing out through this controller.
+	 *
+	 * @param e
+	 *            The exception that happened.
+	 * @param hm
+	 *            What was happening to cause a problem.
+	 * @return View to describe what's going on to the user.
+	 */
+	@Keep
+	@ExceptionHandler({
+		AuthenticationException.class, DataAccessException.class
+	})
+	private ModelAndView dbError(RuntimeException e, HandlerMethod hm) {
+		var a = hm.getMethodAnnotation(Action.class);
+		String message;
+		if (e instanceof AuthenticationException) {
+			message = "authentication problem";
+			if (nonNull(a)) {
+				log.error("auth problem when {}", a.value(), e);
+			} else {
+				log.error("general authentication problem", e);
+			}
+		} else if (e instanceof DataAccessException) {
+			message = "database problem";
+			if (nonNull(a)) {
+				log.error("database problem when {}", a.value(), e);
+			} else {
+				log.error("general database problem", e);
+			}
+		} else {
+			message = "general problem";
+			log.error("general problem", e);
+		}
+		if (new Permit(getContext()).admin) {
+			return error(message + ": " + e.getMessage());
+		} else {
+			return error(message);
+		}
+	}
 
-    @Override
-    @Action(CHANGE_PASSWORD_PATH)
-    public ModelAndView postPasswordChangeForm(
-            PasswordChangeRecord user,
-            Principal principal) {
-        log.info("changing password for {}", principal.getName());
-        return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
-                userManager.updateUser(principal, user));
-    }
+	@Override
+	@Action(CHANGE_PASSWORD_PATH)
+	public ModelAndView postPasswordChangeForm(
+			PasswordChangeRecord user,
+			Principal principal) {
+		log.info("changing password for {}", principal.getName());
+		return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
+				userManager.updateUser(principal, user));
+	}
 
-    @Override
-    @Action("logging out")
-    public String performLogout(HttpServletRequest request,
-            HttpServletResponse response) {
-        var auth = getContext().getAuthentication();
-        AppAuthTransformationFilter.clearToken(request);
-        if (nonNull(auth)) {
-            log.info("logging out {}", auth.getPrincipal());
-            logoutHandler.logout(request, response, auth);
-        }
-        return "redirect:" + urlMaker.systemUrl("login.html");
-    }
+	@Override
+	@Action("logging out")
+	public String performLogout(HttpServletRequest request,
+			HttpServletResponse response) {
+		var auth = getContext().getAuthentication();
+		AppAuthTransformationFilter.clearToken(request);
+		if (nonNull(auth)) {
+			log.info("logging out {}", auth.getPrincipal());
+			logoutHandler.logout(request, response, auth);
+		}
+		return "redirect:" + urlMaker.systemUrl("login.html");
+	}
 
-    private static SystemController self() {
-        // Do not refactor to a constant; request context aware!
-        return on(SystemController.class);
-    }
+	private static SystemController self() {
+		// Do not refactor to a constant; request context aware!
+		return on(SystemController.class);
+	}
 
-    @Override
-    @PreAuthorize(IS_READER)
-    @Action("listing machines")
-    public ModelAndView getMachineList() {
-        var table = spallocCore.listMachines(false);
-        table.forEach(rec -> rec
-                .setDetailsUrl(uri(self().getMachineInfo(rec.getName()))));
-        return view(MACHINE_LIST_VIEW, MACHINES_OBJ, table);
-    }
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("listing machines")
+	public ModelAndView getMachineList() {
+		var table = spallocCore.listMachines(false);
+		table.forEach(rec -> rec
+				.setDetailsUrl(uri(self().getMachineInfo(rec.getName()))));
+		return view(MACHINE_LIST_VIEW, MACHINES_OBJ, table);
+	}
 
-    @Override
-    @PreAuthorize(IS_READER)
-    @Action("getting machine details")
-    public ModelAndView getMachineInfo(String machine) {
-        var permit = new Permit(getContext());
-        /*
-         * Admins can get the view for disabled machines, but if they know it is
-         * there.
-         */
-        var mach = spallocCore
-                .getMachineInfo(machine, permit.admin, permit)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        // Owners and admins may drill down further into jobs
-        mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
-                .forEach(j -> j.setUrl(uri(self().getJobInfo(j.getId()))));
-        return view(MACHINE_VIEW, ONE_MACHINE_OBJ, mach);
-    }
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("getting machine details")
+	public ModelAndView getMachineInfo(String machine) {
+		var permit = new Permit(getContext());
+		/*
+		 * Admins can get the view for disabled machines, but if they know it is
+		 * there.
+		 */
+		var mach = spallocCore
+				.getMachineInfo(machine, permit.admin, permit)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		// Owners and admins may drill down further into jobs
+		mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
+				.forEach(j -> j.setUrl(uri(self().getJobInfo(j.getId()))));
+		return view(MACHINE_VIEW, ONE_MACHINE_OBJ, mach);
+	}
 
-    @Override
-    @PreAuthorize(IS_READER)
-    @Action("listing jobs")
-    public ModelAndView getJobList() {
-        var table = spallocCore.listJobs(new Permit(getContext()));
-        table.forEach(entry -> {
-            entry.setDetailsUrl(uri(self().getJobInfo(entry.getId())));
-            entry.setMachineUrl(
-                    uri(self().getMachineInfo(entry.getMachineName())));
-        });
-        return view(JOB_LIST_VIEW, JOBS_OBJ, table);
-    }
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("listing jobs")
+	public ModelAndView getJobList() {
+		var table = spallocCore.listJobs(new Permit(getContext()));
+		table.forEach(entry -> {
+			entry.setDetailsUrl(uri(self().getJobInfo(entry.getId())));
+			entry.setMachineUrl(
+					uri(self().getMachineInfo(entry.getMachineName())));
+		});
+		return view(JOB_LIST_VIEW, JOBS_OBJ, table);
+	}
 
-    @Override
-    @PreAuthorize(IS_READER)
-    @Action("getting job details")
-    public ModelAndView getJobInfo(int id) {
-        var permit = new Permit(getContext());
-        var job = spallocCore.getJobInfo(permit, id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        if (nonNull(job.getRequestBytes())) {
-            job.setRequest(new String(job.getRequestBytes(), UTF_8));
-        }
-        job.setMachineUrl(uri(self().getMachineInfo(job.getMachine())));
-        var mav = view(JOB_VIEW, ONE_JOB_OBJ, job);
-        mav.addObject("deleteUri", uri(self().destroyJob(id, null)));
-        mav.addObject("powerUri", uri(self().powerJob(id, false)));
-        mav.addObject("processUri", uri(self().listProcesses(id, 0, 0)));
-        return mav;
-    }
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("getting job details")
+	public ModelAndView getJobInfo(int id) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJobInfo(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		if (nonNull(job.getRequestBytes())) {
+			job.setRequest(new String(job.getRequestBytes(), UTF_8));
+		}
+		job.setMachineUrl(uri(self().getMachineInfo(job.getMachine())));
+		var mav = view(JOB_VIEW, ONE_JOB_OBJ, job);
+		mav.addObject("deleteUri", uri(self().destroyJob(id, null)));
+		mav.addObject("powerUri", uri(self().powerJob(id, false)));
+		mav.addObject("processUri", uri(self().listProcesses(id, 0, 0)));
+		return mav;
+	}
 
-    @Override
-    @PreAuthorize(IS_READER)
-    @Action("deleting job")
-    public ModelAndView destroyJob(int id, String reason) {
-        var permit = new Permit(getContext());
-        var job = spallocCore.getJob(permit, id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        job.destroy(reason);
-        var mach = spallocCore.getJobInfo(permit, id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        if (nonNull(mach.getRequestBytes())) {
-            mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
-        }
-        mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
-        return view(JOB_VIEW, ONE_JOB_OBJ, mach);
-    }
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("deleting job")
+	public ModelAndView destroyJob(int id, String reason) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJob(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		job.destroy(reason);
+		var mach = spallocCore.getJobInfo(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		if (nonNull(mach.getRequestBytes())) {
+			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
+		}
+		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
+		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
+	}
 
-    @Override
-    @PreAuthorize(IS_READER)
-    @Action("power job")
-    public ModelAndView powerJob(int id, boolean power) {
-        var permit = new Permit(getContext());
-        var job = spallocCore.getJob(permit, id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        job.setPower(power);
-        job.waitForChange(Duration.ofSeconds(WAIT_FOR_POWER_SECONDS));
-        var mach = spallocCore.getJobInfo(permit, id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        if (nonNull(mach.getRequestBytes())) {
-            mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
-        }
-        mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
-        return view(JOB_VIEW, ONE_JOB_OBJ, mach);
-    }
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("power job")
+	public ModelAndView powerJob(int id, boolean power) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJob(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		job.setPower(power);
+		job.waitForChange(Duration.ofSeconds(WAIT_FOR_POWER_SECONDS));
+		var mach = spallocCore.getJobInfo(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		if (nonNull(mach.getRequestBytes())) {
+			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
+		}
+		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
+		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
+	}
 
-    @Override
-    @PreAuthorize(IS_READER)
-    @Action("getting job process listing")
-    public List<Process> listProcesses(int id, int x, int y) {
-        var permit = new Permit(getContext());
-        var job = spallocCore.getJob(permit, id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        TransceiverInterface txrx = null;
-        try {
-            txrx = job.getTransceiver();
-            CoreSubsets cores = new CoreSubsets();
-            for (int i = 0; i < N_CORES; i++) {
-                cores.addCore(x, y, i);
-            }
-            var info = txrx.getCPUInformation(cores);
-            var response = new ArrayList<Process>();
-            for (var inf : info) {
-                response.add(new Process(inf));
-            }
-            return response;
-        } catch (NoP2PRoute e) {
-            throw new ResponseStatusException(NOT_FOUND, e.getMessage(), e);
-        } catch (ProcessException e) {
-            var cause = e.getCause();
-            if (cause instanceof SocketTimeoutException) {
-                throw new ResponseStatusException(GATEWAY_TIMEOUT,
-                        "Timeout waiting for process information; "
-                        + "is the machine booted?",
-                        cause);
-            } else {
-                throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
-                        "Error receiving process details", e);
-            }
-        } catch (Exception e) {
-            log.error("Error receiving process details", e);
-            throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
-                    "Error receiving process details", e);
-        }
-    }
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("getting job process listing")
+	public List<Process> listProcesses(int id, int x, int y) {
+		var permit = new Permit(getContext());
+		var job = spallocCore.getJob(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		TransceiverInterface txrx = null;
+		try {
+			txrx = job.getTransceiver();
+			CoreSubsets cores = new CoreSubsets();
+			for (int i = 0; i < N_CORES; i++) {
+				cores.addCore(x, y, i);
+			}
+			var info = txrx.getCPUInformation(cores);
+			var response = new ArrayList<Process>();
+			for (var inf : info) {
+				response.add(new Process(inf));
+			}
+			return response;
+		} catch (NoP2PRoute e) {
+			throw new ResponseStatusException(NOT_FOUND, e.getMessage(), e);
+		} catch (ProcessException e) {
+			var cause = e.getCause();
+			if (cause instanceof SocketTimeoutException) {
+				throw new ResponseStatusException(GATEWAY_TIMEOUT,
+						"Timeout waiting for process information; "
+						+ "is the machine booted?",
+						cause);
+			} else {
+				throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+						"Error receiving process details", e);
+			}
+		} catch (Exception e) {
+			log.error("Error receiving process details", e);
+			throw new ResponseStatusException(INTERNAL_SERVER_ERROR,
+					"Error receiving process details", e);
+		}
+	}
 
 }
