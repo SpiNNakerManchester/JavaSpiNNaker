@@ -51,7 +51,7 @@ limitations under the License.
 		Failure to do this leads to strange misbehaviour in tooltips when
 		editing application.yml
 		-->
-		<spring.security.version>7.1.1</spring.security.version>
+		<spring.security.version>7.1.2</spring.security.version>
 
 		<cxf.version>4.2.4</cxf.version>
 		<jackson.version>2.22.4</jackson.version>
