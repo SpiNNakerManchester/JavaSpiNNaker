@@ -33,154 +33,154 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /** Utilities to support MVC controllers. */
 public abstract class ControllerUtils {
 
-    private ControllerUtils() {
-    }
+	private ControllerUtils() {
+	}
 
-    /**
-     * Convert the result of calling a
-     * {@linkplain MvcUriComponentsBuilder#on(Class) component builder delegate}
-     * into a URL. Fixes the scheme to {@code https} and always ignores the
-     * query part.
-     * <p>
-     * <strong>Do not</strong> define a {@code static} variable holding the
-     * result of {@link MvcUriComponentsBuilder#on(Class)}; it tries to be
-     * request-aware, and that defeats it. Rely on the Spring MVC core to do the
-     * relevant object caching.
-     *
-     * @param selfCall
-     *            component builder delegate result
-     * @param objects
-     *            Values to substitute into the template; can be none at all
-     * @return URL that will invoke the method
-     * @see MvcUriComponentsBuilder
-     */
-    @UsedInJavadocOnly(MvcUriComponentsBuilder.class)
-    public static URI uri(Object selfCall, Object... objects) {
+	/**
+	 * Convert the result of calling a
+	 * {@linkplain MvcUriComponentsBuilder#on(Class) component builder delegate}
+	 * into a URL. Fixes the scheme to {@code https} and always ignores the
+	 * query part.
+	 * <p>
+	 * <strong>Do not</strong> define a {@code static} variable holding the
+	 * result of {@link MvcUriComponentsBuilder#on(Class)}; it tries to be
+	 * request-aware, and that defeats it. Rely on the Spring MVC core to do the
+	 * relevant object caching.
+	 *
+	 * @param selfCall
+	 *            component builder delegate result
+	 * @param objects
+	 *            Values to substitute into the template; can be none at all
+	 * @return URL that will invoke the method
+	 * @see MvcUriComponentsBuilder
+	 */
+	@UsedInJavadocOnly(MvcUriComponentsBuilder.class)
+	public static URI uri(Object selfCall, Object... objects) {
 
-        var b = fromMethodCall(selfCall);
-        // Force some dumb stuff to be right
-        if (System.getenv().containsKey("spalloc_use_http")) {
-            b.query(null).scheme("http");
-        } else {
-            b.query(null).scheme("https");
-        }
-        return b.buildAndExpand(objects).toUri();
-    }
+		var b = fromMethodCall(selfCall);
+		// Force some dumb stuff to be right
+		if (System.getenv().containsKey("spalloc_use_http")) {
+			b.query(null).scheme("http");
+		} else {
+			b.query(null).scheme("https");
+		}
+		return b.buildAndExpand(objects).toUri();
+	}
 
-    /** The name of the Spring MVC error view. */
-    public static final String MVC_ERROR = "erroroccurred";
+	/** The name of the Spring MVC error view. */
+	public static final String MVC_ERROR = "erroroccurred";
 
-    /** The main URI variable for JSP pages. */
-    public static final String MAIN_URI = "mainUri";
+	/** The main URI variable for JSP pages. */
+	public static final String MAIN_URI = "mainUri";
 
-    /** The change password URI variable for JSP pages. */
-    public static final String CHANGE_PASSWORD_URI = "changePasswordUri";
+	/** The change password URI variable for JSP pages. */
+	public static final String CHANGE_PASSWORD_URI = "changePasswordUri";
 
-    /** The login URI variable for JSP pages. */
-    public static final String LOGOUT_URI = "logoutUri";
+	/** The login URI variable for JSP pages. */
+	public static final String LOGOUT_URI = "logoutUri";
 
-    /** The logout URI variable for JSP pages. */
-    public static final String LOGIN_URI = "loginUri";
+	/** The logout URI variable for JSP pages. */
+	public static final String LOGIN_URI = "loginUri";
 
-    /** The OIDC providers variable for JSP pages. */
-    public static final String LOGIN_OIDC_PROVIDERS = "loginOidcProviders";
+	/** The OIDC providers variable for JSP pages. */
+	public static final String LOGIN_OIDC_PROVIDERS = "loginOidcProviders";
 
-    /** The Spalloc CSS URI variable for JSP pages. */
-    public static final String SPALLOC_CSS_URI = "spallocCssUri";
+	/** The Spalloc CSS URI variable for JSP pages. */
+	public static final String SPALLOC_CSS_URI = "spallocCssUri";
 
-    /** The Spalloc JS URI variable for JSP pages. */
-    public static final String SPALLOC_JS_URI = "spallocJsUri";
+	/** The Spalloc JS URI variable for JSP pages. */
+	public static final String SPALLOC_JS_URI = "spallocJsUri";
 
-    /** The URI path to use to perform logins. */
-    public static final String LOGIN_PATH = "perform_login";
+	/** The URI path to use to perform logins. */
+	public static final String LOGIN_PATH = "perform_login";
 
-    /** The URI path to use to perform OIDC logins. */
-    public static final String LOGIN_OIDC_PATH =
-            "perform_oidc/auth/";
+	/** The URI path to use to perform OIDC logins. */
+	public static final String LOGIN_OIDC_PATH =
+			"perform_oidc/auth/";
 
-    /** The URI path to use to change passwords. */
-    public static final String CHANGE_PASSWORD_PATH = "change_password";
+	/** The URI path to use to change passwords. */
+	public static final String CHANGE_PASSWORD_PATH = "change_password";
 
-    /** The URI path to use to perform logouts. */
-    public static final String LOGOUT_PATH = "perform_logout";
+	/** The URI path to use to perform logouts. */
+	public static final String LOGOUT_PATH = "perform_logout";
 
-    /** The URI path of the Spalloc CSS file. */
-    public static final String SPALLOC_CSS_PATH = "resources/spalloc.css";
+	/** The URI path of the Spalloc CSS file. */
+	public static final String SPALLOC_CSS_PATH = "resources/spalloc.css";
 
-    /** The URI path of the Spalloc JS file. */
-    public static final String SPALLOC_JS_PATH = "resources/spinnaker.js";
+	/** The URI path of the Spalloc JS file. */
+	public static final String SPALLOC_JS_PATH = "resources/spinnaker.js";
 
-    /**
-     * Create a view that shows an error to the user.
-     *
-     * @param message
-     *            The error message.
-     * @return The view.
-     */
-    public static ModelAndView error(String message) {
-        return new ModelAndView(MVC_ERROR, "error", message);
-    }
+	/**
+	 * Create a view that shows an error to the user.
+	 *
+	 * @param message
+	 *            The error message.
+	 * @return The view.
+	 */
+	public static ModelAndView error(String message) {
+		return new ModelAndView(MVC_ERROR, "error", message);
+	}
 
-    /**
-     * Convert a problem with validation into a user-suitable error message.
-     *
-     * @param error
-     *            The error detail.
-     * @return The message.
-     */
-    public static String errorMessage(ObjectError error) {
-        var msg = error.getDefaultMessage();
-        return isNull(msg) ? error.toString() : msg;
-    }
+	/**
+	 * Convert a problem with validation into a user-suitable error message.
+	 *
+	 * @param error
+	 *            The error detail.
+	 * @return The message.
+	 */
+	public static String errorMessage(ObjectError error) {
+		var msg = error.getDefaultMessage();
+		return isNull(msg) ? error.toString() : msg;
+	}
 
-    /**
-     * Creates a {@link ModelAndView} on demand.
-     *
-     * @author Donal Fellows
-     */
-    @Immutable
-    public static final class ViewFactory {
-        private final String view;
+	/**
+	 * Creates a {@link ModelAndView} on demand.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Immutable
+	public static final class ViewFactory {
+		private final String view;
 
-        /**
-         * @param viewName
-         *            The name of the view that this class will make.
-         */
-        public ViewFactory(@CompileTimeConstant final String viewName) {
-            view = viewName;
-        }
+		/**
+		 * @param viewName
+		 *            The name of the view that this class will make.
+		 */
+		public ViewFactory(@CompileTimeConstant final String viewName) {
+			view = viewName;
+		}
 
-        /**
-         * Make an instance.
-         *
-         * @return The model-and-view, ready for decorating with the model.
-         */
-        public ModelAndView view() {
-            return new ModelAndView(view);
-        }
+		/**
+		 * Make an instance.
+		 *
+		 * @return The model-and-view, ready for decorating with the model.
+		 */
+		public ModelAndView view() {
+			return new ModelAndView(view);
+		}
 
-        /**
-         * Make an instance.
-         *
-         * @param model
-         *            The model we want to start with.
-         * @return The model-and-view, ready for decorating with the model.
-         */
-        public ModelAndView view(ModelMap model) {
-            return new ModelAndView(view, model);
-        }
+		/**
+		 * Make an instance.
+		 *
+		 * @param model
+		 *            The model we want to start with.
+		 * @return The model-and-view, ready for decorating with the model.
+		 */
+		public ModelAndView view(ModelMap model) {
+			return new ModelAndView(view, model);
+		}
 
-        /**
-         * Make an instance.
-         *
-         * @param key
-         *            Name of item to initially insert in the model.
-         * @param value
-         *            Value of item to initially insert in the model.
-         * @return The model-and-view, ready for decorating with the model.
-         */
-        public ModelAndView view(String key, Object value) {
-            return new ModelAndView(view, key, value);
-        }
-    }
+		/**
+		 * Make an instance.
+		 *
+		 * @param key
+		 *            Name of item to initially insert in the model.
+		 * @param value
+		 *            Value of item to initially insert in the model.
+		 * @return The model-and-view, ready for decorating with the model.
+		 */
+		public ModelAndView view(String key, Object value) {
+			return new ModelAndView(view, key, value);
+		}
+	}
 }

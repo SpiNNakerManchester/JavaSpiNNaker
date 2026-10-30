@@ -56,6 +56,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -122,6 +123,9 @@ public class SecurityConfig {
 	// ------------------------------------------------------------------------
 	// What follows is UGLY stuff to make Java open HTTPS right
 	private static X509TrustManager customTm;
+
+	@Autowired(required = false)
+	private InMemoryClientRegistrationRepository oauth2Providers;
 
 	// Static because it has to be done very early.
 	static {
@@ -335,12 +339,8 @@ public class SecurityConfig {
 
 	private final class UserInfoOpaqueTokenIntrospector
 			implements OpaqueTokenIntrospector {
-		private final OpaqueTokenIntrospector delegate;
-
-		private final String userInfoUri;
 
 		private UserInfoOpaqueTokenIntrospector() {
-			var p = properties.getOpenid();
 
 			delegate = SpringOpaqueTokenIntrospector
 					.withIntrospectionUri(p.getIntrospection())
@@ -350,6 +350,22 @@ public class SecurityConfig {
 
 		@Override
 		public OAuth2AuthenticatedPrincipal introspect(String token) {
+			for (var p : oauth2Providers) {
+				try {
+					var delegate = SpringOpaqueTokenIntrospector
+							.withIntrospectionUri(p.getIntrospection())
+							.clientId(p.getId()).clientSecret(p.getSecret()).build();
+					if (reg != null) {
+						return introspect(token, delegate);
+					}
+				} catch (Exception e) {
+					log.warn("Failed to introspect token with provider {}: {}",
+							p.getRegistrationId(), e.getMessage());
+				}
+			}
+
+		private OAuth2AuthenticatedPrincipal introspect(
+				String token, OpaqueTokenIntrospector delegate) {
 			var authorized = delegate.introspect(token);
 			Instant issuedAt = authorized.getAttribute("issued-at");
 			Instant expiresAt = authorized.getAttribute("expires-at");
