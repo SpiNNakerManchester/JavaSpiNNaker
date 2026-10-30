@@ -56,6 +56,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -340,37 +341,31 @@ public class SecurityConfig {
 	private final class UserInfoOpaqueTokenIntrospector
 			implements OpaqueTokenIntrospector {
 
-		private UserInfoOpaqueTokenIntrospector() {
-
-			delegate = SpringOpaqueTokenIntrospector
-					.withIntrospectionUri(p.getIntrospection())
-					.clientId(p.getId()).clientSecret(p.getSecret()).build();
-			userInfoUri = p.getUserinfo();
-		}
-
 		@Override
 		public OAuth2AuthenticatedPrincipal introspect(String token) {
 			for (var p : oauth2Providers) {
 				try {
-					var delegate = SpringOpaqueTokenIntrospector
-							.withIntrospectionUri(p.getIntrospection())
-							.clientId(p.getId()).clientSecret(p.getSecret()).build();
-					if (reg != null) {
-						return introspect(token, delegate);
-					}
+					return introspect(token, p);
 				} catch (Exception e) {
 					log.warn("Failed to introspect token with provider {}: {}",
 							p.getRegistrationId(), e.getMessage());
 				}
 			}
+			return null;
+		}
 
 		private OAuth2AuthenticatedPrincipal introspect(
-				String token, OpaqueTokenIntrospector delegate) {
+				String token, ClientRegistration p) {
+			var delegate = SpringOpaqueTokenIntrospector
+					.withIntrospectionUri(
+							p.getProviderDetails().getTokenUri())
+					.clientId(p.getClientId())
+					.clientSecret(p.getClientSecret()).build();
 			var authorized = delegate.introspect(token);
 			Instant issuedAt = authorized.getAttribute("issued-at");
 			Instant expiresAt = authorized.getAttribute("expires-at");
 
-			var userAttributes = userinfo(token);
+			var userAttributes = userinfo(token, p);
 			var authorities = new LinkedHashSet<GrantedAuthority>();
 			var auth = new OidcUserAuthority(
 					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
@@ -380,13 +375,15 @@ public class SecurityConfig {
 					"preferred_username");
 		}
 
-		private Map<String, Object> userinfo(String token) {
-			log.debug("Fetching user info from {}", userInfoUri);
+		private Map<String, Object> userinfo(String token, ClientRegistration p) {
+			log.debug("Fetching user info from {}",
+					p.getProviderDetails().getUserInfoEndpoint().getUri());
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
 			headers.setBearerAuth(token);
 			var request = new RequestEntity<>(headers, GET,
-					URI.create(userInfoUri));
+					URI.create(
+						p.getProviderDetails().getUserInfoEndpoint().getUri()));
 
 			var restTemplate = new RestTemplateBuilder().build();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
