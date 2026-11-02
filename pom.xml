@@ -786,7 +786,7 @@ limitations under the License.
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
 	<inceptionYear>2018</inceptionYear>
-	<url>https://spinnakermanchester.github.io/</url>
+	<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/</url>
 	<organization>
 		<name>SpiNNaker Team @ University of Manchester</name>
 		<url>https://apt.cs.manchester.ac.uk/projects/SpiNNaker/</url>
@@ -819,7 +819,7 @@ limitations under the License.
 		<site>
 			<id>github-pages</id>
 			<name>GitHub Pages</name>
-			<url>https://spinnakermanchester.github.io/JavaSpiNNaker</url>
+			<url>https://github.com/SpiNNakerManchester/JavaSpiNNaker</url>
 		</site>
 	</distributionManagement>
 	<mailingLists>
