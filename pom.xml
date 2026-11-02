@@ -837,8 +837,7 @@ limitations under the License.
 			<id>andrewgait</id>
 			<name>Andrew Gait</name>
 			<roles>
-				<role>New Feature Development</role>
-				<role>User Support</role>
+				<role>Emeritus</role>
 			</roles>
 			<organization>The University of Manchester</organization>
 			<url>https://personalpages.manchester.ac.uk/staff/Andrew.Gait/</url>
@@ -847,10 +846,12 @@ limitations under the License.
 			<id>agr</id>
 			<name>Andrew Rowley</name>
 			<roles>
+				<role>Techincal Lead</role>
 				<role>New Feature Development</role>
 				<role>Architectural Design</role>
 				<role>Project Liaison</role>
 				<role>Dissemination</role>
+				<role>Techincal Lead</role>
 			</roles>
 			<organization>The University of Manchester</organization>
 		</developer>
@@ -865,25 +866,29 @@ limitations under the License.
 			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
-			<id>dkfellows</id>
-			<name>Donal Fellows</name>
+			<name>Davide Bertozzi</name>
 			<roles>
-				<role>New Feature Development</role>
-				<role>Low-Level Maintenance</role>
-				<role>Software Quality Control</role>
-				<role>Continuous Integration Control</role>
+				<role>Accademic Lead</role>
 			</roles>
-			<organization>The University of Manchester</organization>
-			<url>https://github.com/dkfellows</url>
 		</developer>
 		<developer>
 			<id>sfurber</id>
 			<name>Steve Furber</name>
 			<roles>
-				<role>Head of SpiNNaker Project</role>
+				<role>Emeritus</role>
+				<role>Founder of SpiNNaker Project</role>
 			</roles>
 			<organization>The University of Manchester</organization>
 			<url>https://apt.cs.manchester.ac.uk/people/sfurber/</url>
+		</developer>
+		<developer>
+			<id>dkfellows</id>
+			<name>Donal Fellows</name>
+			<roles>
+				<role>Emeritus</role>
+			</roles>
+			<organization>The University of Manchester</organization>
+			<url>https://github.com/dkfellows</url>
 		</developer>
 		<developer>
 			<id>alan-stokes</id>
