@@ -40,7 +40,7 @@ limitations under the License.
 		<slf4j.version>2.0.20</slf4j.version>
 		<log4j.version>2.26.1</log4j.version>
 
-		<spring.version>7.0.9</spring.version>
+		<spring.version>7.0.10</spring.version>
 		<spring.boot.version>4.1.2</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
@@ -51,7 +51,7 @@ limitations under the License.
 		Failure to do this leads to strange misbehaviour in tooltips when
 		editing application.yml
 		-->
-		<spring.security.version>7.1.1</spring.security.version>
+		<spring.security.version>7.1.2</spring.security.version>
 
 		<cxf.version>4.2.4</cxf.version>
 		<jackson.version>2.22.4</jackson.version>
