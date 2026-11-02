@@ -375,7 +375,8 @@ public class SecurityConfig {
 					"preferred_username");
 		}
 
-		private Map<String, Object> userinfo(String token, ClientRegistration p) {
+		private Map<String, Object> userinfo(
+				String token, ClientRegistration p) {
 			log.debug("Fetching user info from {}",
 					p.getProviderDetails().getUserInfoEndpoint().getUri());
 			var headers = new HttpHeaders();
