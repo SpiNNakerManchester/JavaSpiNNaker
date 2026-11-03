@@ -63,6 +63,11 @@ limitations under the License.
 		<module name="InappropriateJavadocBlockTagsOnPackage"/>
 		<module name="InappropriateJavadocBlockTagsOnType"/>
 		<module name="InvalidJavadocPosition"/>
+		<module name="JavadocBlockTagLocation"/>
+		<module name="JavadocContentLocation"/>
+		<module name="JavadocEndCommentDelimiter"/>
+		<module name="JavadocLeadingAsteriskAlign" />
+		<module name="JavadocLinkFirstOccurrence"/>
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
 			<property name="accessModifiers" value="public, protected" />
