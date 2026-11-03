@@ -68,7 +68,7 @@ limitations under the License.
 		<module name="JavadocEndCommentDelimiter"/>
 		<module name="JavadocLeadingAsteriskAlign" />
 		<!-- module name="JavadocLinkFirstOccurrence"/  We do use multiple links -->
-		<module name="JavadocLinkWellKnownApi"/>
+		<!-- module name="JavadocLinkWellKnownApi"/ We current do have these links -->
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
 			<property name="accessModifiers" value="public, protected" />
