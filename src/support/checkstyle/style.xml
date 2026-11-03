@@ -83,8 +83,10 @@ limitations under the License.
 		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
 		<module name="JavadocNoErrorInThrowsTag"/>
 		<!-- module name="JavadocPackage"/  In checker section -->
-		<module name="JavadocParagraph"/>
+		<!-- module name="JavadocParagraph"/ We currently do not have a new before a <p> tag -->
 		<module name="JavadocParamOrder"/>
+		<!-- module name="JavadocRegexp"/ Currently no regex we want to avoid -->
+		<module name="JavadocSeeTagOrder"/>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />
