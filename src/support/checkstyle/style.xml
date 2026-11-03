@@ -55,6 +55,20 @@ limitations under the License.
 			<property name="message" value="Indent must use tab characters"/>
 			<property name="ignoreComments" value="true"/>
 		</module>
+		<!-- Javadoc Comments Checks -->
+		<!-- module name="AtclauseOrder"/  Not currently followed -->
+		<module name="BlockCommentEndPosition"/>
+		<!-- <module name="IllegalBlockTag"/> We have no user tags to check -->
+		<module name="InappropriateJavadocBlockTagsOnField"/>
+		<module name="InappropriateJavadocBlockTagsOnPackage"/>
+		<module name="InappropriateJavadocBlockTagsOnType"/>
+		<module name="InvalidJavadocPosition"/>
+		<module name="JavadocBlockTagLocation"/>
+		<module name="JavadocContentLocation"/>
+		<module name="JavadocEndCommentDelimiter"/>
+		<module name="JavadocLeadingAsteriskAlign" />
+		<!-- module name="JavadocLinkFirstOccurrence"/  We do use multiple links -->
+		<!-- module name="JavadocLinkWellKnownApi"/ We current do have these links -->
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
 			<property name="accessModifiers" value="public, protected" />
@@ -65,6 +79,15 @@ limitations under the License.
 			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
 		</module>
+		<module name="JavadocMissingLeadingAsterisk"/>
+		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
+		<module name="JavadocNoErrorInThrowsTag"/>
+		<!-- module name="JavadocPackage"/  In checker section -->
+		<!-- module name="JavadocParagraph"/ We currently do not have a new before a <p> tag -->
+		<module name="JavadocParamOrder"/>
+		<!-- module name="JavadocRegexp"/ Currently no regex we want to avoid -->
+		<module name="JavadocSeeTagOrder"/>
+		<module name="JavadocTagContinuationIndentation"/>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />

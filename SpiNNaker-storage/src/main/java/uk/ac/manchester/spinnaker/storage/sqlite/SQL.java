@@ -65,10 +65,11 @@ abstract class SQL {
 			+ " download_region(core_id, local_region_index)"
 			+ " VALUES (?, ?) RETURNING download_region_id";
 
-	/** For testing create an extraction record.
-
-	Would normally be done by python.
-	*/
+	/**
+	 * For testing create an extraction record.
+     *
+	 * Would normally be done by python.
+	 */
 	@ResultColumn("extraction_id")
 	static final String INSERT_MOCK_EXTRACTION = "INSERT INTO "
 			+ "extraction(run_timestep, n_run, n_loop, extract_time) "

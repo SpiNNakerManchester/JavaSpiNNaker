@@ -318,11 +318,11 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	/**
 	 * Get the version of SCAMP which is running on the board.
 	 *
+	 * @param chip
+	 *            the coordinates of the chip to query for SCAMP version
 	 * @param connectionSelector
 	 *            the connection to send the SCAMP version or none (if none then
 	 *            a random SCAMP connection is used).
-	 * @param chip
-	 *            the coordinates of the chip to query for SCAMP version
 	 * @return The version identifier
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
@@ -4275,7 +4275,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
-	 *             If the communications were interrupted.	 */
+	 *             If the communications were interrupted.
+	 */
 	void resetRouting(Map<Integer, DiagnosticFilter> customFilters)
 			throws ProcessException, IOException, InterruptedException;
 }
