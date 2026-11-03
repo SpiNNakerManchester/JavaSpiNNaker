@@ -74,6 +74,10 @@ limitations under the License.
 			<property name="ignoreNamePattern" value="log|logger" />
 		</module>
 		<module name="JavadocStyle" />
+		<module name="InappropriateJavadocBlockTagsOnField"/>
+		<module name="InappropriateJavadocBlockTagsOnPackage"/>
+		<module name="InappropriateJavadocBlockTagsOnType"/>
+		<module name="InvalidJavadocPosition"/>
 		<module name="ConstantName">
 			<property name="format"
 				value="^(log(ger)?|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" />
