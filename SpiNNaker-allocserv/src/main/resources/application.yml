@@ -157,26 +157,18 @@ spalloc:
     unlock-period: 60s
     openid:
       # Support OIDC
-      registration-id: hbp-ebrains
       enable: true
-      auth-grant-type: authorization_code
-      auth: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
-      token: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
-      userinfo: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
-      jwk-set: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/certs
-      issuer: https://iam.ebrains.eu/auth/realms/hbp
-      introspection: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
-      scopes: [ openid, profile, roles, email, team, group ]
-      redirect: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
-      # The credentials for HBP/EBRAINS go here
-      id: spalloc
-      secret: XYZZY_OVERRIDE_THIS
       # Prefix all OpenID-sourced names with this
       username-prefix: "openid."
       # These are generated during build by maven; don't change
       truststore-type: PKCS12
       truststore-path: classpath:/truststore.p12
       truststore-password: hunter2
+      introspection-uris:
+        hbp-ebrains: 
+          type: spring
+          url: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
+          username_property: preferred_username
   quota:
     # Default user quota in board-seconds
     default-quota: 130
@@ -274,17 +266,16 @@ spring:
         registration:
           hbp-ebrains:
             client-name: HBP / EBRAINS
-            client-id: ${spalloc.auth.openid.id}
-            client-secret: ${spalloc.auth.openid.secret}
-            # Repeated from spalloc.auth.openid.scopes, but can't share!
+            # The credentials for HBP/EBRAINS go here
+            client-id: spalloc
+            client-secret: XYZZY_OVERRIDE_THIS
             scope: [ openid, profile, roles, email, team, group ]
-            authorization-grant-type: ${spalloc.auth.openid.auth-grant-type}
-            redirect-uri: ${spalloc.auth.openid.redirect}
+            authorization-grant-type: authorization_code
+            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
         provider:
           hbp-ebrains:
-            # issuer-uri: ${spalloc.auth.openid.issuer}
-            authorization-uri: ${spalloc.auth.openid.auth}
-            token-uri: ${spalloc.auth.openid.token}
-            user-info-uri: ${spalloc.auth.openid.userinfo}
-            jwk-set-uri: ${spalloc.auth.openid.jwk-set}
+            authorization-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
+            token-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
+            user-info-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
+            jwk-set-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/certs
             user-name-attribute: preferred_username

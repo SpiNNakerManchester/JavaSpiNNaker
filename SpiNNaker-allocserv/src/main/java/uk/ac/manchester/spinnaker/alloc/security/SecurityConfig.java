@@ -45,7 +45,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -70,10 +72,13 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 import jakarta.servlet.DispatcherType;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.IntrospectionProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.IntrospectionType;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -356,23 +361,51 @@ public class SecurityConfig {
 
 		private OAuth2AuthenticatedPrincipal introspect(
 				String token, ClientRegistration p) {
-			var delegate = SpringOpaqueTokenIntrospector
-					.withIntrospectionUri(
-							p.getProviderDetails().getTokenUri())
-					.clientId(p.getClientId())
-					.clientSecret(p.getClientSecret()).build();
-			var authorized = delegate.introspect(token);
-			Instant issuedAt = authorized.getAttribute("issued-at");
-			Instant expiresAt = authorized.getAttribute("expires-at");
+			var props = properties.getOpenid().getIntrospectionUris().get(
+					p.getRegistrationId());
+			log.debug("Introspecting token with provider {}: {}",
+					p.getRegistrationId(), props.getUri());
+			if (props.getType() == IntrospectionType.SPRING) {
+				var delegate = SpringOpaqueTokenIntrospector
+						.withIntrospectionUri(props.getUri())
+						.clientId(p.getClientId())
+						.clientSecret(p.getClientSecret()).build();
+				var authorized = delegate.introspect(token);
+				Instant issuedAt = authorized.getAttribute("issued-at");
+				Instant expiresAt = authorized.getAttribute("expires-at");
+				return userinfoPrincipal(token, p, issuedAt, expiresAt, props);
+			}
 
+			if (props.getType() == IntrospectionType.TOKEN) {
+				var restTemplate = new RestTemplate();
+				String request = props.getUri() + "?" +
+						props.getTokenParameter() + "=" + token;
+				ResponseEntity<Map<String, Object>> response = restTemplate
+						.exchange(request,
+								HttpMethod.GET, null,
+								PARAMETERIZED_RESPONSE_TYPE);
+				var attrbutes = response.getBody();
+				Instant expiresAt = Instant.ofEpochSecond(
+						Long.valueOf(((String) attrbutes.get("exp"))));
+				return userinfoPrincipal(token, p, null, expiresAt, props);
+			}
+
+			throw new IllegalArgumentException(
+					"Unknown introspection type: " + props.getType());
+		}
+
+		private OAuth2AuthenticatedPrincipal userinfoPrincipal(
+				String token, ClientRegistration p, Instant issuedAt,
+				Instant expiresAt, IntrospectionProperties props) {
 			var userAttributes = userinfo(token, p);
 			var authorities = new LinkedHashSet<GrantedAuthority>();
 			var auth = new OidcUserAuthority(
-					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
+					new OidcIdToken(token, issuedAt, expiresAt,
+							userAttributes),
 					new OidcUserInfo(userAttributes));
 			localAuthProvider.mapAuthorities(auth, authorities);
 			return new DefaultOAuth2User(authorities, userAttributes,
-					"preferred_username");
+					props.getUsernameProperty());
 		}
 
 		private Map<String, Object> userinfo(
