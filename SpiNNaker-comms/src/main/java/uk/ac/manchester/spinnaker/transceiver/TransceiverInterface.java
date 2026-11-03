@@ -4275,7 +4275,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
-	 *             If the communications were interrupted.	 */
+	 *             If the communications were interrupted.
+	 */
 	void resetRouting(Map<Integer, DiagnosticFilter> customFilters)
 			throws ProcessException, IOException, InterruptedException;
 }
