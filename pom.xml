@@ -775,7 +775,6 @@ limitations under the License.
 		<module>SpiNNaker-machine</module>
 		<module>SpiNNaker-storage</module>
 		<module>SpiNNaker-comms</module>
-		<module>SpiNNaker-pacman</module>
 		<module>SpiNNaker-front-end</module>
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-nmpiserv</module>
