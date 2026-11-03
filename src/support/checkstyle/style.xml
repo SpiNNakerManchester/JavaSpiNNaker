@@ -55,6 +55,14 @@ limitations under the License.
 			<property name="message" value="Indent must use tab characters"/>
 			<property name="ignoreComments" value="true"/>
 		</module>
+		<!-- Javadoc Comments Checks -->
+		<module name="AtclauseOrder"/>
+		<module name="BlockCommentEndPosition"/>
+		<!-- <module name="IllegalBlockTag"/> We have no user tags to check -->
+		<module name="InappropriateJavadocBlockTagsOnField"/>
+		<module name="InappropriateJavadocBlockTagsOnPackage"/>
+		<module name="InappropriateJavadocBlockTagsOnType"/>
+		<module name="InvalidJavadocPosition"/>
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
 			<property name="accessModifiers" value="public, protected" />
