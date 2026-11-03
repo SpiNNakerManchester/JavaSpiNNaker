@@ -101,7 +101,8 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider<LocalAuthProviderImpl.TestAPI> {
 
-	/** The username prefix used to identify an OpenID user fake
+	/**
+	 * The username prefix used to identify an OpenID user fake
 	 *  collaboratory.
 	 */
 	public static final String PRIVATE_COLLAB_PREFIX = "private-";

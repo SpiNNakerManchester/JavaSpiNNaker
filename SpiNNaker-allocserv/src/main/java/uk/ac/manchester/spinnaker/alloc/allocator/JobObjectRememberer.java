@@ -134,7 +134,8 @@ class JobObjectRememberer {
 		return transceivers.get(jobId);
 	}
 
-	/** Set the transceiver for a job.
+	/**
+	 * Set the transceiver for a job.
 	 *
 	 * @param jobId The job ID.
 	 * @param txrx The transceiver.
@@ -144,7 +145,8 @@ class JobObjectRememberer {
 		transceivers.put(jobId, txrx);
 	}
 
-	/** Get the fast data in for a job.
+	/**
+	 * Get the fast data in for a job.
 	 *
 	 * @param jobId The job ID.
 	 * @param chip  The ethernet chip to get the fast data in for.
