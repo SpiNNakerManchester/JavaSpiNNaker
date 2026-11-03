@@ -74,13 +74,15 @@ limitations under the License.
 			<property name="accessModifiers" value="public, protected" />
 			<property name="validateThrows" value="true" />
 		</module>
-		<module name="JavadocMissingLeadingAsterisk"/>
-		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
-		<module name="JavadocNoErrorInThrowsTag"/>
 		<module name="JavadocMethod">
 			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
 			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
+		<module name="JavadocMissingLeadingAsterisk"/>
+		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
+		<module name="JavadocNoErrorInThrowsTag"/>
+		<module name="JavadocPackage"/>
+		<module name="JavadocParagraph"/>
 		</module>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
