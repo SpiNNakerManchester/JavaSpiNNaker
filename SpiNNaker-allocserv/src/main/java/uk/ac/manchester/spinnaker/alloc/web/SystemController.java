@@ -159,7 +159,6 @@ public interface SystemController {
 	ModelAndView powerJob(@PathVariable("id") int id,
 			@RequestParam("power") boolean power);
 
-
 	/**
 	 * Get the view and model for the password change form.
 	 *

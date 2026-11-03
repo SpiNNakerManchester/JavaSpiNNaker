@@ -109,7 +109,7 @@ public class SecurityConfig {
 	private static final ParameterizedTypeReference<
 			Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
 					new ParameterizedTypeReference<>() {
-					};
+			};
 
 	/**
 	 * How to assert that a user must be able to make jobs and read job details
