@@ -840,7 +840,6 @@ limitations under the License.
 				<role>Emeritus</role>
 			</roles>
 			<organization>The University of Manchester</organization>
-			<url>https://personalpages.manchester.ac.uk/staff/Andrew.Gait/</url>
 		</developer>
 		<developer>
 			<id>agr</id>
@@ -870,6 +869,7 @@ limitations under the License.
 			<roles>
 				<role>Accademic Lead</role>
 			</roles>
+			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
 			<id>sfurber</id>
@@ -878,8 +878,7 @@ limitations under the License.
 				<role>Emeritus</role>
 				<role>Founder of SpiNNaker Project</role>
 			</roles>
-			<organization>The University of Manchester</organization>
-			<url>https://apt.cs.manchester.ac.uk/people/sfurber/</url>
+			<organization>The University of Manchester (Retired)</organization>
 		</developer>
 		<developer>
 			<id>dkfellows</id>
@@ -888,7 +887,6 @@ limitations under the License.
 				<role>Emeritus</role>
 			</roles>
 			<organization>The University of Manchester</organization>
-			<url>https://github.com/dkfellows</url>
 		</developer>
 		<developer>
 			<id>alan-stokes</id>
@@ -896,7 +894,7 @@ limitations under the License.
 			<roles>
 				<role>Emeritus</role>
 			</roles>
-			<organization>STFC (ex University of Manchester)</organization>
+			<organization>ex University of Manchester</organization>
 		</developer>
 		<developer>
 			<id>oliverrhodes</id>
@@ -904,7 +902,6 @@ limitations under the License.
 			<roles>
 				<role>Emeritus</role>
 			</roles>
-			<url>https://www.research.manchester.ac.uk/portal/oliver.rhodes.html</url>
 			<organization>The University of Manchester</organization>
 		</developer>
 	</developers>
