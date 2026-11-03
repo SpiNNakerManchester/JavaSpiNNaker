@@ -1,6 +1,6 @@
 [![Build and Test](https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions/workflows/build.yml/badge.svg)](https://github.com/SpiNNakerManchester/JavaSpiNNaker/actions/workflows/build.yml)
 [![Documentation Status](https://readthedocs.org/projects/javaspinnaker/badge/?version=latest)](https://javaspinnaker.readthedocs.io/en/latest)
-[API documentation](https://javaspinnaker.readthedocs.io/en/latest/apidocs/index.html)
+[Javadoc](https://javaspinnaker.readthedocs.io/en/latest/apidocs/index.html)
 # JavaSpiNNaker
 This is an implementation of the SpiNNaker host software in Java. It requires at least Java 21. We test regularly with OpenJDK 21 and 25. It also includes the new implementation of the Spalloc (SpiNNaker Allocator) service and associated support tools.
 
