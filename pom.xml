@@ -842,7 +842,7 @@ limitations under the License.
 			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
-			<id>agr</id>
+			<id>rowleya</id>
 			<name>Andrew Rowley</name>
 			<roles>
 				<role>Techincal Lead</role>
@@ -850,7 +850,6 @@ limitations under the License.
 				<role>Architectural Design</role>
 				<role>Project Liaison</role>
 				<role>Dissemination</role>
-				<role>Techincal Lead</role>
 			</roles>
 			<organization>The University of Manchester</organization>
 		</developer>
@@ -872,7 +871,6 @@ limitations under the License.
 			<organization>The University of Manchester</organization>
 		</developer>
 		<developer>
-			<id>sfurber</id>
 			<name>Steve Furber</name>
 			<roles>
 				<role>Emeritus</role>
