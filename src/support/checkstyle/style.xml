@@ -67,7 +67,7 @@ limitations under the License.
 		<module name="JavadocContentLocation"/>
 		<module name="JavadocEndCommentDelimiter"/>
 		<module name="JavadocLeadingAsteriskAlign" />
-		<module name="JavadocLinkFirstOccurrence"/>
+		<!-- module name="JavadocLinkFirstOccurrence"/  We do use multiple links -->
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
 			<property name="accessModifiers" value="public, protected" />
