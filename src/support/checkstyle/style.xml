@@ -56,7 +56,7 @@ limitations under the License.
 			<property name="ignoreComments" value="true"/>
 		</module>
 		<!-- Javadoc Comments Checks -->
-		<module name="AtclauseOrder"/>
+		<!-- module name="AtclauseOrder"/  Not currently followed -->
 		<module name="BlockCommentEndPosition"/>
 		<!-- <module name="IllegalBlockTag"/> We have no user tags to check -->
 		<module name="InappropriateJavadocBlockTagsOnField"/>
