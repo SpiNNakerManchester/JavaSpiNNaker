@@ -78,12 +78,12 @@ limitations under the License.
 			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
 			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
+		</module>
 		<module name="JavadocMissingLeadingAsterisk"/>
 		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
 		<module name="JavadocNoErrorInThrowsTag"/>
 		<module name="JavadocPackage"/>
 		<module name="JavadocParagraph"/>
-		</module>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />
