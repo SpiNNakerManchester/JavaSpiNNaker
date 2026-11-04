@@ -125,7 +125,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Autowired
 	private UserControl userController;
 
-	@Autowired
+	@Autowired(required = false)
 	private OAuth2AuthorizedClientService authorizedClientService;
 
 	private static final String DUMMY_USER = "user1";
