@@ -624,7 +624,7 @@ public class SpallocProperties {
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
 				@DefaultValue("") String systemReportUser,
-				@DefaultValue String emergencyStopCommandCode) {
+				@DefaultValue("REPLACE-ME") String emergencyStopCommandCode) {
 			this.period = period;
 			this.importanceSpan = importanceSpan;
 			this.priorityScale = priorityScale;

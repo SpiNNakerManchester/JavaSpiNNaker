@@ -127,6 +127,8 @@ spalloc:
       specific-board: 65.0
     # Number of reports of board problems at which the board is taken out of service.
     report-action-threshold: 2
+    # Emergency stop command code - REPLACE this!
+    emergency-stop-command-code: REPLACE-ME!
   # Sending of emails relating to board problems: where to, etc.
   report-email:
     # In addition to configuring the email sender, you need to turn on

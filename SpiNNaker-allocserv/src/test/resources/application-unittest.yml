@@ -14,21 +14,21 @@
 
 # These are just the settings that are changed during testing
 logging:
-level:
-	root: INFO
+  level:
+    root: INFO
 
 spalloc:
-pause: true
-auth:
-	openid:
-	  enable: false
-sqlite:
-	performance-log: true
-	performance-threshold: 1e2
-datasource:
-	jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spalloc?user=root&password=test
-historical-data:
-	datasource:
-	  jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spallochistory?user=root&password=test
-allocator:
-	emergencyStopCommandCode: TestingTesting123
+  pause: true
+  auth:
+    openid:
+      enable: false
+  sqlite:
+    performance-log: true
+    performance-threshold: 1e2
+  datasource:
+    jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spalloc?user=root&password=test
+  historical-data:
+    datasource:
+      jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spallochistory?user=root&password=test
+  allocator:
+    emergency-stop-command-code: TestingTesting123
