@@ -14,28 +14,21 @@
 
 # These are just the settings that are changed during testing
 logging:
-  level:
-    root: INFO
+level:
+	root: INFO
 
 spalloc:
-  pause: true
-  auth:
-    openid:
-      enable: false
-      # This WILL cause an error if resolved; this is intentional! Attempts to
-      # use the real version of this info during testing will fail in some
-      # configurations anyway, so force things earlier with a shorter error
-      # message. It reduces the amount of pain, believe it or not...
-      domain: file:/there-is-no-such-file.txt
-      introspection: file:/there-is-no-such-file.txt
-      userinfo: file:/there-is-no-such-file.txt
-  sqlite:
-    performance-log: true
-    performance-threshold: 1e2
-  datasource:
-    jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spalloc?user=root&password=test
-  historical-data:
-    datasource:
-      jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spallochistory?user=root&password=test
-  allocator:
-    emergencyStopCommandCode: TestingTesting123
+pause: true
+auth:
+	openid:
+	  enable: false
+sqlite:
+	performance-log: true
+	performance-threshold: 1e2
+datasource:
+	jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spalloc?user=root&password=test
+historical-data:
+	datasource:
+	  jdbc-url: jdbc:tc:mysql:8.2.0:///;databaseName=spallochistory?user=root&password=test
+allocator:
+	emergencyStopCommandCode: TestingTesting123
