@@ -232,9 +232,7 @@ public class SecurityConfig {
 						pathPattern(urlMaker.systemUrl("resources/*")),
 						pathPattern(urlMaker.serviceUrl("openapi.json")),
 						pathPattern(urlMaker.serviceUrl("swagger*")),
-						pathPattern(urlMaker.serviceUrl("index.css")),
-						pathPattern(
-								urlMaker.serviceUrl("spalloc/emergencyStop")))
+						pathPattern(urlMaker.serviceUrl("index.css")))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated());
