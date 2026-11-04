@@ -2269,7 +2269,6 @@ public abstract class SQLQueries {
 			"INSERT INTO blacklist_ops(board_id, op, completed) "
 					+ "VALUES(:board_id, 3, 0)";
 
-
 	/**
 	 * Read historical allocations to be written to the historical data DB.
 	 * Only allocations that are already completed will ever get read here.
@@ -2423,7 +2422,6 @@ public abstract class SQLQueries {
 	protected static final String GET_JOB_NMPI_JOB =
 			"SELECT nmpi_job_id, quota_units FROM job_nmpi_job "
 			+ "WHERE job_id=:job_id";
-
 
 	/**
 	 * Find an allocatable board with a specific board ID. (This will have been
