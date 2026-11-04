@@ -1354,8 +1354,8 @@ public class SpallocProperties {
 			return tokenParameter;
 		}
 
-		void setTokenParameter(String token_parameter) {
-			this.tokenParameter = token_parameter;
+		void setTokenParameter(String tokenParameter) {
+			this.tokenParameter = tokenParameter;
 		}
 	}
 
