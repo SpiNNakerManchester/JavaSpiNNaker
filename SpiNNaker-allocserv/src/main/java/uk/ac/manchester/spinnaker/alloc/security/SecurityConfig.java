@@ -378,8 +378,8 @@ public class SecurityConfig {
 
 			if (props.getType() == IntrospectionType.TOKEN) {
 				var restTemplate = new RestTemplate();
-				String request = props.getUri() + "?" +
-						props.getTokenParameter() + "=" + token;
+				String request = props.getUri() + "?"
+						+ props.getTokenParameter() + "=" + token;
 				ResponseEntity<Map<String, Object>> response = restTemplate
 						.exchange(request,
 								HttpMethod.GET, null,

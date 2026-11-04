@@ -1291,7 +1291,7 @@ public class SpallocProperties {
 		private String usernameProperty;
 
 		/** The property name to use for the token. */
-		private String token_parameter;
+		private String tokenParameter;
 
 		/**
 		 * @param uri
@@ -1300,16 +1300,18 @@ public class SpallocProperties {
 		 *            The introspection type.
 		 * @param usernameProperty
 		 *            The property name to use for the username.
+		 * @param tokenParameter
+		 * 		      The property name to use for the token.
 		 */
 		@ConstructorBinding
 		public IntrospectionProperties(@DefaultValue("") String uri,
 				@DefaultValue("spring") IntrospectionType type,
 				@DefaultValue("username") String usernameProperty,
-				@DefaultValue("") String token_parameter) {
+				@DefaultValue("") String tokenParameter) {
 			this.uri = uri;
 			this.type = type;
 			this.usernameProperty = usernameProperty;
-			this.token_parameter = token_parameter;
+			this.tokenParameter = tokenParameter;
 		}
 
 		/**
@@ -1349,11 +1351,11 @@ public class SpallocProperties {
 		 * @return The property name to use for the token.
 		 */
 		public String getTokenParameter() {
-			return token_parameter;
+			return tokenParameter;
 		}
 
 		void setTokenParameter(String token_parameter) {
-			this.token_parameter = token_parameter;
+			this.tokenParameter = token_parameter;
 		}
 	}
 
