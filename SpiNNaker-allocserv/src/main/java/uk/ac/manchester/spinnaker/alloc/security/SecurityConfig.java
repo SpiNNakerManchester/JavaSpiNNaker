@@ -65,6 +65,7 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.server.resource.introspection.BadOpaqueTokenException;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
@@ -356,7 +357,8 @@ public class SecurityConfig {
 							p.getRegistrationId(), e.getMessage());
 				}
 			}
-			return null;
+			throw new BadOpaqueTokenException(
+					"Token not valid for any provider");
 		}
 
 		private OAuth2AuthenticatedPrincipal introspect(
