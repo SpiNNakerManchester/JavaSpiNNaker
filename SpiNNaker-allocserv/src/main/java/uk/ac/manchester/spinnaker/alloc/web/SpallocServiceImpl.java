@@ -15,17 +15,17 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.Response.created;
+import static jakarta.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
-import static jakarta.ws.rs.core.Response.created;
-import static jakarta.ws.rs.core.Response.ok;
-import static jakarta.ws.rs.core.Response.status;
-import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.address;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.physical;
@@ -36,13 +36,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.container.AsyncResponse;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-import jakarta.ws.rs.core.UriInfo;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +45,12 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -59,6 +58,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensionsAt;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
+import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
@@ -89,6 +89,9 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	@Autowired
 	private JsonMapper mapper;
+
+	@Autowired
+	private LocalAuthProviderImpl localAuthProvider;
 
 	/**
 	 * Factory for {@linkplain MachineAPI machines}. Only use via
@@ -268,7 +271,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 					"At most one of group, nmpiCollabId or nmpiJobId"
 					+ " can be specified").build());
 		}
-		bgAction(response, () -> {
+		bgAction(response, new Permit(security), () -> {
 			try {
 				var job = createJob(req, crds);
 				return created(ui.getRequestUriBuilder().path("{id}")
@@ -374,5 +377,10 @@ public class SpallocServiceImpl extends BackgroundSupport
 			core.emergencyStop(commandCode);
 			return ok().build();
 		});
+	}
+
+	@Override
+	public String getJwtToken() {
+		return localAuthProvider.getAccessToken();
 	}
 }
