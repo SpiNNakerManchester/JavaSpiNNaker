@@ -204,6 +204,7 @@ public class SQLiteBufferStorage
 	 * Testing method!  Other usage not supported!
 	 *
 	 * @throws StorageException
+	 *    If there is an error writing to the database.
 	 */
 	public void insertMockExtraction() throws StorageException {
 		callV(conn -> insertMockExtraction(conn),
