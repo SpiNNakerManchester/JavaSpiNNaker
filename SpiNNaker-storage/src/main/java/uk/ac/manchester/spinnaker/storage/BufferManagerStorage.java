@@ -265,6 +265,11 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 	void addRecordingContents(Region region, byte[] contents)
 			throws StorageException;
 
+	/**
+	 * Testing method!  Other usage not supported!
+	 *
+	 * @throws StorageException
+	 */
 	void insertMockExtraction() throws StorageException;
 
 	/**

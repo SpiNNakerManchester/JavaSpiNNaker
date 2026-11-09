@@ -200,6 +200,11 @@ public class SQLiteBufferStorage
 				"could not mock an extraction record");
 	}
 
+	/**
+	 * Testing method!  Other usage not supported!
+	 *
+	 * @throws StorageException
+	 */
 	public void insertMockExtraction() throws StorageException {
 		callV(conn -> insertMockExtraction(conn),
 			"Mocking Extraction");
