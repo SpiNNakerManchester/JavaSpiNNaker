@@ -93,7 +93,7 @@ limitations under the License.
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />
 		</module>
-		<module name="JavadocUtilizingTrailingSpace"/>
+		<!-- module name="JavadocUtilizingTrailingSpace"/ We use too much indentation -->
 		<module name="JavadocVariable">
 			<property name="accessModifiers" value="package" />
 			<property name="ignoreNamePattern" value="log|logger" />
