@@ -102,7 +102,12 @@ limitations under the License.
 		<module name="MissingJavadocPackage"/>
 		<!-- module name="MissingJavadocType"/ Some missing -->
 		<module name="NonEmptyAtclauseDescription"/>
-
+		<module name="PreferCodeOrSnippetJavadocInlineTag"/>
+		<module name="PreferLiteralJavadocInlineTag"/>
+		<module name="RequireEmptyLineBeforeBlockTagGroup"/>
+		<module name="SingleLineJavadoc"/>
+		<!-- module name="SummaryJavadoc"/ Currently not respected -->
+		<!--  module name="WriteTag"/ No user defined tags required-->
 
 		<module name="ConstantName">
 			<property name="format"
