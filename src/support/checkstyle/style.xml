@@ -103,7 +103,7 @@ limitations under the License.
 		<!-- module name="MissingJavadocType"/ Some missing -->
 		<module name="NonEmptyAtclauseDescription"/>
 		<!-- module name="PreferCodeOrSnippetJavadocInlineTag"/ currently we use html tags -->
-		<module name="PreferLiteralJavadocInlineTag"/>
+		<!-- module name="PreferLiteralJavadocInlineTag"/ currently we use html tags -->
 		<!-- module name="RequireEmptyLineBeforeBlockTagGroup"/ not respected also docs with just return -->
 		<!-- module name="SingleLineJavadoc"/ not respected also docs with just return -->
 		<!-- module name="SummaryJavadoc"/ Currently not respected -->
