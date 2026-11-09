@@ -371,7 +371,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * @return The mapping from machine names+IDs to tags.
+	 * {@return The mapping from machine names+IDs to tags}
 	 */
 	public List<MachineTagging> getMachineTagging() {
 		return executeRead(conn -> {
@@ -398,8 +398,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * @return The unacknowledged reports about boards with potential problems
-	 *         in existing machines, categorised by machine.
+	 * {@return The unacknowledged reports about boards with potential problems
+	 *         in existing machines, categorised by machine}
 	 */
 	public Map<String, List<BoardIssueReport>> getMachineReports() {
 		return executeRead(conn -> {

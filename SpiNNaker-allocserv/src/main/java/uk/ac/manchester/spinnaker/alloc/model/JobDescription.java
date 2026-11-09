@@ -178,8 +178,12 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return the width of the allocation in <em>chips</em>, or
-	 *         {@link Optional#empty() empty()} if the job is not allocated.
+	 * The width of the allocation.
+	 *
+	 * Will be in <em>chips</em>,
+	 * or @link Optional#empty() empty()} if the job is not allocated.
+	 *
+	 * @return The width of the allocation in <em>chips</em>
 	 */
 	public Optional<Integer> getWidth() {
 		return Optional.ofNullable(width);
@@ -194,8 +198,12 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return the height of the allocation in <em>chips</em>, or
-	 *         {@link Optional#empty() empty()} if the job is not allocated.
+	 * The height of the allocation.
+	 *
+	 * Will be in <em>chips</em>,
+	 * or @link Optional#empty() empty()} if the job is not allocated.
+	 *
+	 * @return the height of the allocation in <em>chips</em>
 	 */
 	public Optional<Integer> getHeight() {
 		return Optional.ofNullable(height);
@@ -210,8 +218,11 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return whether all boards are powered up; unallocated jobs are
-	 *         considered unpowered.
+	 * Whether all boards are powered up.
+	 *
+	 * Unallocated jobs are considered unpowered.
+	 *
+	 * @return whether all boards are powered up
 	 */
 	public boolean isPowered() {
 		return powered;
@@ -266,8 +277,11 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return The serialized request. Needs to be processed to hand out of
-	 *         {@link #getRequest()}.
+	 * The serialized request.
+	 *
+	 * Needs to be processed to hand out of {@link #getRequest()}.
+
+	 * @return The serialized request
 	 */
 	public byte[] getRequestBytes() {
 		return requestBytes;
@@ -282,7 +296,11 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return The width of the allocation in triads. 0 if not yet allocated.
+	 * The width of the allocation in triads.
+	 *
+	 * 0 if not yet allocated.
+	 *
+	 * @return The width in triads
 	 */
 	public int getTriadWidth() {
 		var stats = boards.stream().collect(summarizingInt(BoardCoords::getX));
@@ -293,7 +311,11 @@ public class JobDescription {
 	}
 
 	/**
-	 * @return The height of the allocation in triads. 0 if not yet allocated.
+	 * The height of the allocation in triads.
+	 *
+	 * 0 if not yet allocated.
+	 *
+	 * @return The height in triads.
 	 */
 	public int getTriadHeight() {
 		var stats = boards.stream().collect(summarizingInt(BoardCoords::getY));

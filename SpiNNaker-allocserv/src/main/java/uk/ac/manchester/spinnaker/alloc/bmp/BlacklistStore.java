@@ -193,6 +193,8 @@ public class BlacklistStore extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Testing method, Do not use outside of tests.
+	 *
 	 * @return The internal API only used for testing.
 	 * @deprecated Only use for testing, as circumvents transaction management.
 	 */

@@ -1308,6 +1308,8 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Testing method, Do not use outside of tests.
+	 *
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 * @hidden

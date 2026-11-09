@@ -48,8 +48,8 @@ public class MemberRecord {
 	private URI userUrl;
 
 	/**
-	 * @return The ID of this membership. Distinct from both the user and the
-	 *         group.
+	 * {@return The ID of this membership. Distinct from both the user and the
+	 *         group}
 	 */
 	public int getId() {
 		return id;

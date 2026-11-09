@@ -80,7 +80,11 @@ public final class GroupRecord {
 	}
 
 	/**
-	 * @return The group identifier. Read-only; cannot be set by the service.
+	 * The group identifier.
+	 *
+	 * Read-only; cannot be set by the service.
+	 *
+	 * @return The group identifier
 	 */
 	@JsonInclude(NON_NULL)
 	@Null

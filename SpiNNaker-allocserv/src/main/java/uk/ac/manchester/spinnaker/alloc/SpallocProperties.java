@@ -241,7 +241,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to historical data management.
+	 * {@return Properties relating to historical data management}
 	 */
 	@NotNull
 	@Valid
@@ -254,7 +254,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to job keep-alive messages.
+	 * {@return Properties relating to job keep-alive messages}
 	 */
 	@NotNull
 	@Valid
@@ -267,7 +267,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to the allocation engine.
+	 * {@return Properties relating to the allocation engine}
 	 */
 	@NotNull
 	@Valid
@@ -280,7 +280,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to authentication and authorization.
+	 * {@return Properties relating to authentication and authorization}
 	 */
 	@NotNull
 	@Valid
@@ -293,7 +293,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to the SDP proxying.
+	 * {@return Properties relating to the SDP proxying}
 	 */
 	@NotNull
 	@Valid
@@ -306,7 +306,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to quota management.
+	 * {@return Properties relating to quota management}
 	 */
 	@NotNull
 	@Valid
@@ -319,8 +319,8 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to low-level transceiver control and the
-	 *         BMPs.
+	 * {@return Properties relating to low-level transceiver control and the
+	 *         BMPs}
 	 */
 	@NotNull
 	@Valid
@@ -333,7 +333,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to the details of working with SQLite.
+	 * {@return Properties relating to the details of working with SQLite}
 	 */
 	@NotNull
 	@Valid
@@ -357,7 +357,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * @return Properties relating to the Spalloc v1 compatibility layer.
+	 * {@return Properties relating to the Spalloc v1 compatibility layer}
 	 */
 	@NotNull
 	@Valid
@@ -369,7 +369,9 @@ public class SpallocProperties {
 		this.compat = compat;
 	}
 
-	/** @return Properties relating to control of the overall machine state. */
+	/**
+	 * {@return Properties relating to control of the overall machine state.}
+	 */
 	@NotNull
 	@Valid
 	public StateControlProperties getStateControl() {

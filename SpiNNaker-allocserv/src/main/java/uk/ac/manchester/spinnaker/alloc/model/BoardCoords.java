@@ -121,53 +121,60 @@ public final class BoardCoords {
 	}
 
 	/**
-	 * @return Logical triad X coordinate.
+	 * {@return Logical triad X coordinate}
 	 */
 	public int getX() {
 		return x;
 	}
 
 	/**
-	 * @return Logical triad Y coordinate.
+	 * {}@return Logical triad Y coordinate}
 	 */
 	public int getY() {
 		return y;
 	}
 
 	/**
-	 * @return Logical triad Z coordinate.
+	 * {@return Logical triad Z coordinate}
 	 */
 	public int getZ() {
 		return z;
 	}
 
 	/**
-	 * @return Physical cabinet number.
+	 * {@return Physical cabinet number}
 	 */
 	public int getCabinet() {
 		return cabinet;
 	}
 
 	/**
-	 * @return Physical frame number.
+	 * {@return Physical frame number}
 	 */
 	public int getFrame() {
 		return frame;
 	}
 
 	/**
-	 * @return Physical board number. May be {@code null} if the board is dead
-	 *         (e.g., because it is outright absent from the machine).
+	 * Physical board number.
+	 *
+	 * May be {@code null} if the board is dead
+	 *     (e.g., because it is outright absent from the machine).
+	 *
+	 * @return Physical board number.
 	 */
 	public Integer getBoard() {
 		return board;
 	}
 
 	/**
-	 * @return IP address of ethernet chip. May be {@code null} if the current
-	 *         user doesn't have permission to see the board address at this
-	 *         point, or the board is dead (e.g., because it is outright absent
-	 *         from the machine).
+	 * IP address of ethernet chip.
+	 *
+	 * May be {@code null} if the current user doesn't have permission to see
+	 * the board address at this point, or the board is dead
+	 * (e.g., because it is outright absent from the machine).
+	 *
+	 * @return IP address of ethernet chip
 	 */
 	public String getAddress() {
 		return address;

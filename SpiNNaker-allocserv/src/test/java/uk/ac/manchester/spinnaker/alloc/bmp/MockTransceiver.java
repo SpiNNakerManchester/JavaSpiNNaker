@@ -116,8 +116,8 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	}
 
 	/**
-	 * @return The bytes of a response, correct in the places which Spalloc
-	 *         checks, and arbitrary (zero) elsewhere.
+	 * {@return The bytes of a response, correct in the places which Spalloc
+	 *         checks, and arbitrary (zero) elsewhere}
 	 */
 	private static ByteBuffer syntheticVersionData(short versionCode) {
 		byte zero = 0;

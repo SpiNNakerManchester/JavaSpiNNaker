@@ -238,9 +238,13 @@ public class BoardRecord {
 	}
 
 	/**
-	 * @return Whether we have either the ID of a board (from a previous lookup)
-	 *         or the name of a machine and at least one set of coordinates for
-	 *         a board on that machine.
+	 * Weather we have a valid location.
+	 *
+	 * Could be either the ID of a board (from a previous lookup)
+	 * or the name of a machine and
+	 * at least one set of coordinates for a board on that machine.
+	 *
+	 * @return True if a there is a valid location.
 	 */
 	@Keep
 	@AssertTrue(message = "board must have some mechanism for being located")
@@ -312,8 +316,11 @@ public class BoardRecord {
 	}
 
 	/**
-	 * @return The reports associated with this board. The list is not
-	 *         modifiable.
+	 * The reports associated with this board.
+	 *
+	 * The list is not modifiable.
+     *
+	 * @return The reports
 	 */
 	public List<BoardIssueReport> getReports() {
 		return reports;

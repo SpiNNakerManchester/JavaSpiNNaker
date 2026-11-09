@@ -36,7 +36,7 @@ final class MachineNotifyMessage {
 	}
 
 	/**
-	 * @return the machines changed
+	 * {@return the machines changed}
 	 */
 	@JsonProperty("machines_changed")
 	public List<String> getMachinesChanged() {

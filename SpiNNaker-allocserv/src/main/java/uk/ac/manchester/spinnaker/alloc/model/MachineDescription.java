@@ -207,8 +207,8 @@ public class MachineDescription {
 	}
 
 	/**
-	 * @return the quota (if that information is to be exposed to the current
-	 *         user and is meaningful)
+	 * {@return the quota (if that information is to be exposed to the current
+	 *         user and is meaningful)}
 	 */
 	public Optional<Long> getQuota() {
 		return quota;

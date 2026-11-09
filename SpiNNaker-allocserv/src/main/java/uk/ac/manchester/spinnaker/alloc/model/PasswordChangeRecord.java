@@ -62,7 +62,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the user id
+	 * {@return the user id}
 	 */
 	public final int getUserId() {
 		return userId;
@@ -77,7 +77,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the username
+	 * {@return the username}
 	 */
 	public final String getUsername() {
 		return username;
@@ -92,7 +92,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the old password
+	 * {@return the old password}
 	 */
 	@NotBlank(message = "old password must be supplied")
 	public String getOldPassword() {
@@ -108,7 +108,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the first copy of the new password
+	 * {@return the first copy of the new password}
 	 */
 	@NotBlank(message = "new password must be supplied")
 	public String getNewPassword() {
@@ -124,7 +124,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the second copy of the new password
+	 * {@return the second copy of the new password}
 	 */
 	@NotBlank(message = "second copy of new password must be supplied")
 	public String getNewPassword2() {

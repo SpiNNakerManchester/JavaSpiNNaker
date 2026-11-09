@@ -36,7 +36,7 @@ final class JobNotifyMessage {
 	}
 
 	/**
-	 * @return the jobs changed
+	 * {@return the jobs changed}
 	 */
 	@JsonProperty("jobs_changed")
 	public List<Integer> getJobsChanged() {

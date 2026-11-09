@@ -105,7 +105,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The user identifier. Read-only; cannot be set by the service.
+	 * The user identifier.
+	 *
+	 * Read-only; cannot be set by the service.
+	 *
+	 * @return The user identifier.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -123,7 +127,7 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The user's username.
+	 * {@return The user's username}
 	 */
 	@NotBlank
 	public String getUserName() {
@@ -139,8 +143,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The user's unencrypted password. <em>Never</em> returned by the
-	 *         service, but may be written.
+	 * The user's unencrypted password.
+	 *
+	 * <em>Never</em> returned by the service, but may be written.
+	 *
+	 * @return The user's unencrypted password
 	 */
 	@JsonInclude(NON_NULL)
 	public String getPassword() {
@@ -157,8 +164,12 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether the user has a password set. If they don't, they'll have
-	 *         to log in by other mechanisms (e.g., HBP/EBRAINS OpenID Connect).
+	 * Whether the user has a password set.
+	 *
+	 * If they don't, they'll have to log in by other mechanisms
+	 * (e.g., HBP/EBRAINS OpenID Connect).
+	 *
+	 * @return Whether the user has a password set
 	 */
 	public Boolean getHasPassword() {
 		return hasPassword;
@@ -175,8 +186,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether this account is enabled. Disabled accounts
-	 *         <em>cannot</em> log into the service until explicitly enabled.
+	 * Whether this account is enabled.
+	 *
+	 * Disabled accounts <em>cannot</em> log into the service until explicitly enabled.
+	 *
+	 * @return Whether this account is enabled.
 	 */
 	public Boolean getEnabled() {
 		return enabled;
@@ -192,9 +206,12 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether this account is temporarily locked. Locked accounts
-	 *         should unlock automatically after 24 hours. Can be explicitly set
-	 *         to {@code false} to force an unlock.
+	 * Whether this account is temporarily locked.
+	 *
+	 * Locked accounts should unlock automatically after 24 hours.
+	 * Can be explicitly set to {@code false} to force an unlock.
+	 *
+	 * @return Whether this account is temporarily locked
 	 */
 	public Boolean getLocked() {
 		return locked;
@@ -211,7 +228,7 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The permissions of the account.
+	 * {@return The permissions of the account}
 	 */
 	@NotNull(message = "a trust level must be given")
 	public TrustLevel getTrustLevel() {
@@ -227,8 +244,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The time that the last successful login was. Read-only; cannot be
-	 *         set via the admin API.
+	 * The time that the last successful login was.
+	 *
+	 * Read-only; cannot be set via the admin API.
+	 *
+	 * @return The time that the last successful login was.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
