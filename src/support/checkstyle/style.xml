@@ -64,6 +64,7 @@ limitations under the License.
 			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
 			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
+			<property name="allowInlineReturn" value="true" />
 		</module>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
