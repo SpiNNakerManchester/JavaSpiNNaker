@@ -276,7 +276,7 @@
 <a class="jxr_linenumber" name="L268" href="#L268">268</a> 					<span class="jxr_string">"At most one of group, nmpiCollabId or nmpiJobId"</span>
 <a class="jxr_linenumber" name="L269" href="#L269">269</a> 					+ <span class="jxr_string">" can be specified"</span>).build());
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> 		}
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 		bgAction(response, () -&gt; {
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 		bgAction(response, <strong class="jxr_keyword">new</strong> <a name="Permit" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/Permit.html#Permit">Permit</a>(security), () -&gt; {
 <a class="jxr_linenumber" name="L272" href="#L272">272</a> 			<strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L273" href="#L273">273</a> 				<strong class="jxr_keyword">var</strong> job = createJob(req, crds);
 <a class="jxr_linenumber" name="L274" href="#L274">274</a> 				<strong class="jxr_keyword">return</strong> created(ui.getRequestUriBuilder().path(<span class="jxr_string">"{id}"</span>)

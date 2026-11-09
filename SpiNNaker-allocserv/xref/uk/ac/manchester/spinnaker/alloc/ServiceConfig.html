@@ -405,119 +405,127 @@
 <a class="jxr_linenumber" name="L397" href="#L397">397</a> 			<strong class="jxr_keyword">return</strong> prefix + suffix;
 <a class="jxr_linenumber" name="L398" href="#L398">398</a> 		}
 <a class="jxr_linenumber" name="L399" href="#L399">399</a> 
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">		 * Create a full local URL for web service components, bearing in mind</em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">		 * the deployment configuration.</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">		 * @param suffix</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">		 *            The URL suffix; &lt;em&gt;should not&lt;/em&gt; start with {@code /}</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">		 * @return The full local URL (absolute path, without protocol or host)</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 		<strong class="jxr_keyword">public</strong> String serviceUrl(String suffix) {
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> 			<strong class="jxr_keyword">var</strong> prefix = cxfPath;
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> 			<strong class="jxr_keyword">if</strong> (!prefix.endsWith(<span class="jxr_string">"/"</span>)) {
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> 				prefix += <span class="jxr_string">"/"</span>;
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> 			}
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> 			<strong class="jxr_keyword">return</strong> prefix + suffix;
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 		}
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> 	}
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> 	@Autowired
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> 	<strong class="jxr_keyword">private</strong> ApplicationContext ctx;
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> 	@Bean
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> 	AllocatorProperties allocatorProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> 		<strong class="jxr_keyword">return</strong> properties.getAllocator();
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 	}
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 	@Bean
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> 	KeepaliveProperties keepaliveProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> 		<strong class="jxr_keyword">return</strong> properties.getKeepalive();
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 	}
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> 	@Bean
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> 	HistoricalDataProperties historyProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> 		<strong class="jxr_keyword">return</strong> properties.getHistoricalData();
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 	}
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> 
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 	@Bean
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	QuotaProperties quotaProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 		<strong class="jxr_keyword">return</strong> properties.getQuota();
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 	}
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 	@Bean
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 	TxrxProperties txrxProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 		<strong class="jxr_keyword">return</strong> properties.getTransceiver();
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 	}
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	@Bean
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 	AuthProperties authProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 		<strong class="jxr_keyword">return</strong> properties.getAuth();
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 	}
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> 
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 	@Bean
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 	ViewResolver jspViewResolver() {
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 		<strong class="jxr_keyword">var</strong> bean = <strong class="jxr_keyword">new</strong> InternalResourceViewResolver() {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 			@Override
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 			<strong class="jxr_keyword">protected</strong> AbstractUrlBasedView buildView(String viewName)
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 					<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 				<strong class="jxr_keyword">var</strong> v = <strong class="jxr_keyword">super</strong>.buildView(viewName);
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 				<strong class="jxr_keyword">var</strong> path = v.getUrl();
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 				<strong class="jxr_keyword">if</strong> (path.startsWith(<span class="jxr_string">"/WEB-INF/views/system"</span>)) {
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 					<strong class="jxr_keyword">var</strong> path2 = path.replaceFirst(<span class="jxr_string">"/system"</span>, <span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 					log.debug(<span class="jxr_string">"rewrote [{}] to [{}]"</span>, path, path2);
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 					v.setUrl(path2);
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 				}
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 				<strong class="jxr_keyword">return</strong> v;
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 			}
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 		};
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 		bean.setPrefix(<span class="jxr_string">"/WEB-INF/views/"</span>);
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 		bean.setSuffix(<span class="jxr_string">".jsp"</span>);
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 		<strong class="jxr_keyword">return</strong> bean;
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 	}
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> 
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">	 * Log what beans are actually there, ignoring the bits and pieces of</em>
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">	 * framework. Useful for debugging!</em>
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> logBeans() {
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 		<strong class="jxr_keyword">if</strong> (log.isTraceEnabled()) {
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 			log.trace(<span class="jxr_string">"beans defined: {}"</span>,
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 					List.of(ctx.getBeanDefinitionNames()));
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 		}
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> 	}
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> 
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">	 * Sets up everything before we enter service.</em>
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 	@PostConstruct
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readyForService() {
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> 		logBeans();
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 		<strong class="jxr_keyword">public</strong> String baseUrl(String suffix) {
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 			<strong class="jxr_keyword">var</strong> prefix = mvcServletPath;
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> 			<strong class="jxr_keyword">if</strong> (!prefix.endsWith(<span class="jxr_string">"/"</span>)) {
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 				prefix += <span class="jxr_string">"/"</span>;
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 			}
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 			<strong class="jxr_keyword">return</strong> prefix + suffix;
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 		}
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">		 * Create a full local URL for web service components, bearing in mind</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">		 * the deployment configuration.</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">		 * @param suffix</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">		 *            The URL suffix; &lt;em&gt;should not&lt;/em&gt; start with {@code /}</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">		 * @return The full local URL (absolute path, without protocol or host)</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> 		<strong class="jxr_keyword">public</strong> String serviceUrl(String suffix) {
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 			<strong class="jxr_keyword">var</strong> prefix = cxfPath;
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 			<strong class="jxr_keyword">if</strong> (!prefix.endsWith(<span class="jxr_string">"/"</span>)) {
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> 				prefix += <span class="jxr_string">"/"</span>;
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> 			}
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 			<strong class="jxr_keyword">return</strong> prefix + suffix;
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 		}
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> 	}
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> 	@Autowired
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 	<strong class="jxr_keyword">private</strong> ApplicationContext ctx;
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 	@Bean
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> 	AllocatorProperties allocatorProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 		<strong class="jxr_keyword">return</strong> properties.getAllocator();
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 	}
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 	@Bean
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> 	KeepaliveProperties keepaliveProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 		<strong class="jxr_keyword">return</strong> properties.getKeepalive();
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> 	}
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 	@Bean
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> 	HistoricalDataProperties historyProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 		<strong class="jxr_keyword">return</strong> properties.getHistoricalData();
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> 	}
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 	@Bean
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> 	QuotaProperties quotaProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 		<strong class="jxr_keyword">return</strong> properties.getQuota();
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 	}
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 	@Bean
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	TxrxProperties txrxProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 		<strong class="jxr_keyword">return</strong> properties.getTransceiver();
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 	}
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 	<em class="jxr_comment">// Exported so we can use a short name in SpEL in @Scheduled annotations</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 	@Bean
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 	AuthProperties authProperties(<a name="SpallocProperties" href="../../../../../uk/ac/manchester/spinnaker/alloc/SpallocProperties.html#SpallocProperties">SpallocProperties</a> properties) {
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 		<strong class="jxr_keyword">return</strong> properties.getAuth();
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 	}
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 	@Bean
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 	ViewResolver jspViewResolver() {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 		<strong class="jxr_keyword">var</strong> bean = <strong class="jxr_keyword">new</strong> InternalResourceViewResolver() {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 			@Override
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 			<strong class="jxr_keyword">protected</strong> AbstractUrlBasedView buildView(String viewName)
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 					<strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 				<strong class="jxr_keyword">var</strong> v = <strong class="jxr_keyword">super</strong>.buildView(viewName);
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 				<strong class="jxr_keyword">var</strong> path = v.getUrl();
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 				<strong class="jxr_keyword">if</strong> (path.startsWith(<span class="jxr_string">"/WEB-INF/views/system"</span>)) {
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 					<strong class="jxr_keyword">var</strong> path2 = path.replaceFirst(<span class="jxr_string">"/system"</span>, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> 					log.debug(<span class="jxr_string">"rewrote [{}] to [{}]"</span>, path, path2);
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 					v.setUrl(path2);
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> 				}
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 				<strong class="jxr_keyword">return</strong> v;
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 			}
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 		};
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> 		bean.setPrefix(<span class="jxr_string">"/WEB-INF/views/"</span>);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 		bean.setSuffix(<span class="jxr_string">".jsp"</span>);
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> 		<strong class="jxr_keyword">return</strong> bean;
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 	}
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">	 * Log what beans are actually there, ignoring the bits and pieces of</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">	 * framework. Useful for debugging!</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> logBeans() {
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> 		<strong class="jxr_keyword">if</strong> (log.isTraceEnabled()) {
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> 			log.trace(<span class="jxr_string">"beans defined: {}"</span>,
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> 					List.of(ctx.getBeanDefinitionNames()));
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 		}
 <a class="jxr_linenumber" name="L501" href="#L501">501</a> 	}
 <a class="jxr_linenumber" name="L502" href="#L502">502</a> 
 <a class="jxr_linenumber" name="L503" href="#L503">503</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">	 * Spring Boot entry point.</em>
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">	 * @param args</em>
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">	 *            Command line arguments.</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) {
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> 		SpringApplication.run(ServiceConfig.<strong class="jxr_keyword">class</strong>, args);
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 	}
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> }
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">	 * Sets up everything before we enter service.</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 	@PostConstruct
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readyForService() {
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 		logBeans();
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 	}
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">	 * Spring Boot entry point.</em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">	 * @param args</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">	 *            Command line arguments.</em>
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) {
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 		SpringApplication.run(ServiceConfig.<strong class="jxr_keyword">class</strong>, args);
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> 	}
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
