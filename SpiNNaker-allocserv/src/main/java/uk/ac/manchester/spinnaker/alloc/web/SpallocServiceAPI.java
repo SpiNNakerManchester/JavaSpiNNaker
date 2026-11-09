@@ -280,7 +280,9 @@ public interface SpallocServiceAPI {
 	 * Immediately stop all jobs and power down all boards.
 	 *
 	 * @param commandCode
+	 *     Code to validate the request.
 	 * @param response
+	 *     Injected AsyncResponse to handle requests asynchronously
 	 */
 	@GET
 	@Description("Immediately stop all jobs and power down all boards,"
