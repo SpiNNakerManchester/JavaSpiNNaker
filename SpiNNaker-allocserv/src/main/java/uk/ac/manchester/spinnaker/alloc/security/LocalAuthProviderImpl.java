@@ -229,7 +229,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		if (isNull(auth)) {
 			return null;
 		}
-		log.debug("requesting auth decision about {}", auth);
+		log.debug("requesting auth decision about {}",
+				auth.getClass().getSimpleName());
+		log.trace("auth: {}", auth);
 		if (auth instanceof AlreadyDoneMarker) {
 			// It's ours; don't repeat the auth
 			return auth;
@@ -282,8 +284,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (supports(current.getClass())) {
 				var updated = authenticate(current);
 				if (nonNull(updated) && updated != current) {
-					log.debug("filter updated security from {} to {}", current,
-							updated);
+					log.debug("filter updated security from {} to {}",
+							current.getClass().getSimpleName(),
+							updated.getClass().getSimpleName());
+					log.trace("current authentication: {}", current);
+					log.trace("updated authentication: {}", updated);
 					ctx.setAuthentication(updated);
 					return updated;
 				}
@@ -409,7 +414,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			OriginatingCredential credential,
 			Collection<? extends GrantedAuthority> authorities)
 			throws AuthenticationException {
-		log.debug("authenticating OpenID {}", credential);
+		log.debug("authenticating OpenID {}, token={}", credential,
+				credential.token);
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
@@ -767,7 +773,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		var seen = new HashSet<>();
 		for (var collab : claim) {
-			log.debug("Collab claim {}", collab);
+			log.trace("Collab claim {}", collab);
 			var reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
 			if (!seen.contains(reduced)) {
 				results.add(new CollabratoryAuthority(reduced));
@@ -797,7 +803,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No special processing required; orgs start with / in name and are
 			 * already guaranteed to be unique.
 			 */
-			log.debug("Org claim {}", org);
+			log.trace("Org claim {}", org);
 			results.add(new OrganisationAuthority(org));
 		}
 		return true;
@@ -840,7 +846,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private void mapAuthorities(String source, ClaimAccessor claimSet,
 			Collection<GrantedAuthority> results) {
-		log.debug("claims from {}: {}", source, claimSet.getClaims());
+		log.trace("claims from {}: {}", source, claimSet.getClaims());
 		if (!collabToAuthority(getTeamsFromClaim(claimSet.getClaim("roles")),
 				results)) {
 			log.warn("no team in {}", source);
@@ -1182,12 +1188,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		try (var synch = new GroupSynch(queries)) {
 			for (var org : orgs) {
-				log.debug("defining org {} for {} with id {}",
+				log.trace("defining org {} for {} with id {}",
 						org, username, userId);
 				synch.define(org, ORGANISATION);
 			}
 			for (var collab : collabs) {
-				log.debug("defining collab {} for {} with id {}",
+				log.trace("defining collab {} for {} with id {}",
 						collab, username, userId);
 				synch.define(collab, COLLABRATORY);
 			}

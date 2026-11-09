@@ -23,7 +23,7 @@ pip install --upgrade wheel setuptools pip
 cd $VENV_PATH
 git clone https://github.com/SpiNNakerManchester/SupportScripts ./support
 git clone https://github.com/SpiNNakerManchester/SpiNNUtils
-cd SpiNNUtils && python setup.py develop && cd ..
+cd SpiNNUtils && pip install -e "." && cd ..
 ./support/install.sh all -y
 ./support/gitcheckout.sh docker-compose
 ./support/setup.sh
