@@ -450,24 +450,30 @@ public final class Blacklist implements Serializable {
 	}
 
 	/**
-	 * @return The chips on the board that are blacklisted. A chip being
-	 *         blacklisted means that its links will also be blacklisted.
+	 * The chips on the board that are blacklisted.
+	 *
+	 * A chip being blacklisted means that its links will also be blacklisted.
+	 *
+	 * @return Blacklisted Chips.
 	 */
 	public Set<ChipLocation> getChips() {
 		return unmodifiableSet(chips);
 	}
 
 	/**
-	 * @return The cores on the board that are blacklisted where the whole chip
-	 *         is not blacklisted. Note that these are <em>physical</em>
-	 *         processor IDs, not logical ones.
+	 * The cores on the board that are blacklisted where the whole chip
+	 *         is not blacklisted.
+	 *
+	 * Note that these are <em>physical</em> processor IDs, not logical ones.
+	 *
+	 * @return blacklisted cores on good Chips.
 	 */
 	public Map<ChipLocation, Set<Integer>> getCores() {
 		return unmodifiableMap(cores);
 	}
 
 	/**
-	 * @return The links on the board that are blacklisted.
+	 * {}@return The links on the board that are blacklisted}
 	 */
 	public Map<ChipLocation, Set<Direction>> getLinks() {
 		return unmodifiableMap(links);
@@ -487,7 +493,9 @@ public final class Blacklist implements Serializable {
 				|| links.containsKey(chip);
 	}
 
-	/** @return The raw blacklist data in little-endian form. Read only. */
+	/**
+	 * @return The raw blacklist data in little-endian form. Read only.
+	 */
 	public ByteBuffer getRawData() {
 		return rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}

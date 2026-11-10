@@ -73,7 +73,9 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 			super("Version", CMD_INFO, buffer);
 		}
 
-		/** @return The chip summary information. */
+		/**
+		 *  {@return The chip summary information}
+		 */
 		@Override
 		protected ChipSummaryInfo parse(ByteBuffer buffer) {
 			return new ChipSummaryInfo(buffer, sdpHeader.getSource());

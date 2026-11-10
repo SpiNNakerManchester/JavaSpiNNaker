@@ -56,7 +56,9 @@ public class GetReinjectionStatus
 			super("Get packet reinjection status", GET_STATUS, buffer);
 		}
 
-		/** @return The chip information received. */
+		/**
+		 * {@return The chip information received}
+		 */
 		@Override
 		protected ReinjectionStatus parse(ByteBuffer buffer) {
 			return new ReinjectionStatus(buffer);

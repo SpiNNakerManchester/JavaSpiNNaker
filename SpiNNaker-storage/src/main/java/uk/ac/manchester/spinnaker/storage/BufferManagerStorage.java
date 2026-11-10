@@ -113,8 +113,9 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 		public final int regionIndex;
 
 		/**
-		 * Where should the data be downloaded from? <em>This is not necessarily
-		 * the start of the region.</em>
+		 * Where should the data be downloaded from.
+		 *
+		 * <em>This is not necessarily the start of the region.</em>
 		 */
 		@NotNull
 		public final MemoryLocation startAddress;
@@ -142,7 +143,7 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 
 		/**
 		 * How many extra bytes are being read at the end of the region in order
-		 * to get an aligned read?
+		 * to get an aligned read.
 		 */
 		@PositiveOrZero
 		public final int finalIgnore;

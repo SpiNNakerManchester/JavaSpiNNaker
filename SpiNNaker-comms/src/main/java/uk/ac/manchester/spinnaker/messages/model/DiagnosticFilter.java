@@ -150,13 +150,15 @@ public class DiagnosticFilter {
 	}
 
 	/**
-	 * @return Whether an interrupt should be raised when this rule matches.
+	 * {@return Whether an interrupt should be raised when this rule matches}
 	 */
 	public boolean getEnableInterruptOnCounterEvent() {
 		return enableInterrupt;
 	}
 
 	/**
+	 * How mergency routing statuses should be matched.
+	 *
 	 * @return Whether the emergency routing statuses should be matched against
 	 *         packets arriving at this router (if True), or if they should be
 	 *         matched against packets leaving this router (if False).
@@ -166,50 +168,50 @@ public class DiagnosticFilter {
 	}
 
 	/**
-	 * @return The set of destinations to match.
+	 * {@return The set of destinations to match}
 	 */
 	public Collection<Destination> getDestinations() {
 		return destinations;
 	}
 
 	/**
-	 * @return The set of sources to match.
+	 * {@return The set of sources to match}
 	 */
 	public Collection<Source> getSources() {
 		return sources;
 	}
 
 	/**
-	 * @return The set of payload statuses to match.
+	 * {@return The set of payload statuses to match}
 	 */
 	public Collection<PayloadStatus> getPayloadStatuses() {
 		return payloads;
 	}
 
 	/**
-	 * @return The set of default routing statuses to match.
+	 * {@return The set of default routing statuses to match}
 	 */
 	public Collection<DefaultRoutingStatus> getDefaultRoutingStatuses() {
 		return defaultStatuses;
 	}
 
 	/**
-	 * @return The set of emergency routing statuses to match.
+	 * {@return The set of emergency routing statuses to match}
 	 */
 	public Collection<EmergencyRoutingStatus> getEmergencyRoutingStatuses() {
 		return emergencyStatuses;
 	}
 
 	/**
-	 * @return The set of packet types to match.
+	 * {@return The set of packet types to match}
 	 */
 	public Collection<PacketType> getPacketTypes() {
 		return packetTypes;
 	}
 
 	/**
-	 * @return A word of data that can be written to the router to set up the
-	 *         filter.
+	 * {@return A word of data that can be written to the router to set up the
+	 *         filter}
 	 */
 	public int getFilterWord() {
 		int data = (enableInterrupt ? 1 << ENABLE_INTERRUPT_OFFSET : 0);

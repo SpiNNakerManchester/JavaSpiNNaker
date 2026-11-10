@@ -63,8 +63,8 @@ public final class SCPResultMessage {
 	}
 
 	/**
-	 * @return Whether this response indicates that the request should be
-	 *         retried.
+	 * {@return Whether this response indicates that the request should be
+	 *         retried}
 	 */
 	public boolean isRetriable() {
 		return RETRY_CODES.contains(result);
@@ -124,12 +124,16 @@ public final class SCPResultMessage {
 		}
 	}
 
-	/** @return The result code from the header. */
+	/**
+	 * {@return The result code from the header}
+	 */
 	public SCPResult getResult() {
 		return result;
 	}
 
-	/** @return The sequence number from the header. */
+	/**
+	 * {@return The sequence number from the header}
+	 */
 	public int getSequenceNumber() {
 		return sequenceNumber;
 	}

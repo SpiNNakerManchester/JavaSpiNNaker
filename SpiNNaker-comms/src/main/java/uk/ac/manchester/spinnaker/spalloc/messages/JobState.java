@@ -53,32 +53,44 @@ public final class JobState {
 		this.keepalivehost = keepalivehost;
 	}
 
-	/** @return the state of the job */
+	/**
+	 * {@return the state of the job}
+	 */
 	public State getState() {
 		return state;
 	}
 
-	/** @return whether the job's boards are powered */
+	/**
+	 * {@return whether the job's boards are powered}
+	 */
 	public Boolean getPower() {
 		return power;
 	}
 
-	/** @return the keepalive interval, in seconds */
+	/**
+	 * {@return the keepalive interval, in seconds}
+	 */
 	public double getKeepalive() {
 		return keepAlive;
 	}
 
-	/** @return the reason why the job was destroyed */
+	/**
+	 * {@return the reason why the job was destroyed}
+	 */
 	public String getReason() {
 		return reason;
 	}
 
-	/** @return the time the job started, in seconds from the epoch */
+	/**
+	 * {@return the time the job started, in seconds from the epoch}
+	 */
 	public double getStartTime() {
 		return startTime;
 	}
 
-	/** @return the host keeping the job alive */
+	/**
+	 * {@return the host keeping the job alive}
+	 */
 	public String getKeepalivehost() {
 		return keepalivehost;
 	}

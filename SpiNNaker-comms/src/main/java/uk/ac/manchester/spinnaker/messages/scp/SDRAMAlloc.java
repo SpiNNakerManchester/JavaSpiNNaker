@@ -106,7 +106,9 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 			super("SDRAM Allocation", CMD_ALLOC, buffer);
 		}
 
-		/** @return The base address allocated. */
+		/**
+		 * {@return The base address allocated}
+		 */
 		@Override
 		protected MemoryLocation parse(ByteBuffer buffer)
 				throws MemoryAllocationFailedException {

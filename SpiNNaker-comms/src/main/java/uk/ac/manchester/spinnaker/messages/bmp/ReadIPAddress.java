@@ -71,7 +71,9 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 			return getByAddress(bytes);
 		}
 
-		/** @return The addresses of the SpiNNaker board. */
+		/**
+		 * {@return The addresses of the SpiNNaker board}
+		 */
 		@Override
 		protected Addresses parse(ByteBuffer buffer) {
 			try {

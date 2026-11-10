@@ -122,7 +122,7 @@ public class SDPMessage extends SpinnakerRequest {
 	}
 
 	/**
-	 * @return The payload of the message, as a read-only little-endian buffer.
+	 * {@return The payload of the message, as a read-only little-endian buffer}
 	 */
 	public final ByteBuffer getData() {
 		ByteBuffer buffer;

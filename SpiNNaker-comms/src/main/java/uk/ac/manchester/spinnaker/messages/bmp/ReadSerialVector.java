@@ -51,7 +51,9 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 			super("Read serial data vector", CMD_BMP_INFO, buffer);
 		}
 
-		/** @return The serial data. */
+		/**
+		 * {@return The serial data}
+		 */
 		@Override
 		protected SerialVector parse(ByteBuffer buffer) {
 			return new SerialVector(buffer);

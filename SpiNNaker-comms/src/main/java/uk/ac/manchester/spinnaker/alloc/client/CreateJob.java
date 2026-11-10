@@ -99,7 +99,9 @@ public final class CreateJob {
 			this.height = height;
 		}
 
-		/** @return The width of the allocation, in triads. */
+		/**
+		 * {@return The width of the allocation, in triads}
+		 */
 		public int getWidth() {
 			return width;
 		}
@@ -108,7 +110,9 @@ public final class CreateJob {
 			this.width = width;
 		}
 
-		/** @return The height of the allocation, in triads. */
+		/**
+		 * {@return The height of the allocation, in triads}
+		 */
 		public int getHeight() {
 			return height;
 		}
@@ -167,7 +171,9 @@ public final class CreateJob {
 			address = addr;
 		}
 
-		/** @return The triad X coordinate. */
+		/**
+		 * {@return The triad X coordinate}
+		 */
 		public Integer getX() {
 			return x;
 		}
@@ -180,7 +186,9 @@ public final class CreateJob {
 			this.x = x;
 		}
 
-		/** @return The triad Y coordinate. */
+		/**
+		 * {@return The triad Y coordinate}
+		 */
 		public Integer getY() {
 			return y;
 		}
@@ -193,7 +201,9 @@ public final class CreateJob {
 			this.y = y;
 		}
 
-		/** @return The triad Z coordinate. */
+		/**
+		 * {@return The triad Z coordinate}
+		 */
 		public Integer getZ() {
 			return z;
 		}
@@ -206,7 +216,9 @@ public final class CreateJob {
 			this.z = z;
 		}
 
-		/** @return The cabinet number. */
+		/**
+		 * {@return The cabinet number}
+		 */
 		public Integer getCabinet() {
 			return cabinet;
 		}
@@ -219,7 +231,9 @@ public final class CreateJob {
 			this.cabinet = cabinet;
 		}
 
-		/** @return The frame number. */
+		/**
+		 * {@return The frame number}
+		 */
 		public Integer getFrame() {
 			return frame;
 		}
@@ -232,7 +246,9 @@ public final class CreateJob {
 			this.frame = frame;
 		}
 
-		/** @return The board number. */
+		/**
+		 * {@return The board number}
+		 */
 		public Integer getBoard() {
 			return board;
 		}
@@ -245,7 +261,9 @@ public final class CreateJob {
 			this.board = board;
 		}
 
-		/** @return The board IP address. */
+		/**
+		 * {@return The board IP address}
+		 */
 		public String getAddress() {
 			return address;
 		}
@@ -403,7 +421,9 @@ public final class CreateJob {
 		this.numBoards = numBoards;
 	}
 
-	/** @return The size of rectangle of boards to request. */
+	/**
+	 * {@return The size of rectangle of boards to request}
+	 */
 	public Dimensions getDimensions() {
 		return dimensions;
 	}
@@ -416,7 +436,9 @@ public final class CreateJob {
 		this.dimensions = dimensions;
 	}
 
-	/** @return The address of the specific board to request. */
+	/**
+	 * {@return The address of the specific board to request}
+	 */
 	public SpecificBoard getBoard() {
 		return board;
 	}

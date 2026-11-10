@@ -290,7 +290,9 @@ public abstract class UDPConnection<T> implements Connection {
 		return requireNonNullElse(getRemoteAddress(), ANY);
 	}
 
-	/** @return The local IP address to which the connection is bound. */
+	/**
+	 * {@return The local IP address to which the connection is bound}
+	 */
 	@Override
 	public final InetAddress getLocalIPAddress() {
 		try {
@@ -300,7 +302,9 @@ public abstract class UDPConnection<T> implements Connection {
 		}
 	}
 
-	/** @return The local port to which the connection is bound. */
+	/**
+	 * {@return The local port to which the connection is bound}
+	 */
 	@Override
 	public final int getLocalPort() {
 		try {
@@ -311,8 +315,8 @@ public abstract class UDPConnection<T> implements Connection {
 	}
 
 	/**
-	 * @return The remote IP address to which the connection is connected, or
-	 *         {@code null} if it is not connected.
+	 * {@return The remote IP address to which the connection is connected, or
+	 *         {@code null} if it is not connected}
 	 */
 	@Override
 	public final InetAddress getRemoteIPAddress() {
@@ -324,8 +328,8 @@ public abstract class UDPConnection<T> implements Connection {
 	}
 
 	/**
-	 * @return The remote port to which the connection is connected, or zero if
-	 *         it is not connected.
+	 * {@return The remote port to which the connection is connected, or zero if
+	 *         it is not connected}
 	 */
 	@Override
 	public final int getRemotePort() {

@@ -62,12 +62,16 @@ public final class Connection {
 		this.hostname = hostname;
 	}
 
-	/** @return The chip for the connection. */
+	/**
+	 * {@return The chip for the connection}
+	 */
 	public ChipLocation getChip() {
 		return chip;
 	}
 
-	/** @return Where to connect to to talk to the chip. */
+	/**
+	 * {@return Where to connect to to talk to the chip}
+	 */
 	public String getHostname() {
 		return hostname;
 	}

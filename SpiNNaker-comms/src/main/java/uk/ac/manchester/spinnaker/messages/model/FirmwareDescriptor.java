@@ -46,7 +46,9 @@ public class FirmwareDescriptor {
 		descriptorData = buffer.asIntBuffer().asReadOnlyBuffer();
 	}
 
-	/** @return The version of the firmware. */
+	/**
+	 * {@return The version of the firmware}
+	 */
 	public Version getVersion() {
 		int n = descriptorData.get(type.versionIndex);
 
@@ -64,7 +66,9 @@ public class FirmwareDescriptor {
 		}
 	}
 
-	/** @return The timestamp in the firmware. */
+	/**
+	 * {@return The timestamp in the firmware}
+	 */
 	public Instant getTimestamp() {
 		return Instant.ofEpochSecond(descriptorData.get(type.timestampIndex));
 	}

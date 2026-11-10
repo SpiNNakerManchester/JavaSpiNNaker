@@ -77,7 +77,9 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
 		}
 
-		/** @return Where the buffer is located. */
+		/**
+		 * {@return Where the buffer is located}
+		 */
 		@Override
 		protected MemoryLocation parse(ByteBuffer buffer) {
 			return new MemoryLocation(buffer.getInt());

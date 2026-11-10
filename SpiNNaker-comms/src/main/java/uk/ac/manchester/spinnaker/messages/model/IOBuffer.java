@@ -98,21 +98,23 @@ public class IOBuffer implements HasCoreLocation {
 		return core.getP();
 	}
 
-	/** @return The raw contents of the buffer as an input stream. */
+	/**
+	 * {@return The raw contents of the buffer as an input stream}
+	 */
 	public InputStream getContentsStream() {
 		return new ByteArrayInputStream(iobuf);
 	}
 
 	/**
-	 * @return The raw contents of the buffer as a read-only little-endian byte
-	 *         buffer.
+	 * {@return The raw contents of the buffer as a read-only little-endian byte
+	 *         buffer}
 	 */
 	public ByteBuffer getContentsBuffer() {
 		return wrap(iobuf).asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 
 	/**
-	 * @return The contents of the buffer as a string, interpreting it as ASCII.
+	 * {@return The contents of the buffer as a string, interpreting it as ASCII}
 	 */
 	public String getContentsString() {
 		return getContentsString(US_ASCII);

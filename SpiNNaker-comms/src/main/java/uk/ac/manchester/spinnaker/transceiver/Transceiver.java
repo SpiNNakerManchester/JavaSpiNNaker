@@ -1055,7 +1055,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
-	 * @return the application ID tracker for this transceiver.
+	 * {@return the application ID tracker for this transceiver}
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -2718,7 +2718,9 @@ public class Transceiver extends UDPTransceiver
 		log.info("total retries used: {}", retryCount);
 	}
 
-	/** @return The connection selectors used for BMP connections. */
+	/**
+	 * {@return The connection selectors used for BMP connections}
+	 */
 	public Map<BMPCoords,
 			ConnectionSelector<BMPConnection>> getBMPConnection() {
 		return bmpSelectors;

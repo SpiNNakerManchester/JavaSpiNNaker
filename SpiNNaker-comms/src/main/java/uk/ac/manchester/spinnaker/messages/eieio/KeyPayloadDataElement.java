@@ -41,7 +41,9 @@ public class KeyPayloadDataElement implements AbstractDataElement {
 		this.timestamp = isTimestamp;
 	}
 
-	/** @return Whether this represents a timestamp. */
+	/**
+	 * {@return Whether this represents a timestamp}
+	 */
 	public boolean isTimestamp() {
 		return timestamp;
 	}

@@ -175,113 +175,145 @@ public class CPUInfo implements HasCoreLocation {
 		return core.getP();
 	}
 
-	/** @return The current register values (r0&hellip;r7). */
+	/**
+	 * {@return The current register values (r0&hellip;r7)}
+	 */
 	public int[] getRegisters() {
 		return registers;
 	}
 
-	/** @return The value in the processor state register (PSR). */
+	/**
+	 * {@return The value in the processor state register (PSR)}
+	 */
 	public int getProcessorStateRegister() {
 		return processorStateRegister;
 	}
 
-	/** @return The current stack pointer value (SP). */
+	/**
+	 * {@return The current stack pointer value (SP)}
+	 */
 	public int getStackPointer() {
 		return stackPointer;
 	}
 
-	/** @return The current link register value (LR). */
+	/**
+	 * {@return The current link register value (LR)}
+	 */
 	public int getLinkRegister() {
 		return linkRegister;
 	}
 
-	/** @return The reason for a run time error. */
+	/**
+	 * {@return The reason for a run time error}
+	 */
 	public RunTimeError getRunTimeError() {
 		return runTimeError;
 	}
 
-	/** @return The physical ID of this processor. */
+	/**
+	 * {@return The physical ID of this processor}
+	 */
 	public byte getPhysicalCPUID() {
 		return physicalCPUID;
 	}
 
-	/** @return The current state of the core. */
+	/**
+	 * {@return The current state of the core}
+	 */
 	public CPUState getState() {
 		return state;
 	}
 
-	/** @return The ID of the application running on the core. */
+	/**
+	 * {@return The ID of the application running on the core}
+	 */
 	public int getApplicationID() {
 		return applicationID;
 	}
 
-	/** @return The address of the data in SDRAM for the application mailbox. */
+	/**
+	 * {@return The address of the data in SDRAM for the application mailbox}
+	 */
 	public int getApplicationMailboxDataAddress() {
 		return applicationMailboxDataAddress;
 	}
 
-	/** @return The address of the data in SDRAM of the monitor mailbox. */
+	/**
+	 * {@return The address of the data in SDRAM of the monitor mailbox}
+	 */
 	public int getMonitorMailboxDataAddress() {
 		return monitorMailboxDataAddress;
 	}
 
 	/**
-	 * @return The command currently in the mailbox being sent from the monitor
-	 *         processor to the application.
+	 * {@return The command currently in the mailbox being sent from the monitor
+	 *         processor to the application}
 	 */
 	public MailboxCommand getApplicationMailboxCommand() {
 		return applicationMailboxCommand;
 	}
 
 	/**
-	 * @return The command currently in the mailbox being sent from the
-	 *         application to the monitor processor.
+	 * {@return The command currently in the mailbox being sent from the
+	 *         application to the monitor processor}
 	 */
 	public MailboxCommand getMonitorMailboxCommand() {
 		return monitorMailboxCommand;
 	}
 
-	/** @return The number of software errors counted. */
+	/**
+	 * {@return The number of software errors counted}
+	 */
 	public short getSoftwareErrorCount() {
 		return softwareErrorCount;
 	}
 
-	/** @return The address of the filename of the software source. */
+	/**
+	 * {@return The address of the filename of the software source}
+	 */
 	public int getSoftwareSourceFilenameAddress() {
 		return softwareSourceFilenameAddress;
 	}
 
-	/** @return The line number of the software source. */
+	/**
+	 * {@return The line number of the software source}
+	 */
 	public int getSoftwareSourceLineNumber() {
 		return softwareSourceLineNumber;
 	}
 
 	/**
-	 * @return The time at which the application started, in seconds since
-	 *         00:00:00 GMT on 1 January 1970.
+	 * {@return The time at which the application started, in seconds since
+	 *         00:00:00 GMT on 1 January 1970}
 	 */
 	public int getTime() {
 		return time;
 	}
 
-	/** @return The name of the application running on the core. */
+	/**
+	 * {@return The name of the application running on the core}
+	 */
 	public String getApplicationName() {
 		return applicationName;
 	}
 
-	/** @return The address of the IOBUF buffer in SDRAM. */
+	/**
+	 * {@return The address of the IOBUF buffer in SDRAM}
+	 */
 	public int getIobufAddress() {
 		return iobufAddress;
 	}
 
-	/** @return The software version. */
+	/**
+	 * {@return The software version}
+	 */
 	public int getSoftwareVersion() {
 		return softwareVersion;
 	}
 
 	/**
-	 * @return The current user values
-	 *         (user<sub>0</sub>&hellip;user<sub>3</sub>).
+	 * {@return The current user values
+	 *         (user<sub>0</sub>&hellip;user<sub>3</sub>)}
 	 */
 	public int[] getUser() {
 		return user;
@@ -298,7 +330,7 @@ public class CPUInfo implements HasCoreLocation {
 	}
 
 	/**
-	 * @return A string representation of this CPU info.
+	 * {@return A string representation of this CPU info}
 	 */
 	@Override
 	public String toString() {
@@ -306,7 +338,7 @@ public class CPUInfo implements HasCoreLocation {
 	}
 
 	/**
-	 * @return A description of the state.
+	 * {@return A description of the state}
 	 */
 	public String getStatusDescription() {
 		if (state != RUN_TIME_EXCEPTION) {

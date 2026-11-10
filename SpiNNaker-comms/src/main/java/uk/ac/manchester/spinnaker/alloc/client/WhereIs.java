@@ -108,12 +108,16 @@ public final class WhereIs {
 		return jobChip;
 	}
 
-	/** @return The global location of the chip. */
+	/**
+	 * {@return The global location of the chip}
+	 */
 	public ChipLocation getChip() {
 		return chip;
 	}
 
-	/** @return Information about the machine containing the chip. */
+	/**
+	 * {@return Information about the machine containing the chip}
+	 */
 	public Machine getMachineHandle() {
 		return machineHandle;
 	}
@@ -122,7 +126,9 @@ public final class WhereIs {
 		this.machineHandle = machineHandle;
 	}
 
-	/** @return The name of the machine containing the chip. */
+	/**
+	 * {@return The name of the machine containing the chip}
+	 */
 	public String getMachineName() {
 		return machineName;
 	}
@@ -147,12 +153,16 @@ public final class WhereIs {
 		return boardChip;
 	}
 
-	/** @return The logical coordinates for the board containing the chip. */
+	/**
+	 * {@return The logical coordinates for the board containing the chip}
+	 */
 	public TriadCoords getLogicalCoords() {
 		return logicalCoords;
 	}
 
-	/** @return The physical coordinates for the board containing the chip. */
+	/**
+	 * {@return The physical coordinates for the board containing the chip}
+	 */
 	public PhysicalCoords getPhysicalCoords() {
 		return physicalCoords;
 	}

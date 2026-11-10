@@ -52,7 +52,9 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 			super("Version", CMD_VER, buffer);
 		}
 
-		/** @return The version information received. */
+		/**
+		 * {@return The version information received}
+		 */
 		@Override
 		protected VersionInfo parse(ByteBuffer buffer) {
 			return new VersionInfo(buffer, false);

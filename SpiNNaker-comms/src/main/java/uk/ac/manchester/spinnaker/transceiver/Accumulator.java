@@ -102,7 +102,9 @@ interface Accumulator<T> {
 			maxpos = max(maxpos, after);
 		}
 
-		/** @return The accumulated data. */
+		/**
+		 * {@return The accumulated data}
+		 */
 		@Override
 		public ByteBuffer finish() {
 			if (!done) {

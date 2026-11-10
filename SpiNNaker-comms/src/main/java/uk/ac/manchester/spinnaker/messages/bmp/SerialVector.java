@@ -65,13 +65,15 @@ public class SerialVector {
 		cortexBoot = new MemoryLocation(b.get());
 	}
 
-	/** @return The hardware version. */
+	/**
+	 * {@return The hardware version}
+	 */
 	public int getHardwareVersion() {
 		return hardwareVersion;
 	}
 
 	/**
-	 * @return The device serial number, as a read-only buffer.
+	 * {@return The device serial number, as a read-only buffer}
 	 */
 	// @formatter:off
 	/* Obtained from LPC17xx In Application Programming function 58. The API
@@ -99,20 +101,24 @@ public class SerialVector {
 		return serialNumber.asReadOnlyBuffer();
 	}
 
-	/** @return The location of the flash buffer. */
+	/**
+	 * {@return The location of the flash buffer}
+	 */
 	public MemoryLocation getFlashBuffer() {
 		return flashBuffer;
 	}
 
 	/**
-	 * @return The board status block location.
+	 * {@return The board status block location}
 	 * @see ReadADC
 	 */
 	public MemoryLocation getBoardStatusLocation() {
 		return boardStat;
 	}
 
-	/** @return The location of the Cortex boot vector. */
+	/**
+	 * {@return The location of the Cortex boot vector}
+	 */
 	public MemoryLocation getCortexVector() {
 		return cortexBoot;
 	}

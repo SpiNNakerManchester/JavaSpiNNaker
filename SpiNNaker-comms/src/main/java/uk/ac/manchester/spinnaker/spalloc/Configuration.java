@@ -112,76 +112,102 @@ public class Configuration {
 				.getConfiguration().getSection(SECTION_NAME);
 	}
 
-	/** @return a clone of the map of the configuration. */
+	/**
+	 * {@return a clone of the map of the configuration}
+	 */
 	public Map<String, Object> getDefaults() {
 		return new HashMap<String, Object>(configurationMap);
 	}
 
-	/** @return The spalloc TCP/IP host. */
+	/**
+	 * {@return The spalloc TCP/IP host}
+	 */
 	public String getHost() {
 		return (String) configurationMap.get(HOSTNAME_PROPERTY);
 	}
 
-	/** @return The spalloc TCP/IP port. */
+	/**
+	 * {@return The spalloc TCP/IP port}
+	 */
 	@TCPPort
 	public int getPort() {
 		return (Integer) configurationMap.get(PORT_PROPERTY);
 	}
 
-	/** @return The spalloc user. */
+	/**
+	 * {@return The spalloc user}
+	 */
 	@NotBlank
 	public String getUser() {
 		return (String) configurationMap.get(USER_PROPERTY);
 	}
 
-	/** @return The keepalive interval, in seconds. */
+	/**
+	 * {@return The keepalive interval, in seconds}
+	 */
 	@Positive
 	public double getKeepalive() {
 		return (Double) configurationMap.get(KEEPALIVE_PROPERTY);
 	}
 
-	/** @return The reconnection delay, in seconds. */
+	/**
+	 * {@return The reconnection delay, in seconds}
+	 */
 	@Positive
 	public double getReconnectDelay() {
 		return (Double) configurationMap.getOrDefault(RECONNECT_DELAY_PROPERTY,
 				RECONNECT_DELAY_DEFAULT);
 	}
 
-	/** @return The network timeout, in seconds. */
+	/**
+	 * {@return The network timeout, in seconds}
+	 */
 	@Positive
 	public double getTimeout() {
 		return (Double) configurationMap.get(TIMEOUT_PROPERTY);
 	}
 
-	/** @return The desired machine name. */
+	/**
+	 * {@return The desired machine name}
+	 */
 	public String getMachine() {
 		return (String) configurationMap.get(MACHINE_PROPERTY);
 	}
 
-	/** @return The desired machine tags. */
+	/**
+	 * {@return The desired machine tags}
+	 */
 	public String[] getTags() {
 		return (String[]) configurationMap.get(TAGS_PROPERTY);
 	}
 
-	/** @return The minimum ratio for rectangular allocations. */
+	/**
+	 * {@return The minimum ratio for rectangular allocations}
+	 */
 	@PositiveOrZero
 	public double getMinRatio() {
 		return (Double) configurationMap.get(MIN_RATIO_PROPERTY);
 	}
 
-	/** @return The maximum number of dead boards wanted. */
+	/**
+	 * {@return The maximum number of dead boards wanted}
+	 */
 	@PositiveOrZero
 	public Integer getMaxDeadBoards() {
 		return (Integer) configurationMap.get(MAX_DEAD_BOARDS_PROPERTY);
 	}
 
-	/** @return The maximum number of dead links desired. Often ignored. */
+	/**
+	 * {@return The maximum number of dead links desired. Often ignored}
+	 */
 	@PositiveOrZero
 	public Integer getMaxDeadLinks() {
 		return (Integer) configurationMap.get(MAX_DEAD_LINKS_PROPERTY);
 	}
 
-	/** @return Whether a torus is required. Not normally useful. */
+	/**
+	 * {}@return Whether a torus is required. Not normally useful}
+	 */
 	public boolean getRequireTorus() {
 		return (Boolean) configurationMap.get(REQUIRE_TORUS_PROPERTY);
 	}

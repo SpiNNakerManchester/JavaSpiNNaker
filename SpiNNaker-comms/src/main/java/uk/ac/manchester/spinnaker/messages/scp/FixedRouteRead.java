@@ -69,7 +69,9 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
 		}
 
-		/** @return the fixed route router route. */
+		/**
+		 * {@return the fixed route router route}
+		 */
 		@Override
 		protected RoutingEntry parse(ByteBuffer buffer) {
 			return new RoutingEntry(buffer.getInt());

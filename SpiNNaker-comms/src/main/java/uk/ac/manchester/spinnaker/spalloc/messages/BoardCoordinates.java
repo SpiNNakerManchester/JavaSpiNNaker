@@ -80,17 +80,23 @@ public final class BoardCoordinates {
 		this.z = triad.z;
 	}
 
-	/** @return the X coordinate */
+	/**
+	 * {@return the X coordinate}
+	 */
 	public int getX() {
 		return x;
 	}
 
-	/** @return the Y coordinate */
+	/**
+	 * {}@return the Y coordinate}
+	 */
 	public int getY() {
 		return y;
 	}
 
-	/** @return the Z coordinate */
+	/**
+	 * {@return the Z coordinate}
+	 */
 	public int getZ() {
 		return z;
 	}

@@ -59,7 +59,9 @@ public class ReadSerialFlashCRC
 			super("Read Serial Flash CRC", CMD_BMP_SF, buffer);
 		}
 
-		/** @return The CRC. */
+		/**
+		 * {@return The CRC}
+		 */
 		@Override
 		protected Integer parse(ByteBuffer buffer) {
 			return buffer.getInt();

@@ -90,17 +90,23 @@ public class ExecutableTargets {
 		return targets.get(binary);
 	}
 
-	/** @return The binaries of the executables. */
+	/**
+	 * {@return The binaries of the executables}
+	 */
 	public Set<String> getBinaries() {
 		return targets.keySet();
 	}
 
-	/** @return The total number of cores to be loaded. */
+	/**
+	 * {@return The total number of cores to be loaded}
+	 */
 	public int getTotalProcessors() {
 		return totalProcessors;
 	}
 
-	/** @return All the core subsets for all the binaries. */
+	/**
+	 * {@return All the core subsets for all the binaries}
+	 */
 	public CoreSubsets getAllCoreSubsets() {
 		return allCoreSubsets;
 	}

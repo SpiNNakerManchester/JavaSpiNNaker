@@ -169,12 +169,16 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 		return core.getP();
 	}
 
-	/** @return The number of requests in the message. */
+	/**
+	 * {@return The number of requests in the message}
+	 */
 	public int getNumRequests() {
 		return numRequests;
 	}
 
-	/** @return The sequence number of the message. */
+	/**
+	 * {@return The sequence number of the message}
+	 */
 	public int getSequenceNumber() {
 		return sequenceNumber;
 	}

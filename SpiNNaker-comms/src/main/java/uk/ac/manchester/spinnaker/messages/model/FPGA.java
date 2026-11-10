@@ -55,7 +55,9 @@ public enum FPGA {
 		return name;
 	}
 
-	/** @return Whether this identifies a single FPGA. */
+	/**
+	 * {@return Whether this identifies a single FPGA}
+	 */
 	public boolean isSingleFPGA() {
 		return this != FPGA_ALL;
 	}

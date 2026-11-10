@@ -61,7 +61,9 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 			super("Read Board Status", CMD_BMP_INFO, buffer);
 		}
 
-		/** @return The ADC information. */
+		/**
+		 * {@return The ADC information}
+		 */
 		@Override
 		protected ADCInfo parse(ByteBuffer buffer) {
 			return new ADCInfo(buffer);

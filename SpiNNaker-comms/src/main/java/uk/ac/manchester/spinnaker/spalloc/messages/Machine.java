@@ -64,32 +64,44 @@ public class Machine {
 		this.deadLinks = deadLinks == null ? List.of() : List.copyOf(deadLinks);
 	}
 
-	/** @return The name of the machine. */
+	/**
+	 * {@return The name of the machine}
+	 */
 	public String getName() {
 		return name;
 	}
 
-	/** @return The tags on the machine. */
+	/**
+	 * {@return The tags on the machine}
+	 */
 	public List<String> getTags() {
 		return tags;
 	}
 
-	/** @return The width of the machine. */
+	/**
+	 * {@return The width of the machine}
+	 */
 	public int getWidth() {
 		return width;
 	}
 
-	/** @return The height of the machine. */
+	/**
+	 * {@return The height of the machine}
+	 */
 	public int getHeight() {
 		return height;
 	}
 
-	/** @return The dead boards on the machine. */
+	/**
+	 * {@return The dead boards on the machine}
+	 */
 	public List<BoardCoordinates> getDeadBoards() {
 		return deadBoards;
 	}
 
-	/** @return The dead links on the machine. */
+	/**
+	 * {@return The dead links on the machine}
+	 */
 	public List<BoardLink> getDeadLinks() {
 		return deadLinks;
 	}

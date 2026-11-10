@@ -70,7 +70,9 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 			super("Read", CMD_READ, buffer);
 		}
 
-		/** @return The data read, in a little-endian read-only buffer. */
+		/**
+		 * {@return The data read, in a little-endian read-only buffer}
+		 */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
 			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);

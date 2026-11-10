@@ -33,12 +33,12 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface SARKStruct {
 	/**
-	 * @return The name of the struct in SARK.
+	 * {@return The name of the struct in SARK}
 	 */
 	String value();
 
 	/**
-	 * @return Which API contains the structure.
+	 * {@return Which API contains the structure}
 	 */
 	API api() default API.SARK;
 

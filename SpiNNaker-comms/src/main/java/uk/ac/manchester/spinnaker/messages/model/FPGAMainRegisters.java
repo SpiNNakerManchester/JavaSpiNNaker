@@ -142,7 +142,7 @@ public enum FPGAMainRegisters {
 	}
 
 	/**
-	 * @return The address of the register in the FPGA's address space.
+	 * {@return The address of the register in the FPGA's address space}
 	 */
 	public MemoryLocation getAddress() {
 		return BASE_ADDRESS.add(offset);

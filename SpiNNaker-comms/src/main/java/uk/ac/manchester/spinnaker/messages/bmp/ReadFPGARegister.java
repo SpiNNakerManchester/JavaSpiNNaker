@@ -69,7 +69,9 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 			super("Read FPGA register", CMD_FPGA_READ, buffer);
 		}
 
-		/** @return The FPGA register contents, not further interpreted. */
+		/**
+		 * {@return The FPGA register contents, not further interpreted}
+		 */
 		@Override
 		protected Integer parse(ByteBuffer buffer) {
 			return buffer.getInt();

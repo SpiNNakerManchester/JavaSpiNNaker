@@ -391,7 +391,7 @@ public class Downloader implements AutoCloseable {
 	}
 
 	/**
-	 * @return The expected sequence numbers, as an ordered list.
+	 * {@return The expected sequence numbers, as an ordered list}
 	 */
 	private List<Integer> expectedSeqs() {
 		return expectedSeqNums.stream().boxed()

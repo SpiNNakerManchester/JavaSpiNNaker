@@ -103,12 +103,16 @@ public class HostDataRead extends EIEIOCommandMessage {
 		this.acks = new Ack(getNumRequests(), channel, regionID, spaceRead);
 	}
 
-	/** @return The number of requests. */
+	/**
+	 * {@return The number of requests}
+	 */
 	public int getNumRequests() {
 		return toUnsignedInt(header.numRequests);
 	}
 
-	/** @return The message sequence number. */
+	/**
+	 * {@return The message sequence number}
+	 */
 	public int getSequenceNumber() {
 		return toUnsignedInt(header.sequenceNumber);
 	}

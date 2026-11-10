@@ -76,8 +76,8 @@ public interface SCPSenderReceiver extends Connection {
 	}
 
 	/**
-	 * @return The chip at which messages sent down this connection will arrive
-	 *         at first.
+	 * {@return The chip at which messages sent down this connection will arrive
+	 *         at first}
 	 */
 	ChipLocation getChip();
 

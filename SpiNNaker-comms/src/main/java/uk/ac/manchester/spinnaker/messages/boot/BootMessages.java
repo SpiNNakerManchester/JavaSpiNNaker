@@ -213,7 +213,9 @@ public class BootMessages {
 		return new BootDataBlock(blockID, buffer);
 	}
 
-	/** @return a stream of messages to be sent. */
+	/**
+	 * {@return a stream of messages to be sent}
+	 */
 	public Stream<BootMessage> getMessages() {
 		// The bookending control messages
 		var start = new StartOfBootMessages(numDataPackets);

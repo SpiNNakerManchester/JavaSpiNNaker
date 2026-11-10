@@ -100,97 +100,101 @@ public class RouterDiagnostics {
 		return registerValues[r.ordinal()];
 	}
 
-	/** @return The number of multicast packets received from local cores. */
+	/** {@return The number of multicast packets received from local cores} */
 	public int getNumLocalMulticastPackets() {
 		return register(LOC_MC);
 	}
 
-	/** @return The number of multicast packets received from external links. */
+	/** {@return The number of multicast packets received from external links} */
 	public int getNumExternalMulticastPackets() {
 		return register(EXT_MC);
 	}
 
-	/** @return The number of multicast packets received that were dropped. */
+	/** {@return The number of multicast packets received that were dropped} */
 	public int getNumDroppedMulticastPackets() {
 		return register(DUMP_MC);
 	}
 
-	/** @return The number of peer-to-peer packets received from local cores. */
+	/** {@return The number of peer-to-peer packets received from local cores} */
 	public int getNumLocalPeerToPeerPackets() {
 		return register(LOC_PP);
 	}
 
 	/**
-	 * @return The number of peer-to-peer packets received from external links.
+	 * {@return The number of peer-to-peer packets received from external links}
 	 */
 	public int getNumExternalPeerToPeerPackets() {
 		return register(EXT_PP);
 	}
 
 	/**
-	 * @return The number of peer-to-peer packets received that were dropped.
+	 * {@return The number of peer-to-peer packets received that were dropped}
 	 */
 	public int getNumDroppedPeerToPeerPackets() {
 		return register(DUMP_PP);
 	}
 
 	/**
-	 * @return The number of nearest-neighbour packets received from local
-	 *         cores.
+	 * {@return The number of nearest-neighbour packets received from local
+	 *         cores}
 	 */
 	public int getNumLocalNearestNeighbourPackets() {
 		return register(LOC_NN);
 	}
 
 	/**
-	 * @return The number of nearest-neighbour packets received from external
-	 *         links.
+	 * {@return The number of nearest-neighbour packets received from external
+	 *         links}
 	 */
 	public int getNumExternalNearestNeighbourPackets() {
 		return register(EXT_NN);
 	}
 
 	/**
-	 * @return The number of nearest-neighbour packets received that were
-	 *         dropped.
+	 * {@return The number of nearest-neighbour packets received that were
+	 *         dropped}
 	 */
 	public int getNumDroppedNearestNeighbourPackets() {
 		return register(DUMP_NN);
 	}
 
-	/** @return The number of fixed-route packets received from local cores. */
+	/**
+	 * {@return The number of fixed-route packets received from local cores}
+	 */
 	public int getNumLocalFixedRoutePackets() {
 		return register(LOC_FR);
 	}
 
 	/**
-	 * @return The number of fixed-route packets received from external links.
+	 * {@return The number of fixed-route packets received from external links}
 	 */
 	public int getNumExternalFixedRoutePackets() {
 		return register(EXT_FR);
 	}
 
-	/** @return The number of fixed-route packets received that were dropped. */
+	/** {@return The number of fixed-route packets received that were dropped} */
 	public int getNumDroppedFixedRoutePackets() {
 		return register(DUMP_FR);
 	}
 
-	/** @return The data gained from the user 0 router diagnostic filter. */
+	/** {@return The data gained from the user 0 router diagnostic filter} */
 	public int getUser0() {
 		return register(USER_0);
 	}
 
-	/** @return The data gained from the user 1 router diagnostic filter. */
+	/** {@return The data gained from the user 1 router diagnostic filter} */
 	public int getUser1() {
 		return register(USER_1);
 	}
 
-	/** @return The data gained from the user 2 router diagnostic filter. */
+	/** {@return The data gained from the user 2 router diagnostic filter} */
 	public int getUser2() {
 		return register(USER_2);
 	}
 
-	/** @return The data gained from the user 3 router diagnostic filter. */
+	/**
+	 * {@return The data gained from the user 3 router diagnostic filter}
+	 */
 	public int getUser3() {
 		return register(USER_3);
 	}

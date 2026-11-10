@@ -134,30 +134,38 @@ public final class TagDescription {
 		return (flags & (1 << bit)) != 0;
 	}
 
-	/** @return True if the tag is marked as being in use. */
+	/**
+	 * {@return True if the tag is marked as being in use}
+	 */
 	public boolean isInUse() {
 		return bitset(USE_BIT);
 	}
 
-	/** @return True if the tag is temporary. */
+	/**
+	 * {@return True if the tag is temporary}
+	 */
 	public boolean isTemporary() {
 		return bitset(TEMP_BIT);
 	}
 
 	/**
-	 * @return True if the tag is in the ARP state (where the MAC address is
-	 *         being looked up; this is a transient state so unlikely).
+	 * {@return True if the tag is in the ARP state (where the MAC address is
+	 *         being looked up; this is a transient state so unlikely)}
 	 */
 	public boolean isARP() {
 		return bitset(ARP_BIT);
 	}
 
-	/** @return True if the tag is a reverse tag. */
+	/**
+	 * {@return True if the tag is a reverse tag}
+	 */
 	public boolean isReverse() {
 		return bitset(REV_BIT);
 	}
 
-	/** @return True if the tag is to strip the SDP header. */
+	/**
+	 * {@return True if the tag is to strip the SDP header}
+	 */
 	public boolean isStrippingSDP() {
 		return bitset(STRIP_BIT);
 	}

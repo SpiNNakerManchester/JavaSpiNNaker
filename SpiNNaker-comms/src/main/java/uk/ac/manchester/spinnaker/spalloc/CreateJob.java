@@ -233,7 +233,9 @@ public class CreateJob {
 		return this;
 	}
 
-	/** @return Whether either the machine or the tags are set. */
+	/**
+	 * {@return Whether either the machine or the tags are set}
+	 */
 	boolean isTargetDefined() {
 		return setMachine || setTags;
 	}
@@ -313,7 +315,7 @@ public class CreateJob {
 	}
 
 	/**
-	 * @return The current keepalive value in the builder.
+	 * {@return The current keepalive value in the builder}
 	 */
 	public Double getKeepAlive() {
 		return (Double) kwargs.getOrDefault(KEEPALIVE_PROPERTY,

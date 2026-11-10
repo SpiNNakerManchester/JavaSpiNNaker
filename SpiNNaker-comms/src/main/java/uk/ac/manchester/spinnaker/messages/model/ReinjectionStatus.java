@@ -103,60 +103,68 @@ public class ReinjectionStatus {
 		this.flags = buffer.getInt();
 	}
 
-	/** @return The WAIT1 timeout value of the router in cycles. */
+	/**
+	 * {@return The WAIT1 timeout value of the router in cycles}
+	 */
 	public RouterTimeout getTimeout() {
 		return timeout;
 	}
 
-	/** @return The WAIT2 timeout value of the router in cycles. */
+	/**
+	 * {@return The WAIT2 timeout value of the router in cycles}
+	 */
 	public RouterTimeout getEmergencyTimeout() {
 		return emergencyTimeout;
 	}
 
 	/**
-	 * @return The number of packets dropped by the router and received by the
-	 *         reinjection functionality (may not fit in the queue though).
+	 * {@return The number of packets dropped by the router and received by the
+	 *         reinjection functionality (may not fit in the queue though)}
 	 */
 	public int getNumDroppedPackets() {
 		return droppedPackets;
 	}
 
 	/**
-	 * @return The number of times that when a dropped packet was read it was
+	 * Number of missed dropped packets
+	 *
+	 * The number of times that when a dropped packet was read it was
 	 *         found that another one or more packets had also been dropped, but
 	 *         had been missed.
+	 *
+	 * @return The number dropped packet
 	 */
 	public int getNumMissedDroppedPackets() {
 		return missedDroppedPackets;
 	}
 
 	/**
-	 * @return Of the n_dropped_packets received, how many were lost due to not
-	 *         having enough space in the queue of packets to reinject.
+	 * {@return Of the n_dropped_packets received, how many were lost due to not
+	 *         having enough space in the queue of packets to reinject}
 	 */
 	public int getNumDroppedPacketOverflows() {
 		return droppedPacketOverflows;
 	}
 
 	/**
-	 * @return The number of times that when a dropped packet was caused due to
-	 *         a processor failing to take the packet.
+	 * {@return The number of times that when a dropped packet was caused due to
+	 *         a processor failing to take the packet}
 	 */
 	public int getNumProcessorDumps() {
 		return processorDumps;
 	}
 
 	/**
-	 * @return The number of times that when a dropped packet was caused due to
-	 *         a link failing to take the packet.
+	 * {@return The number of times that when a dropped packet was caused due to
+	 *         a link failing to take the packet}
 	 */
 	public int getNumLinkDumps() {
 		return linkDumps;
 	}
 
 	/**
-	 * @return Of the number of dropped packets received, how many packets were
-	 *         successfully reinjected.
+	 * {@return Of the number of dropped packets received, how many packets were
+	 *         successfully reinjected}
 	 */
 	public int getNumReinjectedPackets() {
 		return reinjectedPackets;
@@ -166,22 +174,30 @@ public class ReinjectionStatus {
 		return (flags & flag.mask()) != 0;
 	}
 
-	/** @return if re-injection of multicast packets is enabled. */
+	/**
+	 * {@return if re-injection of multicast packets is enabled}
+	 */
 	public boolean isReinjectingMulticast() {
 		return flag(DPRIFlags.MULTICAST);
 	}
 
-	/** @return if re-injection of point-to-point packets is enabled. */
+	/**
+	 * {@return if re-injection of point-to-point packets is enabled}
+	 */
 	public boolean isReinjectingPointToPoint() {
 		return flag(DPRIFlags.POINT_TO_POINT);
 	}
 
-	/** @return if re-injection of nearest neighbour packets is enabled. */
+	/**
+	 * {@return if re-injection of nearest neighbour packets is enabled}
+	 */
 	public boolean isReinjectingNearestNeighbour() {
 		return flag(DPRIFlags.NEAREST_NEIGHBOUR);
 	}
 
-	/** @return if re-injection of fixed-route packets is enabled. */
+	/**
+	 * {@return if re-injection of fixed-route packets is enabled}
+	 */
 	public boolean isReinjectingFixedRoute() {
 		return flag(DPRIFlags.FIXED_ROUTE);
 	}

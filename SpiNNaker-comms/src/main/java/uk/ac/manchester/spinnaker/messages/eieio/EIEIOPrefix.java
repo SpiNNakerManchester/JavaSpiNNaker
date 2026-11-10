@@ -38,7 +38,9 @@ public enum EIEIOPrefix {
 		this.shift = shift;
 	}
 
-	/** @return the encoded form. */
+	/**
+	 * {@return the encoded form}
+	 */
 	public int getValue() {
 		return value;
 	}

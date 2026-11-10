@@ -69,17 +69,23 @@ public abstract class Command<A> {
 		this.command = command;
 	}
 
-	/** @return The command token. */
+	/**
+	 * {@return The command token}
+	 */
 	public String getCommand() {
 		return command;
 	}
 
-	/** @return The positional arguments to the command. */
+	/**
+	 * {@return The positional arguments to the command}
+	 */
 	public List<A> getArgs() {
 		return args;
 	}
 
-	/** @return The keyword arguments to the command. */
+	/**
+	 * {@return The keyword arguments to the command}
+	 */
 	public Map<String, Object> getKwargs() {
 		return kwargs;
 	}

@@ -144,7 +144,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	int BOARD_BOOT_RETRIES = 5;
 
 	/**
-	 * @return The connection selector to use for SCP messages.
+	 * {@return The connection selector to use for SCP messages}
 	 */
 	@ParallelSafe
 	ConnectionSelector<SCPConnection> getScampConnectionSelector();

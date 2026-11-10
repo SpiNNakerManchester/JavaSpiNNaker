@@ -154,9 +154,12 @@ public final class SDPHeader implements SerializableMessage {
 	}
 
 	/**
-	 * @return What "chip" is the message going to. Note that there is a special
-	 *         address for addresses off the machine; that address is not
-	 *         normally representable in a {@link CoreLocation}.
+	 * What "chip" is the message going to.
+	 *
+	 * Note that there is a special address for addresses off the machine;
+	 * that address is not normally representable in a {@link CoreLocation}.
+	 *
+	 * @return "chip" the message is going to.
 	 */
 	public SDPLocation getDestination() {
 		return destination;
@@ -172,7 +175,9 @@ public final class SDPHeader implements SerializableMessage {
 		this.destination = destination;
 	}
 
-	/** @return The target SDP port. Note that this is not a UDP port. */
+	/**
+	 * {@return The target SDP port. Note that this is not a UDP port}
+	 */
 	public int getDestinationPort() {
 		return destinationPort;
 	}
@@ -202,7 +207,9 @@ public final class SDPHeader implements SerializableMessage {
 		this.destinationPort = port;
 	}
 
-	/** @return What "chip" originated the message. */
+	/**
+	 * {@return What "chip" originated the message}
+	 */
 	public SDPLocation getSource() {
 		return source;
 	}
@@ -218,8 +225,11 @@ public final class SDPHeader implements SerializableMessage {
 	}
 
 	/**
-	 * @return What SDP port originated the message. Note that this is not a UDP
-	 *         port.
+	 * What SDP port originated the message.
+	 *
+	 * Note that this is not a UDP port.
+	 *
+	 * @return What SDP port originated the message
 	 */
 	public int getSourcePort() {
 		return sourcePort;
@@ -250,7 +260,9 @@ public final class SDPHeader implements SerializableMessage {
 		this.sourcePort = port;
 	}
 
-	/** @return The flags from the header. */
+	/**
+	 * {@return The flags from the header}
+	 */
 	public Flag getFlags() {
 		return flags;
 	}
@@ -259,7 +271,9 @@ public final class SDPHeader implements SerializableMessage {
 		this.flags = flags;
 	}
 
-	/** @return The tag byte from the header. */
+	/**
+	 * {@return The tag byte from the header}
+	 */
 	public int getTag() {
 		return tag;
 	}
