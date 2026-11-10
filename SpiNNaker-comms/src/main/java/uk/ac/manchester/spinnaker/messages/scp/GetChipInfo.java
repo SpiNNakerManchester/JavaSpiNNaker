@@ -35,6 +35,8 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	private static final int SIZE_FLAG = 0x20;
 
 	/**
+	 * Construct request to read the chip information from a core, without size.
+	 *
 	 * @param chip
 	 *            the chip to read from
 	 */
@@ -43,6 +45,8 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	}
 
 	/**
+	 * Construct request to read the chip information from a core, possibly with size.
+	 *
 	 * @param chip
 	 *            the chip to read from
 	 * @param withSize

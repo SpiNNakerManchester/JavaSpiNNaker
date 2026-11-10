@@ -37,6 +37,8 @@ public abstract class AbstractNotificationMessage
 	private final NotificationMessageCode command;
 
 	/**
+	 * Create an instance based on a buffer to read.
+	 *
 	 * @param buffer
 	 *            Where to read the command code from. The command code will be
 	 *            in the first two bytes; this constructor advances the buffer
@@ -47,6 +49,8 @@ public abstract class AbstractNotificationMessage
 	}
 
 	/**
+	 * Create an instance based on a command.
+	 *
 	 * @param command
 	 *            The command code of the message.
 	 */

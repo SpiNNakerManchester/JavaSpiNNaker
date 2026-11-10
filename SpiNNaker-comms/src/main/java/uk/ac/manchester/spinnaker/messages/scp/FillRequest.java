@@ -31,7 +31,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * in {@code bmp_cmd.c} if sent to a BMP.
  */
 public final class FillRequest extends SCPRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a request to fill a region.
+	 *
 	 * @param chip
 	 *            The chip to read from
 	 * @param baseAddress

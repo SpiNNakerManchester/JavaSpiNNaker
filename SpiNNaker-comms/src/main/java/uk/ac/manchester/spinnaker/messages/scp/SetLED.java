@@ -30,7 +30,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code sark_led_set()} in {@code sark_hw.c}.
  */
 public class SetLED extends SCPRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a request to change this cores LED state as specified.
+	 *
 	 * @param core
 	 *            The SpiNNaker core that will set the BMPSetLED
 	 * @param ledStates

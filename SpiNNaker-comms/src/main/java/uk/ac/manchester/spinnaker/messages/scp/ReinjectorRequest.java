@@ -34,7 +34,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 //TODO Seal in 17
 public abstract class ReinjectorRequest<T extends CheckOKResponse>
 		extends SCPRequest<T> {
+
 	/**
+	 * Constructs a request without arguments.
+	 *
 	 * @param core
 	 *            Where to send the request.
 	 * @param command
@@ -45,6 +48,8 @@ public abstract class ReinjectorRequest<T extends CheckOKResponse>
 	}
 
 	/**
+	 * Constructs a request with just 1 argument.
+	 *
 	 * @param core
 	 *            Where to send the request.
 	 * @param command
@@ -58,6 +63,8 @@ public abstract class ReinjectorRequest<T extends CheckOKResponse>
 	}
 
 	/**
+	 * Constructs a request with three arguments and a body.
+	 *
 	 * @param core
 	 *            Where to send the request.
 	 * @param command

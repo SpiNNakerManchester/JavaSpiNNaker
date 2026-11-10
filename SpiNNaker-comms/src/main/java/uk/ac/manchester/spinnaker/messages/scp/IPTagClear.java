@@ -33,7 +33,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * if sent to a BMP).
  */
 public class IPTagClear extends SCPRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a request to clear the tag on the give Chip.
+	 *
 	 * @param chip
 	 *            The chip to clear the tag on.
 	 * @param tag

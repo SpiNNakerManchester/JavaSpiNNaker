@@ -27,7 +27,10 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * {@code extra_monitor_support.c}.
  */
 public final class LoadApplicationRoutes extends RouterTableRequest {
+
 	/**
+	 * Constructs a load request for this core.
+	 *
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */

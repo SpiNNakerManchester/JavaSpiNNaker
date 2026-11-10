@@ -32,7 +32,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class SetRouterEmergencyTimeout
 		extends ReinjectorRequest<EmptyResponse> {
+
 	/**
+	 * Creates a request to timeout the router.
+	 *
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 * @param timeoutMantissa

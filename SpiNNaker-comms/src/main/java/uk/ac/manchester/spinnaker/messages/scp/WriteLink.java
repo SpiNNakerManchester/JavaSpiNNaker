@@ -31,7 +31,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code cmd_link_write()} in {@code scamp-cmd.c}.
  */
 public class WriteLink extends SCPRequest<EmptyResponse> {
+
 	/**
+	 * Creates a Write Link request.
+	 *
 	 * @param core
 	 *            the core to write via
 	 * @param link

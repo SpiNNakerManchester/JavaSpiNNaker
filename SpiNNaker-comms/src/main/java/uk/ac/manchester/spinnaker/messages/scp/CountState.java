@@ -49,6 +49,8 @@ public class CountState extends SCPRequest<CountState.Response> {
 	private static final int MODE_SHIFT = 20;
 
 	/**
+	 * Constructs a request to get a count of the cores in a particular state.
+	 *
 	 * @param appID
 	 *            The ID of the application to count states of
 	 * @param state
