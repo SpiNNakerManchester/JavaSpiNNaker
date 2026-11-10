@@ -38,6 +38,8 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 	public final int address;
 
 	/**
+	 * Creates a memory location.
+	 *
 	 * @param address
 	 *            The actual location.
 	 */
@@ -46,6 +48,8 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 	}
 
 	/**
+	 * Creates a memory location.
+	 *
 	 * @param address
 	 *            The actual location.
 	 */
@@ -83,7 +87,7 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 	}
 
 	/**
-	 * How many bytes is this location's address above a word-aligned address?
+	 * How many bytes are this location's address above a word-aligned address.
 	 *
 	 * @return The number of bytes offset.
 	 */

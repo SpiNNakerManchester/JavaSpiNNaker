@@ -96,6 +96,8 @@ public final class Link {
 	}
 
 	/**
+	 * Main Constructor which sets all parameters.
+	 *
 	 * @param source
 	 *            The coordinates of the source chip of the link.
 	 * @param destination

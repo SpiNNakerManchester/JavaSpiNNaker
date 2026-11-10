@@ -76,7 +76,7 @@ public class ChipBean {
 	}
 
 	/**
-	 * {return Location of the chip}
+	 * {@return Location of the chip}
 	 */
 	public ChipLocation getLocation() {
 		return location;
@@ -90,7 +90,7 @@ public class ChipBean {
 	}
 
 	/**
-	 * {}@return the resources}
+	 * {@return the resources}
 	 */
 	public ChipDetails getDetails() {
 		return details;

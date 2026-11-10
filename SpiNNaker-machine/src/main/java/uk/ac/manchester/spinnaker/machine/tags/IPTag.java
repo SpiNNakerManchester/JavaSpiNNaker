@@ -95,6 +95,8 @@ public final class IPTag extends Tag {
 	}
 
 	/**
+	 * Create an IP tag.
+	 *
 	 * @param boardAddress
 	 *            The IP address of the board on which the tag is allocated
 	 * @param destination
@@ -113,6 +115,8 @@ public final class IPTag extends Tag {
 	}
 
 	/**
+	 * Create an IP tag.
+	 *
 	 * @param boardAddress
 	 *            The IP address of the board on which the tag is allocated
 	 * @param destination
@@ -134,6 +138,8 @@ public final class IPTag extends Tag {
 	}
 
 	/**
+	 * Create an IP tag.
+	 *
 	 * @param boardAddress
 	 *            The IP address of the board on which the tag is allocated
 	 * @param destination
