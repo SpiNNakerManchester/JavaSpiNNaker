@@ -69,8 +69,11 @@ public final class JobDescription {
 	}
 
 	/**
-	 * @return Who owns the job. {@code null} if the information is shrouded
-	 *         from you.
+	 * Who owns the job.
+	 *
+	 * {@code null} if the information is shrouded from you.
+	 *
+	 * @return Who owns the job.
 	 */
 	public String getOwner() {
 		return owner;
@@ -94,9 +97,12 @@ public final class JobDescription {
 	}
 
 	/**
-	 * @return Which host is believed to be keeping a job alive. May be
-	 *         {@code null} if the information is not known or shrouded from
-	 *         you.
+	 * Which host is believed to be keeping a job alive.
+	 *
+	 * May be {@code null} if the information is not known
+	 * or shrouded from you.
+	 *
+	 * @return Which host is believed to be keeping a job alive.
 	 */
 	@JsonProperty("keepalive-host")
 	public String getKeepaliveHost() {

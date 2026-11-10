@@ -115,7 +115,7 @@ public class SDPConnection extends UDPConnection<SDPMessage> {
 	}
 
 	/**
-	 * @return The SpiNNaker chip that we are talking to with this connection.
+	 * {@return The SpiNNaker chip that we are talking to with this connection}
 	 */
 	public ChipLocation getChip() {
 		return chip;

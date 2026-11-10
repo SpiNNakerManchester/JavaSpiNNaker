@@ -79,7 +79,7 @@ public class SessionRequest {
 	}
 
 	/**
-	 * @return the hardware platform to create the session in.
+	 * {@return the hardware platform to create the session in}
 	 */
 	public String getHardwarePlatform() {
 		return hardwarePlatform;
@@ -94,7 +94,7 @@ public class SessionRequest {
 	}
 
 	/**
-	 * @return the specified configuration of the hardware to use.
+	 * {@return the specified configuration of the hardware to use}
 	 */
 	public Map<String, String> getHardwareConfig() {
 		return hardwareConfig;

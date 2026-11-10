@@ -66,7 +66,7 @@ public interface OpenIDUserAware {
 	}
 
 	/**
-	 * @return The OpenID subject identifier.
+	 * {@return The OpenID subject identifier}
 	 * @throws IllegalStateException
 	 *             If the object was made without either a user or a token.
 	 */
@@ -75,8 +75,12 @@ public interface OpenIDUserAware {
 	}
 
 	/**
-	 * @return The preferred OpenID user name. <em>We don't use this
-	 *         directly</em> as it may clash with other user names.
+	 * The preferred OpenID user name.
+	 *
+	 * <em>We don't use this directly</em>
+	 * as it may clash with other user names.
+	 *
+	 * @return The preferred OpenID user name
 	 * @throws IllegalStateException
 	 *             If the object was made without either a user or a token.
 	 */
@@ -85,7 +89,7 @@ public interface OpenIDUserAware {
 	}
 
 	/**
-	 * @return The real name of the OpenID user.
+	 * {@return The real name of the OpenID user}
 	 * @throws IllegalStateException
 	 *             If the object was made without either a user or a token.
 	 */
@@ -94,7 +98,7 @@ public interface OpenIDUserAware {
 	}
 
 	/**
-	 * @return The verified email address of the OpenID user, if available.
+	 * {@return The verified email address of the OpenID user, if available}
 	 */
 	default Optional<String> getOpenIdEmail() {
 		var email = getOpenIdUser().map(uu -> uu.getAttributes())

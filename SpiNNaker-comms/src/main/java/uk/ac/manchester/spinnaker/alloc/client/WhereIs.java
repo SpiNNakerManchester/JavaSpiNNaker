@@ -77,24 +77,32 @@ public final class WhereIs {
 	}
 
 	/**
+	 * The ID of the job allocated to the board with the chip.
+	 *
+	 * {@code null} if none.
+	 *
 	 * @return The ID of the job allocated to the board with the chip.
-	 *         {@code null} if none.
 	 */
 	public Integer getJobId() {
 		return jobId;
 	}
 
 	/**
-	 * @return The location of more information about the job allocated to the
-	 *         board with the chip. {@code null} if none.
+	 * The location of more information about the job allocated to the
+	 *         board with the chip.
+	 *
+     * {@code null} if none.
+	 *
+   	 * @return The location of more information about the job allocated to the
+	 *         board with the chip.
 	 */
 	public URI getJobRef() {
 		return jobRef;
 	}
 
 	/**
-	 * @return The global location of the chip at the root of the job
-	 *         allocation, if one exists.
+	 * {}@return The global location of the chip at the root of the job
+	 *         allocation, if one exists}
 	 */
 	public ChipLocation getJobChip() {
 		return jobChip;
@@ -120,8 +128,8 @@ public final class WhereIs {
 	}
 
 	/**
-	 * @return The location of more information about the machine containing the
-	 *         chip.
+	 * {@return The location of more information about the machine containing the
+	 *         chip}
 	 */
 	URI getMachineRef() {
 		return machineRef;
@@ -132,8 +140,8 @@ public final class WhereIs {
 	}
 
 	/**
-	 * @return The global location of the chip at the root of the board
-	 *         containing the chip being described.
+	 * {@return The global location of the chip at the root of the board
+	 *         containing the chip being described}
 	 */
 	public ChipLocation getBoardChip() {
 		return boardChip;

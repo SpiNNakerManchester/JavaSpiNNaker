@@ -97,14 +97,14 @@ public class ServiceDescription {
 	}
 
 	/**
-	 * @return the name of the HTTP header to pass the CSRF token in
+	 * {@return the name of the HTTP header to pass the CSRF token in}
 	 */
 	public String getCsrfHeader() {
 		return csrfHeader;
 	}
 
 	/**
-	 * @return the CSRF token
+	 * {@return the CSRF token}
 	 */
 	public String getCsrfToken() {
 		return csrfToken;

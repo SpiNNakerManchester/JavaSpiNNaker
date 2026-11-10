@@ -261,8 +261,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The time that the last failed login was. Read-only; cannot be set
-	 *         via the admin API.
+	 * {@return The time that the last failed login was. Read-only; cannot be set
+	 *         via the admin API}
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -326,8 +326,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether this represents a request to use external authentication
-	 *         (instead of just not setting the password).
+	 * {@return Whether this represents a request to use external authentication
+	 *         (instead of just not setting the password)}
 	 */
 	@JsonIgnore
 	public boolean isExternallyAuthenticated() {

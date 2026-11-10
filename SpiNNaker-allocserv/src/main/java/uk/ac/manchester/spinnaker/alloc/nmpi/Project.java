@@ -31,7 +31,7 @@ public class Project {
 	private List<Quota> quotas;
 
 	/**
-	 * @return the quotas of the project.
+	 * {@return the quotas of the project}
 	 */
 	public List<Quota> getQuotas() {
 		return quotas;
@@ -46,7 +46,7 @@ public class Project {
 	}
 
 	/**
-	 * @return The collab of the project.
+	 * {}@return The collab of the project}
 	 */
 	public String getCollab() {
 		return collab;

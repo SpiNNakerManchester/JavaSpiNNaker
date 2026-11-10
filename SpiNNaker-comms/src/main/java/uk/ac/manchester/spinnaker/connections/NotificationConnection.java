@@ -95,8 +95,8 @@ public class NotificationConnection
 	}
 
 	/**
-	 * @return Get a new little-endian buffer sized suitably for notification
-	 *         messages.
+	 * {@return Get a new little-endian buffer sized suitably for notification
+	 *         messages}
 	 */
 	private static ByteBuffer newMessageBuffer() {
 		return allocate(NOTIFICATION_MESSAGE_BUFFER_SIZE).order(LITTLE_ENDIAN);

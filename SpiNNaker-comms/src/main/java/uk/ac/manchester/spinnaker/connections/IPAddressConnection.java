@@ -68,7 +68,7 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 	}
 
 	/**
-	 * @return The IP address, or {@code null} if none was forthcoming.
+	 * {@return The IP address, or {@code null} if none was forthcoming}
 	 */
 	@Override
 	public final InetAddress receiveMessage() {

@@ -33,7 +33,7 @@ public class RootController {
 	private URLPathMaker urlMaker;
 
 	/**
-	 * @return redirect to {@link SystemController#index()}
+	 * {@return redirect to {@link SystemController#index()}}
 	 */
 	@GetMapping(value = "/", produces = "text/html")
 	public String index() {

@@ -89,8 +89,11 @@ public final class AllocatedMachine {
 	}
 
 	/**
-	 * @return Depth of rectangle. 1 or 3. Only the single-board case uses a
-	 *         depth of 1.
+	 * Depth of rectangle.
+	 *
+	 * 1 or 3. Only the single-board case uses a depth of 1.
+	 *
+	 * @return Depth of rectangle.
 	 */
 	public int getDepth() {
 		return depth;

@@ -109,7 +109,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	}
 
 	/**
-	 * @return The coordinates of the BMP that this connection talks to.
+	 * {@return The coordinates of the BMP that this connection talks to}
 	 */
 	public BMPCoords getCoords() {
 		return coords;

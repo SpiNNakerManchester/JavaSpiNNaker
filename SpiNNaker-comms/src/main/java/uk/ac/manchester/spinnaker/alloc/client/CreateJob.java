@@ -364,8 +364,11 @@ public final class CreateJob {
 	}
 
 	/**
+	 * How long after a keepalive message will the job be auto-deleted?
+	 *
+	 * <em>Required.</em> Must be between 30 and 300 seconds.
+	 *
 	 * @return How long after a keepalive message will the job be auto-deleted?
-	 *         <em>Required.</em> Must be between 30 and 300 seconds.
 	 */
 	public Duration getKeepaliveInterval() {
 		return keepaliveInterval;
@@ -382,8 +385,11 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The number of boards to request. May be {@code null} if a
-	 *         different type of request is made.
+	 * The number of boards to request.
+	 *
+	 * May be {@code null} if a different type of request is made.
+	 *
+	 * @return The number of boards to request
 	 */
 	public Integer getNumBoards() {
 		return numBoards;
@@ -424,8 +430,12 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return Which machine to allocate on. This and {@code tags} are mutually
-	 *         exclusive, but at least one must be given.
+	 * Which machine to allocate on.
+	 *
+	 * This and {@code tags} are mutually exclusive,
+	 * but at least one must be given.
+
+	 * @return Which machine to allocate on
 	 */
 	public String getMachineName() {
 		return machineName;
@@ -442,9 +452,12 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The tags to select which machine to allocate on. This and
-	 *         {@code machineName} are mutually exclusive, but at least one must
-	 *         be given.
+	 * The tags to select which machine to allocate on.
+	 *
+	 * This and {@code machineName} are mutually exclusive,
+	 * but at least one must be given.
+	 *
+	 * @return The tags to select which machine to allocate on.
 	 */
 	public List<String> getTags() {
 		return tags;
@@ -468,9 +481,13 @@ public final class CreateJob {
 	}
 
 	/**
+	 * The maximum number of dead boards allowed in a rectangular allocation.
+	 *
+	 * Note that the allocation engine might increase this
+	 * if it decides to overallocate.
+
 	 * @return The maximum number of dead boards allowed in a rectangular
-	 *         allocation. Note that the allocation engine might increase this
-	 *         if it decides to overallocate.
+	 *         allocation.
 	 */
 	public Integer getMaxDeadBoards() {
 		return maxDeadBoards;
@@ -487,7 +504,11 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The owner; only works when the user is admin or NMPI.
+	 * The owner.
+	 *
+	 * Only works when the user is admin or NMPI.
+	 *
+	 * @return The owner.
 	 */
 	public String getOwner() {
 		return owner;
@@ -505,7 +526,7 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The group the quota for the job should be allocated against.
+	 * {@return The group the quota for the job should be allocated against}
 	 */
 	public String getGroup() {
 		return group;
@@ -538,7 +559,7 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The NMPI job that the quota should be allocated against.
+	 * {@return The NMPI job that the quota should be allocated against}
 	 */
 	public Integer getNmpiJobId() {
 		return nmpiJobId;

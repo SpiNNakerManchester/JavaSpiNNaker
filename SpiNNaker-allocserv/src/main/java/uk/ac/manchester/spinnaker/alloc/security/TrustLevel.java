@@ -65,7 +65,7 @@ public enum TrustLevel {
 	}
 
 	/**
-	 * @return The authorities granted by this trust level.
+	 * {@return The authorities granted by this trust level}
 	 */
 	Stream<GrantedAuthority> getGrants() {
 		return grants.stream().map(SimpleGrantedAuthority::new);

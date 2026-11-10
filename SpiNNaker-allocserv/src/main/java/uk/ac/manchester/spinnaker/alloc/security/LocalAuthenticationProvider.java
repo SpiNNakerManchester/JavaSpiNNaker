@@ -88,6 +88,8 @@ public interface LocalAuthenticationProvider<TestAPI>
 			Collection<GrantedAuthority> resultCollection);
 
 	/**
+	 * Testing method, other use not supported.
+	 *
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 * @hidden
