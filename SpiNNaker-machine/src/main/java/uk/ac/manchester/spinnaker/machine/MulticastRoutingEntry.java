@@ -71,17 +71,23 @@ public class MulticastRoutingEntry extends RoutingEntry {
 		this.defaultable = defaultable;
 	}
 
-	/** @return the key of this entry */
+	/**
+	 * {@return the key of this entry}
+	 */
 	public int getKey() {
 		return key;
 	}
 
-	/** @return the mask of this entry */
+	/**
+	 * {@return the mask of this entry}
+	 */
 	public int getMask() {
 		return mask;
 	}
 
-	/** @return whether this entry is default routable */
+	/**
+	 * {@return whether this entry is default routable}
+	 */
 	public boolean isDefaultable() {
 		return defaultable;
 	}

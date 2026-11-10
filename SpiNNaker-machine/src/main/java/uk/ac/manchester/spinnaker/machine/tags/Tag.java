@@ -54,7 +54,9 @@ public abstract class Tag implements Comparable<Tag> {
 		this.port = port;
 	}
 
-	/** @return The board address of the tag. */
+	/**
+	 * {@return The board address of the tag}
+	 */
 	public InetAddress getBoardAddress() {
 		return boardAddress;
 	}

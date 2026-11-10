@@ -75,7 +75,9 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 		return address - other.address;
 	}
 
-	/** @return Whether this location is really {@linkplain #NULL null}. */
+	/**
+	 * {@return Whether this location is really {@linkplain #NULL null}}
+	 */
 	public boolean isNull() {
 		return address == 0;
 	}
@@ -89,7 +91,9 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 		return address % WORD_SIZE;
 	}
 
-	/** @return Whether this is a word-aligned location. */
+	/**
+	 * {@return Whether this is a word-aligned location}
+	 */
 	public boolean isAligned() {
 		return subWordAlignment() == 0;
 	}

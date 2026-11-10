@@ -221,12 +221,16 @@ public final class IPTag extends Tag {
 		return ipAddress;
 	}
 
-	/** @return Return if the SDP header is to be stripped. */
+	/**
+	 * {@return Return if the SDP header is to be stripped}
+	 */
 	public boolean isStripSDP() {
 		return stripSDP;
 	}
 
-	/** @return The identifier of traffic using this tag. */
+	/**
+	 * {@return The identifier of traffic using this tag}
+	 */
 	public TrafficIdentifier getTrafficIdentifier() {
 		return trafficIdentifier;
 	}
