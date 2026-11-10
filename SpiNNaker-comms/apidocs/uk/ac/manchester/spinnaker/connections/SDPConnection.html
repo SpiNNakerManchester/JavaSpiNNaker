@@ -106,7 +106,7 @@ loadScripts(document, 'script');</script>
 <div class="block">A UDP socket connection that talks SDP (SpiNNaker Datagram Protocol) to
  SpiNNaker. An inbound SDP packet can be routed from the initially receiving
  SC&amp;MP core to any core, and an outbound SDP packet can be routed from any
- core to the outside world (provided an <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="external-link"><code>IPTag</code></a> or <a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/ReverseIPTag.html" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="external-link"><code>ReverseIPTag</code></a>
+ core to the outside world (provided an <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/IPTag.html" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="external-link"><code>IPTag</code></a> or <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/tags/ReverseIPTag.html" title="class or interface in uk.ac.manchester.spinnaker.machine.tags" class="external-link"><code>ReverseIPTag</code></a>
  is configured to handle routing of the message on an Ethernet-equipped chip).
  <p>
  Note that, unlike with an <a href="SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>SCPConnection</code></a>, SDP is essentially a
@@ -134,7 +134,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)" class="member-name-link">SDPConnection</a><wbr>(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;remoteChip,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)" class="member-name-link">SDPConnection</a><wbr>(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;remoteChip,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;localHost,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;localPort,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;remoteHost,
@@ -154,7 +154,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">ChipLocation</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">ChipLocation</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getChip()" class="member-name-link">getChip</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a></code></div>
@@ -168,7 +168,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Sends an SDP message down this connection.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">setChip</a><wbr>(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;chip)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">setChip</a><wbr>(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;chip)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set the SpiNNaker chip that we are talking to with this connection.</div>
 </div>
@@ -198,7 +198,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">
 <h3>SDPConnection</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SDPConnection</span><wbr><span class="parameters">(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;remoteChip,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SDPConnection</span><wbr><span class="parameters">(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;remoteChip,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;localHost,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;localPort,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;remoteHost,
@@ -271,7 +271,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getChip()">
 <h3>getChip</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">ChipLocation</a></span>&nbsp;<span class="element-name">getChip</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">ChipLocation</a></span>&nbsp;<span class="element-name">getChip</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The SpiNNaker chip that we are talking to with this connection.</dd>
@@ -281,7 +281,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setChip(uk.ac.manchester.spinnaker.machine.HasChipLocation)">
 <h3>setChip</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setChip</span><wbr><span class="parameters">(<a href="https://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;chip)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setChip</span><wbr><span class="parameters">(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasChipLocation</a>&nbsp;chip)</span></div>
 <div class="block">Set the SpiNNaker chip that we are talking to with this connection.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
