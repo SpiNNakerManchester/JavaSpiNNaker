@@ -64,6 +64,7 @@ limitations under the License.
 			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
 			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
+			<property name="allowInlineReturn" value="true" />
 		</module>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
@@ -73,6 +74,8 @@ limitations under the License.
 			<property name="accessModifiers" value="package" />
 			<property name="ignoreNamePattern" value="log|logger" />
 		</module>
+		<module name="SummaryJavadoc"/>
+
 		<module name="ConstantName">
 			<property name="format"
 				value="^(log(ger)?|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" />
