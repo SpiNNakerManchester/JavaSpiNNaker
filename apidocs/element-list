@@ -50,7 +50,6 @@ uk.ac.manchester.spinnaker.nmpiexec.job_parameters
 uk.ac.manchester.spinnaker.nmpiexec.jobprocess
 uk.ac.manchester.spinnaker.nmpiexec.jobprocessmanager
 uk.ac.manchester.spinnaker.nmpiexec.utils
-uk.ac.manchester.spinnaker.pacman
 uk.ac.manchester.spinnaker.protocols
 uk.ac.manchester.spinnaker.protocols.download
 uk.ac.manchester.spinnaker.proxy
