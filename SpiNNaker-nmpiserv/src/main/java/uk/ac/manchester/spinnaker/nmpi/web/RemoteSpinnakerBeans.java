@@ -120,7 +120,6 @@ public class RemoteSpinnakerBeans {
 	@Value("${spalloc.enabled}")
 	private boolean useSpalloc;
 
-
 	/**
 	 * Whether we should use the Java or original Spalloc implementation.
 	 */
