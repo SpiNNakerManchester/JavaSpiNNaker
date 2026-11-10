@@ -26,7 +26,7 @@ class NeighbourIterator implements Iterator<ChipLocation> {
 	private Iterator<Link> linksIter;
 
 	/**
-	 * Create an iterator over neighbours
+	 * Create an iterator over neighbours.
 	 *
 	 * @param linksIter
 	 *            The links from the chip.
@@ -36,7 +36,7 @@ class NeighbourIterator implements Iterator<ChipLocation> {
 	}
 
 	/**
-	 * Create an iterator over neighbours
+	 * Create an iterator over neighbours.
 	 *
 	 * @param linksIterable
 	 *            The links from the chip.
