@@ -108,7 +108,7 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 
 		/**
 		 * What was the index of the region in the table of regions for the
-		 * core?
+		 * core.
 		 */
 		public final int regionIndex;
 
@@ -120,21 +120,22 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 		public final MemoryLocation startAddress;
 
 		/**
-		 * How much data should be downloaded? <em>This is not necessarily the
-		 * size of the region.</em>
+		 * How much data should be downloaded.
+		 *
+		 * <em>This is not necessarily the size of the region</em>
 		 */
 		@Positive
 		public final int size;
 
 		/**
-		 * How much data was originally requested?
+		 * How much data was originally requested.
 		 */
 		@Positive
 		public final int realSize;
 
 		/**
 		 * How many extra bytes are being read at the start of the region in
-		 * order to get an aligned read?
+		 * order to get an aligned read.
 		 */
 		@PositiveOrZero
 		public final int initialIgnore;
@@ -191,14 +192,19 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 		}
 
 		/**
-		 * @return Whether this is an aligned buffer. Aligned buffers can be
-		 *         read with efficient reading techniques.
+		 * Whether this is an aligned buffer.
+		 *
+		 * Aligned buffers can be read with efficient reading techniques.
+		 *
+		 * @return Whether this is an aligned buffer
 		 */
 		public final boolean isAligned() {
 			return initialIgnore == 0 && finalIgnore == 0;
 		}
 
-		/** @return Whether this is a non-empty buffer. */
+		/**
+		 * {@return Whether this is a non-empty buffer}
+		 */
 		public final boolean isNonEmpty() {
 			return size > 0;
 		}

@@ -46,6 +46,8 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	private final ConnectionProvider<APIType> connProvider;
 
 	/**
+	 * Wraps the Connection provide.
+	 *
 	 * @param connProvider
 	 *            The source of database connections.
 	 * @see Connection

@@ -43,6 +43,8 @@ public class RegionInfo {
 	public final ByteBuffer  content;
 
 	/**
+	 * Creates the Info combining the provided core content and address.
+	 *
 	 * @param core
 	 *          The core location of the region
 	 * @param content
