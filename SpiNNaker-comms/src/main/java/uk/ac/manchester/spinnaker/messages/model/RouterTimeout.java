@@ -56,7 +56,7 @@ public final class RouterTimeout {
 	}
 
 	/**
-	 * @return the timeout value of a router in ticks.
+	 * {@return the timeout value of a router in ticks}
 	 */
 	public int getValue() {
 		int m = mantissa + MANTISSA_OFFSET;

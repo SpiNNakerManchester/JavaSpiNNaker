@@ -75,14 +75,14 @@ public class CoresNotInStateException extends SpinnmanException {
 	}
 
 	/**
-	 * @return What were we attempting to do when the failure happened.
+	 * {@return What were we attempting to do when the failure happened}
 	 */
 	public String getOperation() {
 		return operation;
 	}
 
 	/**
-	 * @return What cores have failed.
+	 * {@return What cores have failed}
 	 */
 	public CoreSubsets getFailedCores() {
 		return failedCores;

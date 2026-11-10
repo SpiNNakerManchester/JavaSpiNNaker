@@ -494,7 +494,7 @@ public final class Blacklist implements Serializable {
 	}
 
 	/**
-	 * @return The raw blacklist data in little-endian form. Read only.
+	 * {@return The raw blacklist data in little-endian form. Read only}
 	 */
 	public ByteBuffer getRawData() {
 		return rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
