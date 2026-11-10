@@ -20,6 +20,7 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.config.http.SessionCreationPolicy.ALWAYS;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
@@ -67,7 +68,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import jakarta.servlet.DispatcherType;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
@@ -206,13 +206,10 @@ public class SecurityConfig {
 	 *
 	 * @param http
 	 *            Where the configuration is applied to.
-	 * @param introspector
-	 *           The introspector used to build request matchers.
 	 * @throws Exception
 	 *             If anything goes wrong with setting up.
 	 */
-	private void defineAccessPolicy(HttpSecurity http,
-			HandlerMappingIntrospector introspector) throws Exception {
+	private void defineAccessPolicy(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorize) -> authorize
 				// Allow forwarded requests
 				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
@@ -221,6 +218,7 @@ public class SecurityConfig {
 						pathPattern(urlMaker.systemUrl("perform_*")),
 						pathPattern(oidcPath("**")),
 						pathPattern(urlMaker.systemUrl("error")),
+						pathPattern(urlMaker.baseUrl("error")),
 						pathPattern(urlMaker.systemUrl("resources/*")),
 						pathPattern(urlMaker.serviceUrl("openapi.json")),
 						pathPattern(urlMaker.serviceUrl("swagger*")),
@@ -313,25 +311,25 @@ public class SecurityConfig {
 	 *
 	 * @param http
 	 *            Used to build the filter chain.
-	 * @param introspector
-	 *            The introspector used to build request matchers.
 	 * @return The filter chain that implements the controls.
 	 * @throws Exception
 	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	@Bean
 	@Role(ROLE_SUPPORT)
-	public SecurityFilterChain securityFilter(HttpSecurity http,
-			HandlerMappingIntrospector introspector)
+	public SecurityFilterChain securityFilter(HttpSecurity http)
 			throws Exception {
-		defineAccessPolicy(http, introspector);
+		http.sessionManagement((session) -> session
+				.sessionCreationPolicy(ALWAYS));
+		http.securityContext((securityContext) ->
+				securityContext.securityContextRepository(
+						authApplicationFilter.securityContextRepository));
+		defineAccessPolicy(http);
 		defineAPILoginRules(http);
 		defineWebUILoginRules(http);
 		defineLogoutRules(http);
 		http.addFilterAfter(authApplicationFilter,
 				BasicAuthenticationFilter.class);
-		http.securityContext((securityContext) ->
-				securityContext.requireExplicitSave(false));
 		return http.build();
 	}
 

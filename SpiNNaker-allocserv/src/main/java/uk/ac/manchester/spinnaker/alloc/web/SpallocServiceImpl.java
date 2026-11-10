@@ -268,7 +268,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 					"At most one of group, nmpiCollabId or nmpiJobId"
 					+ " can be specified").build());
 		}
-		bgAction(response, () -> {
+		bgAction(response, new Permit(security), () -> {
 			try {
 				var job = createJob(req, crds);
 				return created(ui.getRequestUriBuilder().path("{id}")
