@@ -104,16 +104,19 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 	}
 
 	/**
-	 * @return The ID of the cabinet that contains the frame that contains the
-	 *         BMPs.
+	 * {@return The ID of the cabinet that contains the frame that contains the
+	 *         BMPs}
 	 */
 	public int getCabinet() {
 		return cabinet;
 	}
 
 	/**
-	 * @return The ID of the frame that contains the master BMP. Frames are
-	 *         contained within a cabinet.
+	 * The ID of the frame that contains the master BMP.
+	 *
+	 * Frames are contained within a cabinet.
+	 *
+	 * @return The ID
 	 */
 	public int getFrame() {
 		return frame;

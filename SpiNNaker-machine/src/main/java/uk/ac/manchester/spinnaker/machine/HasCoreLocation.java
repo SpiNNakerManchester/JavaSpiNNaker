@@ -22,7 +22,7 @@ package uk.ac.manchester.spinnaker.machine;
  */
 public interface HasCoreLocation extends HasChipLocation {
 	/**
-	 * @return The processor coordinate of the core on its chip.
+	 * {@return The processor coordinate of the core on its chip}
 	 */
 	@ValidP
 	int getP();

@@ -81,16 +81,16 @@ public final class ReverseIPTag extends Tag {
 	}
 
 	/**
-	 * @return The destination coordinates of a core in the SpiNNaker machine
-	 *         that packets should be sent to for this reverse IP tag.
+	 * {@return The destination coordinates of a core in the SpiNNaker machine
+	 *         that packets should be sent to for this reverse IP tag}
 	 */
 	public CoreLocation getDestination() {
 		return destination;
 	}
 
 	/**
-	 * @return The SDP port number of the tag that these packets are to be
-	 *         received on for the processor.
+	 * {@return The SDP port number of the tag that these packets are to be
+	 *         received on for the processor}
 	 */
 	public int getSdpPort() {
 		return sdpPort;

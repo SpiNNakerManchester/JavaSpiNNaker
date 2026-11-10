@@ -21,21 +21,27 @@ package uk.ac.manchester.spinnaker.machine.board;
  */
 public interface HasBMPLocation {
 	/**
-	 * @return The cabinet number of the board. Not actually a processor
-	 *         coordinate.
+	 * The cabinet number of the board.
+	 *
+	 * Not actually a processor coordinate.
+	 *
+	 * @return The cabinet number of the board.
 	 */
 	@ValidCabinetNumber
 	int getCabinet();
 
 	/**
-	 * @return The frame number of the board. Not actually a processor
-	 *         coordinate.
+	 * The frame number of the board.
+	 *
+	 * Not actually a processor coordinate.
+	 *
+	 * @return The frame number
 	 */
 	@ValidFrameNumber
 	int getFrame();
 
 	/**
-	 * @return The board number of the board. Not actually a processor ID.
+	 * {@return The board number of the board. Not actually a processor ID}
 	 */
 	@ValidBoardNumber
 	int getBoard();

@@ -81,14 +81,14 @@ public class ChipBean {
 	}
 
 	/**
-	 * @return the resources
+	 * {@return the resources}
 	 */
 	public ChipResources getResources() {
 		return resources;
 	}
 
 	/**
-	 * @return the resources
+	 * {}@return the resources}
 	 */
 	public ChipDetails getDetails() {
 		return details;

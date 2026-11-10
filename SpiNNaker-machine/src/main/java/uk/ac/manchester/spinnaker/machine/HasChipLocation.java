@@ -24,13 +24,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public interface HasChipLocation {
 	/**
-	 * @return The X coordinate of the chip.
+	 * {@return The X coordinate of the chip}
 	 */
 	@ValidX
 	int getX();
 
 	/**
-	 * @return The Y coordinate of the chip.
+	 * {@return The Y coordinate of the chip}
 	 */
 	@ValidY
 	int getY();
