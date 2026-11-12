@@ -51,6 +51,8 @@ public final class RouterTimeout {
 	}
 
 	/**
+	 * Constructs a router timeout.
+	 *
 	 * @param mantissa
 	 *            The mantissa of the value; only low 4 bits used.
 	 * @param exponent

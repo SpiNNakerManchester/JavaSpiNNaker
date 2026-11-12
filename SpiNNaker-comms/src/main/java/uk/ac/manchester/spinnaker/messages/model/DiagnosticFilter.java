@@ -294,6 +294,8 @@ public class DiagnosticFilter {
 		}
 
 		/**
+		 * Gets the default routing flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -352,6 +354,8 @@ public class DiagnosticFilter {
 		}
 
 		/**
+		 * Gets the destination flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -409,6 +413,8 @@ public class DiagnosticFilter {
 		}
 
 		/**
+		 * Gets the emergency routing status flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -457,6 +463,8 @@ public class DiagnosticFilter {
 		}
 
 		/**
+		 * Gets the Packet type flag for the given value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -501,6 +509,8 @@ public class DiagnosticFilter {
 		}
 
 		/**
+		 * Gets the Payload flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.

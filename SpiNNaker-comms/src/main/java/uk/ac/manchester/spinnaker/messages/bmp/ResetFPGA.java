@@ -32,6 +32,8 @@ import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetT
 public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 
 	/**
+	 * Constructs a request to perform a reset of the FPGA.
+	 *
 	 * @param board
 	 *            Which board to reset the FPGAs of.
 	 * @param resetType

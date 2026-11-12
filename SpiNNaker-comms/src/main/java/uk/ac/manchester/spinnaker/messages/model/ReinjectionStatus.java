@@ -88,6 +88,8 @@ public class ReinjectionStatus {
 	private final int flags;
 
 	/**
+	 * Extracts the reinjection status from the buffer.
+	 *
 	 * @param buffer
 	 *            The message containing the status to parse.
 	 */

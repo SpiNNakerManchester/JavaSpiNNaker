@@ -119,7 +119,8 @@ public class IOBuffer implements HasCoreLocation {
 	}
 
 	/**
-	 * {@return The contents of the buffer as a string, interpreting it as ASCII}
+	 * {@return The contents of the buffer as a string,
+	 *     interpreting it as ASCII}
 	 */
 	public String getContentsString() {
 		return getContentsString(US_ASCII);

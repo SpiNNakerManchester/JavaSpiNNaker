@@ -146,6 +146,8 @@ public final class ADCInfo implements Serializable {
 	private static final int SHUTDOWN_OFFSET = 44;
 
 	/**
+	 * Constructs a container for the board status data.
+	 *
 	 * @param buffer
 	 *            bytes from an SCP packet containing ADC information
 	 */

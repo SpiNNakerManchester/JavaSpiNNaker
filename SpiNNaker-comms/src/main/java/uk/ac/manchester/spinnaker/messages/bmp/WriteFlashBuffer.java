@@ -33,6 +33,8 @@ public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
 	public static final int FLASH_CHUNK_SIZE = 4096;
 
 	/**
+	 * Constructs a request to write memory to flash.
+	 *
 	 * @param board
 	 *            the board with the BMP to write the flash of
 	 * @param baseAddress
