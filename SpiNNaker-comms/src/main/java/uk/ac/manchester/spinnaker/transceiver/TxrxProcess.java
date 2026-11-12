@@ -174,7 +174,7 @@ public class TxrxProcess {
 		CommandCode getCommand();
 
 		/**
-		 * Which core is the destination of the request?
+		 * Which core is the destination of the request.
 		 *
 		 * @return The core location.
 		 */

@@ -34,7 +34,7 @@ public class ProcessException extends SpinnmanException {
 			"when sending to %d:%d:%d, received exception: %s\n" + S
 					+ "with message: %s";
 
-	/** Where does the code believe this exception originated? */
+	/** Where does the code believe this exception originated. */
 	public final SDPLocation source;
 
 	/**

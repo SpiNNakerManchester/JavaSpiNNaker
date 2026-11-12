@@ -202,7 +202,7 @@ public class Transceiver extends UDPTransceiver
 
 	private static final Set<Integer> BMP_MAJOR_VERSIONS = Set.of(1, 2);
 
-	/** How many times do we try to find SCAMP? */
+	/** How many times do we try to find SCAMP. */
 	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
 
 	private static final int CONNECTION_CHECK_RETRY_COUNT = 3;

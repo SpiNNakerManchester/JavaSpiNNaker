@@ -398,7 +398,7 @@ public class DiagnosticFilter {
 				makeEnumBackingMap(values(), v -> v.value);
 
 		/**
-		 * Constructs an emergency routing status flag
+		 * Constructs an emergency routing status flag.
 		 *
 		 * @param value
 		 *     Flag value.
@@ -446,7 +446,7 @@ public class DiagnosticFilter {
 				makeEnumBackingMap(values(), v -> v.value);
 
 		/**
-		 * Constructs a packet type flag for the diagnostic filters
+		 * Constructs a packet type flag for the diagnostic filters.
 		 *
 		 * @param value
 		 *     Flag value

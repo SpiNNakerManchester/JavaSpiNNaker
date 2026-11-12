@@ -50,7 +50,7 @@ public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 	}
 
 	/**
-	 * Constructs a command message using given arguments
+	 * Constructs a command message using given arguments.
 
 	 * @param core
 	 *            Where to send the request.
