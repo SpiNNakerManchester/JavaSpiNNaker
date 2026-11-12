@@ -93,6 +93,8 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 		}
 
 		/**
+		 * Get the number of blocks allocated.
+		 *
 		 * @return The number of allocated blocks that have been freed from the
 		 *         appID given, or one when the direct block of space to
 		 *         deallocate was given.

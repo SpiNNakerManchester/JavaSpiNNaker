@@ -45,6 +45,8 @@ public class ApplicationRun extends SCPRequest<EmptyResponse> {
 	private static final int WAIT_BIT = 18;
 
 	/**
+	 * Construct a request to run an application without wait.
+	 *
 	 * @param appID
 	 *            The ID of the application to run
 	 * @param chip
@@ -58,6 +60,8 @@ public class ApplicationRun extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Construct a request to run an application with a possible wait.
+	 *
 	 * @param appId
 	 *            The ID of the application to run
 	 * @param chip

@@ -30,7 +30,10 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * Calls {@code ssp1_copy()} in {@code bmp_ssp.c}.
  */
 public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
+
 	/**
+	 * Construct a request to upload a chunk of byte data.
+	 *
 	 * @param board
 	 *            Which board to upload the FPGA data to.
 	 * @param data
@@ -42,6 +45,8 @@ public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
 	}
 
 	/**
+	 * Construct a request to upload a chunk of buffer data.
+	 *
 	 * @param board
 	 *            Which board to upload the FPGA data to.
 	 * @param data

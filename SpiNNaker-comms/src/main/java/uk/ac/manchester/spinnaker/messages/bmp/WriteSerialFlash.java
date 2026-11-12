@@ -34,6 +34,8 @@ public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	public static final int FLASH_CHUNK_SIZE = 256;
 
 	/**
+	 * Construct a request to write to serial flash on a BMP.
+	 *
 	 * @param board
 	 *            the board with the BMP to write the flash of
 	 * @param baseAddress

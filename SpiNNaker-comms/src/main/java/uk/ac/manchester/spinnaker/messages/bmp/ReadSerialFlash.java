@@ -42,6 +42,8 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	}
 
 	/**
+	 * Construct a request to read a region of serial flash.
+	 *
 	 * @param board
 	 *            which board to read the flash of
 	 * @param address

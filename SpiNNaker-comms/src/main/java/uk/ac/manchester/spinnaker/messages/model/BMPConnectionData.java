@@ -57,6 +57,8 @@ public class BMPConnectionData {
 	public final Integer portNumber;
 
 	/**
+	 * Constructs the details of a connection to a BMP based on cabinet and Frame.
+	 *
 	 * @param cabinet
 	 *            The number of the cabinet containing the frame.
 	 * @param frame
@@ -78,6 +80,8 @@ public class BMPConnectionData {
 	}
 
 	/**
+	 * Constructs the details of a connection to a BMP based on the cores.
+	 *
 	 * @param coords
 	 *            The coordinates of the BMP.
 	 * @param ipAddress

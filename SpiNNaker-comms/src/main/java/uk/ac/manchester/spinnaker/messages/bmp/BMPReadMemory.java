@@ -42,6 +42,8 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	}
 
 	/**
+	 * Construct a request to read a region of memory from a BMP.
+	 *
 	 * @param board
 	 *            which board to read the memory of
 	 * @param address

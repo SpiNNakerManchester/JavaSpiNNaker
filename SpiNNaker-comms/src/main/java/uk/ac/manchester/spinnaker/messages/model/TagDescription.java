@@ -67,7 +67,7 @@ public final class TagDescription {
 	/** The timeout of the tag. */
 	public final IPTagTimeOutWaitTime timeout;
 
-	/** Where did the message that we've parsed this from originate from? */
+	/** Where did the message that we've parsed this from originate from. */
 	private final ChipLocation src;
 
 	/**
@@ -76,10 +76,12 @@ public final class TagDescription {
 	 */
 	private final InetAddress host;
 
-	/** What tag was this info about? */
+	/** What tag was this info about. */
 	private final int tag;
 
 	/**
+	 * Constructs a description of the tag.
+	 *
 	 * @param buffer
 	 *            The buffer to parse.
 	 * @param src

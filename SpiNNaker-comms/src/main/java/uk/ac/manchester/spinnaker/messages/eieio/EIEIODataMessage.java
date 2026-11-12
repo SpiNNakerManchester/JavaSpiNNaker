@@ -291,6 +291,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		private byte count;
 
 		/**
+		 * Construct a EIEIO header for data packets based on the params.
+		 *
 		 * @param eieioType
 		 *            the type of message
 		 * @param tag
@@ -328,6 +330,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		}
 
 		/**
+		 * Construct a EZEIO header for data packets based on the buffer.
+		 *
 		 * @param buffer
 		 *            The buffer to deserialise from.
 		 */

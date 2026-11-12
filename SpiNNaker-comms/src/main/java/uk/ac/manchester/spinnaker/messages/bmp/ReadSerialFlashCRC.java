@@ -32,7 +32,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ReadSerialFlashCRC
 		extends BMPRequest<ReadSerialFlashCRC.Response> {
+
 	/**
+	 * Constructs a request to get the CRC of serial flash memory.
+	 *
 	 * @param board
 	 *            which board's BMP's serial flash should be checked
 	 * @param baseAddress

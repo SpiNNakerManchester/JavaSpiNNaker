@@ -47,6 +47,8 @@ public enum EIEIOType {
 	public final long maxValue;
 
 	/**
+	 * Constructs an EIEIO type.
+	 *
 	 * @param value
 	 *            the value
 	 * @param keyBytes

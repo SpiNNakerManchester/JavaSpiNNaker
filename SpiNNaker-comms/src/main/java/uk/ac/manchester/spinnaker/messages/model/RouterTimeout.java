@@ -39,6 +39,12 @@ public final class RouterTimeout {
 	/** The exponent of the timeout. */
 	public final int exponent;
 
+	/**
+	 * Constructs a router timeout and its value.
+	 *
+	 * @param encodedValue
+	 *     Timeout value
+	 */
 	RouterTimeout(int encodedValue) {
 		mantissa = encodedValue & MASK;
 		exponent = (encodedValue >> SHIFT) & MASK;

@@ -30,6 +30,8 @@ public class UnroutableMessageException
 	public final SDPHeader header;
 
 	/**
+	 * Constructs the unable to send Exception.
+	 *
 	 * @param operation
 	 *            The overall operation that we were doing.
 	 * @param command

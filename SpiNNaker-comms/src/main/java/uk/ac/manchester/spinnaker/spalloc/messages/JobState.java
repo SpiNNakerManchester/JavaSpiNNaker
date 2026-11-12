@@ -119,6 +119,8 @@ public final class JobState {
 		private String keepalivehost;
 
 		/**
+		 * Sets the state of the job.
+		 *
 		 * @param state
 		 *            The state of the job.
 		 */
@@ -127,6 +129,8 @@ public final class JobState {
 		}
 
 		/**
+		 * Sets the flags to say if the board is powered.
+		 *
 		 * @param power
 		 *            whether the job's boards are powered.
 		 */
@@ -135,6 +139,8 @@ public final class JobState {
 		}
 
 		/**
+		 * Sets the keepalive interval.
+		 *
 		 * @param keepAlive
 		 *            The keepalive interval, in seconds.
 		 */
@@ -143,6 +149,8 @@ public final class JobState {
 		}
 
 		/**
+		 * Sets the time the job started.
+		 *
 		 * @param startTime
 		 *            The time the job started, in seconds from the epoch.
 		 */
@@ -151,6 +159,8 @@ public final class JobState {
 		}
 
 		/**
+		 * Sets the reason the job was destroyed.
+		 *
 		 * @param reason
 		 *            The reason why the job was destroyed.
 		 */
@@ -159,6 +169,8 @@ public final class JobState {
 		}
 
 		/**
+		 * Sets the host keeping the job alive.
+		 *
 		 * @param keepalivehost
 		 *            The host keeping the job alive.
 		 */

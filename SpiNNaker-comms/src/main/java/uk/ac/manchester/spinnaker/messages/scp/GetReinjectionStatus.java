@@ -32,7 +32,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class GetReinjectionStatus
 		extends ReinjectorRequest<GetReinjectionStatus.Response> {
+
 	/**
+	 * Constructs a request to get the dropped packet reinjection status.
+	 *
 	 * @param core
 	 *            the monitor core to read from
 	 */

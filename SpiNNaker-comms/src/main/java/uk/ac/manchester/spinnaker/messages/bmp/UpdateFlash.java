@@ -33,6 +33,8 @@ public final class UpdateFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int REAL_FLASH_ADDRESS = 0x10000;
 
 	/**
+	 * Construct a request to update flash memory on a BMP.
+	 *
 	 * @param board
 	 *            the board with the BMP to write the flash of
 	 * @param baseAddress

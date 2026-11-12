@@ -129,6 +129,8 @@ public class CPUInfo implements HasCoreLocation {
 	}
 
 	/**
+	 * Constructs a holder of information about the state of a CPU.
+	 *
 	 * @param location
 	 *            Which core was queried for the information.
 	 * @param buffer
@@ -320,6 +322,8 @@ public class CPUInfo implements HasCoreLocation {
 	}
 
 	/**
+	 * Get the current user value.
+	 *
 	 * @param index
 	 *            Which index in the user array to read. Must be in range 0 to 3
 	 *            (inclusive).

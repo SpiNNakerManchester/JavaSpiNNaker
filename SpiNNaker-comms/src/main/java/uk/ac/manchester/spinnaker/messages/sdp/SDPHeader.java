@@ -166,6 +166,8 @@ public final class SDPHeader implements SerializableMessage {
 	}
 
 	/**
+	 * Sets the destination.
+	 *
 	 * @param destination
 	 *            What "chip" is the message going to. Note that there is a
 	 *            special address for addresses off the machine; that address
@@ -215,6 +217,8 @@ public final class SDPHeader implements SerializableMessage {
 	}
 
 	/**
+	 * Sets the source location.
+	 *
 	 * @param source
 	 *            What "chip" originates the message. Note that there is a
 	 *            special address for origination off the machine; that address
@@ -285,7 +289,7 @@ public final class SDPHeader implements SerializableMessage {
 	/** The meanings of individual flag bits in {@link SDPHeader.Flag}. */
 	private static final class SCAMP {
 		/**
-		 * A secret agent's value!
+		 * A secret agent's value.
 		 * <p>
 		 * Most plausible explanation of this (from a set of one) is that Dave
 		 * Lester thinks that Jamie Knight put it in as a reference to wearing

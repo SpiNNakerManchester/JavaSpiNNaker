@@ -31,6 +31,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	/**
+	 * Constructs a request for the serial data vector.
+	 *
 	 * @param board
 	 *            which board to request the serial data from
 	 */

@@ -38,7 +38,7 @@ public enum TransferUnit {
 	}
 
 	/**
-	 * Is a value an odd number?
+	 * Is a value an odd number.
 	 *
 	 * @param value
 	 *            The value to test

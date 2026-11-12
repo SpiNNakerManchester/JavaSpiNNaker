@@ -39,6 +39,8 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	private final int numEntries;
 
 	/**
+	 * Construct the Router allocate request.
+	 *
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID

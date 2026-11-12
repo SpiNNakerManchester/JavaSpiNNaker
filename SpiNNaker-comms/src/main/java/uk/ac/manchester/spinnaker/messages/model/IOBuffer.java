@@ -38,6 +38,8 @@ public class IOBuffer implements HasCoreLocation {
 	private final byte[] iobuf;
 
 	/**
+	 * Constructs the contents of the IOBUF based on an array of bytes.
+	 *
 	 * @param core
 	 *            The coordinates of a core
 	 * @param contents
@@ -49,6 +51,7 @@ public class IOBuffer implements HasCoreLocation {
 	}
 
 	/**
+	 * Constructs the contents of the IOBUF based on a buffer.
 	 * @param core
 	 *            The coordinates of a core
 	 * @param contents
@@ -61,6 +64,8 @@ public class IOBuffer implements HasCoreLocation {
 	}
 
 	/**
+	 * Constructs the contents of the IOBUF based on various buffers.
+	 *
 	 * @param core
 	 *            The coordinates of a core
 	 * @param contents

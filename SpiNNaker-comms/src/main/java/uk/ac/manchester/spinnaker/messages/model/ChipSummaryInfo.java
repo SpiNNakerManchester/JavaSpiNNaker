@@ -116,6 +116,8 @@ public final class ChipSummaryInfo {
 	}
 
 	/**
+	 * Constructs the representation of the chip summary information.
+	 *
 	 * @param buffer
 	 *            The data from the SCP response
 	 * @param source

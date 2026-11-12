@@ -64,6 +64,8 @@ public class DiagnosticFilter {
 	private final Collection<PacketType> packetTypes;
 
 	/**
+	 * Constructs a router diagnostic counter filter based on the parameters.
+	 *
 	 * @param enableInterruptOnCounterEvent
 	 *            Indicates whether an interrupt should be raised when this rule
 	 *            matches
@@ -119,6 +121,8 @@ public class DiagnosticFilter {
 	}
 
 	/**
+	 * Constructs a router diagnostic counter filter based the encode value.
+	 *
 	 * @param encodedValue
 	 *            The word of data that would be written to the router to set up
 	 *            the filter.
@@ -249,7 +253,7 @@ public class DiagnosticFilter {
 		int bit();
 
 		/**
-		 * Is the bit for this enum value set in the given word?
+		 * Is the bit for this enum value set in the given word.
 		 *
 		 * @param value
 		 *            The word to examine.
@@ -278,6 +282,12 @@ public class DiagnosticFilter {
 		private static final Map<Integer, DefaultRoutingStatus> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a default routing flags for the diagnostic filters.
+		 *
+		 * @param value
+		 *     Flag value.
+		 */
 		DefaultRoutingStatus(int value) {
 			this.bit = value + DEFAULT_ROUTE_OFFSET;
 			this.value = value;
@@ -330,6 +340,12 @@ public class DiagnosticFilter {
 		private static final Map<Integer, Destination> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a destination flag for the diagnostic filters.
+		 *
+		 * @param value
+		 *     Flag value.
+		 */
 		Destination(int value) {
 			this.bit = value + DESTINATION_OFFSET;
 			this.value = value;
@@ -381,6 +397,12 @@ public class DiagnosticFilter {
 		private static final Map<Integer, EmergencyRoutingStatus> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs an emergency routing status flag
+		 *
+		 * @param value
+		 *     Flag value.
+		 */
 		EmergencyRoutingStatus(int value) {
 			this.bit = value + EMERGENCY_ROUTE_OFFSET;
 			this.value = value;
@@ -423,6 +445,12 @@ public class DiagnosticFilter {
 		private static final Map<Integer, PacketType> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a packet type flag for the diagnostic filters
+		 *
+		 * @param value
+		 *     Flag value
+		 */
 		PacketType(int value) {
 			this.bit = value + PACKET_TYPE_OFFSET;
 			this.value = value;
@@ -461,6 +489,12 @@ public class DiagnosticFilter {
 		private static final Map<Integer, PayloadStatus> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a Payload flags for the diagnostic filters.
+		 *
+		 * @param value
+		 *     Value of the payload
+		 */
 		PayloadStatus(int value) {
 			this.bit = value + PAYLOAD_OFFSET;
 			this.value = value;
@@ -505,6 +539,8 @@ public class DiagnosticFilter {
 		}
 
 		/**
+		 * Constructs Payload flags for the diagnostic filters.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.

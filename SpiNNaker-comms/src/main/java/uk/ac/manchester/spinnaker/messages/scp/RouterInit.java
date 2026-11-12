@@ -39,6 +39,8 @@ public class RouterInit extends SCPRequest<EmptyResponse> {
 	private static final int MAX_ENTRIES = 1023;
 
 	/**
+	 * Construct a request to initialise the router.
+	 *
 	 * @param chip
 	 *            The coordinates of the chip to clear the router of
 	 * @param numEntries

@@ -45,7 +45,8 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	}
 
 	/**
-	 * Construct request to read the chip information from a core, possibly with size.
+	 * Construct request to read the chip information from a core,
+	 *     possibly with size.
 	 *
 	 * @param chip
 	 *            the chip to read from

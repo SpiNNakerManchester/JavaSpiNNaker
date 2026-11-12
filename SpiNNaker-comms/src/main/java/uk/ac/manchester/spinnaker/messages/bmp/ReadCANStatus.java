@@ -59,8 +59,8 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 		}
 
 		/**
-		 * @return Ordered sequence of board numbers available to be managed by
-		 *         the BMP.
+		 * {@return Ordered sequence of board numbers available to be managed by
+		 *         the BMP}
 		 */
 		@Override
 		protected MappableIterable<BMPBoard> parse(ByteBuffer buffer) {

@@ -43,7 +43,7 @@ public enum Signal {
 	CONTINUE(7, Type.MULTICAST),
 	/** Tells apps to exit. */
 	EXIT(8, Type.MULTICAST),
-	/** Used for clock synchronisation? */
+	/** Used for clock synchronisation. */
 	TIMER(9, Type.MULTICAST),
 	/** For application use. */
 	USER_0(10, Type.MULTICAST),
@@ -64,6 +64,8 @@ public enum Signal {
 			makeEnumBackingMap(values(), v -> v.value);
 
 	/**
+	 * Constructs a SCP Signal.
+	 *
 	 * @param value
 	 *            the value
 	 * @param type

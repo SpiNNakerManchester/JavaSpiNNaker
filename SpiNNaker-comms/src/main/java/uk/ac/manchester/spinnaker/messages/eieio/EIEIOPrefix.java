@@ -28,6 +28,8 @@ public enum EIEIOPrefix {
 	final int shift;
 
 	/**
+	 * Construct a prefix.
+	 *
 	 * @param value
 	 *            the value
 	 * @param shift

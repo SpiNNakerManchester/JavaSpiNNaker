@@ -39,6 +39,8 @@ public final class FixedRouteInitialise extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Construct a request to set a fixed route int entry.
+	 *
 	 * @param chip
 	 *            The chip to set the route on.
 	 * @param entry
@@ -52,6 +54,8 @@ public final class FixedRouteInitialise extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Construct a request to set this fixed route entry.
+	 *
 	 * @param chip
 	 *            The chip to set the route on.
 	 * @param entry

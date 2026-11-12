@@ -51,6 +51,8 @@ public class SerialVector {
 	private final MemoryLocation cortexBoot;
 
 	/**
+	 * Construct a holder of the data in the serial vector,
+	 *
 	 * @param buffer
 	 *            Where to deserialize the vector from.
 	 */

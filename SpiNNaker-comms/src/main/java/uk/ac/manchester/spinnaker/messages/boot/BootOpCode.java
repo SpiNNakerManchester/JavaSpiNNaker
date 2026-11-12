@@ -41,6 +41,8 @@ enum BootOpCode {
 	}
 
 	/**
+	 * Construct a boot message operation code.
+	 *
 	 * @param opcode
 	 *            The opcode to convert.
 	 * @return The converted opcode, or {@code null} if it was unrecognised.

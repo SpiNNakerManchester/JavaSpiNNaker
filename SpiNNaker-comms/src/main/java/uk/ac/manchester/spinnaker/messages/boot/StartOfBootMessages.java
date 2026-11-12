@@ -23,7 +23,10 @@ import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_STA
  * @author Donal Fellows
  */
 class StartOfBootMessages extends BootMessage {
+
 	/**
+	 * Constructs the message indicating the start and how many packets.
+	 *
 	 * @param numPackets
 	 *            The number of payload packets to be sent.
 	 */

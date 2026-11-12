@@ -49,6 +49,8 @@ public final class SCPResultMessage {
 	private ByteBuffer responseData;
 
 	/**
+	 * Constructs the SCP result message.
+	 *
 	 * @param response
 	 *            The payload of the UDP message, which must be an SDP message
 	 *            without header stripped.

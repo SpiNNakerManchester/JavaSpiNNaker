@@ -45,7 +45,7 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private final int size;
 
 	/**
-	 * Create a request to allocate space in the SDRAM space.
+	 * Create a request to allocate space in the SDRAM space using tag 0.
 	 *
 	 * @param chip
 	 *            the chip to allocate on
@@ -59,6 +59,8 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	/**
+	 * Create a request to allocate space in the SDRAM space using the tag.
+	 *
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID

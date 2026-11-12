@@ -50,6 +50,8 @@ public class UnexpectedResponseCodeException extends Exception {
 	}
 
 	/**
+	 * Constructs exception for an unexpected response.
+	 *
 	 * @param operation
 	 *            The operation being performed
 	 * @param command

@@ -36,6 +36,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	/**
+	 * Construct a request for the IP address data.
+	 *
 	 * @param board
 	 *            which board to request the IP address data from
 	 */

@@ -30,7 +30,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code extra_monitor_support.c}.
  */
 public class ResetReinjectionCounters extends ReinjectorRequest<EmptyResponse> {
+
 	/**
+	 * Construct a request to reset the statistics counters.
+	 *
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */

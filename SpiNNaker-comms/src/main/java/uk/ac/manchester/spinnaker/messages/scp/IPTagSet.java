@@ -59,6 +59,8 @@ public class IPTagSet extends SCPRequest<EmptyResponse> {
 	private static final byte[] INADDR_ANY = new byte[INADDRSZ];
 
 	/**
+	 * Constructs a request to set a (forward) IP Tag.
+	 *
 	 * @param chip
 	 *            The chip to set the tag on.
 	 * @param host

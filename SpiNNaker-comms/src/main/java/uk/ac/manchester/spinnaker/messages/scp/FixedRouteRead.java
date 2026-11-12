@@ -46,6 +46,8 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	}
 
 	/**
+	 * Constructs a request to read a fixed route entry.
+	 *
 	 * @param chip
 	 *            The chip to get the route from.
 	 * @param appID

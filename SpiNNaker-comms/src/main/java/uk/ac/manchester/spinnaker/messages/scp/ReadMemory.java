@@ -43,6 +43,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	}
 
 	/**
+	 * Constructs a read request using this core.
+	 *
 	 * @param core
 	 *            the core to read via
 	 * @param address
@@ -56,6 +58,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	}
 
 	/**
+	 * Constructs a read request using the scamp core on this chip.
+	 *
 	 * @param chip
 	 *            the chip to read via
 	 * @param address

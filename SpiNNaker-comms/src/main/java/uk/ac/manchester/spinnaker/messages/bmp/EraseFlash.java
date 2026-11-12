@@ -36,6 +36,8 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	private static final int MEMORY_LIMIT = 524288;
 
 	/**
+	 * Construct a request to erase flash memory on a BMP.
+	 *
 	 * @param board
 	 *            the board with the BMP to write the memory of
 	 * @param baseAddress

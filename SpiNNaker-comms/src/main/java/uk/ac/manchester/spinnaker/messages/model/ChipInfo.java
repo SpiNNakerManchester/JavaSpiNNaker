@@ -583,8 +583,11 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/**
-	 * {@return The physical core ID to virtual core ID map; entries with a value
-	 *         of 0xFF are non-operational cores}
+	 * The physical core ID to virtual core ID map.
+	 *
+	 * Entries with a value of 0xFF are non-operational cores
+	 *
+	 * @return The physical core ID to virtual core ID map
 	 */
 	public byte[] getPhysicalToVirtualCoreMap() {
 		return physicalToVirtualCoreMap;

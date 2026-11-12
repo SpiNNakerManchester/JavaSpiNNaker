@@ -42,7 +42,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @see CountState
  */
 public class SendSignal extends SCPRequest<EmptyResponse> {
+
 	/**
+	 * Construct a request to send a signal to cores.
+	 *
 	 * @param appID
 	 *            The ID of the application to signal (only for multicast
 	 *            signals).

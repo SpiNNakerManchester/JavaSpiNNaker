@@ -36,6 +36,9 @@ public abstract class RouterTableRequest extends SCPRequest<EmptyResponse> {
 	private final RouterTableCommand cmd;
 
 	/**
+	 * Construct a command message to an extra monitor control core
+	 * to manipulate the router table.
+	 *
 	 * @param core
 	 *            Where to send the request.
 	 * @param command

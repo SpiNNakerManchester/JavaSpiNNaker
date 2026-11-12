@@ -46,6 +46,8 @@ public class FloodFillData extends SCPRequest<EmptyResponse> {
 			(FORWARD_LINKS << BYTE3) | ((DELAY | DATA_RESEND) << BYTE2);
 
 	/**
+	 * Constructs a request to flood fill some byte data.
+	 *
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 * @param blockNumber
@@ -63,6 +65,8 @@ public class FloodFillData extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Constructs a request to flood fill with some of the byte data.
+	 *
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 * @param blockNumber
@@ -85,6 +89,8 @@ public class FloodFillData extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Constructs a request to flood fill some byte buffer data.
+	 *
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 * @param blockNumber

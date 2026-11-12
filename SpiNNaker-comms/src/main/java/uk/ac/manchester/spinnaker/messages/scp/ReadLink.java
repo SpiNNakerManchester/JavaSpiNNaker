@@ -44,6 +44,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	}
 
 	/**
+	 * Constructs a read request on the core.
+	 *
 	 * @param core
 	 *            the core to read via
 	 * @param link
@@ -60,6 +62,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	}
 
 	/**
+	 * Constructs a read request on the scamp core of this chip.
+	 *
 	 * @param chip
 	 *            the chip to read via
 	 * @param link

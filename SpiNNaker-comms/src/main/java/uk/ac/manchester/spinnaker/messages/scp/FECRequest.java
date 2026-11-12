@@ -33,7 +33,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
  */
 // TODO Seal in 17
 public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
+
 	/**
+	 * Constructs a command message using default (0) arguements.
+	 *
 	 * @param core
 	 *            Where to send the request.
 	 * @param replyExpected
@@ -47,6 +50,8 @@ public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 	}
 
 	/**
+	 * Constructs a command message using given arguments
+
 	 * @param core
 	 *            Where to send the request.
 	 * @param replyExpected
