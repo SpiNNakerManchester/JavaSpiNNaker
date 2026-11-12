@@ -88,7 +88,7 @@ public final class BoardCoordinates {
 	}
 
 	/**
-	 * {}@return the Y coordinate}
+	 * {@return the Y coordinate}
 	 */
 	public int getY() {
 		return y;

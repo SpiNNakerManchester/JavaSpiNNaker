@@ -25,7 +25,7 @@ public class ReturnResponse implements Response {
 	private String returnValue;
 
 	/**
-	 * {}@return The returned value, as a string}
+	 * {@return The returned value, as a string}
 	 */
 	public String getReturnValue() {
 		return returnValue;

@@ -473,7 +473,7 @@ public final class Blacklist implements Serializable {
 	}
 
 	/**
-	 * {}@return The links on the board that are blacklisted}
+	 * {@return The links on the board that are blacklisted}
 	 */
 	public Map<ChipLocation, Set<Direction>> getLinks() {
 		return unmodifiableMap(links);
