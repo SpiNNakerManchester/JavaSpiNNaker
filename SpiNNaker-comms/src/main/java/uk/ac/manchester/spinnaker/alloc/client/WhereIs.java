@@ -101,7 +101,7 @@ public final class WhereIs {
 	}
 
 	/**
-	 * {}@return The global location of the chip at the root of the job
+	 * {@return The global location of the chip at the root of the job
 	 *         allocation, if one exists}
 	 */
 	public ChipLocation getJobChip() {
