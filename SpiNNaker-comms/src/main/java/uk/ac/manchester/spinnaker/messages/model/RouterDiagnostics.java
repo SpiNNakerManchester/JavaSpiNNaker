@@ -100,22 +100,30 @@ public class RouterDiagnostics {
 		return registerValues[r.ordinal()];
 	}
 
-	/** {@return The number of multicast packets received from local cores} */
+	/**
+	 * {@return The number of multicast packets received from local cores}
+	 */
 	public int getNumLocalMulticastPackets() {
 		return register(LOC_MC);
 	}
 
-	/** {@return The number of multicast packets received from external links} */
+	/**
+	 * {@return The number of multicast packets received from external links}
+	 */
 	public int getNumExternalMulticastPackets() {
 		return register(EXT_MC);
 	}
 
-	/** {@return The number of multicast packets received that were dropped} */
+	/**
+	 * {@return The number of multicast packets received that were dropped}
+	 */
 	public int getNumDroppedMulticastPackets() {
 		return register(DUMP_MC);
 	}
 
-	/** {@return The number of peer-to-peer packets received from local cores} */
+	/**
+	 * {@return The number of peer-to-peer packets received from local cores}
+	 */
 	public int getNumLocalPeerToPeerPackets() {
 		return register(LOC_PP);
 	}
@@ -135,8 +143,8 @@ public class RouterDiagnostics {
 	}
 
 	/**
-	 * {@return The number of nearest-neighbour packets received from local
-	 *         cores}
+	 * {@return The number of nearest-neighbour packets
+	 *     received from local cores}
 	 */
 	public int getNumLocalNearestNeighbourPackets() {
 		return register(LOC_NN);
@@ -172,7 +180,10 @@ public class RouterDiagnostics {
 		return register(EXT_FR);
 	}
 
-	/** {@return The number of fixed-route packets received that were dropped} */
+	/**
+	 * {@return The number of fixed-route packets received
+	 *    that were dropped}
+	 */
 	public int getNumDroppedFixedRoutePackets() {
 		return register(DUMP_FR);
 	}
