@@ -433,7 +433,11 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private Machine machine;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <machineFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public MachineParam() {
 		}
 
@@ -471,7 +475,11 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private IobufRequest request;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <iobufMapFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public IobufMapParam() {
 		}
 
@@ -508,7 +516,11 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private Supplier<List<Gather>> gatherers;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <gatherFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public GatherersParam() {
 		}
 
@@ -548,7 +560,11 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private Supplier<List<Placement>> placements;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <placementFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public PlacementsParam() {
 		}
 
@@ -586,7 +602,11 @@ public final class CommandLineInterface {
 			arity = "1")
 		private ValueHolder<File> logfile = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <logfile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public LogfileParam() {
 		}
 
@@ -625,7 +645,11 @@ public final class CommandLineInterface {
 			arity = "1")
 		private ValueHolder<File> iobufDir = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <iobufDir>} parameter.
+		 *
+		 * @hidden
+		 */
 		public IobufDirParam() {
 		}
 
@@ -665,7 +689,11 @@ public final class CommandLineInterface {
 				arity = "1")
 		private ValueHolder<File> dbFile = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <dbFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public DbFileParam() {
 		}
 
@@ -705,7 +733,11 @@ public final class CommandLineInterface {
 				arity = "1")
 		private ValueHolder<File> dsFile = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <dsFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public DsFileParam() {
 		}
 

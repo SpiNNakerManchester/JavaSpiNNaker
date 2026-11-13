@@ -55,6 +55,8 @@ public class IobufRequest {
 	private Map<@NotNull File, @Valid CoreSubsets> requestMap;
 
 	/**
+	 * Construct a request to read some IOBUFs.
+	 *
 	 * @param map
 	 *            A mapping from fully qualified filenames to an array of
 	 *            sub-arrays of integers, where each sub-array is three elements

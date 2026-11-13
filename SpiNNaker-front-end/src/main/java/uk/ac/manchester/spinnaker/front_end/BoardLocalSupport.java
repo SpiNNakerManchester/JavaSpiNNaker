@@ -53,6 +53,9 @@ public abstract class BoardLocalSupport {
 	protected final Machine machine;
 
 	/**
+	 * Constructs an object for making things easier to do
+	 *     on a per-board basis.
+	 *
 	 * @param storage
 	 *            Database containing information about how to speak to the
 	 *            proxy.
@@ -114,6 +117,9 @@ public abstract class BoardLocalSupport {
 		private MDCCloseable context;
 
 		/**
+		 * Constructs a context that can be pushed to state in logging
+		 *     what board is the root.
+		 *
 		 * @param chipLocation
 		 *            The location of a chip on its board.
 		 */
