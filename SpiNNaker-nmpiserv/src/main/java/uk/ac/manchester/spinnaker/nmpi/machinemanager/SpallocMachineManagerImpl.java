@@ -236,10 +236,10 @@ public class SpallocMachineManagerImpl implements MachineManager {
 		/**
 		 * Get the next response.
 		 *
-		 * @param responseType
-		 *            The type expected.
 		 * @param <T>
 		 *            The type of the response.
+		 * @param responseType
+		 *            The type expected.
 		 * @return The decoded response, or null if cancelled.
 		 * @throws IOException
 		 *             If the response failed to be read.

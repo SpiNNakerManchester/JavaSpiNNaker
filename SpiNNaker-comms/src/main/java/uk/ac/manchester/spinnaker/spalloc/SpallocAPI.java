@@ -500,11 +500,11 @@ public interface SpallocAPI {
 	 *            The machine to request (or cancel requests) about, or
 	 *            {@code null} to be notified/not notified about all machines
 	 *            (known to spalloc).
+	 * @param enable
+	 *            True to enable notifications, false to disable them.
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or {@code null} to wait forever.
-	 * @param enable
-	 *            True to enable notifications, false to disable them.
 	 * @see MachinesChangedNotification
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.

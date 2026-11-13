@@ -66,10 +66,10 @@ public class ChipDetails {
 	 *
 	 * @param cores
 	 *            Total number of cores working cores including monitors.
-	 * @param ipAddress
-	 *            the IP address to set
 	 * @param ethernet
 	 *            Location of the nearest Ethernet-enabled chip.
+	 * @param ipAddress
+	 *            the IP address to set
 	 * @param links
 	 *            Description of link information (only present when the links
 	 *            are not a complete default set).

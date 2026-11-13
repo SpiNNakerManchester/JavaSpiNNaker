@@ -183,12 +183,12 @@ public interface SpallocServiceAPI {
 	 *
 	 * @param wait
 	 *            Whether we are waiting for a change with a long query
+	 * @param destroyed
+	 *            Whether to include destroyed jobs
 	 * @param limit
 	 *            Paging support: how many values to bring back
 	 * @param start
 	 *            Paging support: where in the sequence to start
-	 * @param destroyed
-	 *            Whether to include destroyed jobs
 	 * @param ui
 	 *            How to build URIs
 	 * @param response
@@ -280,7 +280,9 @@ public interface SpallocServiceAPI {
 	 * Immediately stop all jobs and power down all boards.
 	 *
 	 * @param commandCode
+	 *     Code to validate the request.
 	 * @param response
+	 *     Injected AsyncResponse to handle requests asynchronously
 	 */
 	@GET
 	@Description("Immediately stop all jobs and power down all boards,"
