@@ -16,7 +16,6 @@
 package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.joining;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -50,9 +49,7 @@ public class BasicAuthEntryPoint implements AuthenticationEntryPoint {
 	}
 
 	private String openidChallenge() {
-		var scopes = props.getOpenid().getScopes();
-		return format("Bearer realm=\"%s\", scope=\"%s\"", //
-				props.getRealm(), scopes.stream().collect(joining(", ")));
+		return format("Bearer realm=\"%s\"", props.getRealm());
 	}
 
 	@Override

@@ -45,10 +45,11 @@ limitations under the License.
 	</table>
 </form>
 <p>
-<form method="GET"
-		action="${ loginOidcUri }">
-	Alternatively, <input type="submit" value="log in with HBP/EBRAINS">
+<c:forEach var="entry" items="${ loginOidcProviders}">
+<form method="GET" action="${ entry.value }">
+	<input type="submit" value="Log in with ${entry.key}"/>
 </form>
+</c:forEach>
 
 </body>
 </html>

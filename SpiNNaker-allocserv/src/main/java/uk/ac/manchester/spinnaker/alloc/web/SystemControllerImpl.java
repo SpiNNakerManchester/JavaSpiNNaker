@@ -32,7 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.MAIN_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.CHANGE_PASSWORD_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGOUT_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_URI;
-import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_OIDC_URI;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_OIDC_PROVIDERS;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_CSS_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.SPALLOC_JS_URI;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.LOGIN_PATH;
@@ -59,6 +59,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -147,6 +148,9 @@ public class SystemControllerImpl implements SystemController {
 	@Autowired
 	private ServiceVersion version;
 
+	@Autowired(required = false)
+	private InMemoryClientRegistrationRepository oauth2Providers;
+
 	/**
 	 * All models should contain a common set of attributes that describe where
 	 * the view is rendering and where other parts of the admin interface are.
@@ -223,8 +227,15 @@ public class SystemControllerImpl implements SystemController {
 	public ModelAndView login() {
 		var mav = LOGIN_VIEW.view();
 		var model = mav.getModel();
+		Map<String, String> providers = new java.util.HashMap<>();
+		if (nonNull(oauth2Providers)) {
+			oauth2Providers.forEach(reg -> providers.put(
+					reg.getClientName(),
+					urlMaker.systemUrl(
+							LOGIN_OIDC_PATH + reg.getRegistrationId())));
+		}
 		model.put(LOGIN_URI, urlMaker.systemUrl(LOGIN_PATH));
-		model.put(LOGIN_OIDC_URI, urlMaker.systemUrl(LOGIN_OIDC_PATH));
+		model.put(LOGIN_OIDC_PROVIDERS, providers);
 		return mav;
 	}
 

@@ -62,7 +62,7 @@ server:
       # NOTE: Make sure this is longer than spalloc.keepalive.max
       timeout: 30m
   error:
-    include-message: always  
+    include-message: always
 
 cxf:
   path: /spalloc/srv
@@ -127,6 +127,8 @@ spalloc:
       specific-board: 65.0
     # Number of reports of board problems at which the board is taken out of service.
     report-action-threshold: 2
+    # Emergency stop command code - REPLACE this!
+    emergency-stop-command-code: REPLACE-ME!
   # Sending of emails relating to board problems: where to, etc.
   report-email:
     # In addition to configuring the email sender, you need to turn on
@@ -157,26 +159,18 @@ spalloc:
     unlock-period: 60s
     openid:
       # Support OIDC
-      registration-id: hbp-ebrains
       enable: true
-      auth-grant-type: authorization_code
-      auth: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
-      token: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
-      userinfo: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
-      jwk-set: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/certs
-      issuer: https://iam.ebrains.eu/auth/realms/hbp
-      introspection: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
-      scopes: [ openid, profile, roles, email, team, group ]
-      redirect: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
-      # The credentials for HBP/EBRAINS go here
-      id: spalloc
-      secret: XYZZY_OVERRIDE_THIS
       # Prefix all OpenID-sourced names with this
       username-prefix: "openid."
       # These are generated during build by maven; don't change
       truststore-type: PKCS12
       truststore-path: classpath:/truststore.p12
       truststore-password: hunter2
+      introspection-uris:
+        hbp-ebrains: 
+          type: spring
+          uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
+          username_property: preferred_username
   quota:
     # Default user quota in board-seconds
     default-quota: 130
@@ -273,17 +267,17 @@ spring:
       client:
         registration:
           hbp-ebrains:
-            client-id: ${spalloc.auth.openid.id}
-            client-secret: ${spalloc.auth.openid.secret}
-            # Repeated from spalloc.auth.openid.scopes, but can't share!
+            client-name: HBP / EBRAINS
+            # The credentials for HBP/EBRAINS go here
+            client-id: spalloc
+            client-secret: XYZZY_OVERRIDE_THIS
             scope: [ openid, profile, roles, email, team, group ]
-            authorization-grant-type: ${spalloc.auth.openid.auth-grant-type}
-            redirect-uri: ${spalloc.auth.openid.redirect}
+            authorization-grant-type: authorization_code
+            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
         provider:
           hbp-ebrains:
-            # issuer-uri: ${spalloc.auth.openid.issuer}
-            authorization-uri: ${spalloc.auth.openid.auth}
-            token-uri: ${spalloc.auth.openid.token}
-            user-info-uri: ${spalloc.auth.openid.userinfo}
-            jwk-set-uri: ${spalloc.auth.openid.jwk-set}
+            authorization-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
+            token-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
+            user-info-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
+            jwk-set-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/certs
             user-name-attribute: preferred_username

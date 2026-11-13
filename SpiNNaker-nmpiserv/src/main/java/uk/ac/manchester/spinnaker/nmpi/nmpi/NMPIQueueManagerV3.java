@@ -265,7 +265,11 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 
 		final var outputData = new OutputData(REPOSITORY);
 		final var job = new JobDone(STATUS_FINISHED);
-		outputData.setFiles(outputs);
+		if (nonNull(outputs)) {
+			outputData.setFiles(outputs);
+		} else {
+			outputData.setFiles(List.of());
+		}
 		job.setOutputData(outputData);
 		job.setTimestampCompletion(new DateTime(UTC));
 		job.setProvenance(provenance);
@@ -315,7 +319,11 @@ public class NMPIQueueManagerV3 implements NMPIQueueManager {
 
 		final var job = new JobDone(STATUS_ERROR);
 		final var outputData = new OutputData(REPOSITORY);
-		outputData.setFiles(outputs);
+		if (nonNull(outputs)) {
+			outputData.setFiles(outputs);
+		} else {
+			outputData.setFiles(List.of());
+		}
 		job.setTimestampCompletion(new DateTime(UTC));
 		job.setOutputData(outputData);
 		job.setProvenance(provenance);
