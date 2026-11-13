@@ -135,6 +135,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request for this owner.
+	 *
 	 * @param owner
 	 *            The name of the owner of this job. <strong>Required.</strong>
 	 * @return {@code this} (fluent interface)
@@ -147,6 +149,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request specifying how long to keep it alive.
+	 *
 	 * @param keepalive
 	 *            The maximum number of seconds which may elapse between a query
 	 *            on this job before it is automatically destroyed. If
@@ -160,6 +164,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request specifying how long to keep it alive.
+	 *
 	 * @param keepalive
 	 *            The maximum number of seconds which may elapse between a query
 	 *            on this job before it is automatically destroyed. (Default:
@@ -173,6 +179,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request specifying how long to keep it alive.
+	 *
 	 * @param keepalive
 	 *            The maximum amount of time which may elapse between a query on
 	 *            this job before it is automatically destroyed. (Default: 60
@@ -194,6 +202,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request for the specified machine.
+	 *
 	 * @param machine
 	 *            Specify the name of a machine which this job must be executed
 	 *            on. If not specified, the first suitable machine available
@@ -214,6 +224,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request with required tags.
+	 *
 	 * @param tags
 	 *            The set of tags which any machine running this job must have.
 	 *            If none are supplied, only machines with the “{@code default}”
@@ -241,6 +253,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request with request to make it near square.
+	 *
 	 * @param minRatio
 	 *            The aspect ratio (h/w) which the allocated region must be ‘at
 	 *            least as square as’. Set to {@code 0.0} for any allowable
@@ -255,6 +269,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request with a  maximum number of broken boards.
+	 *
 	 * @param maxDeadBoards
 	 *            The maximum number of broken or unreachable boards to allow in
 	 *            the allocated region. If unspecified, any number of dead
@@ -269,6 +285,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Constructs a job request with a  maximum number of broken links.
+	 *
 	 * @param maxDeadLinks
 	 *            The maximum number of broken links allow in the allocated
 	 *            region. When {@code require_torus} is true this includes
@@ -297,6 +315,8 @@ public class CreateJob {
 	}
 
 	/**
+	 * Deprecated Constructor.
+	 *
 	 * @param requireTorus
 	 *            If {@code true}, only allocate blocks with torus connectivity.
 	 *            In general this will only succeed for requests to allocate an

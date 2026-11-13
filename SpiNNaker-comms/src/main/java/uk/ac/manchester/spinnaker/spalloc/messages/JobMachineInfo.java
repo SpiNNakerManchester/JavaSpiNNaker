@@ -43,6 +43,8 @@ public final class JobMachineInfo {
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
 
 	/**
+	 * Constructs a description of a machine.
+	 *
 	 * @param width
 	 *            The width of the allocated machine chunk.
 	 * @param height

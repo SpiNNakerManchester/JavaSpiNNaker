@@ -30,6 +30,8 @@ import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 /** Load a fixed route routing entry onto a chip, and read it back again. */
 class FixedRouteControlProcess extends TxrxProcess {
 	/**
+	 * Construct a process for loading fixed routes.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

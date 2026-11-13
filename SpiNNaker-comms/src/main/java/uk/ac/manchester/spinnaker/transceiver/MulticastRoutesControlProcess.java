@@ -59,6 +59,8 @@ class MulticastRoutesControlProcess extends TxrxProcess {
 	private final Transceiver txrx;
 
 	/**
+	 * Constructs the process for reading and writing the routing table.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

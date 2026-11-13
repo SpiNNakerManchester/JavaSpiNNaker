@@ -77,6 +77,8 @@ class BMPCommandProcess {
 	private final RetryTracker retryTracker;
 
 	/**
+	 * Construct a process for a BMP command with the default timeout.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -90,6 +92,8 @@ class BMPCommandProcess {
 	}
 
 	/**
+	 * Construct a process for a BMP command with the specified timeout.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param timeout

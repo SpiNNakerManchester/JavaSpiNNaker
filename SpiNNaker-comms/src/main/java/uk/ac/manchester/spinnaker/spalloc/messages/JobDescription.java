@@ -62,6 +62,8 @@ public final class JobDescription {
 	private static final int PRINT_EXACT_BOARDS_THRESHOLD = 6;
 
 	/**
+	 * Constructs the job description based on the provided details.
+	 *
 	 * @param jobID
 	 *            The job's identifier
 	 * @param owner
@@ -252,6 +254,8 @@ public final class JobDescription {
 		private String keepAliveHost;
 
 		/**
+		 * Sets the job ID.
+		 *
 		 * @param jobID
 		 *            The job's identifier.
 		 */
@@ -261,6 +265,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the jobs owner.
+		 *
 		 * @param owner
 		 *            The job's owner.
 		 */
@@ -269,6 +275,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the time the job started in seconds,
+		 *
 		 * @param startTime
 		 *            When the job started, in seconds from the epoch.
 		 */
@@ -278,6 +286,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the job state.
+		 *
 		 * @param state
 		 *            The job state.
 		 */
@@ -286,6 +296,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Set if the job's allocated boards are powered on.
+		 *
 		 * @param power
 		 *            Whether the job's allocated boards are powered on.
 		 */
@@ -294,6 +306,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets TThe job's maximum keepalive interval, in seconds.
+		 *
 		 * @param keepAlive
 		 *            The job's maximum keepalive interval, in seconds.
 		 */
@@ -303,6 +317,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the reason why the job terminated.
+		 *
 		 * @param reason
 		 *            The reason why the job terminated.
 		 */
@@ -311,6 +327,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Set the name of the machine that the job is allocated to.
+		 *
 		 * @param machine
 		 *            The name of the machine that the job is allocated to.
 		 */
@@ -320,6 +338,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the positional arguments used to create the job.
+		 *
 		 * @param args
 		 *            The positional arguments used to create the job.
 		 */
@@ -328,6 +348,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the keyword arguments used to create the job.
+		 *
 		 * @param kwargs
 		 *            The keyword arguments used to create the job.
 		 */
@@ -338,6 +360,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the location of boards allocated.
+		 *
 		 * @param boards
 		 *            The boards allocated to the job and their locations.
 		 */
@@ -346,6 +370,8 @@ public final class JobDescription {
 		}
 
 		/**
+		 * Sets the host to keep alive.
+		 *
 		 * @param keepAliveHost
 		 *            The host believed to be keeping the job alive.
 		 */

@@ -57,7 +57,7 @@ public class BMPConnectionData {
 	public final Integer portNumber;
 
 	/**
-	 * Constructs the details of a connection to a BMP based on cabinet and Frame.
+	 * Constructs the details of a connection based on cabinet and Frame.
 	 *
 	 * @param cabinet
 	 *            The number of the cabinet containing the frame.

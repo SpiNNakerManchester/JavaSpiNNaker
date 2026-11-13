@@ -66,6 +66,8 @@ class RuntimeControlProcess extends TxrxProcess {
 			new DefaultMap<>(TreeMap::new);
 
 	/**
+	 * Constructs a process for controlling a running application.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -312,7 +314,7 @@ class RuntimeControlProcess extends TxrxProcess {
 		}
 
 		/**
-		 * @return the message implied by this object
+		 * {@return the message implied by this object}
 		 */
 		ReadMemory message() {
 			return new ReadMemory(core.getScampCore(), base, size);
@@ -339,7 +341,7 @@ class RuntimeControlProcess extends TxrxProcess {
 		}
 
 		/**
-		 * @return the message implied by this object
+		 * {@return the message implied by this object}
 		 */
 		ReadMemory message() {
 			return new ReadMemory(core.getScampCore(), base, size);

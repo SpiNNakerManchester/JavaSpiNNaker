@@ -30,7 +30,10 @@ import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
 
 /** Gets IP tags and reverse IP tags. */
 class GetTagsProcess extends TxrxProcess {
+
 	/**
+	 * Construct a process to get IP tags and reverse IP tag
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

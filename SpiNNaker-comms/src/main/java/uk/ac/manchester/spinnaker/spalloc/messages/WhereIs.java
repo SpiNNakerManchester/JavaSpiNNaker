@@ -183,6 +183,8 @@ public final class WhereIs {
 		private BoardPhysicalCoordinates physical;
 
 		/**
+		 * Set the chip location relative to the job's allocation.
+		 *
 		 * @param jobChip
 		 *            The chip location relative to the job's allocation.
 		 */
@@ -191,6 +193,8 @@ public final class WhereIs {
 		}
 
 		/**
+		 * Sets the job id.
+		 *
 		 * @param jobId
 		 *            The job id.
 		 */
@@ -199,6 +203,8 @@ public final class WhereIs {
 		}
 
 		/**
+		 * Set the absolute chip location.
+		 *
 		 * @param chip
 		 *            The absolute chip location.
 		 */
@@ -207,6 +213,8 @@ public final class WhereIs {
 		}
 
 		/**
+		 * Set the logical coordinates of the board.
+		 *
 		 * @param logical
 		 *            The logical coordinates of the board.
 		 */
@@ -215,6 +223,8 @@ public final class WhereIs {
 		}
 
 		/**
+		 * Set the name of the machine.
+		 *
 		 * @param machine
 		 *            The name of the machine.
 		 */
@@ -223,6 +233,8 @@ public final class WhereIs {
 		}
 
 		/**
+		 * Set the chip location relative to its board.
+		 *
 		 * @param boardChip
 		 *            The chip location relative to its board.
 		 */
@@ -231,6 +243,8 @@ public final class WhereIs {
 		}
 
 		/**
+		 * Sets the physical coordinates of the board.
+		 *
 		 * @param physical
 		 *            The physical coordinates of the board.
 		 */

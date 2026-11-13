@@ -33,7 +33,10 @@ import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
 /** A process for reading serial flash on a BMP. */
 class BMPReadSerialFlashProcess extends BMPCommandProcess {
+
 	/**
+	 * Constructs a process for reading serial flash.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

@@ -226,6 +226,8 @@ final class ClientSession implements Session {
 		private Exception failure;
 
 		/**
+		 * Constructs a websocket client.
+		 *
 		 * @param uri
 		 *            The address of the websocket.
 		 */
@@ -400,6 +402,8 @@ final class ClientSession implements Session {
 			private final BlockingQueue<ByteBuffer> receiveQueue;
 
 			/**
+			 * Constructs a base class for channels routed via the proxy.
+			 *
 			 * @param id
 			 *            The ID of the channel.
 			 * @param receiveQueue
@@ -477,7 +481,10 @@ final class ClientSession implements Session {
 		 */
 		private class ConnectedChannelImpl extends ChannelBase
 				implements ProxyProtocolClient.ConnectedChannel {
+
 			/**
+			 * Constructs a channel that is connected to a particular board.
+			 *
 			 * @param id
 			 *            The ID of the channel.
 			 * @param receiveQueue
@@ -514,6 +521,9 @@ final class ClientSession implements Session {
 			private final int port;
 
 			/**
+			 * Constructs a channel that is
+			 *     not connected to any particular board.
+			 *
 			 * @param id
 			 *            The ID of the channel.
 			 * @param addr

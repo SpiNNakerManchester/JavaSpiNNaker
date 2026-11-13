@@ -51,6 +51,8 @@ public class JobsChangedNotification implements Notification {
 	}
 
 	/**
+	 * Constructs a response that describes what jobs have changed state.
+	 *
 	 * @param jobsChanged
 	 *            What jobs have changed.
 	 */

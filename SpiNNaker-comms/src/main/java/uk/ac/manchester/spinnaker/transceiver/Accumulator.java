@@ -163,6 +163,8 @@ interface Accumulator<T> {
 		}
 
 		/**
+		 * Finish the process.
+		 *
 		 * @return Nothing; caller should already know the data stream and file.
 		 * @throws IOException
 		 *             if any of the writes to the file failed.

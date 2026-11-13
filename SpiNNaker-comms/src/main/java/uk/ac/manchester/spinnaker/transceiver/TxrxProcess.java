@@ -247,6 +247,8 @@ public class TxrxProcess {
 	private Failure failure;
 
 	/**
+	 * Construct a process for talking to SpiNNaker with default setting.
+	 *
 	 * @param <Conn>
 	 *            The type of connection.
 	 * @param connectionSelector
@@ -264,6 +266,8 @@ public class TxrxProcess {
 	}
 
 	/**
+	 * Construct a process for talking to SpiNNaker with specified setting.
+	 *
 	 * @param <Conn>
 	 *            The type of connection.
 	 * @param connectionSelector
@@ -950,6 +954,9 @@ public class TxrxProcess {
 		private static final long serialVersionUID = -7911020002602751941L;
 
 		/**
+		 * Constructs a timeout exception recording the request
+		 *     and how long it was tried.
+
 		 * @param req
 		 *            The request that timed out.
 		 * @param timeout
@@ -969,6 +976,9 @@ public class TxrxProcess {
 		private static final long serialVersionUID = -5555562816486761027L;
 
 		/**
+		 * Constructs a fail to send exception recording the request
+		 *     and how many times it was tried.
+		 *
 		 * @param req
 		 *            The request that timed out.
 		 * @param numRetries

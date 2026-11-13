@@ -22,6 +22,8 @@ public class SpallocProtocolException extends IOException {
 	private static final long serialVersionUID = -1591596793445886688L;
 
 	/**
+	 * Constructs a protocol exception base on another exception.
+	 *
 	 * @param cause
 	 *            The cause of this exception.
 	 */
@@ -30,6 +32,8 @@ public class SpallocProtocolException extends IOException {
 	}
 
 	/**
+	 * Constructs a protocol exception base o string.
+	 *
 	 * @param msg
 	 *            The message of this exception.
 	 */

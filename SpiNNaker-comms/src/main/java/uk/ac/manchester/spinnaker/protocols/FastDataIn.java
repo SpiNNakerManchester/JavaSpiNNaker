@@ -351,6 +351,8 @@ public class FastDataIn implements AutoCloseable {
 	}
 
 	/**
+	 * Constructs a message indicating the start of the data.
+	 *
 	 * @param boardLocalDestination
 	 *            The destination for the data on the board being used.
 	 * @param baseAddress
@@ -375,6 +377,8 @@ public class FastDataIn implements AutoCloseable {
 	}
 
 	/**
+	 * Construct a message containing a chunk of the data.
+	 *
 	 * @param data
 	 *            The overall data to be transmitted.
 	 * @param seqNum

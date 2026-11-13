@@ -36,6 +36,8 @@ public class Machine {
 	private List<BoardLink> deadLinks = List.of();
 
 	/**
+	 * Constructs the machine with the provided details.
+	 *
 	 * @param name
 	 *            The name of the machine.
 	 * @param tags
