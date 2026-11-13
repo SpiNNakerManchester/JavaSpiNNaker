@@ -148,14 +148,14 @@ public class Gather implements HasCoreLocation {
 	}
 
 	/**
-	 * @return the iptag
+	 * {@return the iptag}
 	 */
 	public IPTag getIptag() {
 		return iptag;
 	}
 
 	/**
-	 * @return the monitors (read-only)
+	 * {@return the monitors (read-only)}
 	 */
 	public List<Monitor> getMonitors() {
 		return monitors;

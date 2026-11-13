@@ -99,8 +99,8 @@ public class IobufRequest {
 	}
 
 	/**
-	 * @return The mapping from executables to the cores on which they are
-	 *         running.
+	 * {@return The mapping from executables to the cores on which they are
+	 *         running}
 	 */
 	@JsonIgnore
 	public Map<File, CoreSubsets> getRequestDetails() {

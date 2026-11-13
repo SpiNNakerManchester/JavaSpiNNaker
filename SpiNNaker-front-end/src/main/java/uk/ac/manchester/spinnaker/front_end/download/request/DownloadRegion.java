@@ -59,21 +59,21 @@ public class DownloadRegion {
 	}
 
 	/**
-	 * @return The index of the region.
+	 * {@return The index of the region}
 	 */
 	public int getIndex() {
 		return index;
 	}
 
 	/**
-	 * @return The address of the region.
+	 * {@return The address of the region}
 	 */
 	public MemoryLocation getAddress() {
 		return address;
 	}
 
 	/**
-	 * @return The size of the region.
+	 * {@return The size of the region}
 	 */
 	public int getSize() {
 		return size;

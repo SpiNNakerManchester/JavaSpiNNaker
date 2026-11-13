@@ -97,7 +97,9 @@ public class Placement implements HasCoreLocation {
 		return p;
 	}
 
-	/** @return The information about the vertex. */
+	/**
+	 * {@return The information about the vertex}
+	 */
 	public Vertex getVertex() {
 		return vertex;
 	}

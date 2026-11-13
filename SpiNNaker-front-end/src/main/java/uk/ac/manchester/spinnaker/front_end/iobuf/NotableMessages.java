@@ -50,14 +50,14 @@ public class NotableMessages {
 	}
 
 	/**
-	 * @return The notable errors in the IOBUFs.
+	 * {@return The notable errors in the IOBUFs}
 	 */
 	public List<String> getErrors() {
 		return errors;
 	}
 
 	/**
-	 * @return The notable warnings in the IOBUFs.
+	 * {@return The notable warnings in the IOBUFs}
 	 */
 	public List<String> getWarnings() {
 		return warnings;

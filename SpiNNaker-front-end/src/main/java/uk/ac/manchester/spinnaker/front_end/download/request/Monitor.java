@@ -95,7 +95,7 @@ public class Monitor implements HasCoreLocation {
 	}
 
 	/**
-	 * @return the placements (read-only)
+	 * {@return the placements (read-only)}
 	 */
 	public List<Placement> getPlacements() {
 		return placements;
