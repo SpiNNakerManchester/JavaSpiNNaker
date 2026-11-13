@@ -33,7 +33,10 @@ import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
 /** A process for reading memory on a BMP. */
 class BMPReadMemoryProcess extends BMPCommandProcess {
+
 	/**
+	 * Construct a process for reading memory.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

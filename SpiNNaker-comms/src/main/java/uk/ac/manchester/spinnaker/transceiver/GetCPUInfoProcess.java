@@ -33,7 +33,10 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * Get the CPU information structure for a set of processors.
  */
 class GetCPUInfoProcess extends TxrxProcess {
+
 	/**
+	 * Constructs a CPU information structure.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

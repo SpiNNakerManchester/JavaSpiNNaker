@@ -76,6 +76,8 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 	}
 
 	/**
+	 * Receive a message.
+	 *
 	 * @param timeout
 	 *            How long to wait for an IP address; {@code null} for forever.
 	 * @return The IP address, or {@code null} if none was forthcoming.
