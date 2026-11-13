@@ -326,11 +326,11 @@
 <a class="jxr_linenumber" name="L318" href="#L318">318</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">	 * Get the version of SCAMP which is running on the board.</em>
 <a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">	 * @param connectionSelector</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">	 *            the connection to send the SCAMP version or none (if none then</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">	 *            a random SCAMP connection is used).</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">	 * @param chip</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">	 *            the coordinates of the chip to query for SCAMP version</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">	 * @param chip</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">	 *            the coordinates of the chip to query for SCAMP version</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">	 * @param connectionSelector</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">	 *            the connection to send the SCAMP version or none (if none then</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">	 *            a random SCAMP connection is used).</em>
 <a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">	 * @return The version identifier</em>
 <a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
@@ -4283,10 +4283,11 @@
 <a class="jxr_linenumber" name="L4275" href="#L4275">4275</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L4276" href="#L4276">4276</a> <em class="jxr_javadoccomment">	 *             If SpiNNaker rejects a message.</em>
 <a class="jxr_linenumber" name="L4277" href="#L4277">4277</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L4278" href="#L4278">4278</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.	 */</em>
-<a class="jxr_linenumber" name="L4279" href="#L4279">4279</a> 	<strong class="jxr_keyword">void</strong> resetRouting(Map&lt;Integer, DiagnosticFilter&gt; customFilters)
-<a class="jxr_linenumber" name="L4280" href="#L4280">4280</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException, InterruptedException;
-<a class="jxr_linenumber" name="L4281" href="#L4281">4281</a> }
+<a class="jxr_linenumber" name="L4278" href="#L4278">4278</a> <em class="jxr_javadoccomment">	 *             If the communications were interrupted.</em>
+<a class="jxr_linenumber" name="L4279" href="#L4279">4279</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L4280" href="#L4280">4280</a> 	<strong class="jxr_keyword">void</strong> resetRouting(Map&lt;Integer, DiagnosticFilter&gt; customFilters)
+<a class="jxr_linenumber" name="L4281" href="#L4281">4281</a> 			<strong class="jxr_keyword">throws</strong> ProcessException, IOException, InterruptedException;
+<a class="jxr_linenumber" name="L4282" href="#L4282">4282</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
