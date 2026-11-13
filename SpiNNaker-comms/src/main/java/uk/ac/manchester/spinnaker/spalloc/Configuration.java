@@ -206,7 +206,7 @@ public class Configuration {
 	}
 
 	/**
-	 * {}@return Whether a torus is required. Not normally useful}
+	 * {@return Whether a torus is required. Not normally useful}
 	 */
 	public boolean getRequireTorus() {
 		return (Boolean) configurationMap.get(REQUIRE_TORUS_PROPERTY);
