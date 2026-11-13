@@ -39,7 +39,8 @@ RUN apt-get update --yes && \
     ffmpeg \
     curl \
     make \
-    vim  && \
+    vim  \
+    jq && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install nodejs
