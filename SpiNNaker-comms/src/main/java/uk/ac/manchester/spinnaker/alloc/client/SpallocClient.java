@@ -482,7 +482,7 @@ public interface SpallocClient {
 		}
 
 		/**
-		 * @return The HTTP response code that triggered the exception.
+		 * {@return The HTTP response code that triggered the exception}
 		 */
 		public int getResponseCode() {
 			return responseCode;

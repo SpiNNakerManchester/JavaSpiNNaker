@@ -134,8 +134,8 @@ public final class WhereIs {
 	}
 
 	/**
-	 * {@return The location of more information about the machine containing the
-	 *         chip}
+	 * {@return The location of more information
+	 *     about the machine containing the chip}
 	 */
 	URI getMachineRef() {
 		return machineRef;

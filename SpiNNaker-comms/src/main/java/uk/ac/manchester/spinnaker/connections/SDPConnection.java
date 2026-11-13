@@ -46,6 +46,8 @@ public class SDPConnection extends UDPConnection<SDPMessage> {
 	private ChipLocation chip;
 
 	/**
+	 * Construct a UDP socket connection that talks SDP.
+	 *
 	 * @param remoteChip
 	 *            Which chip are we talking to? This is not necessarily the chip
 	 *            that is connected to the Ethernet connector on the SpiNNaker

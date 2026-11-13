@@ -89,6 +89,8 @@ public final class CreateJob {
 		private int height;
 
 		/**
+		 * Constructs a description of a rectangle.
+		 *
 		 * @param width
 		 *            The width of rectangle to ask for, in triads.
 		 * @param height
@@ -179,6 +181,8 @@ public final class CreateJob {
 		}
 
 		/**
+		 * Sets the triad x coordinate.
+		 *
 		 * @param x
 		 *            The triad X coordinate.
 		 */
@@ -187,13 +191,15 @@ public final class CreateJob {
 		}
 
 		/**
-		 * {@return The triad Y coordinate}
+		 * {@return The triad y coordinate}
 		 */
 		public Integer getY() {
 			return y;
 		}
 
 		/**
+		 * Sets the triad Y coordinate.
+		 *
 		 * @param y
 		 *            The triad Y coordinate.
 		 */
@@ -209,6 +215,8 @@ public final class CreateJob {
 		}
 
 		/**
+		 * Sets the triad z coordinate.
+		 *
 		 * @param z
 		 *            The triad Z coordinate.
 		 */
@@ -224,6 +232,8 @@ public final class CreateJob {
 		}
 
 		/**
+		 * Sets the cabinet number.
+		 *
 		 * @param cabinet
 		 *            The cabinet number.
 		 */
@@ -239,6 +249,8 @@ public final class CreateJob {
 		}
 
 		/**
+		 * Sets the frame number.
+		 *
 		 * @param frame
 		 *            The frame number.
 		 */
@@ -254,6 +266,8 @@ public final class CreateJob {
 		}
 
 		/**
+		 * Sets the board number.
+		 *
 		 * @param board
 		 *            The board number.
 		 */
@@ -269,6 +283,8 @@ public final class CreateJob {
 		}
 
 		/**
+		 * Sets the boards IP address.
+		 *
 		 * @param address
 		 *            The board IP address.
 		 */
@@ -393,6 +409,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the interval between keep alive messages.
+	 *
 	 * @param keepaliveInterval
 	 *            How long after a keepalive message will the job be
 	 *            auto-deleted? <em>Required.</em> Must be between 30 and 300
@@ -414,6 +432,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the number of board to request.
+	 *
 	 * @param numBoards
 	 *            The number of boards to request.
 	 */
@@ -429,6 +449,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the size to request.
+	 *
 	 * @param dimensions
 	 *            The size of rectangle of boards to request.
 	 */
@@ -444,6 +466,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the address of the board.
+	 *
 	 * @param board
 	 *            The address of the specific board to request.
 	 */
@@ -464,6 +488,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the machine name.
+	 *
 	 * @param machineName
 	 *            Which machine to allocate on. This and {@code tags} are
 	 *            mutually exclusive, but at least one must be given.
@@ -486,6 +512,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the tags.
+	 *
 	 * @param tags
 	 *            The tags to select which machine to allocate on. This and
 	 *            {@code machineName} are mutually exclusive, but at least one
@@ -516,6 +544,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the number of dead boards.
+	 *
 	 * @param maxDeadBoards
 	 *            The maximum number of dead boards allowed in a rectangular
 	 *            allocation. Note that the allocation engine might increase
@@ -555,6 +585,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the group.
+	 *
 	 * @param group
 	 *            The group the quota for the job should be allocated against.
 	 */
@@ -572,6 +604,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Sets the collaboratory.
+	 *
 	 * @param nmpiCollab
 	 *            The collaboratory that the quota for the job should be
 	 *            allocated against.
@@ -588,6 +622,8 @@ public final class CreateJob {
 	}
 
 	/**
+	 * Set the NMPI job.
+	 *
 	 * @param nmpiJobId
 	 *            The NMPI job that the quota should be allocated against.
 	 */

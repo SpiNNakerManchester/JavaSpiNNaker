@@ -51,6 +51,8 @@ public class BoardLink {
 	private final int link;
 
 	/**
+	 * Constructs a combination of x, y, z and a Link.
+	 *
 	 * @param x
 	 *            The X coordinate
 	 * @param y

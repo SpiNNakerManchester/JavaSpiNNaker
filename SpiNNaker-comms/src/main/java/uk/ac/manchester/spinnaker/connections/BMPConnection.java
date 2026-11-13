@@ -50,6 +50,8 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	public final Collection<BMPBoard> boards;
 
 	/**
+	 * Constructs a connection for talking to one or more BMPs.
+	 *
 	 * @param connectionData
 	 *            Description of which BMP(s) to talk to.
 	 * @throws IOException

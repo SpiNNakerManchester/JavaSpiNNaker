@@ -275,7 +275,7 @@ public final class JobDescription {
 		}
 
 		/**
-		 * Sets the time the job started in seconds,
+		 * Sets the time the job started in seconds.
 		 *
 		 * @param startTime
 		 *            When the job started, in seconds from the epoch.

@@ -150,6 +150,8 @@ public final class AllocatedMachine {
 		private final String hostname;
 
 		/**
+		 * Constructs information about a connection to a board.
+		 *
 		 * @param chip
 		 *            Which root chip (of a board) is this about?
 		 * @param hostname

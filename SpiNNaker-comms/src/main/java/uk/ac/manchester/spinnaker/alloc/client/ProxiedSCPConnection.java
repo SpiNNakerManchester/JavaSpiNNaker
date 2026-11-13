@@ -43,6 +43,8 @@ final class ProxiedSCPConnection extends SCPConnection {
 	private ProxyProtocolClient ws;
 
 	/**
+	 * Construct a SCP connection based on the proxy.
+	 *
 	 * @param chip
 	 *            Which ethernet chip in the job are we talking to?
 	 * @param ws

@@ -43,6 +43,8 @@ final class ProxiedBootConnection extends BootConnection {
 	private ProxyProtocolClient ws;
 
 	/**
+	 * Constructs a boot connection that routes messages across the proxy.
+	 *
 	 * @param ws
 	 *            The proxy handle.
 	 * @param remoteHost

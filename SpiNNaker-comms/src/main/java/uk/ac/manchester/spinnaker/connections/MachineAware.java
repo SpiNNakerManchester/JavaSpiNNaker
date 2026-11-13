@@ -27,6 +27,8 @@ public interface MachineAware {
 	Machine getMachine();
 
 	/**
+	 * Set the machine.
+	 *
 	 * @param machine
 	 *            The machine to tell the class about.
 	 */

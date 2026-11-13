@@ -181,7 +181,7 @@ public final class ConnectionListener<MessageType> extends Thread
 	}
 
 	/**
-	 *  {@return The current contents of {@link #callbacks}
+	 *  {@return The current contents of {@link #callbacks}}
 	 */
 	private List<MessageHandler<MessageType>> checkpointCallbacks() {
 		synchronized (callbacks) {

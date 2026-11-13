@@ -705,7 +705,7 @@ public class SpallocClientFactory {
 		}
 
 		/**
-		 * @return The websocket-based proxy.
+		 * {@return The websocket-based proxy}
 		 * @throws IOException
 		 *             if we can't connect
 		 * @throws InterruptedException
