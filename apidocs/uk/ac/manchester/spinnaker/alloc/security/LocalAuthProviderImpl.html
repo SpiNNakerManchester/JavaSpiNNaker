@@ -183,24 +183,27 @@ implements <a href="LocalAuthenticationProvider.html" title="interface in uk.ac.
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a user.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mapAuthorities(org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority,java.util.Collection)" class="member-name-link">mapAuthorities</a><wbr>(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/core/oidc/user/OidcUserAuthority.html" title="class or interface in org.springframework.security.oauth2.core.oidc.user" class="external-link">OidcUserAuthority</a>&nbsp;user,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAccessToken()" class="member-name-link">getAccessToken</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mapAuthorities(org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority,java.util.Collection)" class="member-name-link">mapAuthorities</a><wbr>(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/core/oidc/user/OidcUserAuthority.html" title="class or interface in org.springframework.security.oauth2.core.oidc.user" class="external-link">OidcUserAuthority</a>&nbsp;user,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/GrantedAuthority.html" title="class or interface in org.springframework.security.core" class="external-link">GrantedAuthority</a>&gt;&nbsp;ga)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Map the authorities, adding them to the result.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#supports(java.lang.Class)" class="member-name-link">supports</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;cls)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unlockLockedUsers()" class="member-name-link">unlockLockedUsers</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#supports(java.lang.Class)" class="member-name-link">supports</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;cls)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unlockLockedUsers()" class="member-name-link">unlockLockedUsers</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Unlock any locked users whose lock period has expired.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html" title="class or interface in org.springframework.security.core" class="external-link">Authentication</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateAuthentication(jakarta.servlet.http.HttpServletRequest,org.springframework.security.core.context.SecurityContext)" class="member-name-link">updateAuthentication</a><wbr>(<a href="https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/HttpServletRequest.html" title="class or interface in jakarta.servlet.http" class="external-link">HttpServletRequest</a>&nbsp;req,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/Authentication.html" title="class or interface in org.springframework.security.core" class="external-link">Authentication</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateAuthentication(jakarta.servlet.http.HttpServletRequest,org.springframework.security.core.context.SecurityContext)" class="member-name-link">updateAuthentication</a><wbr>(<a href="https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/HttpServletRequest.html" title="class or interface in jakarta.servlet.http" class="external-link">HttpServletRequest</a>&nbsp;req,
  <a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/context/SecurityContext.html" title="class or interface in org.springframework.security.core.context" class="external-link">SecurityContext</a>&nbsp;ctx)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Convert the type of the authentication in the security context.</div>
 </div>
 </div>
@@ -339,6 +342,12 @@ implements <a href="LocalAuthenticationProvider.html" title="interface in uk.ac.
 <dd><code>user</code> - The overall authority to map.</dd>
 <dd><code>ga</code> - Where to add the authorities.</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getAccessToken()">
+<h3>getAccessToken</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getAccessToken</span>()</div>
 </section>
 </li>
 <li>
