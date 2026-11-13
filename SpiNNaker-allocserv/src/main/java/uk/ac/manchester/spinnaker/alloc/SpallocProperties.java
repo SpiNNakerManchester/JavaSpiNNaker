@@ -19,7 +19,7 @@ import static java.util.Objects.nonNull;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.Set;
+import java.util.Map;
 
 import javax.sql.DataSource;
 import jakarta.validation.Valid;
@@ -37,7 +37,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.errorprone.annotations.Keep;
@@ -55,6 +54,14 @@ import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 @ConfigurationProperties("spalloc")
 @Validated
 public class SpallocProperties {
+
+	public enum IntrospectionType {
+		/** Use the standard Spring introspection. */
+		SPRING,
+		/** Send the token to the URL to get the response. */
+		TOKEN
+	}
+
 	/** Path to the main database file. */
 	private File databasePath;
 
@@ -617,7 +624,7 @@ public class SpallocProperties {
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
 				@DefaultValue("") String systemReportUser,
-				@DefaultValue String emergencyStopCommandCode) {
+				@DefaultValue("REPLACE-ME") String emergencyStopCommandCode) {
 			this.period = period;
 			this.importanceSpan = importanceSpan;
 			this.priorityScale = priorityScale;
@@ -1136,49 +1143,6 @@ public class SpallocProperties {
 		 */
 		private boolean enable;
 
-		/**
-		 * The scopes desired. Referred to elsewhere in the configuration file.
-		 */
-		private Set<String> scopes;
-
-		/** The ID of the registration of the client. */
-		private String registrationId;
-
-		/**
-		 * The application installation identity. Required for allowing people
-		 * to use HBP/EBRAINS identities.
-		 */
-		private String id;
-
-		/**
-		 * The application installation secret. Required for allowing people to
-		 * use HBP/EBRAINS identities.
-		 */
-		private String secret;
-
-		/** Location of the OpenID Opaque Token Introspection service. */
-		private String introspection;
-
-		/** Location of the OpenID User Info service. */
-		private String userinfo;
-
-		/** Location of the authorization end-point. */
-		private String auth;
-
-		/** Location of the token end-point. */
-		private String token;
-
-		/** Location of the JWKS. */
-		private String jwkSet;
-
-		/** Location of the issuer. */
-		private String issuer;
-
-		/** Location of the redirect. */
-		private String redirect;
-
-		private AuthorizationGrantType authGrantType;
-
 		/** Prefix for user names originating from OpenID auto-registration. */
 		private String usernamePrefix;
 
@@ -1191,41 +1155,13 @@ public class SpallocProperties {
 		/** How to unlock the truststore. */
 		private String truststorePassword;
 
+		/** Map of introspection URIs for different issuers. */
+		private Map<String, IntrospectionProperties> introspectionUris;
+
 		/**
 		 * @param enable
 		 *            Whether to enable OIDC authentication. Required for
 		 *            allowing people to use HBP/EBRAINS identities.
-		 * @param scopes
-		 *            The scopes desired. Referred to elsewhere in the
-		 *            configuration file.
-		 * @param registrationId
-		 *            The ID of the registration of the client.
-		 * @param id
-		 *            The application installation identity. Required for
-		 *            allowing people to use HBP/EBRAINS identities.
-		 * @param secret
-		 *            The application installation secret. Required for allowing
-		 *            people to use HBP/EBRAINS identities.
-		 * @param introspection
-		 *            Location of the OpenID Opaque Token Introspection service.
-		 *            Resolved with respect to {@code domain} (if that is given
-		 *            and non-empty).
-		 * @param userinfo
-		 *            Location of the OpenID User Info service. Resolved with
-		 *            respect to {@code domain} (if that is given and
-		 *            non-empty).
-		 * @param auth
-		 *            Location of the OpenID Authentication service.
-		 * @param authGrantType
-		 *            The OpenID authorization grant type.
-		 * @param token
-		 *            Location of the OpenID token service.
-		 * @param jwkSet
-		 *            Location of the OpenID JWK Set service.
-		 * @param issuer
-		 *            Location of the OpenID issuer service.
-		 * @param redirect
-		 *            Location to redirect users back to after authentication.
 		 * @param usernamePrefix
 		 *            Prefix for user names originating from OpenID
 		 *            auto-registration.
@@ -1235,44 +1171,24 @@ public class SpallocProperties {
 		 *            Where the truststore is.
 		 * @param truststorePassword
 		 *            How to unlock the truststore.
+		 * @param introspectionUris
+		 * 		      Map of introspection URIs for different issuers.
 		 */
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		@ConstructorBinding
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
-				Set<String> scopes,
-				@DefaultValue("") String registrationId,
-				@DefaultValue("") String id,
-				@DefaultValue("") String secret,
-				@DefaultValue("/") String introspection,
-				@DefaultValue("/") String userinfo,
-				@DefaultValue("/") String auth,
-				@DefaultValue("") String authGrantType,
-				@DefaultValue("/") String token,
-				@DefaultValue("/") String jwkSet,
-				@DefaultValue("/") String issuer,
-				@DefaultValue("/") String redirect,
 				@DefaultValue("openid.") String usernamePrefix,
 				@DefaultValue("PKCS12") String truststoreType,
 				@DefaultValue("classpath:/truststore.p12")
 				Resource truststorePath,
-				@DefaultValue("") String truststorePassword) {
+				@DefaultValue("") String truststorePassword,
+				Map<String, IntrospectionProperties> introspectionUris) {
 			this.enable = enable;
-			this.setScopes(scopes != null ? scopes : Set.of());
-			this.registrationId = registrationId;
-			this.id = id;
-			this.secret = secret;
-			this.introspection = introspection;
-			this.userinfo = userinfo;
-			this.auth = auth;
-			this.authGrantType = new AuthorizationGrantType(authGrantType);
-			this.token = token;
-			this.jwkSet = jwkSet;
-			this.issuer = issuer;
-			this.redirect = redirect;
 			this.usernamePrefix = usernamePrefix;
 			this.truststoreType = truststoreType;
 			this.truststorePath = truststorePath;
 			this.truststorePassword = truststorePassword;
+			this.introspectionUris = introspectionUris;
 		}
 
 		/**
@@ -1290,60 +1206,6 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * The registration ID of the client.
-		 * @return The registration ID.
-		 */
-		public String getRegistrationId() {
-			return registrationId;
-		}
-
-		/**
-		 * The application installation identity. Required for allowing people
-		 * to use HBP/EBRAINS identities.
-		 *
-		 * @return The application installation identity.
-		 */
-		public String getId() {
-			return id == null ? null : id.strip();
-		}
-
-		void setId(String id) {
-			this.id = id;
-		}
-
-		/**
-		 * The application installation secret. Required for allowing people to
-		 * use HBP/EBRAINS identities.
-		 *
-		 * @return The application installation secret.
-		 */
-		public String getSecret() {
-			return secret == null ? null : secret.strip();
-		}
-
-		void setSecret(String secret) {
-			this.secret = secret;
-		}
-
-		/**
-		 * Location of the OpenID Opaque Token Introspection service.
-		 *
-		 * @return The Introspection location.
-		 */
-		public String getIntrospection() {
-			return introspection;
-		}
-
-		/**
-		 * Location of the OpenID User Information service.
-		 *
-		 * @return The Userinfo location.
-		 */
-		public String getUserinfo() {
-			return userinfo;
-		}
-
-		/**
 		 * Prefix for user names originating from OpenID auto-registration. Not
 		 * a good idea to modify this frequently!
 		 *
@@ -1357,20 +1219,6 @@ public class SpallocProperties {
 
 		void setUsernamePrefix(String usernamePrefix) {
 			this.usernamePrefix = usernamePrefix;
-		}
-
-		/**
-		 * The scopes desired. Referred to elsewhere in the configuration file.
-		 *
-		 * @return The OpenID scopes.
-		 */
-		@NotEmpty
-		public Set<String> getScopes() {
-			return scopes;
-		}
-
-		void setScopes(Set<String> scopes) {
-			this.scopes = scopes;
 		}
 
 		/**
@@ -1418,91 +1266,96 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return the OIDC Authorization End-point URL.
+		 * Map of introspection URIs for different issuers.
+		 *
+		 * @return map of introspection URIs for different issuers
 		 */
-		public String getAuth() {
-			return auth;
+		public Map<String, IntrospectionProperties> getIntrospectionUris() {
+			return introspectionUris;
 		}
 
-		void setAuth(String auth) {
-			this.auth = auth;
+		void setIntrospectionUris(
+				Map<String, IntrospectionProperties> introspectionUris) {
+			this.introspectionUris = introspectionUris;
+		}
+	}
+
+	public static class IntrospectionProperties {
+		/** The introspection URI. */
+		private String uri;
+
+		/** The introspection type. */
+		private IntrospectionType type;
+
+		/** The property name to use for the username. */
+		private String usernameProperty;
+
+		/** The property name to use for the token. */
+		private String tokenParameter;
+
+		/**
+		 * @param uri
+		 *            The introspection URI.
+		 * @param type
+		 *            The introspection type.
+		 * @param usernameProperty
+		 *            The property name to use for the username.
+		 * @param tokenParameter
+		 * 		      The property name to use for the token.
+		 */
+		@ConstructorBinding
+		public IntrospectionProperties(@DefaultValue("") String uri,
+				@DefaultValue("spring") IntrospectionType type,
+				@DefaultValue("username") String usernameProperty,
+				@DefaultValue("") String tokenParameter) {
+			this.uri = uri;
+			this.type = type;
+			this.usernameProperty = usernameProperty;
+			this.tokenParameter = tokenParameter;
 		}
 
 		/**
-		 * @return the OIDC Token End-point URL.
+		 * @return The introspection URI.
 		 */
-		public String getToken() {
-			return token;
+		public String getUri() {
+			return uri;
 		}
 
-		void setToken(String token) {
-			this.token = token;
+		void setUri(String uri) {
+			this.uri = uri;
 		}
 
 		/**
-		 * @return the OIDC JWK Set URL.
+		 * @return The introspection type.
 		 */
-		public String getJwkSet() {
-			return jwkSet;
+		public IntrospectionType getType() {
+			return type;
 		}
 
-		void setJwkSet(String jwkSet) {
-			this.jwkSet = jwkSet;
+		void setType(IntrospectionType type) {
+			this.type = type;
 		}
 
 		/**
-		 * @return The OIDC issuer URL.
+		 * @return The property name to use for the username.
 		 */
-		public String getIssuer() {
-			return issuer;
+		public String getUsernameProperty() {
+			return usernameProperty;
 		}
 
-		void setIssuer(String issuer) {
-			this.issuer = issuer;
+		void setUsernameProperty(String usernameProperty) {
+			this.usernameProperty = usernameProperty;
 		}
 
 		/**
-		 * @return the redirect URL to return to.
+		 * @return The property name to use for the token.
 		 */
-		public String getRedirect() {
-			return redirect;
+		public String getTokenParameter() {
+			return tokenParameter;
 		}
 
-		void setRedirect(String redirect) {
-			this.redirect = redirect;
-		}
-
-		/**
-		 * @return the OIDC Authorization grant type.
-		 */
-		public AuthorizationGrantType getAuthGrantType() {
-			return authGrantType;
-		}
-
-		void setAuthGrantType(AuthorizationGrantType authGrantType) {
-			this.authGrantType = authGrantType;
-		}
-
-		/**
-		 * @param introspection the OIDC introspection URL.
-		 */
-		void setIntrospection(String introspection) {
-			this.introspection = introspection;
-		}
-
-		/**
-		 * @param userinfo the OIDC user info URL.
-		 */
-		void setUserinfo(String userinfo) {
-			this.userinfo = userinfo;
-		}
-
-		@Keep
-		@AssertTrue(
-				message = "id and secret must be given if OpenID is enabled")
-		private boolean isValid() {
-			return !enable || (nonNull(id) && !id.isBlank()
-					&& nonNull(secret) && !secret.isBlank());
+		void setTokenParameter(String tokenParameter) {
+			this.tokenParameter = tokenParameter;
 		}
 	}
 

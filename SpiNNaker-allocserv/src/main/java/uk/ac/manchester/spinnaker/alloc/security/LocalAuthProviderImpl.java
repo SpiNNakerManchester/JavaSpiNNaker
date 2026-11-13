@@ -63,7 +63,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -122,6 +124,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Autowired
 	private UserControl userController;
+
+	@Autowired(required = false)
+	private OAuth2AuthorizedClientService authorizedClientService;
 
 	private static final String DUMMY_USER = "user1";
 
@@ -247,11 +252,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var user = ((OAuth2AuthenticationToken) auth).getPrincipal();
+				var oauthAuth = (OAuth2AuthenticationToken) auth;
+				var user = oauthAuth.getPrincipal();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ user.getAttribute(PREFERRED_USERNAME),
-						user.getAttribute(SUB), new OriginatingCredential(user),
+						user.getAttribute(SUB),
+						new OriginatingCredential(
+								oauthAuth, authorizedClientService),
 						auth.getAuthorities());
 			} else if (auth instanceof BearerTokenAuthentication) {
 				/*
@@ -260,12 +268,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 * have to take an authorization decision though.
 				 */
 				var bearerAuth = (BearerTokenAuthentication) auth;
-				var token = bearerAuth.getToken();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ bearerAuth.getTokenAttributes().get(
 										PREFERRED_USERNAME),
-						bearerAuth.getName(), new OriginatingCredential(token),
+						bearerAuth.getName(),
+						new OriginatingCredential(bearerAuth),
 						auth.getAuthorities());
 			} else {
 				return null;
@@ -441,14 +449,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final OAuth2AccessToken token;
 
-		OriginatingCredential(OAuth2User user) {
-			this.user = requireNonNull(user);
-			this.token = null;
+		OriginatingCredential(OAuth2AuthenticationToken auth,
+				OAuth2AuthorizedClientService authorizedClientService) {
+			var client = authorizedClientService.loadAuthorizedClient(
+							auth.getAuthorizedClientRegistrationId(),
+							auth.getName());
+			this.user = auth.getPrincipal();
+			this.token = client.getAccessToken();
 		}
 
-		OriginatingCredential(OAuth2AccessToken token) {
+		OriginatingCredential(BearerTokenAuthentication auth) {
 			this.user = null;
-			this.token = requireNonNull(token);
+			this.token = auth.getToken();
 		}
 
 		@Override
@@ -1203,6 +1215,20 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					username, e);
 			throw e;
 		}
+	}
+
+	public String getAccessToken() {
+		var authentication =
+				SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			log.warn("No authentication found in security context");
+			return "No authentication found";
+		}
+		if (authentication instanceof OpenIDDerivedAuthenticationToken) {
+			var auth = (OpenIDDerivedAuthenticationToken) authentication;
+			return auth.getBearerToken().get().getTokenValue();
+		}
+		return "Authentication is not of type OpenIDDerivedAuthenticationToken";
 	}
 
 	@Override

@@ -82,8 +82,8 @@ public abstract class ControllerUtils {
 	/** The logout URI variable for JSP pages. */
 	public static final String LOGIN_URI = "loginUri";
 
-	/** The OIDC URI variable for JSP pages. */
-	public static final String LOGIN_OIDC_URI = "loginOidcUri";
+	/** The OIDC providers variable for JSP pages. */
+	public static final String LOGIN_OIDC_PROVIDERS = "loginOidcProviders";
 
 	/** The Spalloc CSS URI variable for JSP pages. */
 	public static final String SPALLOC_CSS_URI = "spallocCssUri";
@@ -96,7 +96,7 @@ public abstract class ControllerUtils {
 
 	/** The URI path to use to perform OIDC logins. */
 	public static final String LOGIN_OIDC_PATH =
-			"perform_oidc/auth/hbp-ebrains";
+			"perform_oidc/auth/";
 
 	/** The URI path to use to change passwords. */
 	public static final String CHANGE_PASSWORD_PATH = "change_password";
