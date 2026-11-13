@@ -296,6 +296,10 @@ public interface SpallocServiceAPI {
 			@QueryParam("commandCode") String commandCode,
 			@Suspended AsyncResponse response);
 
+	@GET
+	@Path("/jwtToken")
+	String getJwtToken();
+
 	/**
 	 * Interface to a particular machine.
 	 *

@@ -63,7 +63,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -123,6 +125,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Autowired
 	private UserControl userController;
+
+	@Autowired(required = false)
+	private OAuth2AuthorizedClientService authorizedClientService;
 
 	private static final String DUMMY_USER = "user1";
 
@@ -230,7 +235,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		if (isNull(auth)) {
 			return null;
 		}
-		log.debug("requesting auth decision about {}", auth);
+		log.debug("requesting auth decision about {}",
+				auth.getClass().getSimpleName());
+		log.trace("auth: {}", auth);
 		if (auth instanceof AlreadyDoneMarker) {
 			// It's ours; don't repeat the auth
 			return auth;
@@ -246,11 +253,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				var user = ((OAuth2AuthenticationToken) auth).getPrincipal();
+				var oauthAuth = (OAuth2AuthenticationToken) auth;
+				var user = oauthAuth.getPrincipal();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ user.getAttribute(PREFERRED_USERNAME),
-						user.getAttribute(SUB), new OriginatingCredential(user),
+						user.getAttribute(SUB),
+						new OriginatingCredential(
+								oauthAuth, authorizedClientService),
 						auth.getAuthorities());
 			} else if (auth instanceof BearerTokenAuthentication) {
 				/*
@@ -259,12 +269,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 * have to take an authorization decision though.
 				 */
 				var bearerAuth = (BearerTokenAuthentication) auth;
-				var token = bearerAuth.getToken();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ bearerAuth.getTokenAttributes().get(
 										PREFERRED_USERNAME),
-						bearerAuth.getName(), new OriginatingCredential(token),
+						bearerAuth.getName(),
+						new OriginatingCredential(bearerAuth),
 						auth.getAuthorities());
 			} else {
 				return null;
@@ -283,8 +293,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			if (supports(current.getClass())) {
 				var updated = authenticate(current);
 				if (nonNull(updated) && updated != current) {
-					log.debug("filter updated security from {} to {}", current,
-							updated);
+					log.debug("filter updated security from {} to {}",
+							current.getClass().getSimpleName(),
+							updated.getClass().getSimpleName());
+					log.trace("current authentication: {}", current);
+					log.trace("updated authentication: {}", updated);
 					ctx.setAuthentication(updated);
 					return updated;
 				}
@@ -410,7 +423,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			OriginatingCredential credential,
 			Collection<? extends GrantedAuthority> authorities)
 			throws AuthenticationException {
-		log.debug("authenticating OpenID {}", credential);
+		log.debug("authenticating OpenID {}, token={}", credential,
+				credential.token);
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
@@ -436,14 +450,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final OAuth2AccessToken token;
 
-		OriginatingCredential(OAuth2User user) {
-			this.user = requireNonNull(user);
-			this.token = null;
+		OriginatingCredential(OAuth2AuthenticationToken auth,
+				OAuth2AuthorizedClientService authorizedClientService) {
+			var client = authorizedClientService.loadAuthorizedClient(
+							auth.getAuthorizedClientRegistrationId(),
+							auth.getName());
+			this.user = auth.getPrincipal();
+			this.token = client.getAccessToken();
 		}
 
-		OriginatingCredential(OAuth2AccessToken token) {
+		OriginatingCredential(BearerTokenAuthentication auth) {
 			this.user = null;
-			this.token = requireNonNull(token);
+			this.token = auth.getToken();
 		}
 
 		@Override
@@ -768,7 +786,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		var seen = new HashSet<>();
 		for (var collab : claim) {
-			log.debug("Collab claim {}", collab);
+			log.trace("Collab claim {}", collab);
 			var reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
 			if (!seen.contains(reduced)) {
 				results.add(new CollabratoryAuthority(reduced));
@@ -798,7 +816,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No special processing required; orgs start with / in name and are
 			 * already guaranteed to be unique.
 			 */
-			log.debug("Org claim {}", org);
+			log.trace("Org claim {}", org);
 			results.add(new OrganisationAuthority(org));
 		}
 		return true;
@@ -841,7 +859,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private void mapAuthorities(String source, ClaimAccessor claimSet,
 			Collection<GrantedAuthority> results) {
-		log.debug("claims from {}: {}", source, claimSet.getClaims());
+		log.trace("claims from {}: {}", source, claimSet.getClaims());
 		if (!collabToAuthority(getTeamsFromClaim(claimSet.getClaim("roles")),
 				results)) {
 			log.warn("no team in {}", source);
@@ -1183,12 +1201,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		try (var synch = new GroupSynch(queries)) {
 			for (var org : orgs) {
-				log.debug("defining org {} for {} with id {}",
+				log.trace("defining org {} for {} with id {}",
 						org, username, userId);
 				synch.define(org, ORGANISATION);
 			}
 			for (var collab : collabs) {
-				log.debug("defining collab {} for {} with id {}",
+				log.trace("defining collab {} for {} with id {}",
 						collab, username, userId);
 				synch.define(collab, COLLABRATORY);
 			}
@@ -1198,6 +1216,20 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					username, e);
 			throw e;
 		}
+	}
+
+	public String getAccessToken() {
+		var authentication =
+				SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			log.warn("No authentication found in security context");
+			return "No authentication found";
+		}
+		if (authentication instanceof OpenIDDerivedAuthenticationToken) {
+			var auth = (OpenIDDerivedAuthenticationToken) authentication;
+			return auth.getBearerToken().get().getTokenValue();
+		}
+		return "Authentication is not of type OpenIDDerivedAuthenticationToken";
 	}
 
 	@Override

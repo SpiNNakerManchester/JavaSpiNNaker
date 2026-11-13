@@ -20,6 +20,7 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.config.http.SessionCreationPolicy.ALWAYS;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
@@ -44,7 +45,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -55,11 +58,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.server.resource.introspection.BadOpaqueTokenException;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
@@ -67,11 +73,13 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.web.client.RestTemplate;
 
 import jakarta.servlet.DispatcherType;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.IntrospectionProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.IntrospectionType;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -122,6 +130,9 @@ public class SecurityConfig {
 	// ------------------------------------------------------------------------
 	// What follows is UGLY stuff to make Java open HTTPS right
 	private static X509TrustManager customTm;
+
+	@Autowired(required = false)
+	private InMemoryClientRegistrationRepository oauth2Providers;
 
 	// Static because it has to be done very early.
 	static {
@@ -206,13 +217,10 @@ public class SecurityConfig {
 	 *
 	 * @param http
 	 *            Where the configuration is applied to.
-	 * @param introspector
-	 *           The introspector used to build request matchers.
 	 * @throws Exception
 	 *             If anything goes wrong with setting up.
 	 */
-	private void defineAccessPolicy(HttpSecurity http,
-			HandlerMappingIntrospector introspector) throws Exception {
+	private void defineAccessPolicy(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorize) -> authorize
 				// Allow forwarded requests
 				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
@@ -221,6 +229,7 @@ public class SecurityConfig {
 						pathPattern(urlMaker.systemUrl("perform_*")),
 						pathPattern(oidcPath("**")),
 						pathPattern(urlMaker.systemUrl("error")),
+						pathPattern(urlMaker.baseUrl("error")),
 						pathPattern(urlMaker.systemUrl("resources/*")),
 						pathPattern(urlMaker.serviceUrl("openapi.json")),
 						pathPattern(urlMaker.serviceUrl("swagger*")),
@@ -313,66 +322,104 @@ public class SecurityConfig {
 	 *
 	 * @param http
 	 *            Used to build the filter chain.
-	 * @param introspector
-	 *            The introspector used to build request matchers.
 	 * @return The filter chain that implements the controls.
 	 * @throws Exception
 	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	@Bean
 	@Role(ROLE_SUPPORT)
-	public SecurityFilterChain securityFilter(HttpSecurity http,
-			HandlerMappingIntrospector introspector)
+	public SecurityFilterChain securityFilter(HttpSecurity http)
 			throws Exception {
-		defineAccessPolicy(http, introspector);
+		http.sessionManagement((session) -> session
+				.sessionCreationPolicy(ALWAYS));
+		http.securityContext((securityContext) ->
+				securityContext.securityContextRepository(
+						authApplicationFilter.securityContextRepository));
+		defineAccessPolicy(http);
 		defineAPILoginRules(http);
 		defineWebUILoginRules(http);
 		defineLogoutRules(http);
 		http.addFilterAfter(authApplicationFilter,
 				BasicAuthenticationFilter.class);
-		http.securityContext((securityContext) ->
-				securityContext.requireExplicitSave(false));
 		return http.build();
 	}
 
 	private final class UserInfoOpaqueTokenIntrospector
 			implements OpaqueTokenIntrospector {
-		private final OpaqueTokenIntrospector delegate;
-
-		private final String userInfoUri;
-
-		private UserInfoOpaqueTokenIntrospector() {
-			var p = properties.getOpenid();
-
-			delegate = SpringOpaqueTokenIntrospector
-					.withIntrospectionUri(p.getIntrospection())
-					.clientId(p.getId()).clientSecret(p.getSecret()).build();
-			userInfoUri = p.getUserinfo();
-		}
 
 		@Override
 		public OAuth2AuthenticatedPrincipal introspect(String token) {
-			var authorized = delegate.introspect(token);
-			Instant issuedAt = authorized.getAttribute("issued-at");
-			Instant expiresAt = authorized.getAttribute("expires-at");
+			for (var p : oauth2Providers) {
+				try {
+					return introspect(token, p);
+				} catch (Exception e) {
+					log.warn("Failed to introspect token with provider {}: {}",
+							p.getRegistrationId(), e.getMessage());
+				}
+			}
+			throw new BadOpaqueTokenException(
+					"Token not valid for any provider");
+		}
 
-			var userAttributes = userinfo(token);
+		private OAuth2AuthenticatedPrincipal introspect(
+				String token, ClientRegistration p) {
+			var props = properties.getOpenid().getIntrospectionUris().get(
+					p.getRegistrationId());
+			log.debug("Introspecting token with provider {}: {}",
+					p.getRegistrationId(), props.getUri());
+			if (props.getType() == IntrospectionType.SPRING) {
+				var delegate = SpringOpaqueTokenIntrospector
+						.withIntrospectionUri(props.getUri())
+						.clientId(p.getClientId())
+						.clientSecret(p.getClientSecret()).build();
+				var authorized = delegate.introspect(token);
+				Instant issuedAt = authorized.getAttribute("issued-at");
+				Instant expiresAt = authorized.getAttribute("expires-at");
+				return userinfoPrincipal(token, p, issuedAt, expiresAt, props);
+			}
+
+			if (props.getType() == IntrospectionType.TOKEN) {
+				var restTemplate = new RestTemplate();
+				String request = props.getUri() + "?"
+						+ props.getTokenParameter() + "=" + token;
+				ResponseEntity<Map<String, Object>> response = restTemplate
+						.exchange(request,
+								HttpMethod.GET, null,
+								PARAMETERIZED_RESPONSE_TYPE);
+				var attrbutes = response.getBody();
+				Instant expiresAt = Instant.ofEpochSecond(
+						Long.valueOf(((String) attrbutes.get("exp"))));
+				return userinfoPrincipal(token, p, null, expiresAt, props);
+			}
+
+			throw new IllegalArgumentException(
+					"Unknown introspection type: " + props.getType());
+		}
+
+		private OAuth2AuthenticatedPrincipal userinfoPrincipal(
+				String token, ClientRegistration p, Instant issuedAt,
+				Instant expiresAt, IntrospectionProperties props) {
+			var userAttributes = userinfo(token, p);
 			var authorities = new LinkedHashSet<GrantedAuthority>();
 			var auth = new OidcUserAuthority(
-					new OidcIdToken(token, issuedAt, expiresAt, userAttributes),
+					new OidcIdToken(token, issuedAt, expiresAt,
+							userAttributes),
 					new OidcUserInfo(userAttributes));
 			localAuthProvider.mapAuthorities(auth, authorities);
 			return new DefaultOAuth2User(authorities, userAttributes,
-					"preferred_username");
+					props.getUsernameProperty());
 		}
 
-		private Map<String, Object> userinfo(String token) {
-			log.debug("Fetching user info from {}", userInfoUri);
+		private Map<String, Object> userinfo(
+				String token, ClientRegistration p) {
+			log.debug("Fetching user info from {}",
+					p.getProviderDetails().getUserInfoEndpoint().getUri());
 			var headers = new HttpHeaders();
 			headers.setAccept(List.of(APPLICATION_JSON));
 			headers.setBearerAuth(token);
 			var request = new RequestEntity<>(headers, GET,
-					URI.create(userInfoUri));
+					URI.create(
+						p.getProviderDetails().getUserInfoEndpoint().getUri()));
 
 			var restTemplate = new RestTemplateBuilder().build();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());

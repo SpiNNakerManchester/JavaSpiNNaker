@@ -55,7 +55,11 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 	private URI spallocUri;
 
 	/** The spalloc client to use. */
-	private SpallocClient client;
+	private SpallocClientFactory clientFactory;
+
+	private String username;
+
+	private String password;
 
 	/** A map between machines and spalloc jobs. */
 	private Map<SpinnakerMachine, SpallocClient.Job> jobMap = new HashMap<>();
@@ -70,10 +74,10 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 	private void setup() throws IOException {
 		var userInfo = spallocUri.getUserInfo();
 		int splitPoint = userInfo.indexOf(':');
-		var username = userInfo.substring(0, splitPoint);
-		var password = userInfo.substring(splitPoint + 1);
+		username = userInfo.substring(0, splitPoint);
+		password = userInfo.substring(splitPoint + 1);
 		var spalloc = UriBuilder.fromUri(spallocUri).userInfo(null).build();
-		client = new SpallocClientFactory(spalloc).login(username, password);
+		clientFactory = new SpallocClientFactory(spalloc);
 	}
 
 	@Override
@@ -85,6 +89,7 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 
 	@Override
 	public List<SpinnakerMachine> getMachines() throws IOException {
+		var client = clientFactory.login(username, password);
 		return client.listMachines().stream().map(
 				m -> new SpinnakerMachine(m.getName(), VERSION,
 						m.getWidth(), m.getHeight(), m.getLiveBoardCount(),
@@ -96,6 +101,7 @@ public class SpallocJavaMachineManagerImpl implements MachineManager {
 	public SpinnakerMachine getNextAvailableMachine(final int nBoards,
 			final String owner, final int jobId) {
 		try {
+			var client = clientFactory.login(username, password);
 			var createJob = new CreateJob(nBoards);
 			createJob.setOwner(owner);
 			createJob.setNmpiJobId(jobId);
