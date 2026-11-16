@@ -72,7 +72,6 @@ final class ProxiedTransceiver extends Transceiver {
 	 *            manufacturing of proxied {@link EIEIOConnection}s.
 	 * @param websocket
 	 *            The proxy handle.
-	 * @throws SpinnmanException
 	 * @throws IOException
 	 *             If we couldn't finish setting up our networking.
 	 * @throws InterruptedException

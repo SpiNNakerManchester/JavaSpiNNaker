@@ -373,10 +373,10 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	 * Simple reader that loads a complex SQL query from a file.
 	 *
 	 * @param resource
-	 *			The resource to load from
+	 *     The resource to load from
 	 * @return The content of the resource
 	 * @throws UncategorizedScriptException
-	 *			 If the resource can't be loaded.
+	 *     If the resource can't be loaded.
 	 */
 	private String readSQL(Resource resource) {
 		try (var is = resource.getInputStream()) {

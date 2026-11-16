@@ -77,6 +77,7 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	 * @throws IOException
 	 *             If there is a general error in extraction
 	 * @throws ArchiveException
+	 *             If the archive cannot be read for other reasons
 	 */
 	private void extractAutodetectedArchive(final File output,
 			final File workingDirectory) throws IOException, ArchiveException {

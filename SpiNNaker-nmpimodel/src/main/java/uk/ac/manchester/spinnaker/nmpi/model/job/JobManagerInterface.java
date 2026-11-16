@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 @Path(JobManagerInterface.PATH)
 public interface JobManagerInterface {
 
-	/** The path to the interface. **/
+	/** The path to the interface. */
 	String PATH = "job";
 
 	/** The media type of ZIP files. */

@@ -641,13 +641,13 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	class Allocations {
 
-		/** The BMPs that have been affected by the allocations. **/
+		/** The BMPs that have been affected by the allocations. */
 		final Set<Integer> bmps = new HashSet<>();
 
-		/** The Machines that have been affected by the allocations. **/
+		/** The Machines that have been affected by the allocations. */
 		final Set<Integer> machines = new HashSet<>();
 
-		/** The jobs that have been affected by the allocations. **/
+		/** The jobs that have been affected by the allocations. */
 		final List<Integer> jobIds = new ArrayList<>();
 
 		Allocations() {

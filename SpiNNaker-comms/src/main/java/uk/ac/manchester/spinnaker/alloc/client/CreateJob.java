@@ -520,7 +520,6 @@ public final class CreateJob {
 	}
 
 	/**
-	 *
 	 * @return The collaboratory that the quota for the job should be allocated
 	 *         against.
 	 */

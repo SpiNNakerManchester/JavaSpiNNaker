@@ -67,10 +67,10 @@ public class DirectDataGatherer extends DataGatherer {
 	/**
 	 * Create a data gatherer.
 	 *
-	 * @param database
-	 *            Where to put the retrieved data.
 	 * @param machine
 	 *            The description of the machine being talked to.
+	 * @param database
+	 *            Where to put the retrieved data.
 	 * @throws IOException
 	 *            If we can't discover the machine details due to I/O problems
 	 * @throws InterruptedException
