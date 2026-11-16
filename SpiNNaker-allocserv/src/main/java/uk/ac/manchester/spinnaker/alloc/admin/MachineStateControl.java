@@ -219,7 +219,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return What job has been allocated to the board? */
+		/**
+		 * {@return What job has been allocated to the board}
+		 */
 		public Optional<Integer> getAllocatedJob() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_JOB)) {
@@ -228,7 +230,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return Is the board switched on? */
+		/**
+		 * {@return Is the board switched on}
+		 */
 		public boolean getPower() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -237,7 +241,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return When was the board last switched on? */
+		/**
+		 * {@return When was the board last switched on}
+		 */
 		public Optional<Instant> getPowerOnTime() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -246,7 +252,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return When was the board last switched off? */
+		/**
+		 * {@return When was the board last switched off}
+		 */
 		public Optional<Instant> getPowerOffTime() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -255,7 +263,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return What issues have been logged against the board? */
+		/**
+		 * {@return What issues have been logged against the board}
+		 */
 		public List<BoardIssueReport> getReports() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_REPORTS)) {

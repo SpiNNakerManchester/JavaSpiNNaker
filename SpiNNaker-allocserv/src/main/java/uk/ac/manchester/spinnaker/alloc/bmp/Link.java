@@ -49,12 +49,16 @@ public final class Link {
 		return "Link(" + board + "," + link + ":OFF)";
 	}
 
-	/** @return The database ID of the board that the FPGA is located on. */
+	/**
+	 * {@return The database ID of the board that the FPGA is located on}
+	 */
 	public BMPBoard getBoard() {
 		return board;
 	}
 
-	/** @return Which link (and hence which FPGA). */
+	/**
+	 * {@return Which link (and hence which FPGA)}
+	 */
 	public Direction getLink() {
 		return link;
 	}

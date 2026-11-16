@@ -837,7 +837,9 @@ public interface SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	interface Job extends Waitable {
-		/** @return Job ID */
+		/**
+		 * {@return Job ID}
+		 * */
 		int getId();
 
 		/**
@@ -1060,28 +1062,44 @@ public interface SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	interface Machine extends Waitable {
-		/** @return The ID of the machine. Unique. */
+		/**
+		 * {@return The unique ID of the machine.}
+		 */
 		int getId();
 
-		/** @return The name of the machine. Unique. */
+		/**
+		 * {@return The unique name of the machine}
+		 */
 		String getName();
 
-		/** @return The tags associated with the machine. */
+		/**
+		 * {@return The tags associated with the machine}
+		 */
 		Set<String> getTags();
 
-		/** @return The width of the machine. */
+		/**
+		 * {@return The width of the machine}
+		 */
 		int getWidth();
 
-		/** @return The height of the machine. */
+		/**
+		 * {@return The height of the machine}
+		 */
 		int getHeight();
 
-		/** @return Whether the machine wraps in the horizontal direction. */
+		/**
+		 * {@return Whether the machine wraps in the horizontal direction}
+		 */
 		boolean isHorizonallyWrapped();
 
-		/** @return Whether the machine wraps in the vertical direction. */
+		/**
+		 * {@return Whether the machine wraps in the vertical direction}
+		 */
 		boolean isVerticallyWrapped();
 
-		/** @return Whether this machine is currently in service. */
+		/**
+		 * {@return Whether this machine is currently in service}
+		 */
 		boolean isInService();
 
 		/**
@@ -1145,14 +1163,19 @@ public interface SpallocAPI {
 		Optional<BoardLocation> getBoardByIPAddress(@IPAddress String address);
 
 		/**
-		 * @return The IP address of the BMP of the root board of the machine.
+		 * {@return The IP address of the BMP of the root board
+		 *     of the machine}
 		 */
 		String getRootBoardBMPAddress();
 
-		/** @return The boards supported by the machine. */
+		/**
+		 * {@return The boards supported by the machine}
+		 */
 		List<Integer> getBoardNumbers();
 
-		/** @return The IDs of boards currently available to be allocated. */
+		/**
+		 * {@return The IDs of boards currently available to be allocated}
+		 */
 		List<Integer> getAvailableBoards();
 
 		/**
@@ -1241,22 +1264,34 @@ public interface SpallocAPI {
 
 	/** A view of part of a machine that is allocated to a job. */
 	interface SubMachine {
-		/** @return The machine that this sub-machine is part of. */
+		/**
+		 * {@return The machine that this sub-machine is part of}
+		 */
 		Machine getMachine();
 
-		/** @return The root X coordinate of this sub-machine. */
+		/**
+		 * {@return The root X coordinate of this sub-machine}
+		 */
 		int getRootX();
 
-		/** @return The root Y coordinate of this sub-machine. */
+		/**
+		 * {@return The root Y coordinate of this sub-machine}
+		 */
 		int getRootY();
 
-		/** @return The root Z coordinate of this sub-machine. */
+		/**
+		 * {@return The root Z coordinate of this sub-machine}
+		 */
 		int getRootZ();
 
-		/** @return The width of this sub-machine, in triads. */
+		/**
+		 * {@return The width of this sub-machine, in triads}
+		 */
 		int getWidth();
 
-		/** @return The height of this sub-machine, in triads. */
+		/**
+		 * {@return The height of this sub-machine, in triads}
+		 */
 		int getHeight();
 
 		/**
@@ -1265,13 +1300,19 @@ public interface SpallocAPI {
 		 */
 		int getDepth();
 
-		/** @return The connection details of this sub-machine. */
+		/**
+		 * {@return The connection details of this sub-machine}
+		 */
 		List<ConnectionInfo> getConnections();
 
-		/** @return The board locations of this sub-machine. */
+		/**
+		 * {@return The board locations of this sub-machine}
+		 */
 		List<BoardCoordinates> getBoards();
 
-		/** @return Whether this sub-machine is switched on. */
+		/**
+		 * {@return Whether this sub-machine is switched on}
+		 */
 		PowerState getPower();
 
 		/**

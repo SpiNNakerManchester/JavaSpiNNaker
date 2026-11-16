@@ -45,7 +45,9 @@ public class MachinePower {
 		this.power = power;
 	}
 
-	/** @return the machine power state */
+	/**
+	 * {@return the machine power state}
+	 */
 	public PowerState getPower() {
 		return power;
 	}

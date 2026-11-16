@@ -1367,7 +1367,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					report.address, report.numReports);
 		}
 
-		/** @return The assembled message body. */
+		/**
+		 * {@return The assembled message body}
+		 */
 		@Override
 		public String toString() {
 			return b.toString();

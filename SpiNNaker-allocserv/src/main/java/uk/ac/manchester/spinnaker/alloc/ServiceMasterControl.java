@@ -64,6 +64,8 @@ public class ServiceMasterControl {
 	}
 
 	/**
+	 * Sets whether periodic tasks should not run.
+	 *
 	 * @param paused
 	 *            Whether periodic tasks should not run.
 	 */
@@ -104,6 +106,8 @@ public class ServiceMasterControl {
 	}
 
 	/**
+	 * Set whether to use dummy transceivers for talking to the BMPs.
+	 *
 	 * @param dummyBMP
 	 *            Whether to use dummy transceivers for talking to the BMPs.
 	 */

@@ -134,7 +134,9 @@ public class V1CompatService {
 			return requireNonNull(srv.mapper);
 		}
 
-		/** @return The relevant properties. */
+		/**
+		 * {@return The relevant properties}
+		 */
 		protected final CompatibilityProperties getProperties() {
 			return srv.mainProps.getCompat();
 		}

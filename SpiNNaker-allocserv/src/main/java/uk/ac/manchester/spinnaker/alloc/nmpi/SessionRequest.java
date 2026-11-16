@@ -86,6 +86,8 @@ public class SessionRequest {
 	}
 
 	/**
+	 * Sets the Hardware Platform to set.
+	 *
 	 * @param hardwarePlatform
 	 *            the Hardware Platform to set
 	 */
@@ -101,6 +103,8 @@ public class SessionRequest {
 	}
 
 	/**
+	 * Sets  the Hardware Configuration to set.
+	 *
 	 * @param hardwareConfig
 	 *            the Hardware Configuration to set
 	 */

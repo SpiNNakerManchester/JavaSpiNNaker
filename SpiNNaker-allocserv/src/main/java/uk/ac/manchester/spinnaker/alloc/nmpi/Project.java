@@ -38,6 +38,8 @@ public class Project {
 	}
 
 	/**
+	 * Sets the quotas to set.
+	 *
 	 * @param quotas
 	 *            the quotas to set.
 	 */
@@ -53,6 +55,8 @@ public class Project {
 	}
 
 	/**
+	 * Sets the collab of the project to set.
+	 *
 	 * @param collab
 	 *             the collab of the project to set.
 	 */

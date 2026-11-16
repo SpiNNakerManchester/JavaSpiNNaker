@@ -118,9 +118,13 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the user identifier.
+	 *
+	 * Should be treated as Read-only within the administration interface;
+	 *     and not be set by the service.
+	 *
 	 * @param userId
-	 *            The user identifier. Read-only within the administration
-	 *            interface; cannot be set by the service.
+	 *            The user identifier.
 	 */
 	public void setUserId(Integer userId) {
 		this.userId = userId;
@@ -135,6 +139,8 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the user's username.
+	 *
 	 * @param userName
 	 *            The user's username.
 	 */
@@ -145,7 +151,7 @@ public final class UserRecord {
 	/**
 	 * The user's unencrypted password.
 	 *
-	 * <em>Never</em> returned by the service, but may be written.
+	 * Should <em>Never</em> be returned by the service.
 	 *
 	 * @return The user's unencrypted password
 	 */
@@ -155,9 +161,12 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the user's unencrypted password.
+	 *
+	 * Should <em>Never</em> be returned by the service.
+	 *
 	 * @param password
-	 *            The user's unencrypted password. <em>Never</em> returned by
-	 *            the service, but may be written.
+	 *            The user's unencrypted password.
 	 */
 	public void setPassword(String password) {
 		this.password = password;
@@ -176,10 +185,13 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets whether the user has a password set.
+	 *
+	 * If they don't, they'll have to log in by other mechanisms
+	 *     (e.g., HBP/EBRAINS OpenID Connect).
+	 *
 	 * @param hasPassword
-	 *            Whether the user has a password set. If they don't, they'll
-	 *            have to log in by other mechanisms (e.g., HBP/EBRAINS OpenID
-	 *            Connect).
+	 *            Whether the user has a password set.
 	 */
 	public void setHasPassword(Boolean hasPassword) {
 		this.hasPassword = hasPassword;
@@ -197,9 +209,13 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Set whether this account is enabled.
+	 *
+	 * Disabled accounts <em>cannot</em> log into the service
+	 *     until explicitly enabled.
+	 *
 	 * @param enabled
-	 *            Whether this account is enabled. Disabled accounts
-	 *            <em>cannot</em> log into the service until explicitly enabled.
+	 *            Whether this account is enabled.
 	 */
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
@@ -218,10 +234,13 @@ public final class UserRecord {
 	}
 
 	/**
+	 *  Sets whether this account is temporarily locked.
+	 *
+	 *  Locked accounts should unlock automatically after 24 hours.
+	 *  Can be explicitly set to {@code false} to force an unlock.
+	 *
 	 * @param locked
-	 *            Whether this account is temporarily locked. Locked accounts
-	 *            should unlock automatically after 24 hours. Can be explicitly
-	 *            set to {@code false} to force an unlock.
+	 *            Whether this account is temporarily locked.
 	 */
 	public void setLocked(Boolean locked) {
 		this.locked = locked;
@@ -236,6 +255,8 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the permissions of the account.
+	 *
 	 * @param trustLevel
 	 *            The permissions of the account.
 	 */
@@ -287,6 +308,8 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the groups that the user is a member of.
+	 *
 	 * @param groups
 	 *            The groups that the user is a member of.
 	 */
@@ -294,12 +317,16 @@ public final class UserRecord {
 		this.groups = groups;
 	}
 
-	/** @return The OpenID subject that this user relates to, if known. */
+	/**
+	 * {@return The OpenID subject that this user relates to, if known}
+	 */
 	public String getOpenIdSubject() {
 		return openIdSubject;
 	}
 
 	/**
+	 * Sets the OpenID subject that this user relates to.
+	 *
 	 * @param subject
 	 *            The OpenID subject that this user relates to.
 	 */
@@ -307,12 +334,16 @@ public final class UserRecord {
 		this.openIdSubject = subject;
 	}
 
-	/** @return Whether this is an internal user. */
+	/**
+	 * {@return Whether this is an internal user}
+	 */
 	public boolean isInternal() {
 		return isInternal;
 	}
 
 	/**
+	 * Sets whether this is an internal user.
+	 *
 	 * @param internal
 	 *            Whether this is an internal user.
 	 */

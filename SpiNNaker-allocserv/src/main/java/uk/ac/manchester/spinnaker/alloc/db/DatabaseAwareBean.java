@@ -196,7 +196,9 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 			conn.transaction(action);
 		}
 
-		/** @return The encapsulated connection. */
+		/**
+		 * {@return The encapsulated connection}
+		 */
 		public Connection getConnection() {
 			return conn;
 		}

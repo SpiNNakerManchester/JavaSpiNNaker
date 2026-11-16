@@ -242,7 +242,9 @@ public class TransceiverFactory
 	 */
 	@ForTestingOnly
 	public interface TestAPI {
-		/** @return The current blacklist. */
+		/**
+		 * {@return The current blacklist}
+		 */
 		Blacklist getCurrentBlacklist();
 
 		/**

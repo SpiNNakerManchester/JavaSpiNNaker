@@ -86,12 +86,16 @@ public class JobDescription {
 
 	private byte[] requestBytes;
 
-	/** @return the machine ID */
+	/**
+	 * {@return the machine ID}
+	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
+	 * Sets the machine ID.
+	 *
 	 * @param id
 	 *            the machine ID
 	 */
@@ -99,12 +103,16 @@ public class JobDescription {
 		this.id = id;
 	}
 
-	/** @return the job's owner */
+	/**
+	 * {@return the job's owner}
+	 */
 	public Optional<String> getOwner() {
 		return owner;
 	}
 
 	/**
+	 * Sets The job's owner.
+	 *
 	 * @param owner
 	 *            the job's owner
 	 */
@@ -112,12 +120,16 @@ public class JobDescription {
 		this.owner = Optional.ofNullable(owner);
 	}
 
-	/** @return the job's state */
+	/**
+	 * {@return the job's state}
+	 */
 	public JobState getState() {
 		return state;
 	}
 
 	/**
+	 * Sets the job's state.
+	 *
 	 * @param state
 	 *            the job's state
 	 */
@@ -125,12 +137,16 @@ public class JobDescription {
 		this.state = state;
 	}
 
-	/** @return when the job started */
+	/**
+	 * {@return when the job started}
+	 */
 	public Instant getStartTime() {
 		return startTime;
 	}
 
 	/**
+	 * Sets when the job started.
+	 *
 	 * @param startTime
 	 *            when the job started
 	 */
@@ -138,12 +154,16 @@ public class JobDescription {
 		this.startTime = startTime;
 	}
 
-	/** @return the maximum keepalive interval */
+	/**
+	 * {@return the maximum keepalive interval}
+	 */
 	public Duration getKeepAlive() {
 		return keepAlive;
 	}
 
 	/**
+	 * Sets the maximum keepalive interval.
+	 *
 	 * @param keepAlive
 	 *            the maximum keepalive interval
 	 */
@@ -151,12 +171,16 @@ public class JobDescription {
 		this.keepAlive = keepAlive;
 	}
 
-	/** @return the owner's host (the one supplying keepalives) */
+	/**
+	 * {@return the owner's host (the one supplying keepalives)}
+	 */
 	public Optional<String> getOwnerHost() {
 		return ownerHost;
 	}
 
 	/**
+	 * Sets the owner's host (the one supplying keepalives).
+	 *
 	 * @param ownerHost
 	 *            the owner's host (the one supplying keepalives)
 	 */
@@ -164,12 +188,16 @@ public class JobDescription {
 		this.ownerHost = Optional.ofNullable(ownerHost);
 	}
 
-	/** @return the request */
+	/**
+	 * {@return the request}
+	 */
 	public String getRequest() {
 		return request;
 	}
 
 	/**
+	 * Sets the request.
+	 *
 	 * @param request
 	 *            the request
 	 */
@@ -190,6 +218,8 @@ public class JobDescription {
 	}
 
 	/**
+	 * Sets the width of the allocation in <em>chips</em>..
+	 *
 	 * @param width
 	 *            the width of the allocation in <em>chips</em>.
 	 */
@@ -210,6 +240,8 @@ public class JobDescription {
 	}
 
 	/**
+	 * Sets the height of the allocation in <em>chips</em>.
+	 *
 	 * @param height
 	 *            the height of the allocation in <em>chips</em>.
 	 */
@@ -229,6 +261,9 @@ public class JobDescription {
 	}
 
 	/**
+	 * Sets whether all boards are powered up;
+	 *    unallocated jobs are considered unpowered.
+	 *
 	 * @param powered
 	 *            whether all boards are powered up; unallocated jobs are
 	 *            considered unpowered.
@@ -237,12 +272,16 @@ public class JobDescription {
 		this.powered = powered;
 	}
 
-	/** @return the machine name */
+	/**
+	 * {@return the machine name}
+	 */
 	public String getMachine() {
 		return machine;
 	}
 
 	/**
+	 * Sets the machine name.
+	 *
 	 * @param machine
 	 *            the machine name
 	 */
@@ -250,12 +289,16 @@ public class JobDescription {
 		this.machine = machine;
 	}
 
-	/** @return the board coordinates of all boards allocated to the job */
+	/**
+	 * {@return the board coordinates of all boards allocated to the job}
+	 */
 	public List<BoardCoords> getBoards() {
 		return boards;
 	}
 
 	/**
+	 * Sets  the board coordinates of all boards allocated to the job.
+	 *
 	 * @param boards
 	 *            the board coordinates of all boards allocated to the job
 	 */
@@ -263,12 +306,16 @@ public class JobDescription {
 		this.boards = copy(boards);
 	}
 
-	/** @return the URL to get machine information */
+	/**
+	 * {@return the URL to get machine information}
+	 */
 	public URI getMachineUrl() {
 		return machineUrl;
 	}
 
 	/**
+	 * Sets the URL to get machine information.
+	 *
 	 * @param machineUrl
 	 *            the URL to get machine information
 	 */
@@ -288,6 +335,8 @@ public class JobDescription {
 	}
 
 	/**
+	 * Sets the serialized request.
+	 *
 	 * @param bytes
 	 *            The serialized request.
 	 */

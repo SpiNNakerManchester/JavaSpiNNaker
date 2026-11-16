@@ -154,6 +154,8 @@ public class FirmwareLoader {
 	private FirmwareDefinition firmware;
 
 	/**
+	 * Construct handler for loading of firmware.
+	 *
 	 * @param txrx
 	 *            How to talk to BMPs. The specific BMP to talk to must have
 	 *            been bound.

@@ -1136,7 +1136,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		}
 
-		/** @return The estimated dimensions as a rectangle. */
+		/**
+		 * {@return The estimated dimensions as a rectangle}
+		 */
 		Rectangle getRect() {
 			return new Rectangle(width, height, TRIAD_DEPTH);
 		}
@@ -1477,6 +1479,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/**
+	 * testing method do not use.
+	 *
 	 * @param conn
 	 *            The DB connection
 	 * @return The test interface.
@@ -1523,6 +1527,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/**
+	 * Testing method do not use.
+	 *
 	 * @param conn
 	 *            The DB connection
 	 * @param histConn

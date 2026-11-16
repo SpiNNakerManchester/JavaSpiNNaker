@@ -265,7 +265,9 @@ public interface AdminController {
 
 		private static final int DECIMAL = 10;
 
-		/** @return The name of the group to create. */
+		/**
+		 * {@return The name of the group to create}
+		 */
 		@NotBlank
 		public String getName() {
 			return name;
@@ -311,7 +313,9 @@ public interface AdminController {
 			return gr;
 		}
 
-		/** @return Whether the group has a quota. */
+		/**
+		 * {@return Whether the group has a quota}
+		 */
 		public boolean isQuotad() {
 			return quotaDefined;
 		}
@@ -525,7 +529,9 @@ public interface AdminController {
 
 		private boolean synched;
 
-		/** @return The board ID. */
+		/**
+		 * {@return The board ID}
+		 */
 		@Positive
 		public int getBoardId() {
 			return boardId;
@@ -539,7 +545,9 @@ public interface AdminController {
 			this.boardId = boardId;
 		}
 
-		/** @return The BMP ID. */
+		/**
+		 * {@return The BMP ID}
+		 */
 		@Positive
 		public int getBmpId() {
 			return bmpId;
@@ -552,7 +560,9 @@ public interface AdminController {
 			this.bmpId = bmpId;
 		}
 
-		/** @return The text of the blacklist, if present. */
+		/**
+		 * {@return The text of the blacklist, if present}
+		 */
 		public String getBlacklist() {
 			return blacklist;
 		}
@@ -576,7 +586,9 @@ public interface AdminController {
 			return new Blacklist(blacklist);
 		}
 
-		/** @return Whether there is blacklist data present. */
+		/**
+		 * {@return Whether there is blacklist data present}
+		 */
 		public boolean isPresent() {
 			return present;
 		}

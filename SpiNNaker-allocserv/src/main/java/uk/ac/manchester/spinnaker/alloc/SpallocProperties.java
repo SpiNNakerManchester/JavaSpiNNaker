@@ -105,6 +105,8 @@ public class SpallocProperties {
 	private DataSourceProperties datasource;
 
 	/**
+	 * Constructs Spalloc service management properties
+	 *
 	 * @param databasePath
 	 *            Path to the main database file.
 	 * @param wait
@@ -352,7 +354,9 @@ public class SpallocProperties {
 		this.sqlite = sqlite;
 	}
 
-	/** @return Properties relating to board issue reporting. */
+	/**
+	 * {@return Properties relating to board issue reporting}
+	 */
 	@NotNull
 	@Valid
 	public ReportProperties getReportEmail() {
@@ -389,7 +393,9 @@ public class SpallocProperties {
 		this.stateCtrl = stateCtrl;
 	}
 
-	/** @return The database connection configuration. */
+	/**
+	 * {@return The database connection configuration}
+	 */
 	@NotNull
 	@Valid
 	public DataSourceProperties getDatasource() {
@@ -549,7 +555,9 @@ public class SpallocProperties {
 			this.expiryPeriod = expiryPeriod;
 		}
 
-		/** @return Minimum keepalive period. */
+		/**
+		 * {@return Minimum keepalive period}
+		 */
 		@NotNull
 		public Duration getMin() {
 			return min;
@@ -559,7 +567,9 @@ public class SpallocProperties {
 			this.min = min;
 		}
 
-		/** @return Maximum keepalive period. */
+		/**
+		 * {@return Maximum keepalive period}
+		 */
 		@NotNull
 		public Duration getMax() {
 			return max;
@@ -693,7 +703,9 @@ public class SpallocProperties {
 			reportActionThreshold = threshold;
 		}
 
-		/** @return Name of user that system-generated reports are done by. */
+		/**
+		 * {@return Name of user that system-generated reports are done by}
+		 */
 		@NotNull
 		public String getSystemReportUser() {
 			return systemReportUser;
@@ -826,7 +838,9 @@ public class SpallocProperties {
 			this.subject = subject;
 		}
 
-		/** @return Whether to send an email about reported boards. */
+		/**
+		 * {@return Whether to send an email about reported boards}
+		 */
 		public boolean isSend() {
 			return send;
 		}
@@ -835,7 +849,9 @@ public class SpallocProperties {
 			this.send = send;
 		}
 
-		/** @return The {@code From:} email address. */
+		/**
+		 * {@return The {@code From:} email address}
+		 */
 		@Email
 		public String getFrom() {
 			return from;
@@ -845,7 +861,9 @@ public class SpallocProperties {
 			from = address;
 		}
 
-		/** @return The {@code To:} email address. */
+		/**
+		 * {@return The {@code To:} email address}
+		 */
 		@Email
 		public String getTo() {
 			return to;
@@ -855,7 +873,9 @@ public class SpallocProperties {
 			to = address;
 		}
 
-		/** @return The {@code Subject:} header. */
+		/**
+		 * {@return The {@code Subject:} header}
+		 */
 		@NotBlank
 		public String getSubject() {
 			return subject;
@@ -1074,7 +1094,9 @@ public class SpallocProperties {
 			this.systemGroup = systemGroup;
 		}
 
-		/** @return Provide extra information to callers on auth failures. */
+		/**
+		 * {@return Provide extra information to callers on auth failures}
+		 */
 		public boolean isDebugFailures() {
 			return debugFailures;
 		}
@@ -1083,7 +1105,9 @@ public class SpallocProperties {
 			this.debugFailures = debugFailures;
 		}
 
-		/** @return Number of login failures before automatic lock-out. */
+		/**
+		 * {@return Number of login failures before automatic lock-out}
+		 */
 		@Positive
 		public int getMaxLoginFailures() {
 			return maxLoginFailures;
@@ -1093,7 +1117,9 @@ public class SpallocProperties {
 			this.maxLoginFailures = maxLoginFailures;
 		}
 
-		/** @return Length of time that automatic lock-out lasts. */
+		/**
+		 * {@return Length of time that automatic lock-out lasts}
+		 */
 		@NotNull
 		public Duration getAccountLockDuration() {
 			return accountLockDuration;
@@ -1622,7 +1648,9 @@ public class SpallocProperties {
 			this.period = period;
 		}
 
-		/** @return The basic wait time used by the BMP control tasks. */
+		/**
+		 * {@return The basic wait time used by the BMP control tasks}
+		 */
 		@NotNull
 		public Duration getProbeInterval() {
 			return probeInterval;
@@ -1649,7 +1677,9 @@ public class SpallocProperties {
 			this.powerAttempts = powerAttempts;
 		}
 
-		/** @return Number of attempts that will be made to bring up an FPGA. */
+		/**
+		 * {@return Number of attempts that will be made to bring up an FPGA}
+		 */
 		@Positive
 		public int getFpgaAttempts() {
 			return fpgaAttempts;
@@ -1737,7 +1767,9 @@ public class SpallocProperties {
 			this.password = password;
 		}
 
-		/** @return URL for creating a connection. */
+		/**
+		 * {@return URL for creating a connection}
+		 */
 		public String getJdbcUrl() {
 			return jdbcUrl;
 		}
@@ -1746,7 +1778,9 @@ public class SpallocProperties {
 			this.jdbcUrl = jdbcUrl;
 		}
 
-		/** @return User name for the connection. */
+		/**
+		 * {@return User name for the connection}
+		 */
 		public String getUsername() {
 			return username;
 		}
@@ -1755,7 +1789,9 @@ public class SpallocProperties {
 			this.username = username;
 		}
 
-		/** @return Password for the connection. */
+		/**
+		 * {@return Password for the connection}
+		 */
 		public String getPassword() {
 			return password;
 		}
@@ -1881,7 +1917,9 @@ public class SpallocProperties {
 					enableExpensiveTransactionDebugging;
 		}
 
-		/** @return How long to wait to get a database lock. */
+		/**
+		 * {@return How long to wait to get a database lock}
+		 */
 		@NotNull
 		public Duration getTimeout() {
 			return timeout;
@@ -1961,7 +1999,9 @@ public class SpallocProperties {
 			this.performanceThreshold = threshold;
 		}
 
-		/** @return Number of times to try to take the lock in a transaction. */
+		/**
+		 * {@return Number of times to try to take the lock in a transaction}
+		 */
 		@Positive
 		public int getLockTries() {
 			return lockTries;
@@ -1971,7 +2011,9 @@ public class SpallocProperties {
 			this.lockTries = lockTries;
 		}
 
-		/** @return Delay after transaction failure before retrying. */
+		/**
+		 * {@return Delay after transaction failure before retrying}
+		 */
 		@NotNull
 		public Duration getLockFailedDelay() {
 			return lockFailedDelay;
@@ -1981,7 +2023,9 @@ public class SpallocProperties {
 			this.lockFailedDelay = value;
 		}
 
-		/** @return Time delay before we issue a warning on transaction end. */
+		/**
+		 * {@return Time delay before we issue a warning on transaction end}
+		 */
 		@NotNull
 		public Duration getLockNoteThreshold() {
 			return lockNoteThreshold;
@@ -2322,7 +2366,9 @@ public class SpallocProperties {
 			this.localHost = localHost;
 		}
 
-		/** @return Whether to enable the UDP proxy subsystem. */
+		/**
+		 * {@return Whether to enable the UDP proxy subsystem}
+		 */
 		public boolean isEnable() {
 			return enable;
 		}
@@ -2403,7 +2449,9 @@ public class SpallocProperties {
 			this.blacklistReadBatchSize = blacklistReadBatchSize;
 		}
 
-		/** @return How long to wait between polls of the BMP controller. */
+		/**
+		 * {@return How long to wait between polls of the BMP controller}
+		 */
 		@NotNull
 		public Duration getBlacklistPoll() {
 			return blacklistPoll;
@@ -2413,7 +2461,9 @@ public class SpallocProperties {
 			this.blacklistPoll = blacklistPoll;
 		}
 
-		/** @return How long to wait for a blacklist operation to complete. */
+		/**
+		 * {@return How long to wait for a blacklist operation to complete}
+		 */
 		@NotNull
 		public Duration getBlacklistTimeout() {
 			return blacklistTimeout;
@@ -2424,8 +2474,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return How many board serial numbers to read from a full machine at
-		 *         once when synchronizing the overall state?
+		 * {@return How many board serial numbers to read from a full machine at
+		 *         once when synchronizing the overall state}
 		 */
 		@Positive
 		public int getSerialReadBatchSize() {

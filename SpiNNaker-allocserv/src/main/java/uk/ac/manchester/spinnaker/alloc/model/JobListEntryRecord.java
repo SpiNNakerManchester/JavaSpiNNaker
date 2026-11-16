@@ -103,12 +103,16 @@ public class JobListEntryRecord {
 
 	private byte[] originalRequest;
 
-	/** @return the job's ID */
+	/**
+	 * {@return the job's ID}
+	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
+	 * Sets the job's ID.
+	 *
 	 * @param id
 	 *            the job's ID
 	 */
@@ -116,12 +120,16 @@ public class JobListEntryRecord {
 		this.id = id;
 	}
 
-	/** @return the URL for more details */
+	/**
+	 * {@return the URL for more details}
+	 */
 	public Optional<URI> getDetailsUrl() {
 		return Optional.ofNullable(detailsUrl);
 	}
 
 	/**
+	 * Sets the URL for more details.
+	 *
 	 * @param detailsUrl
 	 *            the URL for more details
 	 */
@@ -129,12 +137,16 @@ public class JobListEntryRecord {
 		this.detailsUrl = detailsUrl;
 	}
 
-	/** @return the job state */
+	/**
+	 * {@return the job state}
+	 */
 	public JobState getState() {
 		return state;
 	}
 
 	/**
+	 * Sets  the job state.
+	 *
 	 * @param state
 	 *            the job state
 	 */
@@ -142,12 +154,16 @@ public class JobListEntryRecord {
 		this.state = state;
 	}
 
-	/** @return whether the job's boards are powered on */
+	/**
+	 * {@return whether the job's boards are powered on}
+	 */
 	public boolean isPowered() {
 		return powered;
 	}
 
 	/**
+	 * Sets whether the job's boards are powered on.
+	 *
 	 * @param powered
 	 *            whether the job's boards are powered on
 	 */
@@ -155,7 +171,9 @@ public class JobListEntryRecord {
 		this.powered = powered;
 	}
 
-	/** @return the number of boards allocated to the job */
+	/**
+	 * {@return the number of boards allocated to the job}
+	 */
 	public Optional<Integer> getNumBoards() {
 		if (isNull(boards)) {
 			return Optional.empty();
@@ -163,7 +181,9 @@ public class JobListEntryRecord {
 		return Optional.of(boards.size());
 	}
 
-	/** @return the boards of the job */
+	/**
+	 * {@return the boards of the job}
+	 */
 	public List<BoardCoords> getBoards() {
 		if (isNull(boards)) {
 			return List.of();
@@ -172,6 +192,8 @@ public class JobListEntryRecord {
 	}
 
 	/**
+	 * Sets the boards allocated to the job.
+	 *
 	 * @param boards
 	 *            the boards allocated to the job
 	 */
@@ -179,12 +201,16 @@ public class JobListEntryRecord {
 		this.boards = boards;
 	}
 
-	/** @return the ID of the machine that the job is using */
+	/**
+	 * {@return the ID of the machine that the job is using}
+	 */
 	public int getMachineId() {
 		return machineId;
 	}
 
 	/**
+	 * Sets the ID of the machine that the job is using.
+	 *
 	 * @param machineId
 	 *            the ID of the machine that the job is using
 	 */
@@ -192,12 +218,16 @@ public class JobListEntryRecord {
 		this.machineId = machineId;
 	}
 
-	/** @return the name of the machine that the job is using */
+	/**
+	 * {@return the name of the machine that the job is using}
+	 */
 	public String getMachineName() {
 		return machineName;
 	}
 
 	/**
+	 * Sets the name of the machine that the job is using.
+	 *
 	 * @param machineName
 	 *            the name of the machine that the job is using
 	 */
@@ -205,12 +235,16 @@ public class JobListEntryRecord {
 		this.machineName = machineName;
 	}
 
-	/** @return the URL for machine info */
+	/**
+	 * {@return the URL for machine info}
+	 */
 	public Optional<URI> getMachineUrl() {
 		return Optional.ofNullable(machineUrl);
 	}
 
 	/**
+	 * Sets the URL for machine info.
+	 *
 	 * @param machineUrl
 	 *            the URL for machine info
 	 */
@@ -218,12 +252,16 @@ public class JobListEntryRecord {
 		this.machineUrl = machineUrl;
 	}
 
-	/** @return the time of the job's creation */
+	/**
+	 * {@return the time of the job's creation}
+	 */
 	public Instant getCreationTimestamp() {
 		return creationTimestamp;
 	}
 
 	/**
+	 * Sets the time of the job's creation.
+	 *
 	 * @param creationTimestamp
 	 *            the time of the job's creation
 	 */
@@ -231,12 +269,16 @@ public class JobListEntryRecord {
 		this.creationTimestamp = creationTimestamp;
 	}
 
-	/** @return the keepalive interval */
+	/**
+	 * {@return the keepalive interval}
+	 */
 	public Duration getKeepaliveInterval() {
 		return keepaliveInterval;
 	}
 
 	/**
+	 * Sets the keepalive interval.
+	 *
 	 * @param keepaliveInterval
 	 *            the keepalive interval
 	 */
@@ -244,12 +286,16 @@ public class JobListEntryRecord {
 		this.keepaliveInterval = keepaliveInterval;
 	}
 
-	/** @return the owner, if not shrouded */
+	/**
+	 * {@return the owner, if not shrouded}
+	 */
 	public Optional<String> getOwner() {
 		return Optional.ofNullable(owner);
 	}
 
 	/**
+	 * Sets the owner.
+	 *
 	 * @param owner
 	 *            the owner
 	 */
@@ -257,12 +303,16 @@ public class JobListEntryRecord {
 		this.owner = owner;
 	}
 
-	/** @return the host keeping things alive, if not shrouded */
+	/**
+	 * {@return the host keeping things alive, if not shrouded}
+	 */
 	public Optional<String> getHost() {
 		return Optional.ofNullable(host);
 	}
 
 	/**
+	 * Sets the host keeping things alive.
+	 *
 	 * @param host
 	 *            the host keeping things alive
 	 */
@@ -271,6 +321,8 @@ public class JobListEntryRecord {
 	}
 
 	/**
+	 * Sets the original request to create the job.
+	 *
 	 * @param originalRequest
 	 *            the original request to create the job
 	 */
@@ -278,12 +330,16 @@ public class JobListEntryRecord {
 		this.originalRequest = originalRequest;
 	}
 
-	/** @return the original request to create the job */
+	/**
+	 * {@return the original request to create the job}
+	 */
 	public Optional<byte[]> getOriginalRequest() {
 		return Optional.ofNullable(originalRequest);
 	}
 
-	/** @return the original request as a string */
+	/**
+	 * {@return the original request as a string}
+	 */
 	public String getRequest() {
 		if (originalRequest == null) {
 			return "";

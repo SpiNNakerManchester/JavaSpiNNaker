@@ -65,7 +65,9 @@ public class MachineTagging {
 		// Url can't be handled now; lack the context
 	}
 
-	/** @return The name of the machine. */
+	/**
+	 * {@return The name of the machine}
+	 */
 	public String getName() {
 		return name;
 	}
@@ -74,7 +76,9 @@ public class MachineTagging {
 		this.name = name;
 	}
 
-	/** @return The ID of the machine. */
+	/**
+	 * {@return The ID of the machine}
+	 */
 	public int getId() {
 		return id;
 	}
@@ -83,12 +87,16 @@ public class MachineTagging {
 		this.id = id;
 	}
 
-	/** @return The URL to the page about the machine. */
+	/**
+	 * {@return The URL to the page about the machine}
+	 */
 	public URI getUrl() {
 		return url;
 	}
 
 	/**
+	 * Sets the URL to the page about the machine.
+	 *
 	 * @param url
 	 *            The URL to the page about the machine.
 	 */
@@ -96,12 +104,18 @@ public class MachineTagging {
 		this.url = url;
 	}
 
-	/** @return The tags of the machine. */
+	/**
+	 * {@return The tags of the machine}
+	 */
 	public String getTags() {
 		return tags.stream().collect(joining(", "));
 	}
 
 	/**
+	 * Sets the tags of the machine.
+	 *
+	 * Overrides previous tags.
+	 *
 	 * @param tags
 	 *            The tags of the machine.
 	 */
@@ -110,6 +124,11 @@ public class MachineTagging {
 	}
 
 	/**
+	 * Sets the tags of the machine.
+	 *
+	 * Appends to previous tags.
+	 * (To be determined if desirable.)
+	 *
 	 * @param tags
 	 *            The tags of the machine.
 	 */

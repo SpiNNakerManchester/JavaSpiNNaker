@@ -226,12 +226,16 @@ public class QuotaManager extends DatabaseAwareBean {
 			this.quota = row.getLong("quota");
 		}
 
-		/** @return The name of the group. */
+		/**
+		 * {@return The name of the group}
+		 */
 		public String getName() {
 			return name;
 		}
 
-		/** @return The new quota of the group. */
+		/**
+		 * {@return The new quota of the group}
+		 */
 		public Long getQuota() {
 			return quota;
 		}

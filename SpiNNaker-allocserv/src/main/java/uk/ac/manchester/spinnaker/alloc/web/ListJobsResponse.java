@@ -46,7 +46,9 @@ public final class ListJobsResponse {
 		jobs = copy(jc.ids().stream().map(b::build).collect(toList()));
 	}
 
-	/** @return URL of previous page when paging is used in this response. */
+	/**
+	 * {@return URL of previous page when paging is used in this response}
+	 */
 	@JsonInclude(value = NON_NULL)
 	public URI getPrev() {
 		return prev;
@@ -56,7 +58,9 @@ public final class ListJobsResponse {
 		this.prev = prev;
 	}
 
-	/** @return URL of next page when paging is used in this response. */
+	/**
+	 * {}@return URL of next page when paging is used in this response}
+	 */
 	@JsonInclude(value = NON_NULL)
 	public URI getNext() {
 		return next;

@@ -42,6 +42,8 @@ public class Quota {
 	}
 
 	/**
+	 * Sets the limit to set.
+	 *
 	 * @param limit
 	 *            the limit to set.
 	 */
@@ -57,6 +59,8 @@ public class Quota {
 	}
 
 	/**
+	 * Sets the usage to set.
+	 *
 	 * @param usage
 	 *            the usage to set.
 	 */
@@ -72,6 +76,8 @@ public class Quota {
 	}
 
 	/**
+	 * Sets the platform to set.
+	 *
 	 * @param platform
 	 *            the platform to set.
 	 */
@@ -87,6 +93,8 @@ public class Quota {
 	}
 
 	/**
+	 * Sets the units to set.
+	 *
 	 * @param units
 	 *            the units to set.
 	 */

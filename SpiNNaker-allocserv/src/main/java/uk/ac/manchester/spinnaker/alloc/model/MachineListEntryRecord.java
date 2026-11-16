@@ -77,12 +77,16 @@ public class MachineListEntryRecord {
 
 	private List<@NotBlank String> tags = List.of();
 
-	/** @return the machine ID */
+	/**
+	 * {@return the machine ID}
+	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
+	 * Sets the machine ID.
+	 *
 	 * @param id
 	 *            the machine ID
 	 */
@@ -90,12 +94,16 @@ public class MachineListEntryRecord {
 		this.id = id;
 	}
 
-	/** @return the machine name */
+	/**
+	 * {@return the machine name}
+	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
+	 * Sets the machine name.
+	 *
 	 * @param name
 	 *            the machine name
 	 */
@@ -103,12 +111,16 @@ public class MachineListEntryRecord {
 		this.name = name;
 	}
 
-	/** @return where to go for more details */
+	/**
+	 * {@return where to go for more details}
+	 */
 	public Optional<URI> getDetailsUrl() {
 		return Optional.ofNullable(detailsUrl);
 	}
 
 	/**
+	 * Sets where to go for more details.
+	 *
 	 * @param detailsUrl
 	 *            where to go for more details
 	 */
@@ -116,12 +128,16 @@ public class MachineListEntryRecord {
 		this.detailsUrl = detailsUrl;
 	}
 
-	/** @return the number of boards in the machine */
+	/**
+	 * {@return the number of boards in the machine}
+	 */
 	public int getNumBoards() {
 		return numBoards;
 	}
 
 	/**
+	 * Sets the number of boards in the machine.
+	 *
 	 * @param numBoards
 	 *            the number of boards in the machine
 	 */
@@ -129,12 +145,16 @@ public class MachineListEntryRecord {
 		this.numBoards = numBoards;
 	}
 
-	/** @return the number of boards in use */
+	/**
+	 * {@return the number of boards in use}
+	 */
 	public int getNumInUse() {
 		return numInUse;
 	}
 
 	/**
+	 * Sets the number of boards in use.
+	 *
 	 * @param numInUse
 	 *            the number of boards in use
 	 */
@@ -142,12 +162,16 @@ public class MachineListEntryRecord {
 		this.numInUse = numInUse;
 	}
 
-	/** @return the number of jobs running on the machine */
+	/**
+	 * {@return the number of jobs running on the machine}
+	 */
 	public int getNumJobs() {
 		return numJobs;
 	}
 
 	/**
+	 * Sets the number of jobs running on the machine.
+	 *
 	 * @param numJobs
 	 *            the number of jobs running on the machine
 	 */
@@ -155,12 +179,16 @@ public class MachineListEntryRecord {
 		this.numJobs = numJobs;
 	}
 
-	/** @return the machine's tags */
+	/**
+	 * {@return the machine's tags}
+	 */
 	public List<String> getTags() {
 		return tags;
 	}
 
 	/**
+	 * Sets the machine's tags.
+	 *
 	 * @param tags
 	 *            the machine's tags
 	 */

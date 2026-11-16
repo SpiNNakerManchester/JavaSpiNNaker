@@ -32,6 +32,8 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @Retention(RUNTIME)
 @UsedInJavadocOnly(AdminControllerImpl.class)
 public @interface Action {
-	/** @return The action we do in the annotated method. */
+	/**
+	 * {@return The action we do in the annotated method}
+	 */
 	String value();
 }
