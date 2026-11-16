@@ -1048,6 +1048,8 @@ public interface SpallocAPI {
 		List<Job> jobs();
 
 		/**
+		 * Gets the set of jobs that have changed during the duration.
+		 *
 		 * @param duration
 		 *            How long to wait for a change.
 		 * @return The set of jobs that have changed.

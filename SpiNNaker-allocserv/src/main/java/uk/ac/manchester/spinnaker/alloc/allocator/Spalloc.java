@@ -1314,6 +1314,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		private final int id;
 
 		/**
+		 * Constructs a builder of issue-report email for sending.
+		 *
 		 * @param id
 		 *            The job ID
 		 */

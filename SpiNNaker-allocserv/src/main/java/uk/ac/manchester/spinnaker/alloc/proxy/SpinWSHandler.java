@@ -108,6 +108,8 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		private final Class<T> cls;
 
 		/**
+		 * Constructs the property descriptor.
+		 *
 		 * @param name
 		 *            The name of the property.
 		 * @param cls

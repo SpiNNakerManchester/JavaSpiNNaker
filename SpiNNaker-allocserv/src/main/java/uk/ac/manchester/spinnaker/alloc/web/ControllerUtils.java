@@ -143,6 +143,8 @@ public abstract class ControllerUtils {
 		private final String view;
 
 		/**
+		 * Construct a factory to Createsa {@link ModelAndView} on demand.
+		 *
 		 * @param viewName
 		 *            The name of the view that this class will make.
 		 */

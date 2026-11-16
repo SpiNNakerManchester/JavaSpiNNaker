@@ -432,6 +432,8 @@ public class SpallocProperties {
 		private DataSourceProperties datasource;
 
 		/**
+		 * Constructs a data properties held for historic interest.
+		 *
 		 * @param path
 		 *            Path to the historical job database file. <em>Must be
 		 *            distinct from the main database!</em>
@@ -524,6 +526,8 @@ public class SpallocProperties {
 		private Duration max;
 
 		/**
+		 * Constructs the keepalive properties.
+		 *
 		 * @param expiryPeriod
 		 *            Time between runs of the keepalive-expiry algorithm.
 		 * @param min
@@ -615,6 +619,9 @@ public class SpallocProperties {
 		private String emergencyStopCommandCode;
 
 		/**
+		 * Constructs the configuration
+		 *     of the main resource allocation engine.
+		 *
 		 * @param period
 		 *            Time between runs of the main allocation algorithm.
 		 * @param importanceSpan
@@ -743,6 +750,8 @@ public class SpallocProperties {
 		private double specificBoard;
 
 		/**
+		 * Constructs the priority scales.
+		 *
 		 * @param size
 		 *            Priority scaling factor for jobs given by number of
 		 *            boards.
@@ -818,6 +827,8 @@ public class SpallocProperties {
 		private String subject;
 
 		/**
+		 * Constructs a report.
+		 *
 		 * @param send
 		 *            Whether to send an email about reported boards.
 		 * @param from
@@ -952,6 +963,8 @@ public class SpallocProperties {
 		private OpenIDProperties openid;
 
 		/**
+		 * Constructs authentication and authorization configuration.
+		 *
 		 * @param basic
 		 *            Whether to enable HTTP BASIC authentication. Useful for
 		 *            simple clients.
@@ -1187,6 +1200,8 @@ public class SpallocProperties {
 		private Map<String, IntrospectionProperties> introspectionUris;
 
 		/**
+		 * Constructs OpenID-related security properties.
+		 *
 		 * @param enable
 		 *            Whether to enable OIDC authentication. Required for
 		 *            allowing people to use HBP/EBRAINS identities.
@@ -1322,6 +1337,8 @@ public class SpallocProperties {
 		private String tokenParameter;
 
 		/**
+		 * Constructs the introspection properties.
+		 *
 		 * @param uri
 		 *            The introspection URI.
 		 * @param type
@@ -1426,6 +1443,8 @@ public class SpallocProperties {
 		private String nmpiPlatform;
 
 		/**
+		 * Constructs the Quota management properties,
+		 *
 		 * @param defaultQuota
 		 *            Default user quota in board-seconds.
 		 * @param defaultOrgQuota
@@ -1590,6 +1609,8 @@ public class SpallocProperties {
 		private Duration offWaitTime;
 
 		/**
+		 * Construct how Spalloc talks to BMPs on machines.
+		 *
 		 * @param period
 		 *            How long between when we send requests to the BMP control
 		 *            tasks.
@@ -1750,6 +1771,9 @@ public class SpallocProperties {
 		private String password;
 
 		/**
+		 * Constructs the properties of a {@link DataSource},
+		 *     describing how to make a database connection.
+		 *
 		 * @param jdbcUrl
 		 *            URL for creating a connection.
 		 * @param username
@@ -1857,6 +1881,8 @@ public class SpallocProperties {
 		private boolean enableExpensiveTransactionDebugging;
 
 		/**
+		 * Constructs the additional database configuration.
+		 *
 		 * @param timeout
 		 *            How long to wait to get a database lock.
 		 * @param debugFailures
@@ -2115,6 +2141,8 @@ public class SpallocProperties {
 		private Duration defaultKeepalive;
 
 		/**
+		 * Constructs settings relating to the v1 spalloc configuration.
+		 *
 		 * @param enable
 		 *            Whether to turn the spalloc version 1 compatibility
 		 *            service interface on.
@@ -2347,6 +2375,8 @@ public class SpallocProperties {
 		private String localHost;
 
 		/**
+		 * Constructs the settings for the proxies.
+		 *
 		 * @param enable
 		 *            Whether to enable the UDP proxy subsystem.
 		 * @param logWriteCounts
@@ -2426,6 +2456,9 @@ public class SpallocProperties {
 		private int blacklistReadBatchSize;
 
 		/**
+		 * Constructs the settings for control of the administrative state
+		 *     of a machine.
+		 *
 		 * @param blacklistPoll
 		 *            How long to wait between polls of the BMP controller.
 		 * @param blacklistTimeout

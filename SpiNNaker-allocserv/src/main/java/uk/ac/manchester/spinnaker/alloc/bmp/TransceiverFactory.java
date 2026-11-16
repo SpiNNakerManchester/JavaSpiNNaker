@@ -248,6 +248,8 @@ public class TransceiverFactory
 		Blacklist getCurrentBlacklist();
 
 		/**
+		 * Test method to set a mock.
+		 *
 		 * @param factory
 		 *            The mock transceiver factory to use.
 		 */

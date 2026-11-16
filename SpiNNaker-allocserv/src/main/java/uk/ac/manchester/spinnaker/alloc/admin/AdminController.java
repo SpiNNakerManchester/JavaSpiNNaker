@@ -274,6 +274,8 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets the name of the group to create.
+		 *
 		 * @param name
 		 *            The name of the group to create.
 		 */
@@ -290,6 +292,8 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets the quota of the group to create, as a {@link String}.
+		 *
 		 * @param quota
 		 *            The quota of the group to create, as a {@link String}.
 		 */
@@ -321,6 +325,8 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets whether the group has a quota.
+		 *
 		 * @param value
 		 *            Whether the group has a quota.
 		 */
@@ -538,6 +544,8 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets the board ID.
+		 *
 		 * @param boardId
 		 *            The board ID.
 		 */
@@ -554,6 +562,8 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets the BMP ID.
+		 *
 		 * @param bmpId The BMP ID.
 		 */
 		public void setBmpId(int bmpId) {
@@ -568,6 +578,8 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets the text of the blacklist.
+		 *
 		 * @param blacklist
 		 *            The text of the blacklist.
 		 */
@@ -594,6 +606,8 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets whether there is blacklist data present.
+		 *
 		 * @param present
 		 *            Whether there is blacklist data present.
 		 */
@@ -610,6 +624,9 @@ public interface AdminController {
 		}
 
 		/**
+		 * Sets whether the blacklist data is believed to be the same as
+		 *     the data on the board.
+		 *
 		 * @param synched
 		 *            Whether the blacklist data is believed to be the same as
 		 *            the data on the board.

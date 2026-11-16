@@ -309,6 +309,9 @@ public class FirmwareLoader {
 		private final int value;
 
 		/**
+		 * Constructs the instructions to set a register
+		 *     with the default bank.
+		 *
 		 * @param fpga
 		 *            Which FPGA's registers to set
 		 * @param register
@@ -323,6 +326,9 @@ public class FirmwareLoader {
 		}
 
 		/**
+		 * Constructs the instructions to set a register
+		 *     with the specified bank.
+		 *
 		 * @param fpga
 		 *            Which FPGA's registers to set
 		 * @param register

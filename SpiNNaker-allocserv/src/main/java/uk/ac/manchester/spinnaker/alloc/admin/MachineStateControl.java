@@ -208,6 +208,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 		}
 
 		/**
+		 * Sets the allocatable state to set the board to.
+		 *
 		 * @param newValue
 		 *            The allocatable state to set the board to.
 		 */
@@ -837,6 +839,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 		private final int boardId;
 
 		/**
+		 * Constructs the Manager for the transactions used to safely talk
+		 *     with the BMP controller.
+		 *
 		 * @param operation
 		 *            The SQL to create the operation to carry out. Must
 		 *            generate an ID, so presumably is an {@code INSERT}.

@@ -286,6 +286,8 @@ public class MachineDescription {
 		}
 
 		/**
+		 * Sets the job ID.
+		 *
 		 * @param id
 		 *            the job ID
 		 */
@@ -301,6 +303,8 @@ public class MachineDescription {
 		}
 
 		/**
+		 * Sets the URL for more detail.
+		 *
 		 * @param url
 		 *            the URL for more detail
 		 */
@@ -316,6 +320,8 @@ public class MachineDescription {
 		}
 
 		/**
+		 * Sets the board coordinates of all boards allocated to the job.
+		 *
 		 * @param boards
 		 *            the board coordinates of all boards allocated to the job
 		 */
@@ -324,6 +330,8 @@ public class MachineDescription {
 		}
 
 		/**
+		 * Sets the board coordinates of all boards allocated to the job.
+		 *
 		 * @param boards
 		 *            the board coordinates of all boards allocated to the job
 		 */
@@ -339,6 +347,8 @@ public class MachineDescription {
 		}
 
 		/**
+		 * Sets the owner of the job.
+		 *
 		 * @param owner
 		 *            the owner of the job
 		 */
