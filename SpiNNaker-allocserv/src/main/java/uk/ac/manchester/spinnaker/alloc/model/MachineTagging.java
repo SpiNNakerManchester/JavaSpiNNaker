@@ -139,7 +139,8 @@ public class MachineTagging {
 	}
 
 	/**
-	 * {@return Whether this machine has the "{@code default}" tag applied to it}
+	 * {@return Whether this machine has the "{@code default}" tag
+	 *     applied to it}
 	 */
 	public boolean isTaggedAsDefault() {
 		return tags.contains("default");

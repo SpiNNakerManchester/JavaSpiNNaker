@@ -39,7 +39,7 @@ import org.springframework.web.socket.WebSocketSession;
  * security context.
  */
 public final class Permit {
-	/** Is the user an admin? */
+	/** Is the user an admin. */
 	public final boolean admin;
 
 	/** Is the user an nmpi exec user. */

@@ -1306,6 +1306,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	/** Used to assemble an issue-report email for sending. */
 	private static final class EmailBuilder {
 		/**
+		 * An efficient Formatter.
+		 *
 		 * More efficient than several String.format() calls, and much clearer
 		 * than a mess of direct {@link StringBuilder} calls!
 		 */

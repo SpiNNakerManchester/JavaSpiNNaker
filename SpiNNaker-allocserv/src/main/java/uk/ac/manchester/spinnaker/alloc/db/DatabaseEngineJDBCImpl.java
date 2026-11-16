@@ -244,7 +244,7 @@ public class DatabaseEngineJDBCImpl implements DatabaseAPI {
 	private abstract class StatementImpl implements StatementCommon {
 		private final String originalSql;
 
-		/** The SQL statement with parameters replaced by ? */
+		/** The SQL statement with parameters replaced by. */
 		final String sql;
 
 		/** The JdbcTemplate to use for this statement. */

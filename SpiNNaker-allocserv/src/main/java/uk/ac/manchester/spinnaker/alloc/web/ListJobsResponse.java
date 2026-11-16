@@ -59,7 +59,7 @@ public final class ListJobsResponse {
 	}
 
 	/**
-	 * {}@return URL of next page when paging is used in this response}
+	 * {@return URL of next page when paging is used in this response}
 	 */
 	@JsonInclude(value = NON_NULL)
 	public URI getNext() {

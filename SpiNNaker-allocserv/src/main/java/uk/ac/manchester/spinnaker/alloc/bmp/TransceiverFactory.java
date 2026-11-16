@@ -280,7 +280,7 @@ public class TransceiverFactory
 	}
 
 	/**
-	 * Not a public API! Do not call outside of test code!
+	 * Not a public API! Do not call outside of test code.
 	 *
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.

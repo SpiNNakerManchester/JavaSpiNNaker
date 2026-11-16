@@ -1068,7 +1068,7 @@ public interface SpallocAPI {
 	 */
 	interface Jobs extends Waitable {
 		/**
-		 * {return The job IDs}
+		 * {@return The job IDs}
 		 */
 		List<Integer> ids();
 
@@ -1268,14 +1268,14 @@ public interface SpallocAPI {
 		String getMachine();
 
 		/**
-		 * Where is the board logically within its machine?
+		 * Where is the board logically within its machine.
 		 *
 		 * @return a triad location descriptor
 		 */
 		BoardCoordinates getLogical();
 
 		/**
-		 * Where is the board physically in its machine?
+		 * Where is the board physically in its machine.
 		 *
 		 * @return a cabinet/frame/board triple
 		 */

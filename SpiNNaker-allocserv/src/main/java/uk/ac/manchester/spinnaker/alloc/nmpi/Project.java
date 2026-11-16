@@ -48,7 +48,7 @@ public class Project {
 	}
 
 	/**
-	 * {}@return The collab of the project}
+	 * {@return The collab of the project}
 	 */
 	public String getCollab() {
 		return collab;

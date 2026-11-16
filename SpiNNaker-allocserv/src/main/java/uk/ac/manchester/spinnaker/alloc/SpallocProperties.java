@@ -65,7 +65,7 @@ public class SpallocProperties {
 	/** Path to the main database file. */
 	private File databasePath;
 
-	/** How long should long calls take before returning anyway? */
+	/** How long should long calls take before returning anyway. */
 	private Duration wait;
 
 	/**
@@ -105,7 +105,7 @@ public class SpallocProperties {
 	private DataSourceProperties datasource;
 
 	/**
-	 * Constructs Spalloc service management properties
+	 * Constructs Spalloc service management properties.
 	 *
 	 * @param databasePath
 	 *            Path to the main database file.
@@ -200,7 +200,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * How long should long calls take before returning anyway?
+	 * How long should long calls take before returning anyway.
 	 *
 	 * @return Wait time.
 	 */
@@ -415,7 +415,7 @@ public class SpallocProperties {
 		private File path;
 
 		/**
-		 * How long after job completion should we wait before moving the data?
+		 * How long after job completion should we wait before moving the data.
 		 */
 		private Duration gracePeriod;
 
@@ -952,7 +952,7 @@ public class SpallocProperties {
 		private Duration accountLockDuration;
 
 		/**
-		 * How often do we look for users to end their lock-out?
+		 * How often do we look for users to end their lock-out.
 		 */
 		private Duration unlockPeriod;
 
@@ -1143,7 +1143,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * How often do we look for users to end their lock-out?
+		 * How often do we look for users to end their lock-out.
 		 *
 		 * @return How often do we look for users to end their lock-out?
 		 */
@@ -1443,7 +1443,7 @@ public class SpallocProperties {
 		private String nmpiPlatform;
 
 		/**
-		 * Constructs the Quota management properties,
+		 * Constructs the Quota management properties.
 		 *
 		 * @param defaultQuota
 		 *            Default user quota in board-seconds.
@@ -1524,8 +1524,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * {@return Cron expression that says when we consolidate job quotas into
-		 *         the main quota table}
+		 * {@return Cron expression that says when we consolidate job quotas
+		 *     into the main quota table}
 		 */
 		@NotBlank
 		public String getConsolidationSchedule() {
@@ -2011,9 +2011,12 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * {@return Whether, if the performance log is enabled, to also write the
-		 *         EXPLAIN of the code to the log on termination (for slow
-		 *         queries only)}
+		 * @return Whether, if the performance log is enabled.
+		 *
+		 * To also write the EXPLAIN of the code to the log on termination
+		 * (for slow queries only)
+		 *
+		 *  @return Whether, if the performance log is enabled
 		 */
 		public final boolean isAutoExplain() {
 			return autoExplain;
@@ -2420,8 +2423,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * {@return Whether to log the number of packets read and written on each
-		 *         channel}
+		 * {@return Whether to log the number of packets
+		 *     read and written on each channel}
 		 */
 		public boolean isLogWriteCounts() {
 			return logWriteCounts;
@@ -2460,7 +2463,7 @@ public class SpallocProperties {
 
 		/**
 		 * How many board serial numbers to read from a full machine at once
-		 * when synchronizing the overall state?
+		 * when synchronizing the overall state.
 		 */
 		private int serialReadBatchSize;
 

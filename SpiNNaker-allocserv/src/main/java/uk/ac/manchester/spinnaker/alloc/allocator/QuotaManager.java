@@ -149,7 +149,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	/**
 	 * Has the execution of a job remained within its group's resource
-	 * allocation at this point?
+	 * allocation at this point.
 	 *
 	 * @param jobId
 	 *            What job is consuming resources?
@@ -163,7 +163,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	/**
 	 * Has the execution of a job exceeded its group's resource allocation at
-	 * this point?
+	 * this point.
 	 *
 	 * @param jobId
 	 *            What job is consuming resources?

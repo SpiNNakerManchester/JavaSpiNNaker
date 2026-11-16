@@ -271,7 +271,7 @@ public class V1CompatService {
 	}
 
 	/**
-	 * Not a public API!
+	 * Not a public API.
 	 *
 	 * @return Test interface.
 	 * @deprecated Only for testing.

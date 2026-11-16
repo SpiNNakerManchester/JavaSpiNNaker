@@ -128,7 +128,7 @@ public final class BoardCoords {
 	}
 
 	/**
-	 * {}@return Logical triad Y coordinate}
+	 * {@return Logical triad Y coordinate}
 	 */
 	public int getY() {
 		return y;

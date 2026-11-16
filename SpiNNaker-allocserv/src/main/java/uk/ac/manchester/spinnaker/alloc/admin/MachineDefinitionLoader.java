@@ -284,7 +284,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/**
-		 * Does a board have a dead link in a given direction?
+		 * Does a board have a dead link in a given direction.
 		 *
 		 * @param board
 		 *            The location of the board

@@ -834,7 +834,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		/**
-		 * {}@return The number of job records to copy over to the historical
+		 * {@return The number of job records to copy over to the historical
 		 *         database}
 		 */
 		int numJobs() {
@@ -1461,7 +1461,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		void emergencyStop();
 
 		/**
-		 * Restart allocations after stopping, to allow more tests!
+		 * Restart allocations after stopping, to allow more tests.
 		 */
 		void restartAfterStop();
 	}

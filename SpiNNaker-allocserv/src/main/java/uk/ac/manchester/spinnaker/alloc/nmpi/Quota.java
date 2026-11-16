@@ -52,7 +52,7 @@ public class Quota {
 	}
 
 	/**
-	 * {}@return the usage of the quota assigned}
+	 * {@return the usage of the quota assigned}
 	 */
 	public double getUsage() {
 		return usage;

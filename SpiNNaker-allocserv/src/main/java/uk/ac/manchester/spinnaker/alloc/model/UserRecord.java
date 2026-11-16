@@ -200,7 +200,8 @@ public final class UserRecord {
 	/**
 	 * Whether this account is enabled.
 	 *
-	 * Disabled accounts <em>cannot</em> log into the service until explicitly enabled.
+	 * Disabled accounts <em>cannot</em> log into the service
+	 * until explicitly enabled.
 	 *
 	 * @return Whether this account is enabled.
 	 */
@@ -282,8 +283,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * {@return The time that the last failed login was. Read-only; cannot be set
-	 *         via the admin API}
+	 * The time that the last failed login was.
+	 *
+	 * Read-only; cannot be set via the admin API}
+	 *
+	 * @return The time that the last failed login was.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null

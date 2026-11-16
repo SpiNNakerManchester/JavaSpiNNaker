@@ -187,7 +187,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	protected abstract void closeNotifiers();
 
 	/**
-	 * What host is connected to this service instance?
+	 * What host is connected to this service instance.
 	 *
 	 * @return The remote host that this task is serving.
 	 */
