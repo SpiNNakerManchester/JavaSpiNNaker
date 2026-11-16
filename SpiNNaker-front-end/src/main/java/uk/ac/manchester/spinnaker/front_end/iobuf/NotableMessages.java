@@ -35,6 +35,8 @@ public class NotableMessages {
 	private List<String> warnings;
 
 	/**
+	 * Construct the result of a IOBUF retrieval.
+	 *
 	 * @param errors
 	 *            The notable errors in the IOBUFs.
 	 * @param warnings
