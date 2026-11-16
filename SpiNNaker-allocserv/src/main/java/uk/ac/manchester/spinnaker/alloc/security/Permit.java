@@ -42,10 +42,10 @@ public final class Permit {
 	/** Is the user an admin? */
 	public final boolean admin;
 
-	/** Is the user an nmpi exec user? */
+	/** Is the user an nmpi exec user. */
 	public final boolean nmpiexec;
 
-	/** What is the name of the user? */
+	/** What is the name of the user. */
 	public final String name;
 
 	private final List<GrantedAuthority> authorities;
@@ -118,7 +118,7 @@ public final class Permit {
 
 	/**
 	 * Can something owned by a given user can be shown to the user that this
-	 * permit is for?
+	 * permit is for.
 	 *
 	 * @param owner
 	 *            The owner of the object.

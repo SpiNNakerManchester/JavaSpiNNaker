@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Just how trusted is a user?
+ * Just how trusted is a user.
  */
 public enum TrustLevel {
 	/** Grants no real permissions at all. */
