@@ -33,7 +33,7 @@ public class DockerInspectResponse {
 		private boolean running;
 
 		/**
-		 * @return if it is running
+		 * {@return if it is running}
 		 */
 		public boolean isRunning() {
 			return running;

@@ -460,8 +460,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Path to the historical job database file. <em>Must be
-		 *         distinct from the main database!</em>
+		 * {@return Path to the historical job database file. <em>Must be
+		 *         distinct from the main database</em>}
 		 */
 		@NotNull
 		public File getPath() {
@@ -473,8 +473,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return How long after job completion should we wait before moving
-		 *         the data?
+		 * {@return How long after job completion should we wait before moving
+		 *         the data}
 		 */
 		@NotNull
 		public Duration getGracePeriod() {
@@ -486,8 +486,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Cron expression saying when to move completed jobs to the
-		 *         historical database.
+		 * {@return Cron expression saying when to move completed jobs to the
+		 *         historical database}
 		 */
 		@NotBlank
 		public String getSchedule() {
@@ -499,8 +499,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Database connection properties for the connection to the
-		 *         historical database.
+		 * {@return Database connection properties for the connection to the
+		 *         historical database}
 		 */
 		@Valid
 		public DataSourceProperties getDatasource() {
@@ -698,8 +698,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Number of reports of board problems at which the board is
-		 *         taken out of service.
+		 * {@return Number of reports of board problems at which the board is
+		 *         taken out of service}
 		 */
 		@Positive
 		public int getReportActionThreshold() {
@@ -723,7 +723,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Command code to accept for an emergency stop.
+		 * {@return Command code to accept for an emergency stop}
 		 */
 		@NotBlank
 		public String getEmergencyStopCommandCode() {
@@ -772,7 +772,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Priority scaling factor for jobs given by number of boards.
+		 * {@return Priority scaling factor for jobs given by number of boards}
 		 */
 		@Positive
 		public double getSize() {
@@ -784,8 +784,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Priority scaling factor for jobs given by rectangular
-		 *         dimensions.
+		 * {@return Priority scaling factor for jobs given by rectangular
+		 *         dimensions}
 		 */
 		@Positive
 		public double getDimensions() {
@@ -797,7 +797,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Priority scaling factor for jobs requiring a specific board.
+		 * {@return Priority scaling factor for jobs requiring a specific board}
 		 */
 		@Positive
 		public double getSpecificBoard() {
@@ -1066,8 +1066,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Force a known local admin user to exist with a known
-		 *         password.
+		 * {@return Force a known local admin user to exist with a known
+		 *         password}
 		 */
 		public boolean isAddDummyUser() {
 			return addDummyUser;
@@ -1360,7 +1360,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The introspection URI.
+		 * {@return The introspection URI}
 		 */
 		public String getUri() {
 			return uri;
@@ -1371,7 +1371,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The introspection type.
+		 * {@return The introspection type}
 		 */
 		public IntrospectionType getType() {
 			return type;
@@ -1382,7 +1382,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The property name to use for the username.
+		 * {@return The property name to use for the username}
 		 */
 		public String getUsernameProperty() {
 			return usernameProperty;
@@ -1393,7 +1393,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The property name to use for the token.
+		 * {@return The property name to use for the token}
 		 */
 		public String getTokenParameter() {
 			return tokenParameter;
@@ -1524,8 +1524,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Cron expression that says when we consolidate job quotas into
-		 *         the main quota table.
+		 * {@return Cron expression that says when we consolidate job quotas into
+		 *         the main quota table}
 		 */
 		@NotBlank
 		public String getConsolidationSchedule() {
@@ -1537,8 +1537,11 @@ public class SpallocProperties {
 		}
 
 		/**
+		 * The URL of an NMPI server that deals with quota.
+		 *
+		 * May be blank, meaning there isn't one.
+		 *
 		 * @return The URL of an NMPI server that deals with quota.
-		 *         May be blank, meaning there isn't one.
 		 */
 		public String getNMPIUrl() {
 			return nmpiUrl;
@@ -1549,8 +1552,11 @@ public class SpallocProperties {
 		}
 
 		/**
+		 * The API Key to use to access the NMPI server.
+		 *
+		 * May be blank if @linkplain(#nmpiUrl) is blank.
+		 *
 		 * @return The API Key to use to access the NMPI server.
-		 *         May be blank if @linkplain(#nmpiUrl) is blank.
 		 */
 		public String getNMPIApiKey() {
 			return nmpiApiKey;
@@ -1561,7 +1567,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The platform to look for on the NMPI server.
+		 * {@return The platform to look for on the NMPI server}
 		 */
 		public String getNMPIPlaform() {
 			return nmpiPlatform;
@@ -1687,7 +1693,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Number of attempts that will be made to switch on a board.
+		 * {@return Number of attempts that will be made to switch on a board}
 		 */
 		@Positive
 		public int getPowerAttempts() {
@@ -1711,8 +1717,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Whether to reload the FPGA bitfiles when they don't come up
-		 *         correctly.
+		 * {@return Whether to reload the FPGA bitfiles when they don't come up
+		 *         correctly}
 		 */
 		public boolean isFpgaReload() {
 			return fpgaReload;
@@ -1956,7 +1962,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Whether to send details of SQL-related exceptions to users.
+		 * {@return Whether to send details of SQL-related exceptions to users}
 		 */
 		public boolean isDebugFailures() {
 			return debugFailures;
@@ -1986,10 +1992,15 @@ public class SpallocProperties {
 		}
 
 		/**
+		 * Whether to collect and write query performance metrics
+		 *     to the log on termination.
+		 *
+		 * Note that this is checked both when recording performance
+		 * (on each database query) and when the log writes happen
+		 * (on termination).
+		 *
 		 * @return Whether to collect and write query performance metrics to the
-		 *         log on termination. Note that this is checked both when
-		 *         recording performance (on each database query) and when the
-		 *         log writes happen (on termination).
+		 *         log on termination.
 		 */
 		public final boolean isPerformanceLog() {
 			return performanceLog;
@@ -2000,9 +2011,9 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Whether, if the performance log is enabled, to also write the
+		 * {@return Whether, if the performance log is enabled, to also write the
 		 *         EXPLAIN of the code to the log on termination (for slow
-		 *         queries only).
+		 *         queries only)}
 		 */
 		public final boolean isAutoExplain() {
 			return autoExplain;
@@ -2013,8 +2024,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Performance stats are not reported for queries with a max
-		 *         less than this, in microseconds.
+		 * {@return Performance stats are not reported for queries with a max
+		 *         less than this, in microseconds}
 		 */
 		@Positive
 		public final double getPerformanceThreshold() {
@@ -2062,8 +2073,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Time delay before we issue a warning during the execution of
-		 *         a transaction.
+		 * {@return Time delay before we issue a warning during the execution of
+		 *         a transaction}
 		 */
 		@NotNull
 		public Duration getLockWarnThreshold() {
@@ -2075,8 +2086,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Whether to determine the caller when doing transaction
-		 *         logging.
+		 * {@return Whether to determine the caller when doing transaction
+		 *         logging}
 		 */
 		public boolean isEnableExpensiveTransactionDebugging() {
 			return enableExpensiveTransactionDebugging;
@@ -2203,8 +2214,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Whether to turn the spalloc version 1 compatibility service
-		 *         interface on.
+		 * {@return Whether to turn the spalloc version 1 compatibility service
+		 *         interface on}
 		 */
 		public boolean isEnable() {
 			return enable;
@@ -2215,8 +2226,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The number of threads to use to service the v1 clients. 0
-		 *         means no limit (slightly dangerous).
+		 * {@return The number of threads to use to service the v1 clients. 0
+		 *         means no limit (slightly dangerous)}
 		 */
 		@PositiveOrZero
 		public int getThreadPoolSize() {
@@ -2228,8 +2239,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return What host address to run the spalloc v1 compatibility service
-		 *         on.
+		 * {@return What host address to run
+		 *     the spalloc v1 compatibility service on}
 		 */
 		@NotBlank
 		public String getHost() {
@@ -2241,7 +2252,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return What TCP port to run the spalloc v1 compatibility service on.
+		 * {@return What TCP port
+		 *     to run the spalloc v1 compatibility service on}
 		 */
 		@TCPPort(ephemeral = false)
 		public int getPort() {
@@ -2301,7 +2313,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return How long to wait for the executor to shut down, maximum.
+		 * {@return How long to wait for the executor to shut down, maximum}
 		 */
 		@NotNull
 		public Duration getShutdownTimeout() {
@@ -2330,9 +2342,9 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return How long to pass to the spalloc core to wait for timeouts
+		 * {@return How long to pass to the spalloc core to wait for timeouts
 		 *         relating to message notifications (i.e., due to machine or
-		 *         job status changes).
+		 *         job status changes)}
 		 */
 		@NotNull
 		public Duration getNotifyWaitTime() {
@@ -2344,7 +2356,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The default value for the keepalive property of jobs.
+		 * {@return The default value for the keepalive property of jobs}
 		 */
 		@NotNull
 		public Duration getDefaultKeepalive() {
@@ -2408,8 +2420,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Whether to log the number of packets read and written on each
-		 *         channel.
+		 * {@return Whether to log the number of packets read and written on each
+		 *         channel}
 		 */
 		public boolean isLogWriteCounts() {
 			return logWriteCounts;
@@ -2420,9 +2432,12 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return The address for local proxied sockets to listen on if
-		 *         they're not being bound to a specific board. If empty, that
-		 *         type of socket will be disabled.
+		 * The address for local proxied sockets to listen on
+		 *     if they're not being bound to a specific board.
+		 *
+		 * If empty, that type of socket will be disabled.
+		 *
+		 * @return The address for local proxied sockets
 		 */
 		@NotNull
 		@IPAddress(emptyOK = true)
@@ -2520,8 +2535,8 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return How many blacklists to read from a full machine at once when
-		 *         synchronizing the overall state?
+		 * {@return How many blacklists to read from a full machine
+		 *     at once when synchronizing the overall state}
 		 */
 		@Positive
 		public int getBlacklistReadBatchSize() {

@@ -194,8 +194,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/**
-		 * @return The extra dead links of the machine. Doesn't include links to
-		 *         dead boards.
+		 * The extra dead links of the machine.
+		 *
+		 * Doesn't include links to dead boards.
+		 *
+		 * @return The extra dead links of the machine.
 		 */
 		public Map<TriadCoords, EnumSet<Link>> getDeadLinks() {
 			return deadLinks;
@@ -484,8 +487,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/**
-		 * @return The host address for the service to listen on. Empty = all
-		 *         interfaces. (Ignored)
+		 * The host address for the service to listen on.
+		 *
+		 * Empty = all interfaces. (Ignored)
+		 *
+		 * @return The host address for the service to listen on.
 		 */
 		public String getIp() {
 			return ip;

@@ -284,8 +284,11 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return The quota of the group to create, as a {@link String}. Empty
-		 *         if the group is quota-less.
+		 * the quota of the group to create, as a String.
+		 *
+		 * Empty if the group is quota-less.
+		 *
+		 * @return The quota of the group to create
 		 */
 		public String getQuota() {
 			return Objects.toString(quota, "");
@@ -306,7 +309,7 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return This request, as a partial group record.
+		 * {@return This request, as a partial group record}
 		 */
 		public GroupRecord toGroupRecord() {
 			var gr = new GroupRecord();
@@ -588,7 +591,7 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return The parsed blacklist.
+		 * {@return The parsed blacklist}
 		 * @throws NullPointerException
 		 *             If no blacklist data is present.
 		 * @throws IllegalArgumentException
@@ -616,8 +619,8 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return Whether the blacklist data is believed to be the same as the
-		 *         data on the board.
+		 * {@return Whether the blacklist data is believed to be the same
+		 *     as the data on the board}
 		 */
 		public boolean isSynched() {
 			return synched;

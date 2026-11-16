@@ -194,10 +194,14 @@ public class MachineStateControl extends DatabaseAwareBean {
 		}
 
 		/**
-		 * @return The allocatable state of the board. If a board is not
-		 *         allocatable, it will not be handed out in new allocations to
-		 *         jobs, but can continue to be used by whatever job it is
-		 *         currently allocated to (if any).
+		 * The allocatable state of the board.
+		 *
+		 * If a board is not allocatable,
+		 * it will not be handed out in new allocations to jobs,
+		 * but can continue to be used by whatever job
+		 * it is currently allocated to (if any).
+		 *
+		 * @return The allocatable state of the board.
 		 */
 		public boolean getState() {
 			return executeRead(conn -> {

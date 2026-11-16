@@ -293,7 +293,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
-		 * @return Whether this request may be repeated.
+		 * {@return Whether this request may be repeated}
 		 */
 		boolean isRepeat() {
 			return numTries < props.getPowerAttempts();

@@ -867,55 +867,75 @@ public interface SpallocAPI {
 		void setPower(boolean power);
 
 		/**
-		 * @return The state of the job.
+		 * {@return The state of the job}
 		 */
 		JobState getState();
 
 		/**
-		 * @return When the job started.
+		 * {@return When the job started}
 		 */
 		Instant getStartTime();
 
 		/**
-		 * @return Host address that issued last keepalive event, or
-		 *         {@link Optional#empty() empty()} if this information is not
-		 *         available to the current user.
+		 * Host address that issued last keepalive event.
+		 *
+		 * Will be {@link Optional#empty() empty()} if this information
+		 * is not available to the current user.
+		 *
+		 * @return Host address that issued last keepalive event
 		 */
 		Optional<String> getKeepaliveHost();
 
 		/**
-		 * @return Time of the last keepalive event.
+		 * {@return Time of the last keepalive event}
 		 */
 		Instant getKeepaliveTimestamp();
 
 		/**
-		 * @return The creator of the job. {@link Optional#empty() empty()} if
-		 *         this is not available to the current user.
+		 * The creator of the job.
+		 *
+		 * {@link Optional#empty() empty()} if this is not available
+		 * to the current user.
+		 *
+		 * @return The creator of the job.
 		 */
 		Optional<String> getOwner();
 
 		/**
+		 * The serialized original request to create the job.
+		 *
+		 * {@link Optional#empty() empty()} if this is not available
+		 * to the current user.
+		 *
 		 * @return The serialized original request to create the job.
-		 *         {@link Optional#empty() empty()} if this is not available to
-		 *         the current user.
 		 */
 		Optional<byte[]> getOriginalRequest();
 
 		/**
-		 * @return When the job finished. {@link Optional#empty() empty()} if
-		 *         the job is not yet finished.
+		 * When the job finished.
+		 *
+		 * {@link Optional#empty() empty()} if the job is not yet finished.
+		 *
+		 * @return When the job finished.
 		 */
 		Optional<Instant> getFinishTime();
 
 		/**
-		 * @return Why the job died. Might be {@link Optional#empty() empty()}
-		 *         if this isn't known (including if the job is alive).
+		 * Why the job died.
+		 *
+		 * Might be {@link Optional#empty() empty()} if this isn't known
+		 * (including if the job is alive).
+		 *
+		 * @return Why the job died.
 		 */
 		Optional<String> getReason();
 
 		/**
+		 * The (sub-)machine allocated to the job.
+		 *
+		 * {@link Optional#empty() empty()} if no resources allocated.
+		 *
 		 * @return The (sub-)machine allocated to the job.
-		 *         {@link Optional#empty() empty()} if no resources allocated.
 		 */
 		Optional<SubMachine> getMachine();
 
@@ -932,30 +952,41 @@ public interface SpallocAPI {
 		Optional<BoardLocation> whereIs(@ValidX int x, @ValidY int y);
 
 		/**
-		 * @return The absolute location of root chip. {@link Optional#empty()
-		 *         empty()} if no resources allocated.
+		 * The absolute location of root chip.
+		 *
+		 * {@link Optional#empty() empty()} if no resources allocated.
+		 *
+		 * @return The absolute location of root chip.
 		 */
 		Optional<ChipLocation> getRootChip();
 
 		/**
-		 * @return the allocated width of the job's rectangle of triads, or
-		 *         {@link Optional#empty() empty()} if not allocated (or not
-		 *         known).
+		 * The allocated width of the job's rectangle of triads.
+		 *
+		 * Will be {@link Optional#empty() empty()} if not allocated
+		 * (or not known).
+		 *
+		 * @return the allocated width of the job's rectangle of triads
 		 */
 		Optional<Integer> getWidth();
 
 		/**
-		 * @return the allocated height of the job's rectangle of triads, or
-		 *         {@link Optional#empty() empty()} if not allocated (or not
-		 *         known).
+		 * The allocated height of the job's rectangle of triads.
+		 *
+		 *  Will be {@link Optional#empty() empty()} if not allocated
+		 *  (or not known).
+		 *
+		 * @return the allocated height of the job's rectangle of triads
 		 */
 		Optional<Integer> getHeight();
 
 		/**
-		 * @return the allocated depth of this sub-machine, or
-		 *         {@link Optional#empty() empty()} if not allocated (or not
-		 *         known). When supplied, will be 1 (single board) or 3 (by
-		 *         triad)
+		 * The allocated depth of this sub-machine.
+		 *
+		 * Will be {@link Optional#empty() empty()} if not allocated (or not
+		 * known). When supplied, will be 1 (single board) or 3 (by triad)
+		 *
+		 * @return the allocated depth of this sub-machine
 		 */
 		Optional<Integer> getDepth();
 
@@ -1037,13 +1068,16 @@ public interface SpallocAPI {
 	 */
 	interface Jobs extends Waitable {
 		/**
-		 * @return The job IDs.
+		 * {return The job IDs}
 		 */
 		List<Integer> ids();
 
 		/**
-		 * @return The jobs. Simplified view only. (No keepalive host or owner
-		 *         information.)
+		 * The jobs.
+		 *
+		 * Simplified view only. (No keepalive host or owner information.)
+		 *
+		 * @return The jobs.
 		 */
 		List<Job> jobs();
 
@@ -1297,8 +1331,11 @@ public interface SpallocAPI {
 		int getHeight();
 
 		/**
-		 * @return The depth of this sub-machine. 1 (single board) or 3 (by
-		 *         triad)
+		 * The depth of this sub-machine.
+		 *
+		 * 1 (single board) or 3 (by triad)
+		 *
+		 * @return The depth of this sub-machine.
 		 */
 		int getDepth();
 

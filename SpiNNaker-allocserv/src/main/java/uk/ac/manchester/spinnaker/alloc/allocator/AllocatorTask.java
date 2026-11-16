@@ -834,16 +834,16 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		/**
-		 * @return The number of job records to copy over to the historical
-		 *         database.
+		 * {}@return The number of job records to copy over to the historical
+		 *         database}
 		 */
 		int numJobs() {
 			return jobs.size();
 		}
 
 		/**
-		 * @return The number of board allocation records to copy over to the
-		 *         historical database.
+		 * {@return The number of board allocation records to copy over to the
+		 *         historical database}
 		 */
 		int numAllocs() {
 			return allocs.size();
