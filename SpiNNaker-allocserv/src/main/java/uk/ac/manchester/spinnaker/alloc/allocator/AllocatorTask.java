@@ -89,6 +89,8 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 public class AllocatorTask extends DatabaseAwareBean
 		implements PowerController {
 	/**
+	 * The No Dictection.
+	 *
 	 * @see #setPower(Connection,int,PowerState)
 	 */
 	private static final EnumSet<Direction> NO_PERIMETER =

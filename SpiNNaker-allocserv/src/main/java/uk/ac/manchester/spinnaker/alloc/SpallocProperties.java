@@ -2011,7 +2011,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * @return Whether, if the performance log is enabled.
+		 * Whether, if the performance log is enabled.
 		 *
 		 * To also write the EXPLAIN of the code to the log on termination
 		 * (for slow queries only)
@@ -2469,7 +2469,7 @@ public class SpallocProperties {
 
 		/**
 		 * How many blacklists to read from a full machine at once when
-		 * synchronizing the overall state?
+		 * synchronizing the overall state.
 		 */
 		private int blacklistReadBatchSize;
 

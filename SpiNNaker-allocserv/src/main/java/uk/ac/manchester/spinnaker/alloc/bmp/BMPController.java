@@ -1098,7 +1098,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	/** A worker of a given BMP. */
 	private final class Worker implements Runnable {
-		/** What are we controlling? */
+		/** What are we controlling. */
 		private SpiNNakerControl control;
 
 		private final SpallocAPI.Machine machine;
@@ -1107,7 +1107,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Map<BMPBoard, String> boards;
 
-		/** Which boards are we looking at? */
+		/** Which boards are we looking at. */
 		private final int bmpId;
 
 		Worker(SpallocAPI.Machine machine, BMPCoords coords,

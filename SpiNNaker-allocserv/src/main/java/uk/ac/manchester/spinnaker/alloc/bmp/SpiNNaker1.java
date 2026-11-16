@@ -198,7 +198,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	/**
-	 * Is a board new enough to be able to manage FPGAs?
+	 * Is a board new enough to be able to manage FPGAs.
 	 *
 	 * @param board
 	 *            The board number.
