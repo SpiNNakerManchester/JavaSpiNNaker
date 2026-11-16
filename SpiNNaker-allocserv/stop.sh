@@ -1,2 +1,2 @@
 #!/bin/bash
-docker compose -f JavaSpiNNaker/SpiNNaker-allocserv/docker-compose.yml --env-file /home/spalloc/local.env down
+docker compose -f JavaSpiNNaker/SpiNNaker-allocserv/docker-compose.yml down
