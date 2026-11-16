@@ -20,6 +20,9 @@ RUN apt update && apt install -y openjdk-21-jdk-headless maven git iputils-ping
 # Set the working directory in the container
 WORKDIR /app
 
+# Check for the latest commit
+ADD "https://api.github.com/repos/SpiNNakerManchester/JavaSpiNNaker/commits?per_page=1" latest_commit
+
 # Checkout the Java Code
 RUN git clone --depth 1 https://github.com/SpiNNakerManchester/JavaSpiNNaker
 

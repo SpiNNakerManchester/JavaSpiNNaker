@@ -13,12 +13,12 @@
 # limitations under the License.
 
 # Use Ubuntu
-FROM ubuntu:noble
+FROM ubuntu:resolute
 
 ARG DOCKER_GROUP_ID
 ENV DOCKER_GROUP_ID $DOCKER_GROUP_ID
 
-RUN apt update && apt install -y openjdk-21-jdk-headless maven git libltdl7 nginx
+RUN apt update && apt install -y openjdk-21-jdk-headless maven git libltdl7 jq nginx
 
 COPY --chown=www-data nginx.conf /etc/nginx/nginx.conf
 
@@ -28,8 +28,11 @@ RUN usermod -a -G docker www-data
 # Set the working directory in the container
 WORKDIR /app
 
+# Check for the latest commit
+ADD "https://api.github.com/repos/SpiNNakerManchester/JavaSpiNNaker/commits?per_page=1" latest_commit
+
 # Checkout the Java Code
-RUN git clone --depth 1 --branch docker-compose https://github.com/SpiNNakerManchester/JavaSpiNNaker
+RUN git clone --depth 1 --branch master https://github.com/SpiNNakerManchester/JavaSpiNNaker
 
 # Make the Java Code
 RUN mvn -f JavaSpiNNaker -DskipTests=true -pl SpiNNaker-nmpiserv -am package
