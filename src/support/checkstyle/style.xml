@@ -60,7 +60,8 @@ limitations under the License.
 		<module name="BlockCommentEndPosition"/>
 		<module name="IllegalBlockTag">
 			<!-- None expected so check if one exists it is SpiNNakerTeam -->
-			<property name="author" value="SpiNNakerTeam"/>
+			<property name="tag" value="@author"/>
+			<property name="tagTextPattern" value="SpiNNakerTeam"/>
 		</module>
 		<module name="InappropriateJavadocBlockTagsOnField"/>
 		<module name="InappropriateJavadocBlockTagsOnPackage"/>
