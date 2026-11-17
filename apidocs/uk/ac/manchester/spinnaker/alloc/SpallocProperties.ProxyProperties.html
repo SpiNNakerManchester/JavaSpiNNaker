@@ -112,7 +112,9 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(boolean,boolean,java.lang.String)" class="member-name-link">ProxyProperties</a><wbr>(boolean&nbsp;enable,
  boolean&nbsp;logWriteCounts,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;localHost)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the settings for the proxies.</div>
+</div>
 </div>
 </section>
 </li>
@@ -129,13 +131,21 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../utils/validation/IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../utils/validation/IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLocalHost()" class="member-name-link">getLocalHost</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The address for local proxied sockets to listen on
+     if they're not being bound to a specific board.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEnable()" class="member-name-link">isEnable</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether to enable the UDP proxy subsystem.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isLogWriteCounts()" class="member-name-link">isLogWriteCounts</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether to log the number of packets
+     read and written on each channel.</div>
+</div>
 </div>
 </div>
 </div>
@@ -163,6 +173,7 @@ loadScripts(document, 'script');</script>
  boolean&nbsp;logWriteCounts,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;localHost)</span></div>
+<div class="block">Constructs the settings for the proxies.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>enable</code> - Whether to enable the UDP proxy subsystem.</dd>
@@ -186,9 +197,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isEnable()">
 <h3>isEnable</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isEnable</span>()</div>
+<div class="block">Returns Whether to enable the UDP proxy subsystem.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether to enable the UDP proxy subsystem.</dd>
+<dd>Whether to enable the UDP proxy subsystem</dd>
 </dl>
 </section>
 </li>
@@ -196,10 +208,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isLogWriteCounts()">
 <h3>isLogWriteCounts</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isLogWriteCounts</span>()</div>
+<div class="block">Returns Whether to log the number of packets
+     read and written on each channel.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether to log the number of packets read and written on each
-         channel.</dd>
+<dd>Whether to log the number of packets
+     read and written on each channel</dd>
 </dl>
 </section>
 </li>
@@ -209,11 +223,13 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 <a href="../utils/validation/IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../utils/validation/IPAddress.html#emptyOK()">emptyOK</a>=true)
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../utils/validation/IPAddress.html" title="annotation interface in uk.ac.manchester.spinnaker.utils.validation">@IPAddress</a>(<a href="../utils/validation/IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getLocalHost</span>()</div>
+<div class="block">The address for local proxied sockets to listen on
+     if they're not being bound to a specific board.
+
+ If empty, that type of socket will be disabled.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The address for local proxied sockets to listen on if
-         they're not being bound to a specific board. If empty, that
-         type of socket will be disabled.</dd>
+<dd>The address for local proxied sockets</dd>
 </dl>
 </section>
 </li>

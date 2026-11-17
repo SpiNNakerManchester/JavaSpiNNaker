@@ -458,113 +458,121 @@
 <a class="jxr_linenumber" name="L450" href="#L450">450</a> 	}
 <a class="jxr_linenumber" name="L451" href="#L451">451</a> 
 <a class="jxr_linenumber" name="L452" href="#L452">452</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">	 * @return The chips on the board that are blacklisted. A chip being</em>
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">	 *         blacklisted means that its links will also be blacklisted.</em>
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	<strong class="jxr_keyword">public</strong> Set&lt;ChipLocation&gt; getChips() {
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 		<strong class="jxr_keyword">return</strong> unmodifiableSet(chips);
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 	}
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">	 * @return The cores on the board that are blacklisted where the whole chip</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">	 *         is not blacklisted. Note that these are &lt;em&gt;physical&lt;/em&gt;</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">	 *         processor IDs, not logical ones.</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 	<strong class="jxr_keyword">public</strong> Map&lt;ChipLocation, Set&lt;Integer&gt;&gt; getCores() {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 		<strong class="jxr_keyword">return</strong> unmodifiableMap(cores);
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 	}
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">	 * @return The links on the board that are blacklisted.</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 	<strong class="jxr_keyword">public</strong> Map&lt;ChipLocation, Set&lt;Direction&gt;&gt; getLinks() {
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 		<strong class="jxr_keyword">return</strong> unmodifiableMap(links);
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 	}
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">	 * Test if a chip is known about by the blacklist.</em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">	 * @param chip</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">	 *            The chip to look for. Coordinates must be board-local.</em>
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">	 * @return Whether the chip is mentioned in the blacklist. That could be if</em>
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">	 *         it is blacklisted, if it has a blacklisted core, of if one of its</em>
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">	 *         links is blacklisted.</em>
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isChipMentioned(ChipLocation chip) {
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 		<strong class="jxr_keyword">return</strong> chips.contains(chip) || cores.containsKey(chip)
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 				|| links.containsKey(chip);
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	}
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 	<em class="jxr_javadoccomment">/** @return The raw blacklist data in little-endian form. Read only. */</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 	<strong class="jxr_keyword">public</strong> ByteBuffer getRawData() {
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 		<strong class="jxr_keyword">return</strong> rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> 	}
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> 
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> 	@Override
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> 		<strong class="jxr_keyword">return</strong> Objects.hash(chips, cores, links);
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 	}
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> 
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> 	@Override
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(Object object) {
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> 		<strong class="jxr_keyword">if</strong> (object instanceof <a name="Blacklist" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/Blacklist.html#Blacklist">Blacklist</a>) {
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 			<strong class="jxr_keyword">var</strong> other = (<a name="Blacklist" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/Blacklist.html#Blacklist">Blacklist</a>) object;
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> 			<strong class="jxr_keyword">return</strong> chips.equals(other.chips) &amp;&amp; cores.equals(other.cores)
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> 					&amp;&amp; links.equals(other.links);
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 		}
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 		<strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> 	}
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> 
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> 	@Override
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 	<strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> 		<strong class="jxr_keyword">var</strong> s = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"Blacklist("</span>);
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> 		s.append(chips).append(<span class="jxr_string">", "</span>).append(cores).append(<span class="jxr_string">", "</span>).append(links);
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 		<strong class="jxr_keyword">return</strong> s.append(<span class="jxr_string">")"</span>).toString();
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> 	}
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> 
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> <em class="jxr_javadoccomment">	 * Write this object to the stream. This is standard except for the special</em>
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">	 * handling of the raw data.</em>
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> <em class="jxr_javadoccomment">	 * @param out</em>
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">	 *            Where to write to.</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">	 *             If output fails.</em>
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">	 * @see ObjectOutputStream#defaultWriteObject()</em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> writeObject(ObjectOutputStream out) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> 		out.defaultWriteObject();
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> 		out.writeInt(rawData.remaining());
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> 		<strong class="jxr_keyword">if</strong> (rawData.hasArray()) {
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 			out.write(rawData.array(), rawData.position(), rawData.remaining());
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> 			byte[] buf = <strong class="jxr_keyword">new</strong> byte[rawData.remaining()];
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> 			rawData.duplicate().get(buf);
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> 			out.write(buf);
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> 		}
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> 	}
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> 
-<a class="jxr_linenumber" name="L539" href="#L539">539</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L540" href="#L540">540</a> <em class="jxr_javadoccomment">	 * Set this object up by reading from the stream. This is standard except</em>
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">	 * for the special handling of the raw data.</em>
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">	 * @param in</em>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">	 *            Where to read from.</em>
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">	 *             If input fails.</em>
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">	 * @throws ClassNotFoundException</em>
-<a class="jxr_linenumber" name="L548" href="#L548">548</a> <em class="jxr_javadoccomment">	 *             if the class of a serialized object could not be found.</em>
-<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">	 * @see ObjectInputStream#defaultReadObject()</em>
-<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readObject(ObjectInputStream in)
-<a class="jxr_linenumber" name="L552" href="#L552">552</a> 			<strong class="jxr_keyword">throws</strong> IOException, ClassNotFoundException {
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> 		in.defaultReadObject();
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> 		<strong class="jxr_keyword">int</strong> len = in.readInt();
-<a class="jxr_linenumber" name="L555" href="#L555">555</a> 		<strong class="jxr_keyword">var</strong> buf = <strong class="jxr_keyword">new</strong> byte[len];
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> 		in.read(buf);
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> 		rawData = wrap(buf).order(LITTLE_ENDIAN);
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> 	}
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> }
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">	 * The chips on the board that are blacklisted.</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">	 * A chip being blacklisted means that its links will also be blacklisted.</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> <em class="jxr_javadoccomment">	 * @return Blacklisted Chips.</em>
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	<strong class="jxr_keyword">public</strong> Set&lt;ChipLocation&gt; getChips() {
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 		<strong class="jxr_keyword">return</strong> unmodifiableSet(chips);
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 	}
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 * The cores on the board that are blacklisted where the whole chip</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 *         is not blacklisted.</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">	 * Note that these are &lt;em&gt;physical&lt;/em&gt; processor IDs, not logical ones.</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">	 * @return blacklisted cores on good Chips.</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 	<strong class="jxr_keyword">public</strong> Map&lt;ChipLocation, Set&lt;Integer&gt;&gt; getCores() {
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 		<strong class="jxr_keyword">return</strong> unmodifiableMap(cores);
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 	}
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">	 * {@return The links on the board that are blacklisted}</em>
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 	<strong class="jxr_keyword">public</strong> Map&lt;ChipLocation, Set&lt;Direction&gt;&gt; getLinks() {
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 		<strong class="jxr_keyword">return</strong> unmodifiableMap(links);
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 	}
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> 
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">	 * Test if a chip is known about by the blacklist.</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">	 * @param chip</em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">	 *            The chip to look for. Coordinates must be board-local.</em>
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">	 * @return Whether the chip is mentioned in the blacklist. That could be if</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">	 *         it is blacklisted, if it has a blacklisted core, of if one of its</em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">	 *         links is blacklisted.</em>
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isChipMentioned(ChipLocation chip) {
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 		<strong class="jxr_keyword">return</strong> chips.contains(chip) || cores.containsKey(chip)
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 				|| links.containsKey(chip);
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> 	}
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> 
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">	 * {@return The raw blacklist data in little-endian form. Read only}</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> 	<strong class="jxr_keyword">public</strong> ByteBuffer getRawData() {
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 		<strong class="jxr_keyword">return</strong> rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> 	}
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> 
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 	@Override
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> 		<strong class="jxr_keyword">return</strong> Objects.hash(chips, cores, links);
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 	}
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 	@Override
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(Object object) {
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 		<strong class="jxr_keyword">if</strong> (object instanceof <a name="Blacklist" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/Blacklist.html#Blacklist">Blacklist</a>) {
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> 			<strong class="jxr_keyword">var</strong> other = (<a name="Blacklist" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/Blacklist.html#Blacklist">Blacklist</a>) object;
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> 			<strong class="jxr_keyword">return</strong> chips.equals(other.chips) &amp;&amp; cores.equals(other.cores)
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> 					&amp;&amp; links.equals(other.links);
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> 		}
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> 		<strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> 	}
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> 
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 	@Override
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> 	<strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> 		<strong class="jxr_keyword">var</strong> s = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"Blacklist("</span>);
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 		s.append(chips).append(<span class="jxr_string">", "</span>).append(cores).append(<span class="jxr_string">", "</span>).append(links);
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> 		<strong class="jxr_keyword">return</strong> s.append(<span class="jxr_string">")"</span>).toString();
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 	}
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> 
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">	 * Write this object to the stream. This is standard except for the special</em>
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">	 * handling of the raw data.</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">	 * @param out</em>
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">	 *            Where to write to.</em>
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">	 *             If output fails.</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">	 * @see ObjectOutputStream#defaultWriteObject()</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> writeObject(ObjectOutputStream out) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> 		out.defaultWriteObject();
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> 		out.writeInt(rawData.remaining());
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> 		<strong class="jxr_keyword">if</strong> (rawData.hasArray()) {
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> 			out.write(rawData.array(), rawData.position(), rawData.remaining());
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> 			byte[] buf = <strong class="jxr_keyword">new</strong> byte[rawData.remaining()];
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> 			rawData.duplicate().get(buf);
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> 			out.write(buf);
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> 		}
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> 	}
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> 
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> <em class="jxr_javadoccomment">	 * Set this object up by reading from the stream. This is standard except</em>
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">	 * for the special handling of the raw data.</em>
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> <em class="jxr_javadoccomment">	 * @param in</em>
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> <em class="jxr_javadoccomment">	 *            Where to read from.</em>
+<a class="jxr_linenumber" name="L553" href="#L553">553</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> <em class="jxr_javadoccomment">	 *             If input fails.</em>
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> <em class="jxr_javadoccomment">	 * @throws ClassNotFoundException</em>
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">	 *             if the class of a serialized object could not be found.</em>
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">	 * @see ObjectInputStream#defaultReadObject()</em>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readObject(ObjectInputStream in)
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> 			<strong class="jxr_keyword">throws</strong> IOException, ClassNotFoundException {
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 		in.defaultReadObject();
+<a class="jxr_linenumber" name="L562" href="#L562">562</a> 		<strong class="jxr_keyword">int</strong> len = in.readInt();
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> 		<strong class="jxr_keyword">var</strong> buf = <strong class="jxr_keyword">new</strong> byte[len];
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> 		in.read(buf);
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> 		rawData = wrap(buf).order(LITTLE_ENDIAN);
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> 	}
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

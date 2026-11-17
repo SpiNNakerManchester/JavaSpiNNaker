@@ -106,7 +106,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.nio.ByteBuffer)" class="member-name-link">SCPResultMessage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;response)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the SCP result message.</div>
+</div>
 </div>
 </section>
 </li>
@@ -123,13 +125,20 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SCPResult.html" title="enum class in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getResult()" class="member-name-link">getResult</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The result code from the header.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSequenceNumber()" class="member-name-link">getSequenceNumber</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The sequence number from the header.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRetriable()" class="member-name-link">isRetriable</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether this response indicates that the request should be
+         retried.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a>&gt;<br>T</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parsePayload(uk.ac.manchester.spinnaker.messages.scp.SCPRequest)" class="member-name-link">parsePayload</a><wbr>(<a href="SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;T&gt;&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -171,6 +180,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(java.nio.ByteBuffer)">
 <h3>SCPResultMessage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SCPResultMessage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;response)</span></div>
+<div class="block">Constructs the SCP result message.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>response</code> - The payload of the UDP message, which must be an SDP message
@@ -190,10 +200,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isRetriable()">
 <h3>isRetriable</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isRetriable</span>()</div>
+<div class="block">Returns Whether this response indicates that the request should be
+         retried.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Whether this response indicates that the request should be
-         retried.</dd>
+         retried</dd>
 </dl>
 </section>
 </li>
@@ -252,9 +264,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getResult()">
 <h3>getResult</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SCPResult.html" title="enum class in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a></span>&nbsp;<span class="element-name">getResult</span>()</div>
+<div class="block">Returns The result code from the header.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The result code from the header.</dd>
+<dd>The result code from the header</dd>
 </dl>
 </section>
 </li>
@@ -262,9 +275,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getSequenceNumber()">
 <h3>getSequenceNumber</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getSequenceNumber</span>()</div>
+<div class="block">Returns The sequence number from the header.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The sequence number from the header.</dd>
+<dd>The sequence number from the header</dd>
 </dl>
 </section>
 </li>

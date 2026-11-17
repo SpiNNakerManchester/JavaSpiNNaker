@@ -120,7 +120,9 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getAvailableBoards()" class="member-name-link">getAvailableBoards</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The IDs of boards currently available to be allocated.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getBMPAddress(uk.ac.manchester.spinnaker.machine.board.BMPCoords)" class="member-name-link">getBMPAddress</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="../../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -152,7 +154,9 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getBoardNumbers()" class="member-name-link">getBoardNumbers</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The boards supported by the machine.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getBoardNumbers(uk.ac.manchester.spinnaker.machine.board.BMPCoords)" class="member-name-link">getBoardNumbers</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="../../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -171,31 +175,50 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getHeight()" class="member-name-link">getHeight</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The height of the machine.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getId()" class="member-name-link">getId</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The unique ID of the machine..</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The unique name of the machine.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRootBoardBMPAddress()" class="member-name-link">getRootBoardBMPAddress</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The IP address of the BMP of the root board
+     of the machine.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTags()" class="member-name-link">getTags</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The tags associated with the machine.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getWidth()" class="member-name-link">getWidth</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns The width of the machine.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isHorizonallyWrapped()" class="member-name-link">isHorizonallyWrapped</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns Whether the machine wraps in the horizontal direction.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isInService()" class="member-name-link">isInService</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns Whether this machine is currently in service.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isVerticallyWrapped()" class="member-name-link">isVerticallyWrapped</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns Whether the machine wraps in the vertical direction.</div>
+</div>
 </div>
 </div>
 </div>
@@ -217,9 +240,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getId()">
 <h3>getId</h3>
 <div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">getId</span>()</div>
+<div class="block">Returns The unique ID of the machine..</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The ID of the machine. Unique.</dd>
+<dd>The unique ID of the machine.</dd>
 </dl>
 </section>
 </li>
@@ -227,9 +251,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getName()">
 <h3>getName</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
+<div class="block">Returns The unique name of the machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The name of the machine. Unique.</dd>
+<dd>The unique name of the machine</dd>
 </dl>
 </section>
 </li>
@@ -237,9 +262,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getTags()">
 <h3>getTags</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">getTags</span>()</div>
+<div class="block">Returns The tags associated with the machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The tags associated with the machine.</dd>
+<dd>The tags associated with the machine</dd>
 </dl>
 </section>
 </li>
@@ -247,9 +273,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getWidth()">
 <h3>getWidth</h3>
 <div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">getWidth</span>()</div>
+<div class="block">Returns The width of the machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The width of the machine.</dd>
+<dd>The width of the machine</dd>
 </dl>
 </section>
 </li>
@@ -257,9 +284,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getHeight()">
 <h3>getHeight</h3>
 <div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">getHeight</span>()</div>
+<div class="block">Returns The height of the machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The height of the machine.</dd>
+<dd>The height of the machine</dd>
 </dl>
 </section>
 </li>
@@ -267,9 +295,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="isHorizonallyWrapped()">
 <h3>isHorizonallyWrapped</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isHorizonallyWrapped</span>()</div>
+<div class="block">Returns Whether the machine wraps in the horizontal direction.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether the machine wraps in the horizontal direction.</dd>
+<dd>Whether the machine wraps in the horizontal direction</dd>
 </dl>
 </section>
 </li>
@@ -277,9 +306,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="isVerticallyWrapped()">
 <h3>isVerticallyWrapped</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isVerticallyWrapped</span>()</div>
+<div class="block">Returns Whether the machine wraps in the vertical direction.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether the machine wraps in the vertical direction.</dd>
+<dd>Whether the machine wraps in the vertical direction</dd>
 </dl>
 </section>
 </li>
@@ -287,9 +317,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="isInService()">
 <h3>isInService</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isInService</span>()</div>
+<div class="block">Returns Whether this machine is currently in service.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether this machine is currently in service.</dd>
+<dd>Whether this machine is currently in service</dd>
 </dl>
 </section>
 </li>
@@ -382,9 +413,12 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getRootBoardBMPAddress()">
 <h3>getRootBoardBMPAddress</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getRootBoardBMPAddress</span>()</div>
+<div class="block">Returns The IP address of the BMP of the root board
+     of the machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The IP address of the BMP of the root board of the machine.</dd>
+<dd>The IP address of the BMP of the root board
+     of the machine</dd>
 </dl>
 </section>
 </li>
@@ -392,9 +426,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getBoardNumbers()">
 <h3>getBoardNumbers</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</span>&nbsp;<span class="element-name">getBoardNumbers</span>()</div>
+<div class="block">Returns The boards supported by the machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The boards supported by the machine.</dd>
+<dd>The boards supported by the machine</dd>
 </dl>
 </section>
 </li>
@@ -402,9 +437,10 @@ extends <a href="SpallocAPI.Waitable.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getAvailableBoards()">
 <h3>getAvailableBoards</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</span>&nbsp;<span class="element-name">getAvailableBoards</span>()</div>
+<div class="block">Returns The IDs of boards currently available to be allocated.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The IDs of boards currently available to be allocated.</dd>
+<dd>The IDs of boards currently available to be allocated</dd>
 </dl>
 </section>
 </li>

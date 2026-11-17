@@ -116,13 +116,19 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,byte%5B%5D)" class="member-name-link">IOBuffer</a><wbr>(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasCoreLocation</a>&nbsp;core,
  byte[]&nbsp;contents)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the contents of the IOBUF based on an array of bytes.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.lang.Iterable)" class="member-name-link">IOBuffer</a><wbr>(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasCoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&gt;&nbsp;contents)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs the contents of the IOBUF based on various buffers.</div>
+</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.nio.ByteBuffer)" class="member-name-link">IOBuffer</a><wbr>(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasCoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;contents)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the contents of the IOBUF based on a buffer.</div>
+</div>
 </div>
 </section>
 </li>
@@ -139,13 +145,21 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentsBuffer()" class="member-name-link">getContentsBuffer</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The raw contents of the buffer as a read-only little-endian byte
+         buffer.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentsStream()" class="member-name-link">getContentsStream</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The raw contents of the buffer as an input stream.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentsString()" class="member-name-link">getContentsString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The contents of the buffer as a string,
+     interpreting it as ASCII.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getContentsString(java.nio.charset.Charset)" class="member-name-link">getContentsString</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/charset/Charset.html" title="class or interface in java.nio.charset" class="external-link">Charset</a>&nbsp;charset)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -188,6 +202,7 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <h3>IOBuffer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">IOBuffer</span><wbr><span class="parameters">(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasCoreLocation</a>&nbsp;core,
  byte[]&nbsp;contents)</span></div>
+<div class="block">Constructs the contents of the IOBUF based on an array of bytes.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>core</code> - The coordinates of a core</dd>
@@ -200,6 +215,7 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <h3>IOBuffer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">IOBuffer</span><wbr><span class="parameters">(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasCoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;contents)</span></div>
+<div class="block">Constructs the contents of the IOBUF based on a buffer.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>core</code> - The coordinates of a core</dd>
@@ -212,6 +228,7 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <h3>IOBuffer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">IOBuffer</span><wbr><span class="parameters">(<a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html" title="class or interface in uk.ac.manchester.spinnaker.machine" class="external-link">HasCoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&gt;&nbsp;contents)</span></div>
+<div class="block">Constructs the contents of the IOBUF based on various buffers.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>core</code> - The coordinates of a core</dd>
@@ -261,9 +278,10 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <section class="detail" id="getContentsStream()">
 <h3>getContentsStream</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a></span>&nbsp;<span class="element-name">getContentsStream</span>()</div>
+<div class="block">Returns The raw contents of the buffer as an input stream.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The raw contents of the buffer as an input stream.</dd>
+<dd>The raw contents of the buffer as an input stream</dd>
 </dl>
 </section>
 </li>
@@ -271,10 +289,12 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <section class="detail" id="getContentsBuffer()">
 <h3>getContentsBuffer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">getContentsBuffer</span>()</div>
+<div class="block">Returns The raw contents of the buffer as a read-only little-endian byte
+         buffer.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The raw contents of the buffer as a read-only little-endian byte
-         buffer.</dd>
+         buffer</dd>
 </dl>
 </section>
 </li>
@@ -282,9 +302,12 @@ implements <a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/ma
 <section class="detail" id="getContentsString()">
 <h3>getContentsString</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getContentsString</span>()</div>
+<div class="block">Returns The contents of the buffer as a string,
+     interpreting it as ASCII.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The contents of the buffer as a string, interpreting it as ASCII.</dd>
+<dd>The contents of the buffer as a string,
+     interpreting it as ASCII</dd>
 </dl>
 </section>
 </li>

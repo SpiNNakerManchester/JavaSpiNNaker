@@ -182,25 +182,37 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getData()" class="member-name-link">getData</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The raw data of this message.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="EIEIODataMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIODataMessage.Header</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeader()" class="member-name-link">getHeader</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the header of this message.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxNumElements()" class="member-name-link">getMaxNumElements</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The maximum number of elements that can fit in the packet.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumElements()" class="member-name-link">getNumElements</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The number of elements in the packet.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSize()" class="member-name-link">getSize</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The size of the packet with the current contents.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a><wbr>&lt;<a href="AbstractDataElement.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">AbstractDataElement</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#iterator()" class="member-name-link">iterator</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#minPacketLength()" class="member-name-link">minPacketLength</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the minimum length of a message instance in bytes.</div>
+</div>
 </div>
 </div>
 </div>
@@ -271,11 +283,13 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="minPacketLength()">
 <h3>minPacketLength</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">minPacketLength</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="EIEIOMessage.html#minPacketLength()">EIEIOMessage</a></code></span></div>
+<div class="block">Returns the minimum length of a message instance in bytes.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="EIEIOMessage.html#minPacketLength()">minPacketLength</a></code>&nbsp;in interface&nbsp;<code><a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessage</a>&lt;<a href="EIEIODataMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIODataMessage.Header</a>&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>the minimum length of a message instance in bytes.</dd>
+<dd>the minimum length of a message instance in bytes</dd>
 </dl>
 </section>
 </li>
@@ -283,9 +297,10 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="getMaxNumElements()">
 <h3>getMaxNumElements</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getMaxNumElements</span>()</div>
+<div class="block">Returns The maximum number of elements that can fit in the packet.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The maximum number of elements that can fit in the packet.</dd>
+<dd>The maximum number of elements that can fit in the packet</dd>
 </dl>
 </section>
 </li>
@@ -293,9 +308,10 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="getNumElements()">
 <h3>getNumElements</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNumElements</span>()</div>
+<div class="block">Returns The number of elements in the packet.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The number of elements in the packet.</dd>
+<dd>The number of elements in the packet</dd>
 </dl>
 </section>
 </li>
@@ -303,9 +319,10 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="getSize()">
 <h3>getSize</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getSize</span>()</div>
+<div class="block">Returns The size of the packet with the current contents.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The size of the packet with the current contents.</dd>
+<dd>The size of the packet with the current contents</dd>
 </dl>
 </section>
 </li>
@@ -343,9 +360,10 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="getData()">
 <h3>getData</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">getData</span>()</div>
+<div class="block">Returns The raw data of this message.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The raw data of this message.</dd>
+<dd>The raw data of this message</dd>
 </dl>
 </section>
 </li>
@@ -402,11 +420,13 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="getHeader()">
 <h3>getHeader</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="EIEIODataMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIODataMessage.Header</a></span>&nbsp;<span class="element-name">getHeader</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="EIEIOMessage.html#getHeader()">EIEIOMessage</a></code></span></div>
+<div class="block">Returns the header of this message.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="EIEIOMessage.html#getHeader()">getHeader</a></code>&nbsp;in interface&nbsp;<code><a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessage</a>&lt;<a href="EIEIODataMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIODataMessage.Header</a>&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>the header of this message.</dd>
+<dd>the header of this message</dd>
 </dl>
 </section>
 </li>

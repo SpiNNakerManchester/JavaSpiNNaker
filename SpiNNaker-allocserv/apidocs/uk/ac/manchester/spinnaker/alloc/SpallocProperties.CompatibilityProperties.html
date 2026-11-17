@@ -119,7 +119,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;shutdownTimeout,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;notifyWaitTime,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;defaultKeepalive)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs settings relating to the v1 spalloc configuration.</div>
+</div>
 </div>
 </section>
 </li>
@@ -136,16 +138,28 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDefaultKeepalive()" class="member-name-link">getDefaultKeepalive</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The default value for the keepalive property of jobs.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHost()" class="member-name-link">getHost</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns What host address to run
+     the spalloc v1 compatibility service on.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNotifyWaitTime()" class="member-name-link">getNotifyWaitTime</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How long to pass to the spalloc core to wait for timeouts
+         relating to message notifications (i.e., due to machine or
+         job status changes).</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@uk.ac.manchester.spinnaker.utils.validation.TCPPort(ephemeral=false) int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPort()" class="member-name-link">getPort</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns What TCP port
+     to run the spalloc v1 compatibility service on.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReceiveTimeout()" class="member-name-link">getReceiveTimeout</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -165,13 +179,21 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getShutdownTimeout()" class="member-name-link">getShutdownTimeout</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How long to wait for the executor to shut down, maximum.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.PositiveOrZero int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getThreadPoolSize()" class="member-name-link">getThreadPoolSize</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The number of threads to use to service the v1 clients. 0
+         means no limit (slightly dangerous).</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEnable()" class="member-name-link">isEnable</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether to turn the spalloc version 1 compatibility service
+         interface on.</div>
+</div>
 </div>
 </div>
 </div>
@@ -213,6 +235,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;notifyWaitTime,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("1m")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;defaultKeepalive)</span></div>
+<div class="block">Constructs settings relating to the v1 spalloc configuration.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>enable</code> - Whether to turn the spalloc version 1 compatibility
@@ -255,10 +278,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isEnable()">
 <h3>isEnable</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isEnable</span>()</div>
+<div class="block">Returns Whether to turn the spalloc version 1 compatibility service
+         interface on.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Whether to turn the spalloc version 1 compatibility service
-         interface on.</dd>
+         interface on</dd>
 </dl>
 </section>
 </li>
@@ -267,10 +292,12 @@ loadScripts(document, 'script');</script>
 <h3>getThreadPoolSize</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/PositiveOrZero.html" title="class or interface in jakarta.validation.constraints" class="external-link">@PositiveOrZero</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="element-name">getThreadPoolSize</span>()</div>
+<div class="block">Returns The number of threads to use to service the v1 clients. 0
+         means no limit (slightly dangerous).</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The number of threads to use to service the v1 clients. 0
-         means no limit (slightly dangerous).</dd>
+         means no limit (slightly dangerous)</dd>
 </dl>
 </section>
 </li>
@@ -279,10 +306,12 @@ loadScripts(document, 'script');</script>
 <h3>getHost</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getHost</span>()</div>
+<div class="block">Returns What host address to run
+     the spalloc v1 compatibility service on.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>What host address to run the spalloc v1 compatibility service
-         on.</dd>
+<dd>What host address to run
+     the spalloc v1 compatibility service on</dd>
 </dl>
 </section>
 </li>
@@ -291,9 +320,12 @@ loadScripts(document, 'script');</script>
 <h3>getPort</h3>
 <div class="member-signature"><span class="annotations">@TCPPort(ephemeral=false)
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@uk.ac.manchester.spinnaker.utils.validation.TCPPort(ephemeral=false) int</span>&nbsp;<span class="element-name">getPort</span>()</div>
+<div class="block">Returns What TCP port
+     to run the spalloc v1 compatibility service on.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>What TCP port to run the spalloc v1 compatibility service on.</dd>
+<dd>What TCP port
+     to run the spalloc v1 compatibility service on</dd>
 </dl>
 </section>
 </li>
@@ -330,9 +362,10 @@ loadScripts(document, 'script');</script>
 <h3>getShutdownTimeout</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getShutdownTimeout</span>()</div>
+<div class="block">Returns How long to wait for the executor to shut down, maximum.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>How long to wait for the executor to shut down, maximum.</dd>
+<dd>How long to wait for the executor to shut down, maximum</dd>
 </dl>
 </section>
 </li>
@@ -356,11 +389,14 @@ loadScripts(document, 'script');</script>
 <h3>getNotifyWaitTime</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getNotifyWaitTime</span>()</div>
+<div class="block">Returns How long to pass to the spalloc core to wait for timeouts
+         relating to message notifications (i.e., due to machine or
+         job status changes).</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>How long to pass to the spalloc core to wait for timeouts
          relating to message notifications (i.e., due to machine or
-         job status changes).</dd>
+         job status changes)</dd>
 </dl>
 </section>
 </li>
@@ -369,9 +405,10 @@ loadScripts(document, 'script');</script>
 <h3>getDefaultKeepalive</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getDefaultKeepalive</span>()</div>
+<div class="block">Returns The default value for the keepalive property of jobs.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The default value for the keepalive property of jobs.</dd>
+<dd>The default value for the keepalive property of jobs</dd>
 </dl>
 </section>
 </li>

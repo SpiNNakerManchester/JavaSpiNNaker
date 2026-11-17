@@ -136,7 +136,9 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommand)" class="member-name-link">EIEIOCommandMessage</a><wbr>(<a href="EIEIOCommand.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommand</a>&nbsp;command)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs an EIEIO message containing a command.</div>
+</div>
 </div>
 </section>
 </li>
@@ -158,10 +160,14 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="EIEIOCommandMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage.Header</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeader()" class="member-name-link">getHeader</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the header of this message.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#minPacketLength()" class="member-name-link">minPacketLength</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the minimum length of a message instance in bytes.</div>
+</div>
 </div>
 </div>
 </div>
@@ -183,6 +189,7 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommand)">
 <h3>EIEIOCommandMessage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">EIEIOCommandMessage</span><wbr><span class="parameters">(<a href="EIEIOCommand.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommand</a>&nbsp;command)</span></div>
+<div class="block">Constructs an EIEIO message containing a command.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>command</code> - The command in the message.</dd>
@@ -226,11 +233,13 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="minPacketLength()">
 <h3>minPacketLength</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">minPacketLength</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="EIEIOMessage.html#minPacketLength()">EIEIOMessage</a></code></span></div>
+<div class="block">Returns the minimum length of a message instance in bytes.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="EIEIOMessage.html#minPacketLength()">minPacketLength</a></code>&nbsp;in interface&nbsp;<code><a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessage</a>&lt;<a href="EIEIOCommandMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage.Header</a>&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>the minimum length of a message instance in bytes.</dd>
+<dd>the minimum length of a message instance in bytes</dd>
 </dl>
 </section>
 </li>
@@ -238,11 +247,13 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <section class="detail" id="getHeader()">
 <h3>getHeader</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="EIEIOCommandMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage.Header</a></span>&nbsp;<span class="element-name">getHeader</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="EIEIOMessage.html#getHeader()">EIEIOMessage</a></code></span></div>
+<div class="block">Returns the header of this message.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="EIEIOMessage.html#getHeader()">getHeader</a></code>&nbsp;in interface&nbsp;<code><a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessage</a>&lt;<a href="EIEIOCommandMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage.Header</a>&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>the header of this message.</dd>
+<dd>the header of this message</dd>
 </dl>
 </section>
 </li>

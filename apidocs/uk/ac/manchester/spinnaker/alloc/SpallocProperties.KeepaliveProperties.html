@@ -112,7 +112,9 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.time.Duration,java.time.Duration,java.time.Duration)" class="member-name-link">KeepaliveProperties</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;expiryPeriod,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;min,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;max)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the keepalive properties.</div>
+</div>
 </div>
 </section>
 </li>
@@ -134,10 +136,14 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMax()" class="member-name-link">getMax</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Maximum keepalive period.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMin()" class="member-name-link">getMin</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Minimum keepalive period.</div>
+</div>
 </div>
 </div>
 </div>
@@ -165,6 +171,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;min,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("300s")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;max)</span></div>
+<div class="block">Constructs the keepalive properties.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>expiryPeriod</code> - Time between runs of the keepalive-expiry algorithm.</dd>
@@ -198,9 +205,10 @@ loadScripts(document, 'script');</script>
 <h3>getMin</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getMin</span>()</div>
+<div class="block">Returns Minimum keepalive period.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Minimum keepalive period.</dd>
+<dd>Minimum keepalive period</dd>
 </dl>
 </section>
 </li>
@@ -209,9 +217,10 @@ loadScripts(document, 'script');</script>
 <h3>getMax</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getMax</span>()</div>
+<div class="block">Returns Maximum keepalive period.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Maximum keepalive period.</dd>
+<dd>Maximum keepalive period</dd>
 </dl>
 </section>
 </li>

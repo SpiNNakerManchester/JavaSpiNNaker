@@ -113,7 +113,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;gracePeriod,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;schedule,
  <a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a>&nbsp;datasource)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a data properties held for historic interest.</div>
+</div>
 </div>
 </section>
 </li>
@@ -130,16 +132,28 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDatasource()" class="member-name-link">getDatasource</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Database connection properties for the connection to the
+         historical database.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getGracePeriod()" class="member-name-link">getGracePeriod</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How long after job completion should we wait before moving
+         the data.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPath()" class="member-name-link">getPath</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Path to the historical job database file. <em>Must be
+         distinct from the main database</em>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSchedule()" class="member-name-link">getSchedule</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Cron expression saying when to move completed jobs to the
+         historical database.</div>
+</div>
 </div>
 </div>
 </div>
@@ -169,6 +183,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;schedule,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>
  <a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a>&nbsp;datasource)</span></div>
+<div class="block">Constructs a data properties held for historic interest.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>path</code> - Path to the historical job database file. <em>Must be
@@ -195,10 +210,12 @@ loadScripts(document, 'script');</script>
 <h3>getPath</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a></span>&nbsp;<span class="element-name">getPath</span>()</div>
+<div class="block">Returns Path to the historical job database file. <em>Must be
+         distinct from the main database</em>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Path to the historical job database file. <em>Must be
-         distinct from the main database!</em></dd>
+         distinct from the main database</em></dd>
 </dl>
 </section>
 </li>
@@ -207,10 +224,12 @@ loadScripts(document, 'script');</script>
 <h3>getGracePeriod</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getGracePeriod</span>()</div>
+<div class="block">Returns How long after job completion should we wait before moving
+         the data.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>How long after job completion should we wait before moving
-         the data?</dd>
+         the data</dd>
 </dl>
 </section>
 </li>
@@ -219,10 +238,12 @@ loadScripts(document, 'script');</script>
 <h3>getSchedule</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getSchedule</span>()</div>
+<div class="block">Returns Cron expression saying when to move completed jobs to the
+         historical database.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Cron expression saying when to move completed jobs to the
-         historical database.</dd>
+         historical database</dd>
 </dl>
 </section>
 </li>
@@ -231,10 +252,12 @@ loadScripts(document, 'script');</script>
 <h3>getDatasource</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="SpallocProperties.DataSourceProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.DataSourceProperties</a></span>&nbsp;<span class="element-name">getDatasource</span>()</div>
+<div class="block">Returns Database connection properties for the connection to the
+         historical database.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Database connection properties for the connection to the
-         historical database.</dd>
+         historical database</dd>
 </dl>
 </section>
 </li>

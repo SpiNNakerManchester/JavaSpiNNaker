@@ -301,7 +301,7 @@
 <a class="jxr_linenumber" name="L293" href="#L293">293</a> 		}
 <a class="jxr_linenumber" name="L294" href="#L294">294</a> 
 <a class="jxr_linenumber" name="L295" href="#L295">295</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">		 * @return Whether this request may be repeated.</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">		 * {@return Whether this request may be repeated}</em>
 <a class="jxr_linenumber" name="L297" href="#L297">297</a> <em class="jxr_javadoccomment">		 */</em>
 <a class="jxr_linenumber" name="L298" href="#L298">298</a> 		<strong class="jxr_keyword">boolean</strong> isRepeat() {
 <a class="jxr_linenumber" name="L299" href="#L299">299</a> 			<strong class="jxr_keyword">return</strong> numTries &lt; props.getPowerAttempts();
@@ -1106,7 +1106,7 @@
 <a class="jxr_linenumber" name="L1098" href="#L1098">1098</a> 
 <a class="jxr_linenumber" name="L1099" href="#L1099">1099</a> 	<em class="jxr_javadoccomment">/** A worker of a given BMP. */</em>
 <a class="jxr_linenumber" name="L1100" href="#L1100">1100</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Worker <strong class="jxr_keyword">implements</strong> Runnable {
-<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 		<em class="jxr_javadoccomment">/** What are we controlling? */</em>
+<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 		<em class="jxr_javadoccomment">/** What are we controlling. */</em>
 <a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> 		<strong class="jxr_keyword">private</strong> <a name="SpiNNakerControl" href="../../../../../../uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#SpiNNakerControl">SpiNNakerControl</a> control;
 <a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> 
 <a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> SpallocAPI.Machine machine;
@@ -1115,7 +1115,7 @@
 <a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> 
 <a class="jxr_linenumber" name="L1108" href="#L1108">1108</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;BMPBoard, String&gt; boards;
 <a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> 
-<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> 		<em class="jxr_javadoccomment">/** Which boards are we looking at? */</em>
+<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> 		<em class="jxr_javadoccomment">/** Which boards are we looking at. */</em>
 <a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> bmpId;
 <a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> 
 <a class="jxr_linenumber" name="L1113" href="#L1113">1113</a> 		Worker(SpallocAPI.Machine machine, <a name="BMPCoords" href="../../../../../../uk/ac/manchester/spinnaker/machine/board/BMPCoords.html#BMPCoords">BMPCoords</a> coords,
@@ -1316,77 +1316,79 @@
 <a class="jxr_linenumber" name="L1308" href="#L1308">1308</a> 	}
 <a class="jxr_linenumber" name="L1309" href="#L1309">1309</a> 
 <a class="jxr_linenumber" name="L1310" href="#L1310">1310</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1311" href="#L1311">1311</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L1312" href="#L1312">1312</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L1313" href="#L1313">1313</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L1314" href="#L1314">1314</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1315" href="#L1315">1315</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L1316" href="#L1316">1316</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L1317" href="#L1317">1317</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L1318" href="#L1318">1318</a> 	@Deprecated
-<a class="jxr_linenumber" name="L1319" href="#L1319">1319</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> TestAPI getTestAPI() {
-<a class="jxr_linenumber" name="L1320" href="#L1320">1320</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L1321" href="#L1321">1321</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L1322" href="#L1322">1322</a> 			@Override
-<a class="jxr_linenumber" name="L1323" href="#L1323">1323</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> prepare(<strong class="jxr_keyword">boolean</strong> useDummyCommsParam) {
-<a class="jxr_linenumber" name="L1324" href="#L1324">1324</a> 				useDummyComms = useDummyCommsParam;
-<a class="jxr_linenumber" name="L1325" href="#L1325">1325</a> 			}
-<a class="jxr_linenumber" name="L1326" href="#L1326">1326</a> 
-<a class="jxr_linenumber" name="L1327" href="#L1327">1327</a> 			@Override
-<a class="jxr_linenumber" name="L1328" href="#L1328">1328</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> resetTransceivers() {
-<a class="jxr_linenumber" name="L1329" href="#L1329">1329</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> worker : workers.values()) {
-<a class="jxr_linenumber" name="L1330" href="#L1330">1330</a> 					worker.control = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L1331" href="#L1331">1331</a> 				}
-<a class="jxr_linenumber" name="L1332" href="#L1332">1332</a> 				<em class="jxr_comment">// Recreate in case of new data</em>
-<a class="jxr_linenumber" name="L1333" href="#L1333">1333</a> 				makeWorkers();
-<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a> 			}
-<a class="jxr_linenumber" name="L1335" href="#L1335">1335</a> 
-<a class="jxr_linenumber" name="L1336" href="#L1336">1336</a> 			@Override
-<a class="jxr_linenumber" name="L1337" href="#L1337">1337</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processRequests(<strong class="jxr_keyword">long</strong> millis, Collection&lt;Integer&gt; bmps)
-<a class="jxr_linenumber" name="L1338" href="#L1338">1338</a> 					<strong class="jxr_keyword">throws</strong> IOException, SpinnmanException,
-<a class="jxr_linenumber" name="L1339" href="#L1339">1339</a> 					InterruptedException {
-<a class="jxr_linenumber" name="L1340" href="#L1340">1340</a> 				<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L1341" href="#L1341">1341</a> <em class="jxr_comment">				 * Runs twice because it takes two cycles to fully process a</em>
-<a class="jxr_linenumber" name="L1342" href="#L1342">1342</a> <em class="jxr_comment">				 * request.</em>
-<a class="jxr_linenumber" name="L1343" href="#L1343">1343</a> <em class="jxr_comment">				 */</em>
-<a class="jxr_linenumber" name="L1344" href="#L1344">1344</a> 				triggerSearch(bmps);
-<a class="jxr_linenumber" name="L1345" href="#L1345">1345</a> 				<strong class="jxr_keyword">if</strong> (millis &gt; 0) {
-<a class="jxr_linenumber" name="L1346" href="#L1346">1346</a> 					Thread.sleep(millis);
-<a class="jxr_linenumber" name="L1347" href="#L1347">1347</a> 					triggerSearch(bmps);
-<a class="jxr_linenumber" name="L1348" href="#L1348">1348</a> 				}
-<a class="jxr_linenumber" name="L1349" href="#L1349">1349</a> 			}
-<a class="jxr_linenumber" name="L1350" href="#L1350">1350</a> 
-<a class="jxr_linenumber" name="L1351" href="#L1351">1351</a> 			@Override
-<a class="jxr_linenumber" name="L1352" href="#L1352">1352</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processRequests(<strong class="jxr_keyword">long</strong> millis) <strong class="jxr_keyword">throws</strong> IOException,
-<a class="jxr_linenumber" name="L1353" href="#L1353">1353</a> 					SpinnmanException, InterruptedException {
-<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a> 				processRequests(millis, workers.keySet());
-<a class="jxr_linenumber" name="L1355" href="#L1355">1355</a> 			}
-<a class="jxr_linenumber" name="L1356" href="#L1356">1356</a> 
-<a class="jxr_linenumber" name="L1357" href="#L1357">1357</a> 			@Override
-<a class="jxr_linenumber" name="L1358" href="#L1358">1358</a> 			<strong class="jxr_keyword">public</strong> Throwable getBmpException() {
-<a class="jxr_linenumber" name="L1359" href="#L1359">1359</a> 				<strong class="jxr_keyword">synchronized</strong> (BMPController.<strong class="jxr_keyword">this</strong>) {
-<a class="jxr_linenumber" name="L1360" href="#L1360">1360</a> 					<strong class="jxr_keyword">return</strong> bmpProcessingException;
-<a class="jxr_linenumber" name="L1361" href="#L1361">1361</a> 				}
-<a class="jxr_linenumber" name="L1362" href="#L1362">1362</a> 			}
-<a class="jxr_linenumber" name="L1363" href="#L1363">1363</a> 
-<a class="jxr_linenumber" name="L1364" href="#L1364">1364</a> 			@Override
-<a class="jxr_linenumber" name="L1365" href="#L1365">1365</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> clearBmpException() {
-<a class="jxr_linenumber" name="L1366" href="#L1366">1366</a> 				<strong class="jxr_keyword">synchronized</strong> (BMPController.<strong class="jxr_keyword">this</strong>) {
-<a class="jxr_linenumber" name="L1367" href="#L1367">1367</a> 					bmpProcessingException = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L1368" href="#L1368">1368</a> 				}
-<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a> 			}
-<a class="jxr_linenumber" name="L1370" href="#L1370">1370</a> 
-<a class="jxr_linenumber" name="L1371" href="#L1371">1371</a> 			@Override
-<a class="jxr_linenumber" name="L1372" href="#L1372">1372</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> emergencyResume() {
-<a class="jxr_linenumber" name="L1373" href="#L1373">1373</a> 				<strong class="jxr_keyword">synchronized</strong> (guard) {
-<a class="jxr_linenumber" name="L1374" href="#L1374">1374</a> 					emergencyStop = false;
-<a class="jxr_linenumber" name="L1375" href="#L1375">1375</a> 					workers.clear();
-<a class="jxr_linenumber" name="L1376" href="#L1376">1376</a> 				}
-<a class="jxr_linenumber" name="L1377" href="#L1377">1377</a> 				init();
-<a class="jxr_linenumber" name="L1378" href="#L1378">1378</a> 			}
-<a class="jxr_linenumber" name="L1379" href="#L1379">1379</a> 		};
-<a class="jxr_linenumber" name="L1380" href="#L1380">1380</a> 	}
-<a class="jxr_linenumber" name="L1381" href="#L1381">1381</a> }
+<a class="jxr_linenumber" name="L1311" href="#L1311">1311</a> <em class="jxr_javadoccomment">	 * Testing method, Do not use outside of tests.</em>
+<a class="jxr_linenumber" name="L1312" href="#L1312">1312</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L1313" href="#L1313">1313</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L1314" href="#L1314">1314</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L1315" href="#L1315">1315</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L1316" href="#L1316">1316</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1317" href="#L1317">1317</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L1318" href="#L1318">1318</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L1319" href="#L1319">1319</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L1320" href="#L1320">1320</a> 	@Deprecated
+<a class="jxr_linenumber" name="L1321" href="#L1321">1321</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> TestAPI getTestAPI() {
+<a class="jxr_linenumber" name="L1322" href="#L1322">1322</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L1323" href="#L1323">1323</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L1324" href="#L1324">1324</a> 			@Override
+<a class="jxr_linenumber" name="L1325" href="#L1325">1325</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> prepare(<strong class="jxr_keyword">boolean</strong> useDummyCommsParam) {
+<a class="jxr_linenumber" name="L1326" href="#L1326">1326</a> 				useDummyComms = useDummyCommsParam;
+<a class="jxr_linenumber" name="L1327" href="#L1327">1327</a> 			}
+<a class="jxr_linenumber" name="L1328" href="#L1328">1328</a> 
+<a class="jxr_linenumber" name="L1329" href="#L1329">1329</a> 			@Override
+<a class="jxr_linenumber" name="L1330" href="#L1330">1330</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> resetTransceivers() {
+<a class="jxr_linenumber" name="L1331" href="#L1331">1331</a> 				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> worker : workers.values()) {
+<a class="jxr_linenumber" name="L1332" href="#L1332">1332</a> 					worker.control = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L1333" href="#L1333">1333</a> 				}
+<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a> 				<em class="jxr_comment">// Recreate in case of new data</em>
+<a class="jxr_linenumber" name="L1335" href="#L1335">1335</a> 				makeWorkers();
+<a class="jxr_linenumber" name="L1336" href="#L1336">1336</a> 			}
+<a class="jxr_linenumber" name="L1337" href="#L1337">1337</a> 
+<a class="jxr_linenumber" name="L1338" href="#L1338">1338</a> 			@Override
+<a class="jxr_linenumber" name="L1339" href="#L1339">1339</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processRequests(<strong class="jxr_keyword">long</strong> millis, Collection&lt;Integer&gt; bmps)
+<a class="jxr_linenumber" name="L1340" href="#L1340">1340</a> 					<strong class="jxr_keyword">throws</strong> IOException, SpinnmanException,
+<a class="jxr_linenumber" name="L1341" href="#L1341">1341</a> 					InterruptedException {
+<a class="jxr_linenumber" name="L1342" href="#L1342">1342</a> 				<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L1343" href="#L1343">1343</a> <em class="jxr_comment">				 * Runs twice because it takes two cycles to fully process a</em>
+<a class="jxr_linenumber" name="L1344" href="#L1344">1344</a> <em class="jxr_comment">				 * request.</em>
+<a class="jxr_linenumber" name="L1345" href="#L1345">1345</a> <em class="jxr_comment">				 */</em>
+<a class="jxr_linenumber" name="L1346" href="#L1346">1346</a> 				triggerSearch(bmps);
+<a class="jxr_linenumber" name="L1347" href="#L1347">1347</a> 				<strong class="jxr_keyword">if</strong> (millis &gt; 0) {
+<a class="jxr_linenumber" name="L1348" href="#L1348">1348</a> 					Thread.sleep(millis);
+<a class="jxr_linenumber" name="L1349" href="#L1349">1349</a> 					triggerSearch(bmps);
+<a class="jxr_linenumber" name="L1350" href="#L1350">1350</a> 				}
+<a class="jxr_linenumber" name="L1351" href="#L1351">1351</a> 			}
+<a class="jxr_linenumber" name="L1352" href="#L1352">1352</a> 
+<a class="jxr_linenumber" name="L1353" href="#L1353">1353</a> 			@Override
+<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> processRequests(<strong class="jxr_keyword">long</strong> millis) <strong class="jxr_keyword">throws</strong> IOException,
+<a class="jxr_linenumber" name="L1355" href="#L1355">1355</a> 					SpinnmanException, InterruptedException {
+<a class="jxr_linenumber" name="L1356" href="#L1356">1356</a> 				processRequests(millis, workers.keySet());
+<a class="jxr_linenumber" name="L1357" href="#L1357">1357</a> 			}
+<a class="jxr_linenumber" name="L1358" href="#L1358">1358</a> 
+<a class="jxr_linenumber" name="L1359" href="#L1359">1359</a> 			@Override
+<a class="jxr_linenumber" name="L1360" href="#L1360">1360</a> 			<strong class="jxr_keyword">public</strong> Throwable getBmpException() {
+<a class="jxr_linenumber" name="L1361" href="#L1361">1361</a> 				<strong class="jxr_keyword">synchronized</strong> (BMPController.<strong class="jxr_keyword">this</strong>) {
+<a class="jxr_linenumber" name="L1362" href="#L1362">1362</a> 					<strong class="jxr_keyword">return</strong> bmpProcessingException;
+<a class="jxr_linenumber" name="L1363" href="#L1363">1363</a> 				}
+<a class="jxr_linenumber" name="L1364" href="#L1364">1364</a> 			}
+<a class="jxr_linenumber" name="L1365" href="#L1365">1365</a> 
+<a class="jxr_linenumber" name="L1366" href="#L1366">1366</a> 			@Override
+<a class="jxr_linenumber" name="L1367" href="#L1367">1367</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> clearBmpException() {
+<a class="jxr_linenumber" name="L1368" href="#L1368">1368</a> 				<strong class="jxr_keyword">synchronized</strong> (BMPController.<strong class="jxr_keyword">this</strong>) {
+<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a> 					bmpProcessingException = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L1370" href="#L1370">1370</a> 				}
+<a class="jxr_linenumber" name="L1371" href="#L1371">1371</a> 			}
+<a class="jxr_linenumber" name="L1372" href="#L1372">1372</a> 
+<a class="jxr_linenumber" name="L1373" href="#L1373">1373</a> 			@Override
+<a class="jxr_linenumber" name="L1374" href="#L1374">1374</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> emergencyResume() {
+<a class="jxr_linenumber" name="L1375" href="#L1375">1375</a> 				<strong class="jxr_keyword">synchronized</strong> (guard) {
+<a class="jxr_linenumber" name="L1376" href="#L1376">1376</a> 					emergencyStop = false;
+<a class="jxr_linenumber" name="L1377" href="#L1377">1377</a> 					workers.clear();
+<a class="jxr_linenumber" name="L1378" href="#L1378">1378</a> 				}
+<a class="jxr_linenumber" name="L1379" href="#L1379">1379</a> 				init();
+<a class="jxr_linenumber" name="L1380" href="#L1380">1380</a> 			}
+<a class="jxr_linenumber" name="L1381" href="#L1381">1381</a> 		};
+<a class="jxr_linenumber" name="L1382" href="#L1382">1382</a> 	}
+<a class="jxr_linenumber" name="L1383" href="#L1383">1383</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

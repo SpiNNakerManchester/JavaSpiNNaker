@@ -160,16 +160,25 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getChips()" class="member-name-link">getChips</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The chips on the board that are blacklisted.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCores()" class="member-name-link">getCores</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The cores on the board that are blacklisted where the whole chip
+         is not blacklisted.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../machine/Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&gt;&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLinks()" class="member-name-link">getLinks</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The links on the board that are blacklisted.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRawData()" class="member-name-link">getRawData</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The raw blacklist data in little-endian form. Read only.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -290,10 +299,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="getChips()">
 <h3>getChips</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</span>&nbsp;<span class="element-name">getChips</span>()</div>
+<div class="block">The chips on the board that are blacklisted.
+
+ A chip being blacklisted means that its links will also be blacklisted.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The chips on the board that are blacklisted. A chip being
-         blacklisted means that its links will also be blacklisted.</dd>
+<dd>Blacklisted Chips.</dd>
 </dl>
 </section>
 </li>
@@ -301,11 +312,13 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="getCores()">
 <h3>getCores</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&gt;</span>&nbsp;<span class="element-name">getCores</span>()</div>
+<div class="block">The cores on the board that are blacklisted where the whole chip
+         is not blacklisted.
+
+ Note that these are <em>physical</em> processor IDs, not logical ones.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The cores on the board that are blacklisted where the whole chip
-         is not blacklisted. Note that these are <em>physical</em>
-         processor IDs, not logical ones.</dd>
+<dd>blacklisted cores on good Chips.</dd>
 </dl>
 </section>
 </li>
@@ -313,9 +326,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="getLinks()">
 <h3>getLinks</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../machine/Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&gt;&gt;</span>&nbsp;<span class="element-name">getLinks</span>()</div>
+<div class="block">Returns The links on the board that are blacklisted.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The links on the board that are blacklisted.</dd>
+<dd>The links on the board that are blacklisted</dd>
 </dl>
 </section>
 </li>
@@ -338,9 +352,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="getRawData()">
 <h3>getRawData</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">getRawData</span>()</div>
+<div class="block">Returns The raw blacklist data in little-endian form. Read only.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The raw blacklist data in little-endian form. Read only.</dd>
+<dd>The raw blacklist data in little-endian form. Read only</dd>
 </dl>
 </section>
 </li>

@@ -117,7 +117,9 @@ loadScripts(document, 'script');</script>
  int&nbsp;buildAttempts,
  boolean&nbsp;dummy,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;offWaitTime)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct how Spalloc talks to BMPs on machines.</div>
+</div>
 </div>
 </section>
 </li>
@@ -141,7 +143,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFpgaAttempts()" class="member-name-link">getFpgaAttempts</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Number of attempts that will be made to bring up an FPGA.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOffWaitTime()" class="member-name-link">getOffWaitTime</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -152,10 +156,14 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPowerAttempts()" class="member-name-link">getPowerAttempts</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Number of attempts that will be made to switch on a board.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProbeInterval()" class="member-name-link">getProbeInterval</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The basic wait time used by the BMP control tasks.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDummy()" class="member-name-link">isDummy</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -163,7 +171,10 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isFpgaReload()" class="member-name-link">isFpgaReload</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether to reload the FPGA bitfiles when they don't come up
+         correctly.</div>
+</div>
 </div>
 </div>
 </div>
@@ -201,6 +212,7 @@ loadScripts(document, 'script');</script>
  boolean&nbsp;dummy,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("30s")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;offWaitTime)</span></div>
+<div class="block">Construct how Spalloc talks to BMPs on machines.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>period</code> - How long between when we send requests to the BMP control
@@ -247,9 +259,10 @@ loadScripts(document, 'script');</script>
 <h3>getProbeInterval</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getProbeInterval</span>()</div>
+<div class="block">Returns The basic wait time used by the BMP control tasks.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The basic wait time used by the BMP control tasks.</dd>
+<dd>The basic wait time used by the BMP control tasks</dd>
 </dl>
 </section>
 </li>
@@ -265,9 +278,10 @@ loadScripts(document, 'script');</script>
 <h3>getPowerAttempts</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">getPowerAttempts</span>()</div>
+<div class="block">Returns Number of attempts that will be made to switch on a board.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Number of attempts that will be made to switch on a board.</dd>
+<dd>Number of attempts that will be made to switch on a board</dd>
 </dl>
 </section>
 </li>
@@ -276,9 +290,10 @@ loadScripts(document, 'script');</script>
 <h3>getFpgaAttempts</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">getFpgaAttempts</span>()</div>
+<div class="block">Returns Number of attempts that will be made to bring up an FPGA.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Number of attempts that will be made to bring up an FPGA.</dd>
+<dd>Number of attempts that will be made to bring up an FPGA</dd>
 </dl>
 </section>
 </li>
@@ -286,10 +301,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isFpgaReload()">
 <h3>isFpgaReload</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isFpgaReload</span>()</div>
+<div class="block">Returns Whether to reload the FPGA bitfiles when they don't come up
+         correctly.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Whether to reload the FPGA bitfiles when they don't come up
-         correctly.</dd>
+         correctly</dd>
 </dl>
 </section>
 </li>

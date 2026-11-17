@@ -88,7 +88,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Link.</span><code><a href="../../../alloc/bmp/Link.html#getBoard()" class="member-name-link">getBoard</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The database ID of the board that the FPGA is located on.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../../alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a> with parameters of type <a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></span></div>
 <div class="summary-table three-column-summary">
@@ -176,7 +178,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../alloc/bmp/FirmwareLoader.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface,uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">FirmwareLoader</a><wbr>(<a href="../../../transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a>&nbsp;txrx,
  <a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct handler for loading of firmware.</div>
+</div>
 </div>
 </section>
 </li>
@@ -206,7 +210,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected <a href="../../../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a><wbr>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ReadCANStatus.Response.</span><code><a href="../../../messages/bmp/ReadCANStatus.Response.html#parse(java.nio.ByteBuffer)" class="member-name-link">parse</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns Ordered sequence of board numbers available to be managed by
+         the BMP.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> with parameters of type <a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></span></div>
 <div class="summary-table three-column-summary">
@@ -217,84 +224,122 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/BMPReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">BMPReadMemory</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to read a region of memory from a BMP.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/BMPWriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">BMPWriteMemory</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to write to memory on a BMP.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/EraseFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">EraseFlash</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to erase flash memory on a BMP.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/GetBMPVersion.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">GetBMPVersion</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to read the software version.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/GetFPGAResetStatus.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">GetFPGAResetStatus</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a message to get the reset status.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/InitFPGA.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,int)" class="member-name-link">InitFPGA</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  int&nbsp;mask)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to start an initialisation of the FPGAs.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/ReadADC.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">ReadADC</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request for the board status data.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/ReadFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">ReadFPGARegister</a><wbr>(<a href="../../../messages/model/FPGA.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
  <a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request for the data from a FPGA's register.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/ReadIPAddress.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">ReadIPAddress</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request for the IP address data.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/ReadSerialFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadSerialFlash</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to read a region of serial flash.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/ReadSerialFlashCRC.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadSerialFlashCRC</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to get the CRC of serial flash memory.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/ReadSerialVector.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">ReadSerialVector</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request for the serial data vector.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/ResetFPGA.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)" class="member-name-link">ResetFPGA</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../../transceiver/BMPTransceiverInterface.FPGAResetType.html" title="enum class in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to perform a reset of the FPGA.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/UpdateFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">UpdateFlash</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to update flash memory on a BMP.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/WriteFlashBuffer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,boolean)" class="member-name-link">WriteFlashBuffer</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  boolean&nbsp;erase)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to write memory to flash.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/WriteFPGAData.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,byte%5B%5D)" class="member-name-link">WriteFPGAData</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  byte[]&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to upload a chunk of byte data.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/WriteFPGAData.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,java.nio.ByteBuffer)" class="member-name-link">WriteFPGAData</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to upload a chunk of buffer data.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/bmp/WriteFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">WriteFPGARegister</a><wbr>(<a href="../../../messages/model/FPGA.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
  int&nbsp;value,
  <a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to write data to an FPGA register.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/WriteSerialFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">WriteSerialFlash</a><wbr>(<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to write to serial flash on a BMP.</div>
+</div>
 </div>
 <div class="caption"><span>Constructor parameters in <a href="../../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> with type arguments of type <a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a></span></div>
 <div class="summary-table three-column-summary">
@@ -305,7 +350,9 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../../../messages/bmp/SetPower.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.PowerCommand,java.util.Collection,double)" class="member-name-link">SetPower</a><wbr>(<a href="../../../messages/model/PowerCommand.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&gt;&nbsp;boards,
  double&nbsp;delay)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to power on or power off boards.</div>
+</div>
 </div>
 </section>
 </li>

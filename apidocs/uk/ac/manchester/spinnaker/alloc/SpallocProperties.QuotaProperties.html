@@ -116,7 +116,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;nmpiUrl,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;nmpiApiKey,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;nmpiPlatform)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the Quota management properties.</div>
+</div>
 </div>
 </section>
 </li>
@@ -133,7 +135,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConsolidationSchedule()" class="member-name-link">getConsolidationSchedule</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Cron expression that says when we consolidate job quotas
+     into the main quota table.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDefaultCollabQuota()" class="member-name-link">getDefaultCollabQuota</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -151,13 +156,19 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNMPIApiKey()" class="member-name-link">getNMPIApiKey</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The API Key to use to access the NMPI server.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNMPIPlaform()" class="member-name-link">getNMPIPlaform</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The platform to look for on the NMPI server.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNMPIUrl()" class="member-name-link">getNMPIUrl</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The URL of an NMPI server that deals with quota.</div>
+</div>
 </div>
 </div>
 </div>
@@ -193,6 +204,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;nmpiApiKey,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("SpiNNaker")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;nmpiPlatform)</span></div>
+<div class="block">Constructs the Quota management properties.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>defaultQuota</code> - Default user quota in board-seconds.</dd>
@@ -258,10 +270,12 @@ loadScripts(document, 'script');</script>
 <h3>getConsolidationSchedule</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getConsolidationSchedule</span>()</div>
+<div class="block">Returns Cron expression that says when we consolidate job quotas
+     into the main quota table.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Cron expression that says when we consolidate job quotas into
-         the main quota table.</dd>
+<dd>Cron expression that says when we consolidate job quotas
+     into the main quota table</dd>
 </dl>
 </section>
 </li>
@@ -269,10 +283,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNMPIUrl()">
 <h3>getNMPIUrl</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getNMPIUrl</span>()</div>
+<div class="block">The URL of an NMPI server that deals with quota.
+
+ May be blank, meaning there isn't one.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The URL of an NMPI server that deals with quota.
-         May be blank, meaning there isn't one.</dd>
+<dd>The URL of an NMPI server that deals with quota.</dd>
 </dl>
 </section>
 </li>
@@ -280,10 +296,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNMPIApiKey()">
 <h3>getNMPIApiKey</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getNMPIApiKey</span>()</div>
+<div class="block">The API Key to use to access the NMPI server.
+
+ May be blank if @linkplain(#nmpiUrl) is blank.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The API Key to use to access the NMPI server.
-         May be blank if @linkplain(#nmpiUrl) is blank.</dd>
+<dd>The API Key to use to access the NMPI server.</dd>
 </dl>
 </section>
 </li>
@@ -291,9 +309,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNMPIPlaform()">
 <h3>getNMPIPlaform</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getNMPIPlaform</span>()</div>
+<div class="block">Returns The platform to look for on the NMPI server.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The platform to look for on the NMPI server.</dd>
+<dd>The platform to look for on the NMPI server</dd>
 </dl>
 </section>
 </li>

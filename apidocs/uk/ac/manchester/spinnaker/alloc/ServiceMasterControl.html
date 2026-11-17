@@ -143,10 +143,14 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPaused()" class="member-name-link">isPaused</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether periodic tasks should not run.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUseDummyBMP()" class="member-name-link">isUseDummyBMP</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether to use dummy transceivers for talking to the BMPs.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removePausedListener(java.beans.PropertyChangeListener)" class="member-name-link">removePausedListener</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.desktop/java/beans/PropertyChangeListener.html" title="class or interface in java.beans" class="external-link">PropertyChangeListener</a>&nbsp;listener)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -159,10 +163,14 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPaused(boolean)" class="member-name-link">setPaused</a><wbr>(boolean&nbsp;paused)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets whether periodic tasks should not run.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUseDummyBMP(boolean)" class="member-name-link">setUseDummyBMP</a><wbr>(boolean&nbsp;dummyBMP)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set whether to use dummy transceivers for talking to the BMPs.</div>
+</div>
 </div>
 </div>
 </div>
@@ -205,9 +213,10 @@ loadScripts(document, 'script');</script>
 <h3>isPaused</h3>
 <div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html" title="class or interface in org.springframework.jmx.export.annotation" class="external-link">@ManagedAttribute</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html#description()" title="class or interface in org.springframework.jmx.export.annotation" class="external-link">description</a>="Whether periodic tasks should not run.")
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isPaused</span>()</div>
+<div class="block">Returns Whether periodic tasks should not run.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether periodic tasks should not run.</dd>
+<dd>Whether periodic tasks should not run</dd>
 </dl>
 </section>
 </li>
@@ -215,6 +224,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setPaused(boolean)">
 <h3>setPaused</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPaused</span><wbr><span class="parameters">(boolean&nbsp;paused)</span></div>
+<div class="block">Sets whether periodic tasks should not run.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>paused</code> - Whether periodic tasks should not run.</dd>
@@ -248,9 +258,10 @@ loadScripts(document, 'script');</script>
 <h3>isUseDummyBMP</h3>
 <div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html" title="class or interface in org.springframework.jmx.export.annotation" class="external-link">@ManagedAttribute</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html#description()" title="class or interface in org.springframework.jmx.export.annotation" class="external-link">description</a>="Whether the service actually talks to BMPs; when using a dummy, all actual hardware is ignored.")
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isUseDummyBMP</span>()</div>
+<div class="block">Returns Whether to use dummy transceivers for talking to the BMPs.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether to use dummy transceivers for talking to the BMPs.</dd>
+<dd>Whether to use dummy transceivers for talking to the BMPs</dd>
 </dl>
 </section>
 </li>
@@ -258,6 +269,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setUseDummyBMP(boolean)">
 <h3>setUseDummyBMP</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setUseDummyBMP</span><wbr><span class="parameters">(boolean&nbsp;dummyBMP)</span></div>
+<div class="block">Set whether to use dummy transceivers for talking to the BMPs.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>dummyBMP</code> - Whether to use dummy transceivers for talking to the BMPs.</dd>

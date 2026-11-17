@@ -113,7 +113,10 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;blacklistTimeout,
  int&nbsp;serialReadBatchSize,
  int&nbsp;blacklistReadBatchSize)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the settings for control of the administrative state
+     of a machine.</div>
+</div>
 </div>
 </section>
 </li>
@@ -130,16 +133,26 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBlacklistPoll()" class="member-name-link">getBlacklistPoll</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How long to wait between polls of the BMP controller.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBlacklistReadBatchSize()" class="member-name-link">getBlacklistReadBatchSize</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How many blacklists to read from a full machine
+     at once when synchronizing the overall state.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBlacklistTimeout()" class="member-name-link">getBlacklistTimeout</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How long to wait for a blacklist operation to complete.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSerialReadBatchSize()" class="member-name-link">getSerialReadBatchSize</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How many board serial numbers to read from a full machine at
+         once when synchronizing the overall state.</div>
+</div>
 </div>
 </div>
 </div>
@@ -169,6 +182,8 @@ loadScripts(document, 'script');</script>
  int&nbsp;serialReadBatchSize,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("6")
  int&nbsp;blacklistReadBatchSize)</span></div>
+<div class="block">Constructs the settings for control of the administrative state
+     of a machine.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>blacklistPoll</code> - How long to wait between polls of the BMP controller.</dd>
@@ -193,9 +208,10 @@ loadScripts(document, 'script');</script>
 <h3>getBlacklistPoll</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getBlacklistPoll</span>()</div>
+<div class="block">Returns How long to wait between polls of the BMP controller.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>How long to wait between polls of the BMP controller.</dd>
+<dd>How long to wait between polls of the BMP controller</dd>
 </dl>
 </section>
 </li>
@@ -204,9 +220,10 @@ loadScripts(document, 'script');</script>
 <h3>getBlacklistTimeout</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getBlacklistTimeout</span>()</div>
+<div class="block">Returns How long to wait for a blacklist operation to complete.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>How long to wait for a blacklist operation to complete.</dd>
+<dd>How long to wait for a blacklist operation to complete</dd>
 </dl>
 </section>
 </li>
@@ -215,10 +232,12 @@ loadScripts(document, 'script');</script>
 <h3>getSerialReadBatchSize</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">getSerialReadBatchSize</span>()</div>
+<div class="block">Returns How many board serial numbers to read from a full machine at
+         once when synchronizing the overall state.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>How many board serial numbers to read from a full machine at
-         once when synchronizing the overall state?</dd>
+         once when synchronizing the overall state</dd>
 </dl>
 </section>
 </li>
@@ -227,10 +246,12 @@ loadScripts(document, 'script');</script>
 <h3>getBlacklistReadBatchSize</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">getBlacklistReadBatchSize</span>()</div>
+<div class="block">Returns How many blacklists to read from a full machine
+     at once when synchronizing the overall state.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>How many blacklists to read from a full machine at once when
-         synchronizing the overall state?</dd>
+<dd>How many blacklists to read from a full machine
+     at once when synchronizing the overall state</dd>
 </dl>
 </section>
 </li>

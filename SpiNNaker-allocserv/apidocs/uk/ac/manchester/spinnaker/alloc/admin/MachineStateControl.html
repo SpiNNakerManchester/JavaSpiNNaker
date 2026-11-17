@@ -190,10 +190,15 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../model/BoardIssueReport.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardIssueReport</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMachineReports()" class="member-name-link">getMachineReports</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The unacknowledged reports about boards with potential problems
+         in existing machines, categorised by machine.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../model/MachineTagging.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineTagging</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMachineTagging()" class="member-name-link">getMachineTagging</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The mapping from machine names+IDs to tags.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSerialNumber(uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState)" class="member-name-link">getSerialNumber</a><wbr>(<a href="MachineStateControl.BoardState.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">MachineStateControl.BoardState</a>&nbsp;board)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -374,9 +379,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMachineTagging()">
 <h3>getMachineTagging</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../model/MachineTagging.html" title="class in uk.ac.manchester.spinnaker.alloc.model">MachineTagging</a>&gt;</span>&nbsp;<span class="element-name">getMachineTagging</span>()</div>
+<div class="block">Returns The mapping from machine names+IDs to tags.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The mapping from machine names+IDs to tags.</dd>
+<dd>The mapping from machine names+IDs to tags</dd>
 </dl>
 </section>
 </li>
@@ -384,10 +390,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMachineReports()">
 <h3>getMachineReports</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../model/BoardIssueReport.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardIssueReport</a>&gt;&gt;</span>&nbsp;<span class="element-name">getMachineReports</span>()</div>
+<div class="block">Returns The unacknowledged reports about boards with potential problems
+         in existing machines, categorised by machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The unacknowledged reports about boards with potential problems
-         in existing machines, categorised by machine.</dd>
+         in existing machines, categorised by machine</dd>
 </dl>
 </section>
 </li>

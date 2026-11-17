@@ -107,7 +107,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.nio.ByteBuffer)" class="member-name-link">ReinjectionStatus</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Extracts the reinjection status from the buffer.</div>
+</div>
 </div>
 </section>
 </li>
@@ -131,40 +133,73 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEmergencyTimeout()" class="member-name-link">getEmergencyTimeout</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The WAIT2 timeout value of the router in cycles.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumDroppedPacketOverflows()" class="member-name-link">getNumDroppedPacketOverflows</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Of the n_dropped_packets received, how many were lost due to not
+         having enough space in the queue of packets to reinject.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumDroppedPackets()" class="member-name-link">getNumDroppedPackets</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The number of packets dropped by the router and received by the
+         reinjection functionality (may not fit in the queue though).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumLinkDumps()" class="member-name-link">getNumLinkDumps</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The number of times that when a dropped packet was caused due to
+         a link failing to take the packet.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumMissedDroppedPackets()" class="member-name-link">getNumMissedDroppedPackets</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Number of missed dropped packets
+
+ The number of times that when a dropped packet was read it was
+         found that another one or more packets had also been dropped, but
+         had been missed.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumProcessorDumps()" class="member-name-link">getNumProcessorDumps</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The number of times that when a dropped packet was caused due to
+         a processor failing to take the packet.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNumReinjectedPackets()" class="member-name-link">getNumReinjectedPackets</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Of the number of dropped packets received, how many packets were
+         successfully reinjected.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTimeout()" class="member-name-link">getTimeout</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The WAIT1 timeout value of the router in cycles.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReinjectingFixedRoute()" class="member-name-link">isReinjectingFixedRoute</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns if re-injection of fixed-route packets is enabled.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReinjectingMulticast()" class="member-name-link">isReinjectingMulticast</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns if re-injection of multicast packets is enabled.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReinjectingNearestNeighbour()" class="member-name-link">isReinjectingNearestNeighbour</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns if re-injection of nearest neighbour packets is enabled.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReinjectingPointToPoint()" class="member-name-link">isReinjectingPointToPoint</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns if re-injection of point-to-point packets is enabled.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -189,6 +224,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(java.nio.ByteBuffer)">
 <h3>ReinjectionStatus</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ReinjectionStatus</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</span></div>
+<div class="block">Extracts the reinjection status from the buffer.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>buffer</code> - The message containing the status to parse.</dd>
@@ -223,9 +259,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getTimeout()">
 <h3>getTimeout</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a></span>&nbsp;<span class="element-name">getTimeout</span>()</div>
+<div class="block">Returns The WAIT1 timeout value of the router in cycles.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The WAIT1 timeout value of the router in cycles.</dd>
+<dd>The WAIT1 timeout value of the router in cycles</dd>
 </dl>
 </section>
 </li>
@@ -233,9 +270,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getEmergencyTimeout()">
 <h3>getEmergencyTimeout</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="RouterTimeout.html" title="class in uk.ac.manchester.spinnaker.messages.model">RouterTimeout</a></span>&nbsp;<span class="element-name">getEmergencyTimeout</span>()</div>
+<div class="block">Returns The WAIT2 timeout value of the router in cycles.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The WAIT2 timeout value of the router in cycles.</dd>
+<dd>The WAIT2 timeout value of the router in cycles</dd>
 </dl>
 </section>
 </li>
@@ -243,10 +281,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNumDroppedPackets()">
 <h3>getNumDroppedPackets</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNumDroppedPackets</span>()</div>
+<div class="block">Returns The number of packets dropped by the router and received by the
+         reinjection functionality (may not fit in the queue though).</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The number of packets dropped by the router and received by the
-         reinjection functionality (may not fit in the queue though).</dd>
+         reinjection functionality (may not fit in the queue though)</dd>
 </dl>
 </section>
 </li>
@@ -254,11 +294,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNumMissedDroppedPackets()">
 <h3>getNumMissedDroppedPackets</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNumMissedDroppedPackets</span>()</div>
+<div class="block">Number of missed dropped packets
+
+ The number of times that when a dropped packet was read it was
+         found that another one or more packets had also been dropped, but
+         had been missed.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The number of times that when a dropped packet was read it was
-         found that another one or more packets had also been dropped, but
-         had been missed.</dd>
+<dd>The number dropped packet</dd>
 </dl>
 </section>
 </li>
@@ -266,10 +309,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNumDroppedPacketOverflows()">
 <h3>getNumDroppedPacketOverflows</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNumDroppedPacketOverflows</span>()</div>
+<div class="block">Returns Of the n_dropped_packets received, how many were lost due to not
+         having enough space in the queue of packets to reinject.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Of the n_dropped_packets received, how many were lost due to not
-         having enough space in the queue of packets to reinject.</dd>
+         having enough space in the queue of packets to reinject</dd>
 </dl>
 </section>
 </li>
@@ -277,10 +322,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNumProcessorDumps()">
 <h3>getNumProcessorDumps</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNumProcessorDumps</span>()</div>
+<div class="block">Returns The number of times that when a dropped packet was caused due to
+         a processor failing to take the packet.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The number of times that when a dropped packet was caused due to
-         a processor failing to take the packet.</dd>
+         a processor failing to take the packet</dd>
 </dl>
 </section>
 </li>
@@ -288,10 +335,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNumLinkDumps()">
 <h3>getNumLinkDumps</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNumLinkDumps</span>()</div>
+<div class="block">Returns The number of times that when a dropped packet was caused due to
+         a link failing to take the packet.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The number of times that when a dropped packet was caused due to
-         a link failing to take the packet.</dd>
+         a link failing to take the packet</dd>
 </dl>
 </section>
 </li>
@@ -299,10 +348,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getNumReinjectedPackets()">
 <h3>getNumReinjectedPackets</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getNumReinjectedPackets</span>()</div>
+<div class="block">Returns Of the number of dropped packets received, how many packets were
+         successfully reinjected.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Of the number of dropped packets received, how many packets were
-         successfully reinjected.</dd>
+         successfully reinjected</dd>
 </dl>
 </section>
 </li>
@@ -310,9 +361,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isReinjectingMulticast()">
 <h3>isReinjectingMulticast</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReinjectingMulticast</span>()</div>
+<div class="block">Returns if re-injection of multicast packets is enabled.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>if re-injection of multicast packets is enabled.</dd>
+<dd>if re-injection of multicast packets is enabled</dd>
 </dl>
 </section>
 </li>
@@ -320,9 +372,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isReinjectingPointToPoint()">
 <h3>isReinjectingPointToPoint</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReinjectingPointToPoint</span>()</div>
+<div class="block">Returns if re-injection of point-to-point packets is enabled.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>if re-injection of point-to-point packets is enabled.</dd>
+<dd>if re-injection of point-to-point packets is enabled</dd>
 </dl>
 </section>
 </li>
@@ -330,9 +383,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isReinjectingNearestNeighbour()">
 <h3>isReinjectingNearestNeighbour</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReinjectingNearestNeighbour</span>()</div>
+<div class="block">Returns if re-injection of nearest neighbour packets is enabled.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>if re-injection of nearest neighbour packets is enabled.</dd>
+<dd>if re-injection of nearest neighbour packets is enabled</dd>
 </dl>
 </section>
 </li>
@@ -340,9 +394,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isReinjectingFixedRoute()">
 <h3>isReinjectingFixedRoute</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReinjectingFixedRoute</span>()</div>
+<div class="block">Returns if re-injection of fixed-route packets is enabled.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>if re-injection of fixed-route packets is enabled.</dd>
+<dd>if re-injection of fixed-route packets is enabled</dd>
 </dl>
 </section>
 </li>

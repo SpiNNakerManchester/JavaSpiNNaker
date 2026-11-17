@@ -221,18 +221,20 @@
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="BootDataBlock" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/BootDataBlock.html#BootDataBlock">BootDataBlock</a>(blockID, buffer);
 <a class="jxr_linenumber" name="L214" href="#L214">214</a> 	}
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> 	<em class="jxr_javadoccomment">/** @return a stream of messages to be sent. */</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 	<strong class="jxr_keyword">public</strong> Stream&lt;BootMessage&gt; getMessages() {
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 		<em class="jxr_comment">// The bookending control messages</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> 		<strong class="jxr_keyword">var</strong> start = <strong class="jxr_keyword">new</strong> <a name="StartOfBootMessages" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/StartOfBootMessages.html#StartOfBootMessages">StartOfBootMessages</a>(numDataPackets);
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 		<strong class="jxr_keyword">var</strong> finish = <strong class="jxr_keyword">new</strong> <a name="EndOfBootMessages" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/EndOfBootMessages.html#EndOfBootMessages">EndOfBootMessages</a>();
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> 		<em class="jxr_comment">// Concatenate everything in the right order</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 		<strong class="jxr_keyword">return</strong> concat(Stream.of(start),
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 				concat(range(0, numDataPackets).mapToObj(<strong class="jxr_keyword">this</strong>::getBootMessage),
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 						Stream.of(finish)));
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 	}
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> }
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">	 * {@return a stream of messages to be sent}</em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 	<strong class="jxr_keyword">public</strong> Stream&lt;BootMessage&gt; getMessages() {
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 		<em class="jxr_comment">// The bookending control messages</em>
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 		<strong class="jxr_keyword">var</strong> start = <strong class="jxr_keyword">new</strong> <a name="StartOfBootMessages" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/StartOfBootMessages.html#StartOfBootMessages">StartOfBootMessages</a>(numDataPackets);
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 		<strong class="jxr_keyword">var</strong> finish = <strong class="jxr_keyword">new</strong> <a name="EndOfBootMessages" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/EndOfBootMessages.html#EndOfBootMessages">EndOfBootMessages</a>();
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 		<em class="jxr_comment">// Concatenate everything in the right order</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> 		<strong class="jxr_keyword">return</strong> concat(Stream.of(start),
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 				concat(range(0, numDataPackets).mapToObj(<strong class="jxr_keyword">this</strong>::getBootMessage),
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 						Stream.of(finish)));
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> 	}
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

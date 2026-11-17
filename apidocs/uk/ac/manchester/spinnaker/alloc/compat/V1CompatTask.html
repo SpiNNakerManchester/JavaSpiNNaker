@@ -193,7 +193,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link">ExecutorService</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExecutor()" class="member-name-link">getExecutor</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The executor to use.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="../../spalloc/messages/JobMachineInfo.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobMachineInfo</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getJobMachineInfo(int)" class="member-name-link">getJobMachineInfo</a><wbr>(int&nbsp;jobId)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -206,14 +208,18 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/latest/com/fasterxml/jackson/databind/ObjectMapper.html" title="class or interface in com.fasterxml.jackson.databind" class="external-link">ObjectMapper</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getJsonMapper()" class="member-name-link">getJsonMapper</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The JSON mapper to use if necessary.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final <a href="../SpallocProperties.CompatibilityProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.CompatibilityProperties</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProperties()" class="member-name-link">getProperties</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The relevant properties.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#host()" class="member-name-link">host</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">What host is connected to this service instance?</div>
+<div class="block">What host is connected to this service instance.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#jobKeepalive(int)" class="member-name-link">jobKeepalive</a><wbr>(int&nbsp;jobId)</code></div>
@@ -391,7 +397,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="host()">
 <h3>host</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">host</span>()</div>
-<div class="block">What host is connected to this service instance?</div>
+<div class="block">What host is connected to this service instance.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The remote host that this task is serving.</dd>
@@ -898,9 +904,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getExecutor()">
 <h3>getExecutor</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ExecutorService.html" title="class or interface in java.util.concurrent" class="external-link">ExecutorService</a></span>&nbsp;<span class="element-name">getExecutor</span>()</div>
+<div class="block">Returns The executor to use.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The executor to use.</dd>
+<dd>The executor to use</dd>
 </dl>
 </section>
 </li>
@@ -908,9 +915,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getJsonMapper()">
 <h3>getJsonMapper</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/latest/com/fasterxml/jackson/databind/ObjectMapper.html" title="class or interface in com.fasterxml.jackson.databind" class="external-link">ObjectMapper</a></span>&nbsp;<span class="element-name">getJsonMapper</span>()</div>
+<div class="block">Returns The JSON mapper to use if necessary.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The JSON mapper to use if necessary.</dd>
+<dd>The JSON mapper to use if necessary</dd>
 </dl>
 </section>
 </li>
@@ -918,9 +926,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getProperties()">
 <h3>getProperties</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../SpallocProperties.CompatibilityProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.CompatibilityProperties</a></span>&nbsp;<span class="element-name">getProperties</span>()</div>
+<div class="block">Returns The relevant properties.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The relevant properties.</dd>
+<dd>The relevant properties</dd>
 </dl>
 </section>
 </li>

@@ -264,7 +264,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;localPort,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;remoteHost,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;remotePort)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a UDP socket connection that talks SDP.</div>
+</div>
 </div>
 </section>
 </li>
@@ -278,7 +280,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../front_end/BoardLocalSupport.BoardLocal.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">BoardLocal</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chipLocation)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a context that can be pushed to state in logging
+     what board is the root.</div>
+</div>
 </div>
 </section>
 </li>
@@ -420,7 +425,9 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><code><a href="../Link.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">Link</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source,
  int&nbsp;sourceLinkId,
  <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;destination)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Main Constructor which sets all parameters.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../Link.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">Link</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source,
  <a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;sourceLinkDirection,
@@ -592,13 +599,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getBootChip()" class="member-name-link">getBootChip</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The location of the chip from which the system was booted.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getDebugChip()" class="member-name-link">getDebugChip</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The location of the chip to send debug messages to.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getEthernetChip()" class="member-name-link">getEthernetChip</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The location of the nearest chip with Ethernet.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a> with parameters of type <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -624,13 +637,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/model/ChipSummaryInfo.html#%3Cinit%3E(java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">ChipSummaryInfo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer,
  <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the representation of the chip summary information.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/model/TagDescription.html#%3Cinit%3E(java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,int)" class="member-name-link">TagDescription</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer,
  <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;src,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;host,
  int&nbsp;tag)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a description of the tag.</div>
+</div>
 </div>
 </section>
 </li>
@@ -646,33 +663,45 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ApplicationRun.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection)" class="member-name-link">ApplicationRun</a><wbr>(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
  <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../ValidP.html" title="annotation interface in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;processors)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to run an application without wait.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/ApplicationRun.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,boolean)" class="member-name-link">ApplicationRun</a><wbr>(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appId,
  <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../ValidP.html" title="annotation interface in uk.ac.manchester.spinnaker.machine">@ValidP</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;processors,
  boolean&nbsp;wait)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to run an application with a possible wait.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/FillRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)" class="member-name-link">FillRequest</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;data,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to fill a region.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/FixedRouteInitialise.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID)" class="member-name-link">FixedRouteInitialise</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  int&nbsp;entry,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to set a fixed route int entry.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/FixedRouteInitialise.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.RoutingEntry,uk.ac.manchester.spinnaker.messages.model.AppID)" class="member-name-link">FixedRouteInitialise</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../RoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">RoutingEntry</a>&nbsp;entry,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to set this fixed route entry.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/FixedRouteRead.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)" class="member-name-link">FixedRouteRead</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to read a fixed route entry.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/FloodFillStart.html#%3Cinit%3E(byte,int,uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">FloodFillStart</a><wbr>(byte&nbsp;nearestNeighbourID,
  int&nbsp;numBlocks,
@@ -682,22 +711,33 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/GetChipInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">GetChipInfo</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct request to read the chip information from a core, without size.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/GetChipInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,boolean)" class="member-name-link">GetChipInfo</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  boolean&nbsp;withSize)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct request to read the chip information from a core,
+     possibly with size.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/IPTagClear.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int)" class="member-name-link">IPTagClear</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to clear the tag on the give Chip.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/IPTagGet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int)" class="member-name-link">IPTagGet</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  @uk.ac.manchester.spinnaker.machine.tags.TagID(scamp=true, ephemeral=true) int&nbsp;tag)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to get this IP tag on this Chip.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/IPTagGetInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">IPTagGetInfo</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">A request information about IP tags for this Chip.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/IPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,byte%5B%5D,int,int,boolean,boolean)" class="member-name-link">IPTagSet</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  @jakarta.validation.constraints.Size(min=4, max=4) byte[]&nbsp;host,
@@ -705,55 +745,75 @@ loadScripts(document, 'script');</script>
  @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
  boolean&nbsp;strip,
  boolean&nbsp;useSender)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to set a (forward) IP Tag.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/IPTagSetTTO.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime)" class="member-name-link">IPTagSetTTO</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../../messages/model/IPTagTimeOutWaitTime.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">IPTagTimeOutWaitTime</a>&nbsp;tagTimeout)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to set the transient timeout.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ReadLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadLink</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a read request on the scamp core of this chip.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/ReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadMemory</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a read request using the scamp core on this chip.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ReverseIPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)" class="member-name-link">ReverseIPTagSet</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
  @uk.ac.manchester.spinnaker.utils.validation.UDPPort int&nbsp;port,
  @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
  int&nbsp;sdpPort)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to set a Reverse IP Tag based on the supplied data.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/RouterAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int)" class="member-name-link">RouterAlloc</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
  int&nbsp;numEntries)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct the Router allocate request.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/RouterClear.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)" class="member-name-link">RouterClear</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to clear the router on this chip.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/RouterInit.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID)" class="member-name-link">RouterInit</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  int&nbsp;numEntries,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;tableAddress,
  int&nbsp;baseIndex,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to initialise the router.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/SDRAMAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int)" class="member-name-link">SDRAMAlloc</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Create a request to allocate space in the SDRAM space using tag 0.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/SDRAMAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID,int,int)" class="member-name-link">SDRAMAlloc</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
  int&nbsp;size,
  int&nbsp;tag)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Create a request to allocate space in the SDRAM space using the tag.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/SDRAMDeAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)" class="member-name-link">SDRAMDeAlloc</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></div>
@@ -770,7 +830,9 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/WriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">WriteMemory</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a write requested based on a Chip.</div>
+</div>
 </div>
 </section>
 </li>

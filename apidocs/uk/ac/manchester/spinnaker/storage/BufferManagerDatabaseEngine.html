@@ -143,10 +143,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDDL()" class="member-name-link">getDDL</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The DDL for initialising this kind of database.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStorageInterface()" class="member-name-link">getStorageInterface</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns a storage interface that is suitable for providing support for a
+         particular API.</div>
+</div>
 </div>
 </div>
 </div>
@@ -210,11 +215,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getDDL()">
 <h3>getDDL</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getDDL</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="DatabaseEngine.html#getDDL()">DatabaseEngine</a></code></span></div>
+<div class="block">Returns The DDL for initialising this kind of database.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="DatabaseEngine.html#getDDL()">getDDL</a></code>&nbsp;in class&nbsp;<code><a href="DatabaseEngine.html" title="class in uk.ac.manchester.spinnaker.storage">DatabaseEngine</a>&lt;<a href="BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a>&gt;</code></dd>
 <dt>Returns:</dt>
-<dd>The DDL for initialising this kind of database.</dd>
+<dd>The DDL for initialising this kind of database</dd>
 </dl>
 </section>
 </li>
@@ -222,10 +229,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getStorageInterface()">
 <h3>getStorageInterface</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="BufferManagerStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">BufferManagerStorage</a></span>&nbsp;<span class="element-name">getStorageInterface</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ConnectionProvider.html#getStorageInterface()">ConnectionProvider</a></code></span></div>
+<div class="block">Returns a storage interface that is suitable for providing support for a
+         particular API.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>a storage interface that is suitable for providing support for a
-         particular API.</dd>
+         particular API</dd>
 </dl>
 </section>
 </li>

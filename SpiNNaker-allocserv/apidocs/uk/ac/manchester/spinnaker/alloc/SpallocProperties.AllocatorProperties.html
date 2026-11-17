@@ -115,7 +115,10 @@ loadScripts(document, 'script');</script>
  int&nbsp;reportActionThreshold,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;systemReportUser,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;emergencyStopCommandCode)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the configuration
+     of the main resource allocation engine.</div>
+</div>
 </div>
 </section>
 </li>
@@ -132,7 +135,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEmergencyStopCommandCode()" class="member-name-link">getEmergencyStopCommandCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Command code to accept for an emergency stop.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getImportanceSpan()" class="member-name-link">getImportanceSpan</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -150,10 +155,15 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getReportActionThreshold()" class="member-name-link">getReportActionThreshold</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Number of reports of board problems at which the board is
+         taken out of service.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSystemReportUser()" class="member-name-link">getSystemReportUser</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Name of user that system-generated reports are done by.</div>
+</div>
 </div>
 </div>
 </div>
@@ -187,6 +197,8 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;systemReportUser,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("REPLACE-ME")
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;emergencyStopCommandCode)</span></div>
+<div class="block">Constructs the configuration
+     of the main resource allocation engine.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>period</code> - Time between runs of the main allocation algorithm.</dd>
@@ -252,10 +264,12 @@ loadScripts(document, 'script');</script>
 <h3>getReportActionThreshold</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">getReportActionThreshold</span>()</div>
+<div class="block">Returns Number of reports of board problems at which the board is
+         taken out of service.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Number of reports of board problems at which the board is
-         taken out of service.</dd>
+         taken out of service</dd>
 </dl>
 </section>
 </li>
@@ -264,9 +278,10 @@ loadScripts(document, 'script');</script>
 <h3>getSystemReportUser</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getSystemReportUser</span>()</div>
+<div class="block">Returns Name of user that system-generated reports are done by.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Name of user that system-generated reports are done by.</dd>
+<dd>Name of user that system-generated reports are done by</dd>
 </dl>
 </section>
 </li>
@@ -275,9 +290,10 @@ loadScripts(document, 'script');</script>
 <h3>getEmergencyStopCommandCode</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotBlank.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotBlank</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getEmergencyStopCommandCode</span>()</div>
+<div class="block">Returns Command code to accept for an emergency stop.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Command code to accept for an emergency stop.</dd>
+<dd>Command code to accept for an emergency stop</dd>
 </dl>
 </section>
 </li>

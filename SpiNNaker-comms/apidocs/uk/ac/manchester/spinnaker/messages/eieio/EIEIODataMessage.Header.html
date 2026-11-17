@@ -163,7 +163,9 @@ implements <a href="EIEIOHeader.html" title="interface in uk.ac.manchester.spinn
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;payloadBase,
  boolean&nbsp;isTime,
  byte&nbsp;count)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a EIEIO header for data packets based on the params.</div>
+</div>
 </div>
 </section>
 </li>
@@ -185,10 +187,14 @@ implements <a href="EIEIOHeader.html" title="interface in uk.ac.manchester.spinn
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCount()" class="member-name-link">getCount</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The number of items in the packet.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSize()" class="member-name-link">getSize</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The unit size per data component.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#incrementCount()" class="member-name-link">incrementCount</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -281,6 +287,7 @@ implements <a href="EIEIOHeader.html" title="interface in uk.ac.manchester.spinn
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;payloadBase,
  boolean&nbsp;isTime,
  byte&nbsp;count)</span></div>
+<div class="block">Construct a EIEIO header for data packets based on the params.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>eieioType</code> - the type of message</dd>
@@ -306,9 +313,10 @@ implements <a href="EIEIOHeader.html" title="interface in uk.ac.manchester.spinn
 <section class="detail" id="getCount()">
 <h3>getCount</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="element-name">getCount</span>()</div>
+<div class="block">Returns The number of items in the packet.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The number of items in the packet.</dd>
+<dd>The number of items in the packet</dd>
 </dl>
 </section>
 </li>
@@ -341,9 +349,10 @@ implements <a href="EIEIOHeader.html" title="interface in uk.ac.manchester.spinn
 <section class="detail" id="getSize()">
 <h3>getSize</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getSize</span>()</div>
+<div class="block">Returns The unit size per data component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The unit size per data component.</dd>
+<dd>The unit size per data component</dd>
 </dl>
 </section>
 </li>

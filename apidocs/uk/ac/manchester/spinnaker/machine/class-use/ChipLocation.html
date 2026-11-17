@@ -162,7 +162,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocAPI.Job.</span><code><a href="../../alloc/allocator/SpallocAPI.Job.html#getRootChip()" class="member-name-link">getRootChip</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The absolute location of root chip.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> with parameters of type <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -188,16 +190,26 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">WhereIs.</span><code><a href="../../alloc/client/WhereIs.html#getBoardChip()" class="member-name-link">getBoardChip</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The global location of the chip at the root of the board
+         containing the chip being described.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">AllocatedMachine.ConnectionInfo.</span><code><a href="../../alloc/client/AllocatedMachine.ConnectionInfo.html#getChip()" class="member-name-link">getChip</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns Which root chip (of a board) is this about.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">WhereIs.</span><code><a href="../../alloc/client/WhereIs.html#getChip()" class="member-name-link">getChip</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The global location of the chip.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">WhereIs.</span><code><a href="../../alloc/client/WhereIs.html#getJobChip()" class="member-name-link">getJobChip</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The global location of the chip at the root of the job
+         allocation, if one exists.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../alloc/client/package-summary.html">uk.ac.manchester.spinnaker.alloc.client</a> with parameters of type <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -222,7 +234,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../alloc/client/AllocatedMachine.ConnectionInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.String)" class="member-name-link">ConnectionInfo</a><wbr>(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hostname)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs information about a connection to a board.</div>
+</div>
 </div>
 </section>
 </li>
@@ -272,7 +286,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ConnectionInfo.</span><code><a href="../../alloc/model/ConnectionInfo.html#getChip()" class="member-name-link">getChip</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The chip for the connection.</div>
+</div>
 </div>
 </section>
 </li>
@@ -323,7 +339,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SDPConnection.</span><code><a href="../../connections/SDPConnection.html#getChip()" class="member-name-link">getChip</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The SpiNNaker chip that we are talking to with this connection.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ThrottledConnection.</span><code><a href="../../connections/ThrottledConnection.html#getLocation()" class="member-name-link">getLocation</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -340,7 +358,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SCPSenderReceiver.</span><code><a href="../../connections/model/SCPSenderReceiver.html#getChip()" class="member-name-link">getChip</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The chip at which messages sent down this connection will arrive
+         at first.</div>
+</div>
 </div>
 </section>
 </li>
@@ -701,7 +722,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipDetails.</span><code><a href="../bean/ChipDetails.html#getEthernet()" class="member-name-link">getEthernet</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns the location of the board's Ethernet-enabled chip.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipDetails.</span><code><a href="../bean/ChipDetails.html#getLinkDestination(uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Machine)" class="member-name-link">getLinkDestination</a><wbr>(<a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;direction,
  <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;source,
@@ -711,10 +734,14 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipBean.</span><code><a href="../bean/ChipBean.html#getLocation()" class="member-name-link">getLocation</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns Location of the chip.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">MachineBean.</span><code><a href="../bean/MachineBean.html#getRoot()" class="member-name-link">getRoot</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The root chip of the machine.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../bean/package-summary.html">uk.ac.manchester.spinnaker.machine.bean</a> with parameters of type <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -797,7 +824,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">IPTag.</span><code><a href="../tags/IPTag.html#getDestination()" class="member-name-link">getDestination</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The coordinates where users of this tag should send packets to.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../tags/package-summary.html">uk.ac.manchester.spinnaker.machine.tags</a> with parameters of type <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -818,7 +847,9 @@ loadScripts(document, 'script');</script>
  int&nbsp;tagID,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;targetAddress,
  boolean&nbsp;stripSDP)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Create an IP tag.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../tags/IPTag.html#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress,java.lang.Integer)" class="member-name-link">IPTag</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;boardAddress,
  <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
@@ -835,7 +866,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;targetAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;udpPort,
  boolean&nbsp;stripSDP)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Create an IP tag.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../tags/IPTag.html#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress,java.lang.Integer,boolean,uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier)" class="member-name-link">IPTag</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;boardAddress,
  <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;destination,
@@ -844,7 +877,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;udpPort,
  boolean&nbsp;stripSDP,
  <a href="../tags/TrafficIdentifier.html" title="class in uk.ac.manchester.spinnaker.machine.tags">TrafficIdentifier</a>&nbsp;trafficIdentifier)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Create an IP tag.</div>
+</div>
 </div>
 </section>
 </li>
@@ -869,16 +904,25 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Blacklist.</span><code><a href="../../messages/model/Blacklist.html#getChips()" class="member-name-link">getChips</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The chips on the board that are blacklisted.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt;</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">P2PTable.</span><code><a href="../../messages/model/P2PTable.html#getChips()" class="member-name-link">getChips</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The coordinates of chips in the table.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Blacklist.</span><code><a href="../../messages/model/Blacklist.html#getCores()" class="member-name-link">getCores</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The cores on the board that are blacklisted where the whole chip
+         is not blacklisted.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&gt;&gt;</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">Blacklist.</span><code><a href="../../messages/model/Blacklist.html#getLinks()" class="member-name-link">getLinks</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The links on the board that are blacklisted.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a> with parameters of type <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -958,7 +1002,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">Connection.</span><code><a href="../../spalloc/messages/Connection.html#getChip()" class="member-name-link">getChip</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The chip for the connection.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">WhereIs.</span><code><a href="../../spalloc/messages/WhereIs.html#getChip()" class="member-name-link">getChip</a>()</code></div>
 <div class="col-last even-row-color">
@@ -977,13 +1023,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>void</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">WhereIs.Builder.</span><code><a href="../../spalloc/messages/WhereIs.Builder.html#setBoardChip(uk.ac.manchester.spinnaker.machine.ChipLocation)" class="member-name-link">setBoardChip</a><wbr>(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;boardChip)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Set the chip location relative to its board.</div>
+</div>
 <div class="col-first odd-row-color"><code>void</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">WhereIs.Builder.</span><code><a href="../../spalloc/messages/WhereIs.Builder.html#setChip(uk.ac.manchester.spinnaker.machine.ChipLocation)" class="member-name-link">setChip</a><wbr>(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Set the absolute chip location.</div>
+</div>
 <div class="col-first even-row-color"><code>void</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">WhereIs.Builder.</span><code><a href="../../spalloc/messages/WhereIs.Builder.html#setJobChip(uk.ac.manchester.spinnaker.machine.ChipLocation)" class="member-name-link">setJobChip</a><wbr>(<a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;jobChip)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Set the chip location relative to the job's allocation.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../../spalloc/messages/package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> with parameters of type <a href="../ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span></div>
 <div class="summary-table three-column-summary">

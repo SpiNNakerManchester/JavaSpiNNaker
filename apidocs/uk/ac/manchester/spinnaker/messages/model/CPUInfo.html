@@ -113,7 +113,9 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.nio.ByteBuffer)" class="member-name-link">CPUInfo</a><wbr>(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;location,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a holder of information about the state of a CPU.</div>
+</div>
 </div>
 </section>
 </li>
@@ -130,82 +132,138 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getApplicationID()" class="member-name-link">getApplicationID</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The ID of the application running on the core.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="MailboxCommand.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">MailboxCommand</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getApplicationMailboxCommand()" class="member-name-link">getApplicationMailboxCommand</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The command currently in the mailbox being sent from the monitor
+         processor to the application.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getApplicationMailboxDataAddress()" class="member-name-link">getApplicationMailboxDataAddress</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The address of the data in SDRAM for the application mailbox.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getApplicationName()" class="member-name-link">getApplicationName</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The name of the application running on the core.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIobufAddress()" class="member-name-link">getIobufAddress</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The address of the IOBUF buffer in SDRAM.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLinkRegister()" class="member-name-link">getLinkRegister</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The current link register value (LR).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="MailboxCommand.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">MailboxCommand</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMonitorMailboxCommand()" class="member-name-link">getMonitorMailboxCommand</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The command currently in the mailbox being sent from the
+         application to the monitor processor.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMonitorMailboxDataAddress()" class="member-name-link">getMonitorMailboxDataAddress</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The address of the data in SDRAM of the monitor mailbox.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getP()" class="member-name-link">getP</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The processor coordinate of the core on its chip.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPhysicalCPUID()" class="member-name-link">getPhysicalCPUID</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The physical ID of this processor.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProcessorStateRegister()" class="member-name-link">getProcessorStateRegister</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The value in the processor state register (PSR).</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegisters()" class="member-name-link">getRegisters</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The current register values (r0&hellip;r7).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="RunTimeError.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">RunTimeError</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRunTimeError()" class="member-name-link">getRunTimeError</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The reason for a run time error.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>short</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSoftwareErrorCount()" class="member-name-link">getSoftwareErrorCount</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The number of software errors counted.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSoftwareSourceFilenameAddress()" class="member-name-link">getSoftwareSourceFilenameAddress</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The address of the filename of the software source.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSoftwareSourceLineNumber()" class="member-name-link">getSoftwareSourceLineNumber</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The line number of the software source.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSoftwareVersion()" class="member-name-link">getSoftwareVersion</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The software version.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStackPointer()" class="member-name-link">getStackPointer</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The current stack pointer value (SP).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CPUState.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">CPUState</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getState()" class="member-name-link">getState</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The current state of the core.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStatusDescription()" class="member-name-link">getStatusDescription</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns A description of the state.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTime()" class="member-name-link">getTime</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The time at which the application started, in seconds since
+         00:00:00 GMT on 1 January 1970.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUser()" class="member-name-link">getUser</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The current user values
+         (user<sub>0</sub>&hellip;user<sub>3</sub>).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUser(int)" class="member-name-link">getUser</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the current user value.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getX()" class="member-name-link">getX</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The X coordinate of the chip.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getY()" class="member-name-link">getY</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The Y coordinate of the chip.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns A string representation of this CPU info.</div>
+</div>
 </div>
 </div>
 </div>
@@ -234,6 +292,7 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <h3>CPUInfo</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CPUInfo</span><wbr><span class="parameters">(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;location,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</span></div>
+<div class="block">Constructs a holder of information about the state of a CPU.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>location</code> - Which core was queried for the information.</dd>
@@ -254,11 +313,13 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getX()">
 <h3>getX</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getX</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../machine/HasChipLocation.html#getX()">HasChipLocation</a></code></span></div>
+<div class="block">Returns The X coordinate of the chip.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../machine/HasChipLocation.html#getX()">getX</a></code>&nbsp;in interface&nbsp;<code><a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></dd>
 <dt>Returns:</dt>
-<dd>The X coordinate of the chip.</dd>
+<dd>The X coordinate of the chip</dd>
 </dl>
 </section>
 </li>
@@ -266,11 +327,13 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getY()">
 <h3>getY</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getY</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../machine/HasChipLocation.html#getY()">HasChipLocation</a></code></span></div>
+<div class="block">Returns The Y coordinate of the chip.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../machine/HasChipLocation.html#getY()">getY</a></code>&nbsp;in interface&nbsp;<code><a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></dd>
 <dt>Returns:</dt>
-<dd>The Y coordinate of the chip.</dd>
+<dd>The Y coordinate of the chip</dd>
 </dl>
 </section>
 </li>
@@ -278,11 +341,13 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getP()">
 <h3>getP</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getP</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../machine/HasCoreLocation.html#getP()">HasCoreLocation</a></code></span></div>
+<div class="block">Returns The processor coordinate of the core on its chip.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../machine/HasCoreLocation.html#getP()">getP</a></code>&nbsp;in interface&nbsp;<code><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></dd>
 <dt>Returns:</dt>
-<dd>The processor coordinate of the core on its chip.</dd>
+<dd>The processor coordinate of the core on its chip</dd>
 </dl>
 </section>
 </li>
@@ -290,9 +355,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getRegisters()">
 <h3>getRegisters</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int[]</span>&nbsp;<span class="element-name">getRegisters</span>()</div>
+<div class="block">Returns The current register values (r0&hellip;r7).</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The current register values (r0&hellip;r7).</dd>
+<dd>The current register values (r0&hellip;r7)</dd>
 </dl>
 </section>
 </li>
@@ -300,9 +366,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getProcessorStateRegister()">
 <h3>getProcessorStateRegister</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getProcessorStateRegister</span>()</div>
+<div class="block">Returns The value in the processor state register (PSR).</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The value in the processor state register (PSR).</dd>
+<dd>The value in the processor state register (PSR)</dd>
 </dl>
 </section>
 </li>
@@ -310,9 +377,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getStackPointer()">
 <h3>getStackPointer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getStackPointer</span>()</div>
+<div class="block">Returns The current stack pointer value (SP).</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The current stack pointer value (SP).</dd>
+<dd>The current stack pointer value (SP)</dd>
 </dl>
 </section>
 </li>
@@ -320,9 +388,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getLinkRegister()">
 <h3>getLinkRegister</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getLinkRegister</span>()</div>
+<div class="block">Returns The current link register value (LR).</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The current link register value (LR).</dd>
+<dd>The current link register value (LR)</dd>
 </dl>
 </section>
 </li>
@@ -330,9 +399,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getRunTimeError()">
 <h3>getRunTimeError</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="RunTimeError.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">RunTimeError</a></span>&nbsp;<span class="element-name">getRunTimeError</span>()</div>
+<div class="block">Returns The reason for a run time error.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The reason for a run time error.</dd>
+<dd>The reason for a run time error</dd>
 </dl>
 </section>
 </li>
@@ -340,9 +410,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getPhysicalCPUID()">
 <h3>getPhysicalCPUID</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="element-name">getPhysicalCPUID</span>()</div>
+<div class="block">Returns The physical ID of this processor.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The physical ID of this processor.</dd>
+<dd>The physical ID of this processor</dd>
 </dl>
 </section>
 </li>
@@ -350,9 +421,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getState()">
 <h3>getState</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CPUState.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">CPUState</a></span>&nbsp;<span class="element-name">getState</span>()</div>
+<div class="block">Returns The current state of the core.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The current state of the core.</dd>
+<dd>The current state of the core</dd>
 </dl>
 </section>
 </li>
@@ -360,9 +432,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getApplicationID()">
 <h3>getApplicationID</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getApplicationID</span>()</div>
+<div class="block">Returns The ID of the application running on the core.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The ID of the application running on the core.</dd>
+<dd>The ID of the application running on the core</dd>
 </dl>
 </section>
 </li>
@@ -370,9 +443,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getApplicationMailboxDataAddress()">
 <h3>getApplicationMailboxDataAddress</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getApplicationMailboxDataAddress</span>()</div>
+<div class="block">Returns The address of the data in SDRAM for the application mailbox.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The address of the data in SDRAM for the application mailbox.</dd>
+<dd>The address of the data in SDRAM for the application mailbox</dd>
 </dl>
 </section>
 </li>
@@ -380,9 +454,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getMonitorMailboxDataAddress()">
 <h3>getMonitorMailboxDataAddress</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getMonitorMailboxDataAddress</span>()</div>
+<div class="block">Returns The address of the data in SDRAM of the monitor mailbox.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The address of the data in SDRAM of the monitor mailbox.</dd>
+<dd>The address of the data in SDRAM of the monitor mailbox</dd>
 </dl>
 </section>
 </li>
@@ -390,10 +465,12 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getApplicationMailboxCommand()">
 <h3>getApplicationMailboxCommand</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="MailboxCommand.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">MailboxCommand</a></span>&nbsp;<span class="element-name">getApplicationMailboxCommand</span>()</div>
+<div class="block">Returns The command currently in the mailbox being sent from the monitor
+         processor to the application.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The command currently in the mailbox being sent from the monitor
-         processor to the application.</dd>
+         processor to the application</dd>
 </dl>
 </section>
 </li>
@@ -401,10 +478,12 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getMonitorMailboxCommand()">
 <h3>getMonitorMailboxCommand</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="MailboxCommand.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">MailboxCommand</a></span>&nbsp;<span class="element-name">getMonitorMailboxCommand</span>()</div>
+<div class="block">Returns The command currently in the mailbox being sent from the
+         application to the monitor processor.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The command currently in the mailbox being sent from the
-         application to the monitor processor.</dd>
+         application to the monitor processor</dd>
 </dl>
 </section>
 </li>
@@ -412,9 +491,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getSoftwareErrorCount()">
 <h3>getSoftwareErrorCount</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">short</span>&nbsp;<span class="element-name">getSoftwareErrorCount</span>()</div>
+<div class="block">Returns The number of software errors counted.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The number of software errors counted.</dd>
+<dd>The number of software errors counted</dd>
 </dl>
 </section>
 </li>
@@ -422,9 +502,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getSoftwareSourceFilenameAddress()">
 <h3>getSoftwareSourceFilenameAddress</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getSoftwareSourceFilenameAddress</span>()</div>
+<div class="block">Returns The address of the filename of the software source.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The address of the filename of the software source.</dd>
+<dd>The address of the filename of the software source</dd>
 </dl>
 </section>
 </li>
@@ -432,9 +513,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getSoftwareSourceLineNumber()">
 <h3>getSoftwareSourceLineNumber</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getSoftwareSourceLineNumber</span>()</div>
+<div class="block">Returns The line number of the software source.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The line number of the software source.</dd>
+<dd>The line number of the software source</dd>
 </dl>
 </section>
 </li>
@@ -442,10 +524,12 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getTime()">
 <h3>getTime</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getTime</span>()</div>
+<div class="block">Returns The time at which the application started, in seconds since
+         00:00:00 GMT on 1 January 1970.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The time at which the application started, in seconds since
-         00:00:00 GMT on 1 January 1970.</dd>
+         00:00:00 GMT on 1 January 1970</dd>
 </dl>
 </section>
 </li>
@@ -453,9 +537,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getApplicationName()">
 <h3>getApplicationName</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getApplicationName</span>()</div>
+<div class="block">Returns The name of the application running on the core.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The name of the application running on the core.</dd>
+<dd>The name of the application running on the core</dd>
 </dl>
 </section>
 </li>
@@ -463,9 +548,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getIobufAddress()">
 <h3>getIobufAddress</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getIobufAddress</span>()</div>
+<div class="block">Returns The address of the IOBUF buffer in SDRAM.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The address of the IOBUF buffer in SDRAM.</dd>
+<dd>The address of the IOBUF buffer in SDRAM</dd>
 </dl>
 </section>
 </li>
@@ -473,9 +559,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getSoftwareVersion()">
 <h3>getSoftwareVersion</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getSoftwareVersion</span>()</div>
+<div class="block">Returns The software version.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The software version.</dd>
+<dd>The software version</dd>
 </dl>
 </section>
 </li>
@@ -483,10 +570,12 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getUser()">
 <h3>getUser</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int[]</span>&nbsp;<span class="element-name">getUser</span>()</div>
+<div class="block">Returns The current user values
+         (user<sub>0</sub>&hellip;user<sub>3</sub>).</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The current user values
-         (user<sub>0</sub>&hellip;user<sub>3</sub>).</dd>
+         (user<sub>0</sub>&hellip;user<sub>3</sub>)</dd>
 </dl>
 </section>
 </li>
@@ -494,6 +583,7 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getUser(int)">
 <h3>getUser</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getUser</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="block">Get the current user value.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>index</code> - Which index in the user array to read. Must be in range 0 to 3
@@ -507,11 +597,12 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="toString()">
 <h3>toString</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
+<div class="block">Returns A string representation of this CPU info.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
 <dt>Returns:</dt>
-<dd>A string representation of this CPU info.</dd>
+<dd>A string representation of this CPU info</dd>
 </dl>
 </section>
 </li>
@@ -519,9 +610,10 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <section class="detail" id="getStatusDescription()">
 <h3>getStatusDescription</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getStatusDescription</span>()</div>
+<div class="block">Returns A description of the state.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>A description of the state.</dd>
+<dd>A description of the state</dd>
 </dl>
 </section>
 </li>

@@ -136,10 +136,14 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIptag()" class="member-name-link">getIptag</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the iptag.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Monitor.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Monitor</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMonitors()" class="member-name-link">getMonitors</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the monitors (read-only).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNextTransactionId()" class="member-name-link">getNextTransactionId</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -147,13 +151,19 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getP()" class="member-name-link">getP</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The processor coordinate of the core on its chip.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getX()" class="member-name-link">getX</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The X coordinate of the chip.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getY()" class="member-name-link">getY</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The Y coordinate of the chip.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)" class="member-name-link">updateTransactionIdFromMachine</a><wbr>(<a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -201,11 +211,13 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <section class="detail" id="getX()">
 <h3>getX</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getX</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../machine/HasChipLocation.html#getX()">HasChipLocation</a></code></span></div>
+<div class="block">Returns The X coordinate of the chip.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../../machine/HasChipLocation.html#getX()">getX</a></code>&nbsp;in interface&nbsp;<code><a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></dd>
 <dt>Returns:</dt>
-<dd>The X coordinate of the chip.</dd>
+<dd>The X coordinate of the chip</dd>
 </dl>
 </section>
 </li>
@@ -213,11 +225,13 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <section class="detail" id="getY()">
 <h3>getY</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getY</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../machine/HasChipLocation.html#getY()">HasChipLocation</a></code></span></div>
+<div class="block">Returns The Y coordinate of the chip.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../../machine/HasChipLocation.html#getY()">getY</a></code>&nbsp;in interface&nbsp;<code><a href="../../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code></dd>
 <dt>Returns:</dt>
-<dd>The Y coordinate of the chip.</dd>
+<dd>The Y coordinate of the chip</dd>
 </dl>
 </section>
 </li>
@@ -225,11 +239,13 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <section class="detail" id="getP()">
 <h3>getP</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getP</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../machine/HasCoreLocation.html#getP()">HasCoreLocation</a></code></span></div>
+<div class="block">Returns The processor coordinate of the core on its chip.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../../machine/HasCoreLocation.html#getP()">getP</a></code>&nbsp;in interface&nbsp;<code><a href="../../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></dd>
 <dt>Returns:</dt>
-<dd>The processor coordinate of the core on its chip.</dd>
+<dd>The processor coordinate of the core on its chip</dd>
 </dl>
 </section>
 </li>
@@ -266,6 +282,7 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <section class="detail" id="getIptag()">
 <h3>getIptag</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></span>&nbsp;<span class="element-name">getIptag</span>()</div>
+<div class="block">Returns the iptag.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the iptag</dd>
@@ -276,6 +293,7 @@ implements <a href="../../../machine/HasCoreLocation.html" title="interface in u
 <section class="detail" id="getMonitors()">
 <h3>getMonitors</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Monitor.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Monitor</a>&gt;</span>&nbsp;<span class="element-name">getMonitors</span>()</div>
+<div class="block">Returns the monitors (read-only).</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the monitors (read-only)</dd>

@@ -439,42 +439,46 @@
 <a class="jxr_linenumber" name="L431" href="#L431">431</a> 	}
 <a class="jxr_linenumber" name="L432" href="#L432">432</a> 
 <a class="jxr_linenumber" name="L433" href="#L433">433</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">	 * @return A converter that handles the initial extraction of collabratories</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">	 *         and organisations from the info we have available when a user</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">	 *         logs in explicitly in the web UI.</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">	 * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 	@Bean(<span class="jxr_string">"hbp.collab-and-org.user-converter.shim"</span>)
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 	GrantedAuthoritiesMapper userAuthoritiesMapper() {
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 		<strong class="jxr_keyword">var</strong> baseMapper = <strong class="jxr_keyword">new</strong> SimpleAuthorityMapper();
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 		<strong class="jxr_keyword">return</strong> authorities -&gt; {
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 			<strong class="jxr_keyword">var</strong> mappedAuthorities = baseMapper.mapAuthorities(authorities);
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 			authorities.forEach(authority -&gt; {
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 				<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_comment">				 * Check for OidcUserAuthority because Spring Security 5.2</em>
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_comment">				 * returns each scope as a GrantedAuthority, which we don't care</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_comment">				 * about.</em>
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_comment">				 */</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 				<strong class="jxr_keyword">if</strong> (authority instanceof OidcUserAuthority) {
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 					localAuthProvider.mapAuthorities(
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 							(OidcUserAuthority) authority, mappedAuthorities);
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 				}
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 				mappedAuthorities.add(authority);
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 			});
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 			<strong class="jxr_keyword">return</strong> mappedAuthorities;
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 		};
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	}
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> 	@Bean
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> 	LogoutHandler logoutHandler() {
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 		<strong class="jxr_keyword">var</strong> handler = <strong class="jxr_keyword">new</strong> SecurityContextLogoutHandler();
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 		handler.setClearAuthentication(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 		handler.setInvalidateHttpSession(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 		<strong class="jxr_keyword">return</strong> handler;
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 	}
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> }
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">	 * A converter that handles the initial extraction of collabratories</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">	 *     and organisations.</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">	 * 	Acts on the info we have available when a user logs in</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">	 * 	explicitly in the web UI}</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">	 * @return A converter</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">	 * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 	@Bean(<span class="jxr_string">"hbp.collab-and-org.user-converter.shim"</span>)
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> 	GrantedAuthoritiesMapper userAuthoritiesMapper() {
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 		<strong class="jxr_keyword">var</strong> baseMapper = <strong class="jxr_keyword">new</strong> SimpleAuthorityMapper();
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> 		<strong class="jxr_keyword">return</strong> authorities -&gt; {
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 			<strong class="jxr_keyword">var</strong> mappedAuthorities = baseMapper.mapAuthorities(authorities);
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 			authorities.forEach(authority -&gt; {
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 				<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_comment">				 * Check for OidcUserAuthority because Spring Security 5.2</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_comment">				 * returns each scope as a GrantedAuthority, which we don't care</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_comment">				 * about.</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_comment">				 */</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 				<strong class="jxr_keyword">if</strong> (authority instanceof OidcUserAuthority) {
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 					localAuthProvider.mapAuthorities(
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 							(OidcUserAuthority) authority, mappedAuthorities);
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 				}
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 				mappedAuthorities.add(authority);
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 			});
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 			<strong class="jxr_keyword">return</strong> mappedAuthorities;
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 		};
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 	}
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 	@Bean
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 	LogoutHandler logoutHandler() {
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 		<strong class="jxr_keyword">var</strong> handler = <strong class="jxr_keyword">new</strong> SecurityContextLogoutHandler();
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 		handler.setClearAuthentication(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 		handler.setInvalidateHttpSession(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 		<strong class="jxr_keyword">return</strong> handler;
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> 	}
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

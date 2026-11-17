@@ -121,10 +121,14 @@ implements <a href="NotificationMessage.html" title="interface in uk.ac.manchest
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected </code></div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.nio.ByteBuffer)" class="member-name-link">AbstractNotificationMessage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Create an instance based on a buffer to read.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.notification.NotificationMessageCode)" class="member-name-link">AbstractNotificationMessage</a><wbr>(<a href="NotificationMessageCode.html" title="enum class in uk.ac.manchester.spinnaker.messages.notification">NotificationMessageCode</a>&nbsp;command)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Create an instance based on a command.</div>
+</div>
 </div>
 </section>
 </li>
@@ -171,6 +175,7 @@ implements <a href="NotificationMessage.html" title="interface in uk.ac.manchest
 <section class="detail" id="&lt;init&gt;(java.nio.ByteBuffer)">
 <h3>AbstractNotificationMessage</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">AbstractNotificationMessage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</span></div>
+<div class="block">Create an instance based on a buffer to read.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>buffer</code> - Where to read the command code from. The command code will be
@@ -183,6 +188,7 @@ implements <a href="NotificationMessage.html" title="interface in uk.ac.manchest
 <section class="detail" id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.notification.NotificationMessageCode)">
 <h3>AbstractNotificationMessage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AbstractNotificationMessage</span><wbr><span class="parameters">(<a href="NotificationMessageCode.html" title="enum class in uk.ac.manchester.spinnaker.messages.notification">NotificationMessageCode</a>&nbsp;command)</span></div>
+<div class="block">Create an instance based on a command.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>command</code> - The command code of the message.</dd>

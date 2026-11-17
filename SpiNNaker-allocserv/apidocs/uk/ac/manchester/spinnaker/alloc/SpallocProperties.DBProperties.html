@@ -120,7 +120,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;lockNoteThreshold,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;lockWarnThreshold,
  boolean&nbsp;enableExpensiveTransactionDebugging)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the additional database configuration.</div>
+</div>
 </div>
 </section>
 </li>
@@ -142,34 +144,58 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLockFailedDelay()" class="member-name-link">getLockFailedDelay</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Delay after transaction failure before retrying.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLockNoteThreshold()" class="member-name-link">getLockNoteThreshold</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Time delay before we issue a warning on transaction end.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLockTries()" class="member-name-link">getLockTries</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Number of times to try to take the lock in a transaction.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLockWarnThreshold()" class="member-name-link">getLockWarnThreshold</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Time delay before we issue a warning during the execution of
+         a transaction.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @jakarta.validation.constraints.Positive double</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPerformanceThreshold()" class="member-name-link">getPerformanceThreshold</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Performance stats are not reported for queries with a max
+         less than this, in microseconds.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTimeout()" class="member-name-link">getTimeout</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns How long to wait to get a database lock.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAutoExplain()" class="member-name-link">isAutoExplain</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether, if the performance log is enabled.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDebugFailures()" class="member-name-link">isDebugFailures</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether to send details of SQL-related exceptions to users.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEnableExpensiveTransactionDebugging()" class="member-name-link">isEnableExpensiveTransactionDebugging</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether to determine the caller when doing transaction
+         logging.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPerformanceLog()" class="member-name-link">isPerformanceLog</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether to collect and write query performance metrics
+     to the log on termination.</div>
+</div>
 </div>
 </div>
 </div>
@@ -213,6 +239,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;lockWarnThreshold,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>("false")
  boolean&nbsp;enableExpensiveTransactionDebugging)</span></div>
+<div class="block">Constructs the additional database configuration.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>timeout</code> - How long to wait to get a database lock.</dd>
@@ -252,9 +279,10 @@ loadScripts(document, 'script');</script>
 <h3>getTimeout</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getTimeout</span>()</div>
+<div class="block">Returns How long to wait to get a database lock.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>How long to wait to get a database lock.</dd>
+<dd>How long to wait to get a database lock</dd>
 </dl>
 </section>
 </li>
@@ -262,9 +290,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isDebugFailures()">
 <h3>isDebugFailures</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isDebugFailures</span>()</div>
+<div class="block">Returns Whether to send details of SQL-related exceptions to users.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether to send details of SQL-related exceptions to users.</dd>
+<dd>Whether to send details of SQL-related exceptions to users</dd>
 </dl>
 </section>
 </li>
@@ -294,12 +323,16 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isPerformanceLog()">
 <h3>isPerformanceLog</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isPerformanceLog</span>()</div>
+<div class="block">Whether to collect and write query performance metrics
+     to the log on termination.
+
+ Note that this is checked both when recording performance
+ (on each database query) and when the log writes happen
+ (on termination).</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Whether to collect and write query performance metrics to the
-         log on termination. Note that this is checked both when
-         recording performance (on each database query) and when the
-         log writes happen (on termination).</dd>
+         log on termination.</dd>
 </dl>
 </section>
 </li>
@@ -307,11 +340,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isAutoExplain()">
 <h3>isAutoExplain</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAutoExplain</span>()</div>
+<div class="block">Whether, if the performance log is enabled.
+
+ To also write the EXPLAIN of the code to the log on termination
+ (for slow queries only)</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether, if the performance log is enabled, to also write the
-         EXPLAIN of the code to the log on termination (for slow
-         queries only).</dd>
+<dd>Whether, if the performance log is enabled</dd>
 </dl>
 </section>
 </li>
@@ -320,10 +355,12 @@ loadScripts(document, 'script');</script>
 <h3>getPerformanceThreshold</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public final</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive double</span>&nbsp;<span class="element-name">getPerformanceThreshold</span>()</div>
+<div class="block">Returns Performance stats are not reported for queries with a max
+         less than this, in microseconds.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Performance stats are not reported for queries with a max
-         less than this, in microseconds.</dd>
+         less than this, in microseconds</dd>
 </dl>
 </section>
 </li>
@@ -332,9 +369,10 @@ loadScripts(document, 'script');</script>
 <h3>getLockTries</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">getLockTries</span>()</div>
+<div class="block">Returns Number of times to try to take the lock in a transaction.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Number of times to try to take the lock in a transaction.</dd>
+<dd>Number of times to try to take the lock in a transaction</dd>
 </dl>
 </section>
 </li>
@@ -343,9 +381,10 @@ loadScripts(document, 'script');</script>
 <h3>getLockFailedDelay</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getLockFailedDelay</span>()</div>
+<div class="block">Returns Delay after transaction failure before retrying.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Delay after transaction failure before retrying.</dd>
+<dd>Delay after transaction failure before retrying</dd>
 </dl>
 </section>
 </li>
@@ -354,9 +393,10 @@ loadScripts(document, 'script');</script>
 <h3>getLockNoteThreshold</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getLockNoteThreshold</span>()</div>
+<div class="block">Returns Time delay before we issue a warning on transaction end.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Time delay before we issue a warning on transaction end.</dd>
+<dd>Time delay before we issue a warning on transaction end</dd>
 </dl>
 </section>
 </li>
@@ -365,10 +405,12 @@ loadScripts(document, 'script');</script>
 <h3>getLockWarnThreshold</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getLockWarnThreshold</span>()</div>
+<div class="block">Returns Time delay before we issue a warning during the execution of
+         a transaction.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Time delay before we issue a warning during the execution of
-         a transaction.</dd>
+         a transaction</dd>
 </dl>
 </section>
 </li>
@@ -376,10 +418,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isEnableExpensiveTransactionDebugging()">
 <h3>isEnableExpensiveTransactionDebugging</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isEnableExpensiveTransactionDebugging</span>()</div>
+<div class="block">Returns Whether to determine the caller when doing transaction
+         logging.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Whether to determine the caller when doing transaction
-         logging.</dd>
+         logging</dd>
 </dl>
 </section>
 </li>

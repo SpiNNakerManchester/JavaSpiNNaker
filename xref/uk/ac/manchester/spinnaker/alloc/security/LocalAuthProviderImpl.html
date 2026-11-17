@@ -1275,25 +1275,27 @@
 <a class="jxr_linenumber" name="L1267" href="#L1267">1267</a> 	}
 <a class="jxr_linenumber" name="L1268" href="#L1268">1268</a> 
 <a class="jxr_linenumber" name="L1269" href="#L1269">1269</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L1271" href="#L1271">1271</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L1273" href="#L1273">1273</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1274" href="#L1274">1274</a> 	@Override
-<a class="jxr_linenumber" name="L1275" href="#L1275">1275</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L1276" href="#L1276">1276</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L1277" href="#L1277">1277</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a> 	@Deprecated
-<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestAPI() {
-<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a> 			@Override
-<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlock() {
-<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> 				LocalAuthProviderImpl.<strong class="jxr_keyword">this</strong>.unlock();
-<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a> 			}
-<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a> 		};
-<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a> 	}
-<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a> }
+<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a> <em class="jxr_javadoccomment">	 * Testing method, other use not supported.</em>
+<a class="jxr_linenumber" name="L1271" href="#L1271">1271</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
+<a class="jxr_linenumber" name="L1273" href="#L1273">1273</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
+<a class="jxr_linenumber" name="L1274" href="#L1274">1274</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L1275" href="#L1275">1275</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1276" href="#L1276">1276</a> 	@Override
+<a class="jxr_linenumber" name="L1277" href="#L1277">1277</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a> 	@Deprecated
+<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestAPI() {
+<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> 			@Override
+<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlock() {
+<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a> 				LocalAuthProviderImpl.<strong class="jxr_keyword">this</strong>.unlock();
+<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a> 			}
+<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a> 		};
+<a class="jxr_linenumber" name="L1289" href="#L1289">1289</a> 	}
+<a class="jxr_linenumber" name="L1290" href="#L1290">1290</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

@@ -126,16 +126,26 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getLocalIPAddress()" class="member-name-link">getLocalIPAddress</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">The local (host) IP address of the socket.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getLocalPort()" class="member-name-link">getLocalPort</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns the local (host) port of the socket.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRemoteIPAddress()" class="member-name-link">getRemoteIPAddress</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">The remote (board) IP address of the socket
+
+ Expected to be an IPv4 address when talking to SpiNNaker.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRemotePort()" class="member-name-link">getRemotePort</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns the remote (board) port of the socket.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isClosed()" class="member-name-link">isClosed</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -220,10 +230,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <section class="detail" id="getLocalIPAddress()">
 <h3>getLocalIPAddress</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></span>&nbsp;<span class="element-name">getLocalIPAddress</span>()</div>
+<div class="block">The local (host) IP address of the socket.
+
+ Expected to be an IPv4 address when talking to SpiNNaker</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the local (host) IP address of the socket. Expected to be an IPv4
-         address when talking to SpiNNaker.</dd>
+<dd>the local (host) IP address of the socket.</dd>
 </dl>
 </section>
 </li>
@@ -231,9 +243,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <section class="detail" id="getLocalPort()">
 <h3>getLocalPort</h3>
 <div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">getLocalPort</span>()</div>
+<div class="block">Returns the local (host) port of the socket.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the local (host) port of the socket.</dd>
+<dd>the local (host) port of the socket</dd>
 </dl>
 </section>
 </li>
@@ -241,10 +254,12 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <section class="detail" id="getRemoteIPAddress()">
 <h3>getRemoteIPAddress</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></span>&nbsp;<span class="element-name">getRemoteIPAddress</span>()</div>
+<div class="block">The remote (board) IP address of the socket
+
+ Expected to be an IPv4 address when talking to SpiNNaker.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the remote (board) IP address of the socket. Expected to be an
-         IPv4 address when talking to SpiNNaker.</dd>
+<dd>the remote (board) IP address of the socket.</dd>
 </dl>
 </section>
 </li>
@@ -252,9 +267,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <section class="detail" id="getRemotePort()">
 <h3>getRemotePort</h3>
 <div class="member-signature"><span class="return-type">int</span>&nbsp;<span class="element-name">getRemotePort</span>()</div>
+<div class="block">Returns the remote (board) port of the socket.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the remote (board) port of the socket.</dd>
+<dd>the remote (board) port of the socket</dd>
 </dl>
 </section>
 </li>

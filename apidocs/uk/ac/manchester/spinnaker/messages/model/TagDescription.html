@@ -167,7 +167,9 @@ loadScripts(document, 'script');</script>
  <a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;src,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;host,
  int&nbsp;tag)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a description of the tag.</div>
+</div>
 </div>
 </section>
 </li>
@@ -189,19 +191,30 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isARP()" class="member-name-link">isARP</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns True if the tag is in the ARP state (where the MAC address is
+         being looked up; this is a transient state so unlikely).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isInUse()" class="member-name-link">isInUse</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns True if the tag is marked as being in use.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReverse()" class="member-name-link">isReverse</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns True if the tag is a reverse tag.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStrippingSDP()" class="member-name-link">isStrippingSDP</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns True if the tag is to strip the SDP header.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isTemporary()" class="member-name-link">isTemporary</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns True if the tag is temporary.</div>
+</div>
 </div>
 </div>
 </div>
@@ -299,6 +312,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;host,
  int&nbsp;tag)</span>
                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/UnknownHostException.html" title="class or interface in java.net" class="external-link">UnknownHostException</a></span></div>
+<div class="block">Constructs a description of the tag.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>buffer</code> - The buffer to parse.</dd>
@@ -323,9 +337,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isInUse()">
 <h3>isInUse</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isInUse</span>()</div>
+<div class="block">Returns True if the tag is marked as being in use.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>True if the tag is marked as being in use.</dd>
+<dd>True if the tag is marked as being in use</dd>
 </dl>
 </section>
 </li>
@@ -333,9 +348,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isTemporary()">
 <h3>isTemporary</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isTemporary</span>()</div>
+<div class="block">Returns True if the tag is temporary.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>True if the tag is temporary.</dd>
+<dd>True if the tag is temporary</dd>
 </dl>
 </section>
 </li>
@@ -343,10 +359,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isARP()">
 <h3>isARP</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isARP</span>()</div>
+<div class="block">Returns True if the tag is in the ARP state (where the MAC address is
+         being looked up; this is a transient state so unlikely).</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>True if the tag is in the ARP state (where the MAC address is
-         being looked up; this is a transient state so unlikely).</dd>
+         being looked up; this is a transient state so unlikely)</dd>
 </dl>
 </section>
 </li>
@@ -354,9 +372,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isReverse()">
 <h3>isReverse</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReverse</span>()</div>
+<div class="block">Returns True if the tag is a reverse tag.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>True if the tag is a reverse tag.</dd>
+<dd>True if the tag is a reverse tag</dd>
 </dl>
 </section>
 </li>
@@ -364,9 +383,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isStrippingSDP()">
 <h3>isStrippingSDP</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isStrippingSDP</span>()</div>
+<div class="block">Returns True if the tag is to strip the SDP header.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>True if the tag is to strip the SDP header.</dd>
+<dd>True if the tag is to strip the SDP header</dd>
 </dl>
 </section>
 </li>

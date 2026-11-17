@@ -175,7 +175,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">DownloadRegion.</span><code><a href="../../front_end/download/request/DownloadRegion.html#getAddress()" class="member-name-link">getAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The address of the region.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">Vertex.</span><code><a href="../../front_end/download/request/Vertex.html#getBase()" class="member-name-link">getBase</a>()</code></div>
 <div class="col-last odd-row-color">
@@ -245,16 +247,24 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SerialVector.</span><code><a href="../../messages/bmp/SerialVector.html#getBoardStatusLocation()" class="member-name-link">getBoardStatusLocation</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The board status block location.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SerialVector.</span><code><a href="../../messages/bmp/SerialVector.html#getCortexVector()" class="member-name-link">getCortexVector</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The location of the Cortex boot vector.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SerialVector.</span><code><a href="../../messages/bmp/SerialVector.html#getFlashBuffer()" class="member-name-link">getFlashBuffer</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The location of the flash buffer.</div>
+</div>
 <div class="col-first odd-row-color"><code>protected <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">EraseFlash.Response.</span><code><a href="../../messages/bmp/EraseFlash.Response.html#parse(java.nio.ByteBuffer)" class="member-name-link">parse</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns Where the buffer is located.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> with parameters of type <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -265,53 +275,73 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../../messages/bmp/BMPReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">BMPReadMemory</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to read a region of memory from a BMP.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/bmp/BMPWriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">BMPWriteMemory</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to write to memory on a BMP.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/bmp/EraseFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">EraseFlash</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to erase flash memory on a BMP.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/bmp/ReadFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">ReadFPGARegister</a><wbr>(<a href="../../messages/model/FPGA.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
  <a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request for the data from a FPGA's register.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/bmp/ReadSerialFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadSerialFlash</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to read a region of serial flash.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/bmp/ReadSerialFlashCRC.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadSerialFlashCRC</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to get the CRC of serial flash memory.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/bmp/UpdateFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">UpdateFlash</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to update flash memory on a BMP.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/bmp/WriteFlashBuffer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,boolean)" class="member-name-link">WriteFlashBuffer</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  boolean&nbsp;erase)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to write memory to flash.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/bmp/WriteFPGARegister.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">WriteFPGARegister</a><wbr>(<a href="../../messages/model/FPGA.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
  int&nbsp;value,
  <a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to write data to an FPGA register.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/bmp/WriteSerialFlash.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.board.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">WriteSerialFlash</a><wbr>(<a href="../board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a request to write to serial flash on a BMP.</div>
+</div>
 </div>
 </section>
 </li>
@@ -366,19 +396,29 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">FPGAMainRegisters.</span><code><a href="../../messages/model/FPGAMainRegisters.html#getAddress()" class="member-name-link">getAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The address of the register in the FPGA's address space.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getAllocatedTagTableAddress()" class="member-name-link">getAllocatedTagTableAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The address of the allocated tag table.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getAppDataTableAddress()" class="member-name-link">getAppDataTableAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The address of the application data table.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getBoardInfoAddress()" class="member-name-link">getBoardInfoAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns A pointer to the board information structure.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getCPUInformationBaseAddress()" class="member-name-link">getCPUInformationBaseAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The base address of the CPU information blocks.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">HeapElement.</span><code><a href="../../messages/model/HeapElement.html#getDataAddress()" class="member-name-link">getDataAddress</a>()</code></div>
 <div class="col-last even-row-color">
@@ -386,37 +426,59 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getNearestNeighbourMemoryAddress()" class="member-name-link">getNearestNeighbourMemoryAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The memory pointer for nearest neighbour global operations.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getP2PHopTableAddress()" class="member-name-link">getP2PHopTableAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The address of the peer-to-peer hop tables.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getRouterTableCopyAddress()" class="member-name-link">getRouterTableCopyAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The address of the copy of the routing tables.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSDRAMBaseAddress()" class="member-name-link">getSDRAMBaseAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The base address of SDRAM.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSDRAMHeapAddress()" class="member-name-link">getSDRAMHeapAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The base address of the user SDRAM heap.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSharedMessageBufferAddress()" class="member-name-link">getSharedMessageBufferAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The address of the shared message buffers.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSharedMessageFirstFreeAddress()" class="member-name-link">getSharedMessageFirstFreeAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns Pointer to the first free shared message buffer.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSystemRAMBaseAddress()" class="member-name-link">getSystemRAMBaseAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The base address of System RAM.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSystemRAMHeapAddress()" class="member-name-link">getSystemRAMHeapAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The base address of the system SDRAM heap.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSystemSDRAMBaseAddress()" class="member-name-link">getSystemSDRAMBaseAddress</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The base address of System SDRAM.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ChipInfo.</span><code><a href="../../messages/model/ChipInfo.html#getSystemSDRAMHeapAddress()" class="member-name-link">getSystemSDRAMHeapAddress</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The base address of the system SDRAM heap.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../messages/model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a> with parameters of type <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -440,7 +502,9 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../../messages/model/HeapElement.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">HeapElement</a><wbr>(<a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;blockAddress,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;nextAddress,
  int&nbsp;free)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs an element of one of the heaps.</div>
+</div>
 </div>
 </section>
 </li>
@@ -454,7 +518,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SDRAMAlloc.Response.</span><code><a href="../../messages/scp/SDRAMAlloc.Response.html#parse(java.nio.ByteBuffer)" class="member-name-link">parse</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The base address allocated.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../../messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a> with parameters of type <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span></div>
 <div class="summary-table three-column-summary">
@@ -466,13 +532,17 @@ loadScripts(document, 'script');</script>
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;data,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to fill a region.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/FloodFillData.html#%3Cinit%3E(byte,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,byte%5B%5D)" class="member-name-link">FloodFillData</a><wbr>(byte&nbsp;nearestNeighbourID,
  int&nbsp;blockNumber,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  byte[]&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to flood fill some byte data.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/FloodFillData.html#%3Cinit%3E(byte,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,byte%5B%5D,int,int)" class="member-name-link">FloodFillData</a><wbr>(byte&nbsp;nearestNeighbourID,
  int&nbsp;blockNumber,
@@ -480,42 +550,56 @@ loadScripts(document, 'script');</script>
  byte[]&nbsp;data,
  int&nbsp;offset,
  int&nbsp;length)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to flood fill with some of the byte data.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/FloodFillData.html#%3Cinit%3E(byte,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">FloodFillData</a><wbr>(byte&nbsp;nearestNeighbourID,
  int&nbsp;blockNumber,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to flood fill some byte buffer data.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ReadLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadLink</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a read request on the scamp core of this chip.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/ReadLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadLink</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a read request on the core.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadMemory</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a read request using the scamp core on this chip.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/ReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadMemory</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a read request using this core.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/RouterInit.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID)" class="member-name-link">RouterInit</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  int&nbsp;numEntries,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;tableAddress,
  int&nbsp;baseIndex,
  <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to initialise the router.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/SDRAMDeAlloc.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)" class="member-name-link">SDRAMDeAlloc</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></div>
@@ -527,17 +611,23 @@ loadScripts(document, 'script');</script>
  <a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a Write Link request.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/WriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">WriteMemory</a><wbr>(<a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a write requested based on a Chip.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/WriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">WriteMemory</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a write requested based on a core.</div>
+</div>
 </div>
 </section>
 </li>
@@ -593,7 +683,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>final <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">BufferManagerStorage.Region.</span><code><a href="../../storage/BufferManagerStorage.Region.html#startAddress" class="member-name-link">startAddress</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">Where should the data be downloaded from?</div>
+<div class="block">Where should the data be downloaded from.</div>
 </div>
 </div>
 <div class="caption"><span>Methods in <a href="../../storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a> that return <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span></div>
@@ -637,7 +727,9 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><code><a href="../../storage/RegionInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.CoreLocation,java.nio.ByteBuffer,uk.ac.manchester.spinnaker.machine.MemoryLocation)" class="member-name-link">RegionInfo</a><wbr>(<a href="../CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;content,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;pointer)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates the Info combining the provided core content and address.</div>
+</div>
 </div>
 </section>
 </li>

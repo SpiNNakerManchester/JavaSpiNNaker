@@ -157,7 +157,10 @@ implements <a href="BMPTransceiverInterface.html" title="interface in uk.ac.manc
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBoundBMP()" class="member-name-link">getBoundBMP</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The currently bound BMP coordinates. Defaults to 0,0 if not set
+         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a>.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getResetStatus(uk.ac.manchester.spinnaker.machine.board.BMPCoords,uk.ac.manchester.spinnaker.machine.board.BMPBoard)" class="member-name-link">getResetStatus</a><wbr>(<a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>&nbsp;bmp,
  <a href="../machine/board/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPBoard</a>&nbsp;board)</code></div>
@@ -978,12 +981,15 @@ implements <a href="BMPTransceiverInterface.html" title="interface in uk.ac.manc
 <section class="detail" id="getBoundBMP()">
 <h3>getBoundBMP</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></span>&nbsp;<span class="element-name">getBoundBMP</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="BMPTransceiverInterface.html#getBoundBMP()">BMPTransceiverInterface</a></code></span></div>
+<div class="block">Returns The currently bound BMP coordinates. Defaults to 0,0 if not set
+         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a>.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BMPTransceiverInterface.html#getBoundBMP()">getBoundBMP</a></code>&nbsp;in interface&nbsp;<code><a href="BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></code></dd>
 <dt>Returns:</dt>
 <dd>The currently bound BMP coordinates. Defaults to 0,0 if not set
-         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a>.</dd>
+         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a></dd>
 </dl>
 </section>
 </li>

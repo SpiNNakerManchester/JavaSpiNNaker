@@ -354,19 +354,27 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/model/CPUInfo.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.nio.ByteBuffer)" class="member-name-link">CPUInfo</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;location,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a holder of information about the state of a CPU.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/model/IOBuffer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,byte%5B%5D)" class="member-name-link">IOBuffer</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  byte[]&nbsp;contents)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs the contents of the IOBUF based on an array of bytes.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/model/IOBuffer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.lang.Iterable)" class="member-name-link">IOBuffer</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&gt;&nbsp;contents)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the contents of the IOBUF based on various buffers.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/model/IOBuffer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.nio.ByteBuffer)" class="member-name-link">IOBuffer</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;contents)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs the contents of the IOBUF based on a buffer.</div>
+</div>
 </div>
 </section>
 </li>
@@ -380,46 +388,69 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ClearIOBUF.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">ClearIOBUF</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to clear the IOBUF on a core.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/ClearReinjectionQueue.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">ClearReinjectionQueue</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to clear reinjection queue.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/GetReinjectionStatus.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">GetReinjectionStatus</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to get the dropped packet reinjection status.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/GetVersion.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">GetVersion</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">A request to read the software version.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/LoadApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">LoadApplicationRoutes</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a load request for this core.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/LoadSystemRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">LoadSystemRoutes</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to load system routes.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ReadLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadLink</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  int&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a read request on the core.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/ReadMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)" class="member-name-link">ReadMemory</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
  int&nbsp;size)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a read request using this core.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/ResetReinjectionCounters.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">ResetReinjectionCounters</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a request to reset the statistics counters.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/ReverseIPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)" class="member-name-link">ReverseIPTagSet</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
  @uk.ac.manchester.spinnaker.utils.validation.UDPPort int&nbsp;port,
  @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
  int&nbsp;sdpPort)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to set a Reverse IP Tag based on the supplied data.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/SaveApplicationRoutes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">SaveApplicationRoutes</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to save the
+     currently-installed application multicast router.</div>
+</div>
 <div class="col-first odd-row-color"><code>protected </code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/SCPRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.scp.SCPCommand)" class="member-name-link">SCPRequest</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../../messages/scp/SCPCommand.html" title="enum class in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command)</code></div>
@@ -463,45 +494,61 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/SetLED.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,java.util.Map)" class="member-name-link">SetLED</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="../../messages/model/LEDAction.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&gt;&nbsp;ledStates)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to change this cores LED state as specified.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/SetReinjectionPacketTypes.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,boolean,boolean,boolean,boolean)" class="member-name-link">SetReinjectionPacketTypes</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  boolean&nbsp;multicast,
  boolean&nbsp;pointToPoint,
  boolean&nbsp;fixedRoute,
  boolean&nbsp;nearestNeighbour)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to set the dropped packet reinjected packet types.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/SetRouterEmergencyTimeout.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int)" class="member-name-link">SetRouterEmergencyTimeout</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  int&nbsp;timeoutMantissa,
  int&nbsp;timeoutExponent)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a request to timeout the router.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/SetRouterTimeout.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int)" class="member-name-link">SetRouterTimeout</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  int&nbsp;timeoutMantissa,
  int&nbsp;timeoutExponent)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to set the timeeout.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/UpdateProvenanceAndExit.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)" class="member-name-link">UpdateProvenanceAndExit</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to update the runtime info on this core.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/UpdateRuntime.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,boolean,int,int)" class="member-name-link">UpdateRuntime</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  int&nbsp;runTime,
  boolean&nbsp;infiniteRun,
  int&nbsp;currentTime,
  int&nbsp;numSyncSteps)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to update the runtime info.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../messages/scp/WriteLink.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">WriteLink</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../Direction.html" title="enum class in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a Write Link request.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../messages/scp/WriteMemory.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)" class="member-name-link">WriteMemory</a><wbr>(<a href="../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
  <a href="../MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;data)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a write requested based on a core.</div>
+</div>
 </div>
 </section>
 </li>

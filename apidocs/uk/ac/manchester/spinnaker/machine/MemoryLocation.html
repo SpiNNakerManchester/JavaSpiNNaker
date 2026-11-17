@@ -139,9 +139,13 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">MemoryLocation</a><wbr>(int&nbsp;address)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a memory location.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(long)" class="member-name-link">MemoryLocation</a><wbr>(long&nbsp;address)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a memory location.</div>
+</div>
 </div>
 </section>
 </li>
@@ -182,10 +186,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAligned()" class="member-name-link">isAligned</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether this is a word-aligned location.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNull()" class="member-name-link">isNull</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether this location is really <a href="#NULL">null</a>.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lessThan(uk.ac.manchester.spinnaker.machine.MemoryLocation)" class="member-name-link">lessThan</a><wbr>(<a href="MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;other)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -194,7 +202,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subWordAlignment()" class="member-name-link">subWordAlignment</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">How many bytes is this location's address above a word-aligned address?</div>
+<div class="block">How many bytes are this location's address above a word-aligned address.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
@@ -242,6 +250,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>MemoryLocation</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">MemoryLocation</span><wbr><span class="parameters">(int&nbsp;address)</span></div>
+<div class="block">Creates a memory location.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>address</code> - The actual location.</dd>
@@ -252,6 +261,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="&lt;init&gt;(long)">
 <h3>MemoryLocation</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">MemoryLocation</span><wbr><span class="parameters">(long&nbsp;address)</span></div>
+<div class="block">Creates a memory location.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>address</code> - The actual location.</dd>
@@ -296,9 +306,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="isNull()">
 <h3>isNull</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isNull</span>()</div>
+<div class="block">Returns Whether this location is really <a href="#NULL">null</a>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether this location is really <a href="#NULL">null</a>.</dd>
+<dd>Whether this location is really <a href="#NULL">null</a></dd>
 </dl>
 </section>
 </li>
@@ -306,7 +317,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="subWordAlignment()">
 <h3>subWordAlignment</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">subWordAlignment</span>()</div>
-<div class="block">How many bytes is this location's address above a word-aligned address?</div>
+<div class="block">How many bytes are this location's address above a word-aligned address.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The number of bytes offset.</dd>
@@ -317,9 +328,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <section class="detail" id="isAligned()">
 <h3>isAligned</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAligned</span>()</div>
+<div class="block">Returns Whether this is a word-aligned location.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether this is a word-aligned location.</dd>
+<dd>Whether this is a word-aligned location</dd>
 </dl>
 </section>
 </li>

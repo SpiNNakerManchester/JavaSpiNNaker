@@ -34,15 +34,17 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ExceptionResponse" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/ExceptionResponse.html#ExceptionResponse">ExceptionResponse</a> <strong class="jxr_keyword">implements</strong> <a name="Response" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/Response.html#Response">Response</a> {
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  	<strong class="jxr_keyword">private</strong> String exception;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	<em class="jxr_javadoccomment">/** @return The exception message. Should not include a stack trace. */</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  	<strong class="jxr_keyword">public</strong> String getException() {
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  		<strong class="jxr_keyword">return</strong> exception;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	}
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<strong class="jxr_keyword">void</strong> setException(String exception) {
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  		<strong class="jxr_keyword">this</strong>.exception = exception == <strong class="jxr_keyword">null</strong> ? <span class="jxr_string">""</span> : exception.toString();
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	}
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  }
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">	 * {@return The exception message. Should not include a stack trace}</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<strong class="jxr_keyword">public</strong> String getException() {
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  		<strong class="jxr_keyword">return</strong> exception;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	}
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	<strong class="jxr_keyword">void</strong> setException(String exception) {
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  		<strong class="jxr_keyword">this</strong>.exception = exception == <strong class="jxr_keyword">null</strong> ? <span class="jxr_string">""</span> : exception.toString();
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  	}
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

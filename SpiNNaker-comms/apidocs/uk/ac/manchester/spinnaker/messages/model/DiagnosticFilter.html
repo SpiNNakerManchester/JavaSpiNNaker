@@ -164,9 +164,13 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.DefaultRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.DefaultRoutingStatus</a>&gt;&nbsp;defaultRoutingStatuses,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.EmergencyRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.EmergencyRoutingStatus</a>&gt;&nbsp;emergencyRoutingStatuses,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.PacketType.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.PacketType</a>&gt;&nbsp;packetTypes)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a router diagnostic counter filter based on the parameters.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">DiagnosticFilter</a><wbr>(int&nbsp;encodedValue)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a router diagnostic counter filter based the encode value.</div>
+</div>
 </div>
 </section>
 </li>
@@ -183,31 +187,50 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="DiagnosticFilter.DefaultRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.DefaultRoutingStatus</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDefaultRoutingStatuses()" class="member-name-link">getDefaultRoutingStatuses</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The set of default routing statuses to match.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="DiagnosticFilter.Destination.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.Destination</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDestinations()" class="member-name-link">getDestinations</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The set of destinations to match.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="DiagnosticFilter.EmergencyRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.EmergencyRoutingStatus</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEmergencyRoutingStatuses()" class="member-name-link">getEmergencyRoutingStatuses</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The set of emergency routing statuses to match.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEnableInterruptOnCounterEvent()" class="member-name-link">getEnableInterruptOnCounterEvent</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Whether an interrupt should be raised when this rule matches.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFilterWord()" class="member-name-link">getFilterWord</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns A word of data that can be written to the router to set up the
+         filter.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMatchEmergencyRoutingStatusToIncomingPacket()" class="member-name-link">getMatchEmergencyRoutingStatusToIncomingPacket</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">How mergency routing statuses should be matched.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="DiagnosticFilter.PacketType.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.PacketType</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPacketTypes()" class="member-name-link">getPacketTypes</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The set of packet types to match.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="DiagnosticFilter.PayloadStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.PayloadStatus</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPayloadStatuses()" class="member-name-link">getPayloadStatuses</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The set of payload statuses to match.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;<a href="DiagnosticFilter.Source.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.Source</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSources()" class="member-name-link">getSources</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The set of sources to match.</div>
+</div>
 </div>
 </div>
 </div>
@@ -236,6 +259,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.DefaultRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.DefaultRoutingStatus</a>&gt;&nbsp;defaultRoutingStatuses,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.EmergencyRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.EmergencyRoutingStatus</a>&gt;&nbsp;emergencyRoutingStatuses,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.PacketType.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.PacketType</a>&gt;&nbsp;packetTypes)</span></div>
+<div class="block">Constructs a router diagnostic counter filter based on the parameters.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>enableInterruptOnCounterEvent</code> - Indicates whether an interrupt should be raised when this rule
@@ -263,6 +287,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>DiagnosticFilter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DiagnosticFilter</span><wbr><span class="parameters">(int&nbsp;encodedValue)</span></div>
+<div class="block">Constructs a router diagnostic counter filter based the encode value.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>encodedValue</code> - The word of data that would be written to the router to set up
@@ -282,9 +307,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getEnableInterruptOnCounterEvent()">
 <h3>getEnableInterruptOnCounterEvent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getEnableInterruptOnCounterEvent</span>()</div>
+<div class="block">Returns Whether an interrupt should be raised when this rule matches.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether an interrupt should be raised when this rule matches.</dd>
+<dd>Whether an interrupt should be raised when this rule matches</dd>
 </dl>
 </section>
 </li>
@@ -292,6 +318,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMatchEmergencyRoutingStatusToIncomingPacket()">
 <h3>getMatchEmergencyRoutingStatusToIncomingPacket</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getMatchEmergencyRoutingStatusToIncomingPacket</span>()</div>
+<div class="block">How mergency routing statuses should be matched.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Whether the emergency routing statuses should be matched against
@@ -304,9 +331,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getDestinations()">
 <h3>getDestinations</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.Destination.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.Destination</a>&gt;</span>&nbsp;<span class="element-name">getDestinations</span>()</div>
+<div class="block">Returns The set of destinations to match.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The set of destinations to match.</dd>
+<dd>The set of destinations to match</dd>
 </dl>
 </section>
 </li>
@@ -314,9 +342,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getSources()">
 <h3>getSources</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.Source.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.Source</a>&gt;</span>&nbsp;<span class="element-name">getSources</span>()</div>
+<div class="block">Returns The set of sources to match.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The set of sources to match.</dd>
+<dd>The set of sources to match</dd>
 </dl>
 </section>
 </li>
@@ -324,9 +353,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getPayloadStatuses()">
 <h3>getPayloadStatuses</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.PayloadStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.PayloadStatus</a>&gt;</span>&nbsp;<span class="element-name">getPayloadStatuses</span>()</div>
+<div class="block">Returns The set of payload statuses to match.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The set of payload statuses to match.</dd>
+<dd>The set of payload statuses to match</dd>
 </dl>
 </section>
 </li>
@@ -334,9 +364,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getDefaultRoutingStatuses()">
 <h3>getDefaultRoutingStatuses</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.DefaultRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.DefaultRoutingStatus</a>&gt;</span>&nbsp;<span class="element-name">getDefaultRoutingStatuses</span>()</div>
+<div class="block">Returns The set of default routing statuses to match.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The set of default routing statuses to match.</dd>
+<dd>The set of default routing statuses to match</dd>
 </dl>
 </section>
 </li>
@@ -344,9 +375,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getEmergencyRoutingStatuses()">
 <h3>getEmergencyRoutingStatuses</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.EmergencyRoutingStatus.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.EmergencyRoutingStatus</a>&gt;</span>&nbsp;<span class="element-name">getEmergencyRoutingStatuses</span>()</div>
+<div class="block">Returns The set of emergency routing statuses to match.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The set of emergency routing statuses to match.</dd>
+<dd>The set of emergency routing statuses to match</dd>
 </dl>
 </section>
 </li>
@@ -354,9 +386,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getPacketTypes()">
 <h3>getPacketTypes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="DiagnosticFilter.PacketType.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.PacketType</a>&gt;</span>&nbsp;<span class="element-name">getPacketTypes</span>()</div>
+<div class="block">Returns The set of packet types to match.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The set of packet types to match.</dd>
+<dd>The set of packet types to match</dd>
 </dl>
 </section>
 </li>
@@ -364,10 +397,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getFilterWord()">
 <h3>getFilterWord</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getFilterWord</span>()</div>
+<div class="block">Returns A word of data that can be written to the router to set up the
+         filter.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>A word of data that can be written to the router to set up the
-         filter.</dd>
+         filter</dd>
 </dl>
 </section>
 </li>

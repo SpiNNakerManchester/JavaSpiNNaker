@@ -79,7 +79,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getState()" class="member-name-link">getState</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The current state of the job.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJob.</span><code><a href="../../SpallocJob.html#waitForStateChange(uk.ac.manchester.spinnaker.spalloc.messages.State,java.lang.Integer)" class="member-name-link">waitForStateChange</a><wbr>(<a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a>&nbsp;oldState,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;timeout)</code></div>
@@ -129,10 +131,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JobDescription.</span><code><a href="../JobDescription.html#getState()" class="member-name-link">getState</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The job state.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">JobState.</span><code><a href="../JobState.html#getState()" class="member-name-link">getState</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns the state of the job.</div>
+</div>
 <div class="col-first even-row-color"><code>static <a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">State.</span><code><a href="../State.html#valueOf(java.lang.String)" class="member-name-link">valueOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color">
@@ -152,10 +158,14 @@ the order they are declared.</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>void</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JobDescription.Builder.</span><code><a href="../JobDescription.Builder.html#setState(uk.ac.manchester.spinnaker.spalloc.messages.State)" class="member-name-link">setState</a><wbr>(<a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a>&nbsp;state)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Sets the job state.</div>
+</div>
 <div class="col-first odd-row-color"><code>void</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">JobState.Builder.</span><code><a href="../JobState.Builder.html#setState(uk.ac.manchester.spinnaker.spalloc.messages.State)" class="member-name-link">setState</a><wbr>(<a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a>&nbsp;state)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Sets the state of the job.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> with parameters of type <a href="../State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></span></div>
 <div class="summary-table three-column-summary">
@@ -175,7 +185,9 @@ the order they are declared.</div>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;kwargs,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;&nbsp;boards,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;keepAliveHost)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the job description based on the provided details.</div>
+</div>
 </div>
 </section>
 </li>

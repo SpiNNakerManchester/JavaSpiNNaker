@@ -219,31 +219,43 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getBoards()" class="member-name-link">getBoards</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns All the boards allocated to the job.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../messages/Connection.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Connection</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJob.</span><code><a href="../../SpallocJob.html#getConnections()" class="member-name-link">getConnections</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../messages/Connection.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Connection</a>&gt;</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getConnections()" class="member-name-link">getConnections</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The list of connections, where each connection says what the
+         hostname is to talk to a particular board's root chip.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJob.</span><code><a href="../../SpallocJob.html#getDestroyReason()" class="member-name-link">getDestroyReason</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getDestroyReason()" class="member-name-link">getDestroyReason</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The reason for destruction of the job.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../../../machine/MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJob.</span><code><a href="../../SpallocJob.html#getDimensions()" class="member-name-link">getDimensions</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../machine/MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getDimensions()" class="member-name-link">getDimensions</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The dimensions of the machine in chips, e.g., for booting.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJob.</span><code><a href="../../SpallocJob.html#getHostname()" class="member-name-link">getHostname</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getHostname()" class="member-name-link">getHostname</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The name of the host that is the root chip of the whole
+         allocation.</div>
+</div>
 <div class="col-first even-row-color"><code>default <a href="../../messages/JobMachineInfo.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">JobMachineInfo</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocAPI.</span><code><a href="../../SpallocAPI.html#getJobMachineInfo(int)" class="member-name-link">getJobMachineInfo</a><wbr>(int&nbsp;jobID)</code></div>
 <div class="col-last even-row-color">
@@ -279,19 +291,25 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getMachineName()" class="member-name-link">getMachineName</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The name of the machine the job is allocated on.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJob.</span><code><a href="../../SpallocJob.html#getPower()" class="member-name-link">getPower</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getPower()" class="member-name-link">getPower</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The current power state of the job.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="../../messages/State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJob.</span><code><a href="../../SpallocJob.html#getState()" class="member-name-link">getState</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../messages/State.html" title="enum class in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getState()" class="member-name-link">getState</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The current state of the job.</div>
+</div>
 <div class="col-first even-row-color"><code>default <a href="../../../transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">SpallocJobAPI.</span><code><a href="../../SpallocJobAPI.html#getTransceiver()" class="member-name-link">getTransceiver</a>()</code></div>
 <div class="col-last even-row-color">

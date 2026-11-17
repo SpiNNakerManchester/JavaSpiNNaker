@@ -397,13 +397,20 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AppIdTracker.html" title="class in uk.ac.manchester.spinnaker.transceiver">AppIdTracker</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAppIdTracker()" class="member-name-link">getAppIdTracker</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the application ID tracker for this transceiver.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>,<wbr><a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;<a href="../connections/BMPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BMPConnection</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBMPConnection()" class="member-name-link">getBMPConnection</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The connection selectors used for BMP connections.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBoundBMP()" class="member-name-link">getBoundBMP</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The currently bound BMP coordinates. Defaults to 0,0 if not set
+         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a>.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../connections/model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getConnections()" class="member-name-link">getConnections</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -480,7 +487,9 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a><wbr>&lt;<a href="../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getScampConnectionSelector()" class="member-name-link">getScampConnectionSelector</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The connection selector to use for SCP messages.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getScampVersion(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.connections.ConnectionSelector)" class="member-name-link">getScampVersion</a><wbr>(<a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;<a href="../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&gt;&nbsp;connectionSelector)</code></div>
@@ -1195,11 +1204,13 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 <section class="detail" id="getScampConnectionSelector()">
 <h3>getScampConnectionSelector</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;<a href="../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&gt;</span>&nbsp;<span class="element-name">getScampConnectionSelector</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="TransceiverInterface.html#getScampConnectionSelector()">TransceiverInterface</a></code></span></div>
+<div class="block">Returns The connection selector to use for SCP messages.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="TransceiverInterface.html#getScampConnectionSelector()">getScampConnectionSelector</a></code>&nbsp;in interface&nbsp;<code><a href="TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></code></dd>
 <dt>Returns:</dt>
-<dd>The connection selector to use for SCP messages.</dd>
+<dd>The connection selector to use for SCP messages</dd>
 </dl>
 </section>
 </li>
@@ -1348,9 +1359,10 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a>,
 <a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a>,
 <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
+<div class="block">Returns the application ID tracker for this transceiver.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the application ID tracker for this transceiver.</dd>
+<dd>the application ID tracker for this transceiver</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If anything goes wrong with networking.</dd>
 <dd><code><a href="ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
@@ -4104,9 +4116,10 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 <section class="detail" id="getBMPConnection()">
 <h3>getBMPConnection</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>,<wbr><a href="../connections/ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;<a href="../connections/BMPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BMPConnection</a>&gt;&gt;</span>&nbsp;<span class="element-name">getBMPConnection</span>()</div>
+<div class="block">Returns The connection selectors used for BMP connections.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The connection selectors used for BMP connections.</dd>
+<dd>The connection selectors used for BMP connections</dd>
 </dl>
 </section>
 </li>
@@ -4143,12 +4156,15 @@ R extends <a href="../messages/scp/PayloadedResponse.html" title="class in uk.ac
 <section class="detail" id="getBoundBMP()">
 <h3>getBoundBMP</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a></span>&nbsp;<span class="element-name">getBoundBMP</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="BMPTransceiverInterface.html#getBoundBMP()">BMPTransceiverInterface</a></code></span></div>
+<div class="block">Returns The currently bound BMP coordinates. Defaults to 0,0 if not set
+         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a>.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BMPTransceiverInterface.html#getBoundBMP()">getBoundBMP</a></code>&nbsp;in interface&nbsp;<code><a href="BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></code></dd>
 <dt>Returns:</dt>
 <dd>The currently bound BMP coordinates. Defaults to 0,0 if not set
-         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a>.</dd>
+         by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.machine.board.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a></dd>
 </dl>
 </section>
 </li>

@@ -120,7 +120,9 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;accountLockDuration,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;unlockPeriod,
  <a href="SpallocProperties.OpenIDProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.OpenIDProperties</a>&nbsp;openid)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs authentication and authorization configuration.</div>
+</div>
 </div>
 </section>
 </li>
@@ -137,10 +139,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAccountLockDuration()" class="member-name-link">getAccountLockDuration</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Length of time that automatic lock-out lasts.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@jakarta.validation.constraints.Positive int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxLoginFailures()" class="member-name-link">getMaxLoginFailures</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Number of login failures before automatic lock-out.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="SpallocProperties.OpenIDProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.OpenIDProperties</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOpenid()" class="member-name-link">getOpenid</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -160,11 +166,14 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUnlockPeriod()" class="member-name-link">getUnlockPeriod</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">How often do we look for users to end their lock-out?</div>
+<div class="block">How often do we look for users to end their lock-out.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAddDummyUser()" class="member-name-link">isAddDummyUser</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Force a known local admin user to exist with a known
+         password.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isBasic()" class="member-name-link">isBasic</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -172,7 +181,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDebugFailures()" class="member-name-link">isDebugFailures</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns Provide extra information to callers on auth failures.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDummyRandomPass()" class="member-name-link">isDummyRandomPass</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -226,6 +237,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;unlockPeriod,
  <a href="https://docs.spring.io/spring-boot/api/java/org/springframework/boot/context/properties/bind/DefaultValue.html" title="class or interface in org.springframework.boot.context.properties.bind" class="external-link">@DefaultValue</a>
  <a href="SpallocProperties.OpenIDProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.OpenIDProperties</a>&nbsp;openid)</span></div>
+<div class="block">Constructs authentication and authorization configuration.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>basic</code> - Whether to enable HTTP BASIC authentication. Useful for
@@ -299,10 +311,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isAddDummyUser()">
 <h3>isAddDummyUser</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAddDummyUser</span>()</div>
+<div class="block">Returns Force a known local admin user to exist with a known
+         password.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Force a known local admin user to exist with a known
-         password.</dd>
+         password</dd>
 </dl>
 </section>
 </li>
@@ -336,9 +350,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isDebugFailures()">
 <h3>isDebugFailures</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isDebugFailures</span>()</div>
+<div class="block">Returns Provide extra information to callers on auth failures.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Provide extra information to callers on auth failures.</dd>
+<dd>Provide extra information to callers on auth failures</dd>
 </dl>
 </section>
 </li>
@@ -347,9 +362,10 @@ loadScripts(document, 'script');</script>
 <h3>getMaxLoginFailures</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/Positive.html" title="class or interface in jakarta.validation.constraints" class="external-link">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@jakarta.validation.constraints.Positive int</span>&nbsp;<span class="element-name">getMaxLoginFailures</span>()</div>
+<div class="block">Returns Number of login failures before automatic lock-out.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Number of login failures before automatic lock-out.</dd>
+<dd>Number of login failures before automatic lock-out</dd>
 </dl>
 </section>
 </li>
@@ -358,9 +374,10 @@ loadScripts(document, 'script');</script>
 <h3>getAccountLockDuration</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getAccountLockDuration</span>()</div>
+<div class="block">Returns Length of time that automatic lock-out lasts.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Length of time that automatic lock-out lasts.</dd>
+<dd>Length of time that automatic lock-out lasts</dd>
 </dl>
 </section>
 </li>
@@ -369,7 +386,7 @@ loadScripts(document, 'script');</script>
 <h3>getUnlockPeriod</h3>
 <div class="member-signature"><span class="annotations"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a></span>&nbsp;<span class="element-name">getUnlockPeriod</span>()</div>
-<div class="block">How often do we look for users to end their lock-out?</div>
+<div class="block">How often do we look for users to end their lock-out.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>How often do we look for users to end their lock-out?</dd>

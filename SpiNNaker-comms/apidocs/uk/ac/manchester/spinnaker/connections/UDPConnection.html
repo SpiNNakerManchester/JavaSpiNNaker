@@ -192,10 +192,14 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLocalIPAddress()" class="member-name-link">getLocalIPAddress</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The local IP address to which the connection is bound.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLocalPort()" class="member-name-link">getLocalPort</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The local port to which the connection is bound.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetSocketAddress.html" title="class or interface in java.net" class="external-link">InetSocketAddress</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemoteAddress()" class="member-name-link">getRemoteAddress</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -203,10 +207,16 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemoteIPAddress()" class="member-name-link">getRemoteIPAddress</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The remote IP address to which the connection is connected, or
+         <code>null</code> if it is not connected.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemotePort()" class="member-name-link">getRemotePort</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The remote port to which the connection is connected, or zero if
+         it is not connected.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isClosed()" class="member-name-link">isClosed</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -411,11 +421,12 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getLocalIPAddress()">
 <h3>getLocalIPAddress</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></span>&nbsp;<span class="element-name">getLocalIPAddress</span>()</div>
+<div class="block">Returns The local IP address to which the connection is bound.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="model/Connection.html#getLocalIPAddress()">getLocalIPAddress</a></code>&nbsp;in interface&nbsp;<code><a href="model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a></code></dd>
 <dt>Returns:</dt>
-<dd>The local IP address to which the connection is bound.</dd>
+<dd>The local IP address to which the connection is bound</dd>
 </dl>
 </section>
 </li>
@@ -423,11 +434,12 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getLocalPort()">
 <h3>getLocalPort</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getLocalPort</span>()</div>
+<div class="block">Returns The local port to which the connection is bound.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="model/Connection.html#getLocalPort()">getLocalPort</a></code>&nbsp;in interface&nbsp;<code><a href="model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a></code></dd>
 <dt>Returns:</dt>
-<dd>The local port to which the connection is bound.</dd>
+<dd>The local port to which the connection is bound</dd>
 </dl>
 </section>
 </li>
@@ -435,12 +447,14 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getRemoteIPAddress()">
 <h3>getRemoteIPAddress</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a></span>&nbsp;<span class="element-name">getRemoteIPAddress</span>()</div>
+<div class="block">Returns The remote IP address to which the connection is connected, or
+         <code>null</code> if it is not connected.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="model/Connection.html#getRemoteIPAddress()">getRemoteIPAddress</a></code>&nbsp;in interface&nbsp;<code><a href="model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a></code></dd>
 <dt>Returns:</dt>
 <dd>The remote IP address to which the connection is connected, or
-         <code>null</code> if it is not connected.</dd>
+         <code>null</code> if it is not connected</dd>
 </dl>
 </section>
 </li>
@@ -448,12 +462,14 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <section class="detail" id="getRemotePort()">
 <h3>getRemotePort</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getRemotePort</span>()</div>
+<div class="block">Returns The remote port to which the connection is connected, or zero if
+         it is not connected.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="model/Connection.html#getRemotePort()">getRemotePort</a></code>&nbsp;in interface&nbsp;<code><a href="model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a></code></dd>
 <dt>Returns:</dt>
 <dd>The remote port to which the connection is connected, or zero if
-         it is not connected.</dd>
+         it is not connected</dd>
 </dl>
 </section>
 </li>

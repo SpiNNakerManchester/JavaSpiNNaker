@@ -77,11 +77,15 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/scp/IPTagClear.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int)" class="member-name-link">IPTagClear</a><wbr>(<a href="../../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to clear the tag on the give Chip.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/scp/IPTagGet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,int)" class="member-name-link">IPTagGet</a><wbr>(<a href="../../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  @uk.ac.manchester.spinnaker.machine.tags.TagID(scamp=true, ephemeral=true) int&nbsp;tag)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to get this IP tag on this Chip.</div>
+</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../messages/scp/IPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,byte%5B%5D,int,int,boolean,boolean)" class="member-name-link">IPTagSet</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  @jakarta.validation.constraints.Size(min=4, max=4) byte[]&nbsp;host,
@@ -89,14 +93,18 @@ loadScripts(document, 'script');</script>
  @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
  boolean&nbsp;strip,
  boolean&nbsp;useSender)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a request to set a (forward) IP Tag.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../messages/scp/ReverseIPTagSet.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)" class="member-name-link">ReverseIPTagSet</a><wbr>(<a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../../HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
  <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/Valid.html" title="class or interface in jakarta.validation" class="external-link">@Valid</a> <a href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/NotNull.html" title="class or interface in jakarta.validation.constraints" class="external-link">@NotNull</a> <a href="../../HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;destination,
  @uk.ac.manchester.spinnaker.utils.validation.UDPPort int&nbsp;port,
  @uk.ac.manchester.spinnaker.machine.tags.TagID int&nbsp;tag,
  int&nbsp;sdpPort)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a request to set a Reverse IP Tag based on the supplied data.</div>
+</div>
 </div>
 </section>
 </li>

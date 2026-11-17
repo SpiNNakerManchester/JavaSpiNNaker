@@ -100,7 +100,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a><wbr>&lt;<a href="../SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&gt;</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">TransceiverInterface.</span><code><a href="../../transceiver/TransceiverInterface.html#getScampConnectionSelector()" class="member-name-link">getScampConnectionSelector</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns The connection selector to use for SCP messages.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> that return types with arguments of type <a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a></span></div>
 <div class="summary-table three-column-summary">
@@ -109,7 +111,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="../../machine/board/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.machine.board">BMPCoords</a>,<wbr><a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;<a href="../BMPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BMPConnection</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Transceiver.</span><code><a href="../../transceiver/Transceiver.html#getBMPConnection()" class="member-name-link">getBMPConnection</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Returns The connection selectors used for BMP connections.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> with parameters of type <a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a></span></div>
 <div class="summary-table three-column-summary">
@@ -144,11 +148,15 @@ loadScripts(document, 'script');</script>
  int&nbsp;numChannels,
  int&nbsp;intermediateChannelWaits,
  <a href="../../transceiver/RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Construct a process for talking to SpiNNaker with specified setting.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../transceiver/TxrxProcess.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.ConnectionSelector,uk.ac.manchester.spinnaker.transceiver.RetryTracker)" class="member-name-link">TxrxProcess</a><wbr>(<a href="../ConnectionSelector.html" title="interface in uk.ac.manchester.spinnaker.connections">ConnectionSelector</a>&lt;Conn&gt;&nbsp;connectionSelector,
  <a href="../../transceiver/RetryTracker.html" title="interface in uk.ac.manchester.spinnaker.transceiver">RetryTracker</a>&nbsp;retryTracker)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a process for talking to SpiNNaker with default setting.</div>
+</div>
 </div>
 </section>
 </li>

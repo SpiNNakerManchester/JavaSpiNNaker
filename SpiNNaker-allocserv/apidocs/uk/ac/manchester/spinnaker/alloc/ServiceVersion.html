@@ -128,13 +128,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBuildTimestamp()" class="member-name-link">getBuildTimestamp</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The build timestamp.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFullVersion()" class="member-name-link">getFullVersion</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns The full version identifier. Conforms only to Maven conventions.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Version.html" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="external-link">Version</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getVersion()" class="member-name-link">getVersion</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The logical version number.</div>
+</div>
 </div>
 </div>
 </div>
@@ -180,10 +186,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getVersion()">
 <h3>getVersion</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Version.html" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="external-link">Version</a></span>&nbsp;<span class="element-name">getVersion</span>()</div>
+<div class="block">The logical version number.
+
+ Expected to at least <em>approximately</em> follow semver rules.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The logical version number. Expected to at least
-         <em>approximately</em> follow semver rules.</dd>
+<dd>The logical version number.</dd>
 </dl>
 </section>
 </li>
@@ -191,9 +199,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getFullVersion()">
 <h3>getFullVersion</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getFullVersion</span>()</div>
+<div class="block">Returns The full version identifier. Conforms only to Maven conventions.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The full version identifier. Conforms only to Maven conventions.</dd>
+<dd>The full version identifier. Conforms only to Maven conventions</dd>
 </dl>
 </section>
 </li>
@@ -201,10 +210,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getBuildTimestamp()">
 <h3>getBuildTimestamp</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getBuildTimestamp</span>()</div>
+<div class="block">The build timestamp.
+
+ The format of this is not intended for further machine parsing</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The build timestamp. The format of this is not intended for
-         further machine parsing.</dd>
+<dd>The build timestamp.</dd>
 </dl>
 </section>
 </li>

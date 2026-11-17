@@ -210,7 +210,7 @@
 <a class="jxr_linenumber" name="L202" href="#L202">202</a> 
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Set&lt;Integer&gt; BMP_MAJOR_VERSIONS = Set.of(1, 2);
 <a class="jxr_linenumber" name="L204" href="#L204">204</a> 
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> 	<em class="jxr_javadoccomment">/** How many times do we try to find SCAMP? */</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 	<em class="jxr_javadoccomment">/** How many times do we try to find SCAMP. */</em>
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> 
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> CONNECTION_CHECK_RETRY_COUNT = 3;
@@ -1063,7 +1063,7 @@
 <a class="jxr_linenumber" name="L1055" href="#L1055">1055</a> 	}
 <a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> 
 <a class="jxr_linenumber" name="L1057" href="#L1057">1057</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> <em class="jxr_javadoccomment">	 * @return the application ID tracker for this transceiver.</em>
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> <em class="jxr_javadoccomment">	 * {@return the application ID tracker for this transceiver}</em>
 <a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with networking.</em>
 <a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_javadoccomment">	 * @throws ProcessException</em>
@@ -2726,76 +2726,78 @@
 <a class="jxr_linenumber" name="L2718" href="#L2718">2718</a> 		log.info(<span class="jxr_string">"total retries used: {}"</span>, retryCount);
 <a class="jxr_linenumber" name="L2719" href="#L2719">2719</a> 	}
 <a class="jxr_linenumber" name="L2720" href="#L2720">2720</a> 
-<a class="jxr_linenumber" name="L2721" href="#L2721">2721</a> 	<em class="jxr_javadoccomment">/** @return The connection selectors used for BMP connections. */</em>
-<a class="jxr_linenumber" name="L2722" href="#L2722">2722</a> 	<strong class="jxr_keyword">public</strong> Map&lt;BMPCoords,
-<a class="jxr_linenumber" name="L2723" href="#L2723">2723</a> 			ConnectionSelector&lt;BMPConnection&gt;&gt; getBMPConnection() {
-<a class="jxr_linenumber" name="L2724" href="#L2724">2724</a> 		<strong class="jxr_keyword">return</strong> bmpSelectors;
-<a class="jxr_linenumber" name="L2725" href="#L2725">2725</a> 	}
-<a class="jxr_linenumber" name="L2726" href="#L2726">2726</a> 
-<a class="jxr_linenumber" name="L2727" href="#L2727">2727</a> 	<em class="jxr_javadoccomment">/** A simple description of a connection to create. */</em>
-<a class="jxr_linenumber" name="L2728" href="#L2728">2728</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ConnectionDescriptor {
-<a class="jxr_linenumber" name="L2729" href="#L2729">2729</a> 		<em class="jxr_javadoccomment">/** What host to talk to. */</em>
-<a class="jxr_linenumber" name="L2730" href="#L2730">2730</a> 		<strong class="jxr_keyword">private</strong> InetAddress hostname;
-<a class="jxr_linenumber" name="L2731" href="#L2731">2731</a> 
-<a class="jxr_linenumber" name="L2732" href="#L2732">2732</a> 		<em class="jxr_javadoccomment">/** What port to talk to, or {@code null} for default. */</em>
-<a class="jxr_linenumber" name="L2733" href="#L2733">2733</a> 		<strong class="jxr_keyword">private</strong> Integer portNumber;
-<a class="jxr_linenumber" name="L2734" href="#L2734">2734</a> 
-<a class="jxr_linenumber" name="L2735" href="#L2735">2735</a> 		<em class="jxr_javadoccomment">/** What chip to talk to. */</em>
-<a class="jxr_linenumber" name="L2736" href="#L2736">2736</a> 		<strong class="jxr_keyword">private</strong> ChipLocation chip;
-<a class="jxr_linenumber" name="L2737" href="#L2737">2737</a> 
-<a class="jxr_linenumber" name="L2738" href="#L2738">2738</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2739" href="#L2739">2739</a> <em class="jxr_javadoccomment">		 * Create a connection descriptor.</em>
-<a class="jxr_linenumber" name="L2740" href="#L2740">2740</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L2741" href="#L2741">2741</a> <em class="jxr_javadoccomment">		 * @param hostname</em>
-<a class="jxr_linenumber" name="L2742" href="#L2742">2742</a> <em class="jxr_javadoccomment">		 *            The host to talk to. The default UDP port will be used.</em>
-<a class="jxr_linenumber" name="L2743" href="#L2743">2743</a> <em class="jxr_javadoccomment">		 * @param chip</em>
-<a class="jxr_linenumber" name="L2744" href="#L2744">2744</a> <em class="jxr_javadoccomment">		 *            The chip to talk to.</em>
-<a class="jxr_linenumber" name="L2745" href="#L2745">2745</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L2746" href="#L2746">2746</a> 		<strong class="jxr_keyword">public</strong> ConnectionDescriptor(InetAddress hostname,
-<a class="jxr_linenumber" name="L2747" href="#L2747">2747</a> 				HasChipLocation chip) {
-<a class="jxr_linenumber" name="L2748" href="#L2748">2748</a> 			<strong class="jxr_keyword">this</strong>.hostname = requireNonNull(hostname);
-<a class="jxr_linenumber" name="L2749" href="#L2749">2749</a> 			<strong class="jxr_keyword">this</strong>.chip = chip.asChipLocation();
-<a class="jxr_linenumber" name="L2750" href="#L2750">2750</a> 			<strong class="jxr_keyword">this</strong>.portNumber = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L2751" href="#L2751">2751</a> 		}
-<a class="jxr_linenumber" name="L2752" href="#L2752">2752</a> 
-<a class="jxr_linenumber" name="L2753" href="#L2753">2753</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2754" href="#L2754">2754</a> <em class="jxr_javadoccomment">		 * Create a connection descriptor.</em>
-<a class="jxr_linenumber" name="L2755" href="#L2755">2755</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L2756" href="#L2756">2756</a> <em class="jxr_javadoccomment">		 * @param host</em>
-<a class="jxr_linenumber" name="L2757" href="#L2757">2757</a> <em class="jxr_javadoccomment">		 *            The host to talk to.</em>
-<a class="jxr_linenumber" name="L2758" href="#L2758">2758</a> <em class="jxr_javadoccomment">		 * @param port</em>
-<a class="jxr_linenumber" name="L2759" href="#L2759">2759</a> <em class="jxr_javadoccomment">		 *            The UDP port to talk to.</em>
-<a class="jxr_linenumber" name="L2760" href="#L2760">2760</a> <em class="jxr_javadoccomment">		 * @param chip</em>
-<a class="jxr_linenumber" name="L2761" href="#L2761">2761</a> <em class="jxr_javadoccomment">		 *            The chip to talk to.</em>
-<a class="jxr_linenumber" name="L2762" href="#L2762">2762</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L2763" href="#L2763">2763</a> 		<strong class="jxr_keyword">public</strong> ConnectionDescriptor(InetAddress host, <strong class="jxr_keyword">int</strong> port,
-<a class="jxr_linenumber" name="L2764" href="#L2764">2764</a> 				HasChipLocation chip) {
-<a class="jxr_linenumber" name="L2765" href="#L2765">2765</a> 			<strong class="jxr_keyword">this</strong>.hostname = requireNonNull(host);
-<a class="jxr_linenumber" name="L2766" href="#L2766">2766</a> 			<strong class="jxr_keyword">this</strong>.chip = chip.asChipLocation();
-<a class="jxr_linenumber" name="L2767" href="#L2767">2767</a> 			<strong class="jxr_keyword">this</strong>.portNumber = port;
-<a class="jxr_linenumber" name="L2768" href="#L2768">2768</a> 		}
-<a class="jxr_linenumber" name="L2769" href="#L2769">2769</a> 	}
-<a class="jxr_linenumber" name="L2770" href="#L2770">2770</a> 
-<a class="jxr_linenumber" name="L2771" href="#L2771">2771</a> 	@Override
-<a class="jxr_linenumber" name="L2772" href="#L2772">2772</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addConnection(<a name="Connection" href="../../../../../uk/ac/manchester/spinnaker/connections/model/Connection.html#Connection">Connection</a> connection) {
-<a class="jxr_linenumber" name="L2773" href="#L2773">2773</a> 		<strong class="jxr_keyword">this</strong>.allConnections.add(connection);
-<a class="jxr_linenumber" name="L2774" href="#L2774">2774</a> 	}
-<a class="jxr_linenumber" name="L2775" href="#L2775">2775</a> 
-<a class="jxr_linenumber" name="L2776" href="#L2776">2776</a> 	@Override
-<a class="jxr_linenumber" name="L2777" href="#L2777">2777</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> bind(BMPCoords bmp) {
-<a class="jxr_linenumber" name="L2778" href="#L2778">2778</a> 		boundBMP = bmp;
-<a class="jxr_linenumber" name="L2779" href="#L2779">2779</a> 	}
-<a class="jxr_linenumber" name="L2780" href="#L2780">2780</a> 
-<a class="jxr_linenumber" name="L2781" href="#L2781">2781</a> 	@Override
-<a class="jxr_linenumber" name="L2782" href="#L2782">2782</a> 	<strong class="jxr_keyword">public</strong> BMPCoords getBoundBMP() {
-<a class="jxr_linenumber" name="L2783" href="#L2783">2783</a> 		<strong class="jxr_keyword">return</strong> boundBMP;
-<a class="jxr_linenumber" name="L2784" href="#L2784">2784</a> 	}
-<a class="jxr_linenumber" name="L2785" href="#L2785">2785</a> 
-<a class="jxr_linenumber" name="L2786" href="#L2786">2786</a> 	@Override
-<a class="jxr_linenumber" name="L2787" href="#L2787">2787</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> pingBoard(String address) {
-<a class="jxr_linenumber" name="L2788" href="#L2788">2788</a> 		<strong class="jxr_keyword">return</strong> Ping.ping(address);
-<a class="jxr_linenumber" name="L2789" href="#L2789">2789</a> 	}
-<a class="jxr_linenumber" name="L2790" href="#L2790">2790</a> }
+<a class="jxr_linenumber" name="L2721" href="#L2721">2721</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2722" href="#L2722">2722</a> <em class="jxr_javadoccomment">	 * {@return The connection selectors used for BMP connections}</em>
+<a class="jxr_linenumber" name="L2723" href="#L2723">2723</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L2724" href="#L2724">2724</a> 	<strong class="jxr_keyword">public</strong> Map&lt;BMPCoords,
+<a class="jxr_linenumber" name="L2725" href="#L2725">2725</a> 			ConnectionSelector&lt;BMPConnection&gt;&gt; getBMPConnection() {
+<a class="jxr_linenumber" name="L2726" href="#L2726">2726</a> 		<strong class="jxr_keyword">return</strong> bmpSelectors;
+<a class="jxr_linenumber" name="L2727" href="#L2727">2727</a> 	}
+<a class="jxr_linenumber" name="L2728" href="#L2728">2728</a> 
+<a class="jxr_linenumber" name="L2729" href="#L2729">2729</a> 	<em class="jxr_javadoccomment">/** A simple description of a connection to create. */</em>
+<a class="jxr_linenumber" name="L2730" href="#L2730">2730</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ConnectionDescriptor {
+<a class="jxr_linenumber" name="L2731" href="#L2731">2731</a> 		<em class="jxr_javadoccomment">/** What host to talk to. */</em>
+<a class="jxr_linenumber" name="L2732" href="#L2732">2732</a> 		<strong class="jxr_keyword">private</strong> InetAddress hostname;
+<a class="jxr_linenumber" name="L2733" href="#L2733">2733</a> 
+<a class="jxr_linenumber" name="L2734" href="#L2734">2734</a> 		<em class="jxr_javadoccomment">/** What port to talk to, or {@code null} for default. */</em>
+<a class="jxr_linenumber" name="L2735" href="#L2735">2735</a> 		<strong class="jxr_keyword">private</strong> Integer portNumber;
+<a class="jxr_linenumber" name="L2736" href="#L2736">2736</a> 
+<a class="jxr_linenumber" name="L2737" href="#L2737">2737</a> 		<em class="jxr_javadoccomment">/** What chip to talk to. */</em>
+<a class="jxr_linenumber" name="L2738" href="#L2738">2738</a> 		<strong class="jxr_keyword">private</strong> ChipLocation chip;
+<a class="jxr_linenumber" name="L2739" href="#L2739">2739</a> 
+<a class="jxr_linenumber" name="L2740" href="#L2740">2740</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2741" href="#L2741">2741</a> <em class="jxr_javadoccomment">		 * Create a connection descriptor.</em>
+<a class="jxr_linenumber" name="L2742" href="#L2742">2742</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L2743" href="#L2743">2743</a> <em class="jxr_javadoccomment">		 * @param hostname</em>
+<a class="jxr_linenumber" name="L2744" href="#L2744">2744</a> <em class="jxr_javadoccomment">		 *            The host to talk to. The default UDP port will be used.</em>
+<a class="jxr_linenumber" name="L2745" href="#L2745">2745</a> <em class="jxr_javadoccomment">		 * @param chip</em>
+<a class="jxr_linenumber" name="L2746" href="#L2746">2746</a> <em class="jxr_javadoccomment">		 *            The chip to talk to.</em>
+<a class="jxr_linenumber" name="L2747" href="#L2747">2747</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L2748" href="#L2748">2748</a> 		<strong class="jxr_keyword">public</strong> ConnectionDescriptor(InetAddress hostname,
+<a class="jxr_linenumber" name="L2749" href="#L2749">2749</a> 				HasChipLocation chip) {
+<a class="jxr_linenumber" name="L2750" href="#L2750">2750</a> 			<strong class="jxr_keyword">this</strong>.hostname = requireNonNull(hostname);
+<a class="jxr_linenumber" name="L2751" href="#L2751">2751</a> 			<strong class="jxr_keyword">this</strong>.chip = chip.asChipLocation();
+<a class="jxr_linenumber" name="L2752" href="#L2752">2752</a> 			<strong class="jxr_keyword">this</strong>.portNumber = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L2753" href="#L2753">2753</a> 		}
+<a class="jxr_linenumber" name="L2754" href="#L2754">2754</a> 
+<a class="jxr_linenumber" name="L2755" href="#L2755">2755</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2756" href="#L2756">2756</a> <em class="jxr_javadoccomment">		 * Create a connection descriptor.</em>
+<a class="jxr_linenumber" name="L2757" href="#L2757">2757</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L2758" href="#L2758">2758</a> <em class="jxr_javadoccomment">		 * @param host</em>
+<a class="jxr_linenumber" name="L2759" href="#L2759">2759</a> <em class="jxr_javadoccomment">		 *            The host to talk to.</em>
+<a class="jxr_linenumber" name="L2760" href="#L2760">2760</a> <em class="jxr_javadoccomment">		 * @param port</em>
+<a class="jxr_linenumber" name="L2761" href="#L2761">2761</a> <em class="jxr_javadoccomment">		 *            The UDP port to talk to.</em>
+<a class="jxr_linenumber" name="L2762" href="#L2762">2762</a> <em class="jxr_javadoccomment">		 * @param chip</em>
+<a class="jxr_linenumber" name="L2763" href="#L2763">2763</a> <em class="jxr_javadoccomment">		 *            The chip to talk to.</em>
+<a class="jxr_linenumber" name="L2764" href="#L2764">2764</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L2765" href="#L2765">2765</a> 		<strong class="jxr_keyword">public</strong> ConnectionDescriptor(InetAddress host, <strong class="jxr_keyword">int</strong> port,
+<a class="jxr_linenumber" name="L2766" href="#L2766">2766</a> 				HasChipLocation chip) {
+<a class="jxr_linenumber" name="L2767" href="#L2767">2767</a> 			<strong class="jxr_keyword">this</strong>.hostname = requireNonNull(host);
+<a class="jxr_linenumber" name="L2768" href="#L2768">2768</a> 			<strong class="jxr_keyword">this</strong>.chip = chip.asChipLocation();
+<a class="jxr_linenumber" name="L2769" href="#L2769">2769</a> 			<strong class="jxr_keyword">this</strong>.portNumber = port;
+<a class="jxr_linenumber" name="L2770" href="#L2770">2770</a> 		}
+<a class="jxr_linenumber" name="L2771" href="#L2771">2771</a> 	}
+<a class="jxr_linenumber" name="L2772" href="#L2772">2772</a> 
+<a class="jxr_linenumber" name="L2773" href="#L2773">2773</a> 	@Override
+<a class="jxr_linenumber" name="L2774" href="#L2774">2774</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addConnection(<a name="Connection" href="../../../../../uk/ac/manchester/spinnaker/connections/model/Connection.html#Connection">Connection</a> connection) {
+<a class="jxr_linenumber" name="L2775" href="#L2775">2775</a> 		<strong class="jxr_keyword">this</strong>.allConnections.add(connection);
+<a class="jxr_linenumber" name="L2776" href="#L2776">2776</a> 	}
+<a class="jxr_linenumber" name="L2777" href="#L2777">2777</a> 
+<a class="jxr_linenumber" name="L2778" href="#L2778">2778</a> 	@Override
+<a class="jxr_linenumber" name="L2779" href="#L2779">2779</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> bind(BMPCoords bmp) {
+<a class="jxr_linenumber" name="L2780" href="#L2780">2780</a> 		boundBMP = bmp;
+<a class="jxr_linenumber" name="L2781" href="#L2781">2781</a> 	}
+<a class="jxr_linenumber" name="L2782" href="#L2782">2782</a> 
+<a class="jxr_linenumber" name="L2783" href="#L2783">2783</a> 	@Override
+<a class="jxr_linenumber" name="L2784" href="#L2784">2784</a> 	<strong class="jxr_keyword">public</strong> BMPCoords getBoundBMP() {
+<a class="jxr_linenumber" name="L2785" href="#L2785">2785</a> 		<strong class="jxr_keyword">return</strong> boundBMP;
+<a class="jxr_linenumber" name="L2786" href="#L2786">2786</a> 	}
+<a class="jxr_linenumber" name="L2787" href="#L2787">2787</a> 
+<a class="jxr_linenumber" name="L2788" href="#L2788">2788</a> 	@Override
+<a class="jxr_linenumber" name="L2789" href="#L2789">2789</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> pingBoard(String address) {
+<a class="jxr_linenumber" name="L2790" href="#L2790">2790</a> 		<strong class="jxr_keyword">return</strong> Ping.ping(address);
+<a class="jxr_linenumber" name="L2791" href="#L2791">2791</a> 	}
+<a class="jxr_linenumber" name="L2792" href="#L2792">2792</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
