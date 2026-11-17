@@ -293,7 +293,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
-		 * @return Whether this request may be repeated.
+		 * {@return Whether this request may be repeated}
 		 */
 		boolean isRepeat() {
 			return numTries < props.getPowerAttempts();
@@ -1098,7 +1098,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	/** A worker of a given BMP. */
 	private final class Worker implements Runnable {
-		/** What are we controlling? */
+		/** What are we controlling. */
 		private SpiNNakerControl control;
 
 		private final SpallocAPI.Machine machine;
@@ -1107,7 +1107,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Map<BMPBoard, String> boards;
 
-		/** Which boards are we looking at? */
+		/** Which boards are we looking at. */
 		private final int bmpId;
 
 		Worker(SpallocAPI.Machine machine, BMPCoords coords,
@@ -1308,6 +1308,8 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Testing method, Do not use outside of tests.
+	 *
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 * @hidden

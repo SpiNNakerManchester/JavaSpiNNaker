@@ -431,9 +431,13 @@ public class SecurityConfig {
 	}
 
 	/**
-	 * @return A converter that handles the initial extraction of collabratories
-	 *         and organisations from the info we have available when a user
-	 *         logs in explicitly in the web UI.
+	 * A converter that handles the initial extraction of collabratories
+	 *     and organisations.
+	 *
+	 * 	Acts on the info we have available when a user logs in
+	 * 	explicitly in the web UI}
+	 *
+	 * @return A converter
 	 * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)
 	 */
 	@Bean("hbp.collab-and-org.user-converter.shim")

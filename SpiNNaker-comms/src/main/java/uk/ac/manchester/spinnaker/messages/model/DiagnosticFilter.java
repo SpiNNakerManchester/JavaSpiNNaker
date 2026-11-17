@@ -64,6 +64,8 @@ public class DiagnosticFilter {
 	private final Collection<PacketType> packetTypes;
 
 	/**
+	 * Constructs a router diagnostic counter filter based on the parameters.
+	 *
 	 * @param enableInterruptOnCounterEvent
 	 *            Indicates whether an interrupt should be raised when this rule
 	 *            matches
@@ -119,6 +121,8 @@ public class DiagnosticFilter {
 	}
 
 	/**
+	 * Constructs a router diagnostic counter filter based the encode value.
+	 *
 	 * @param encodedValue
 	 *            The word of data that would be written to the router to set up
 	 *            the filter.
@@ -150,13 +154,15 @@ public class DiagnosticFilter {
 	}
 
 	/**
-	 * @return Whether an interrupt should be raised when this rule matches.
+	 * {@return Whether an interrupt should be raised when this rule matches}
 	 */
 	public boolean getEnableInterruptOnCounterEvent() {
 		return enableInterrupt;
 	}
 
 	/**
+	 * How mergency routing statuses should be matched.
+	 *
 	 * @return Whether the emergency routing statuses should be matched against
 	 *         packets arriving at this router (if True), or if they should be
 	 *         matched against packets leaving this router (if False).
@@ -166,50 +172,50 @@ public class DiagnosticFilter {
 	}
 
 	/**
-	 * @return The set of destinations to match.
+	 * {@return The set of destinations to match}
 	 */
 	public Collection<Destination> getDestinations() {
 		return destinations;
 	}
 
 	/**
-	 * @return The set of sources to match.
+	 * {@return The set of sources to match}
 	 */
 	public Collection<Source> getSources() {
 		return sources;
 	}
 
 	/**
-	 * @return The set of payload statuses to match.
+	 * {@return The set of payload statuses to match}
 	 */
 	public Collection<PayloadStatus> getPayloadStatuses() {
 		return payloads;
 	}
 
 	/**
-	 * @return The set of default routing statuses to match.
+	 * {@return The set of default routing statuses to match}
 	 */
 	public Collection<DefaultRoutingStatus> getDefaultRoutingStatuses() {
 		return defaultStatuses;
 	}
 
 	/**
-	 * @return The set of emergency routing statuses to match.
+	 * {@return The set of emergency routing statuses to match}
 	 */
 	public Collection<EmergencyRoutingStatus> getEmergencyRoutingStatuses() {
 		return emergencyStatuses;
 	}
 
 	/**
-	 * @return The set of packet types to match.
+	 * {@return The set of packet types to match}
 	 */
 	public Collection<PacketType> getPacketTypes() {
 		return packetTypes;
 	}
 
 	/**
-	 * @return A word of data that can be written to the router to set up the
-	 *         filter.
+	 * {@return A word of data that can be written to the router to set up the
+	 *         filter}
 	 */
 	public int getFilterWord() {
 		int data = (enableInterrupt ? 1 << ENABLE_INTERRUPT_OFFSET : 0);
@@ -247,7 +253,7 @@ public class DiagnosticFilter {
 		int bit();
 
 		/**
-		 * Is the bit for this enum value set in the given word?
+		 * Is the bit for this enum value set in the given word.
 		 *
 		 * @param value
 		 *            The word to examine.
@@ -276,12 +282,20 @@ public class DiagnosticFilter {
 		private static final Map<Integer, DefaultRoutingStatus> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a default routing flags for the diagnostic filters.
+		 *
+		 * @param value
+		 *     Flag value.
+		 */
 		DefaultRoutingStatus(int value) {
 			this.bit = value + DEFAULT_ROUTE_OFFSET;
 			this.value = value;
 		}
 
 		/**
+		 * Gets the default routing flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -328,12 +342,20 @@ public class DiagnosticFilter {
 		private static final Map<Integer, Destination> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a destination flag for the diagnostic filters.
+		 *
+		 * @param value
+		 *     Flag value.
+		 */
 		Destination(int value) {
 			this.bit = value + DESTINATION_OFFSET;
 			this.value = value;
 		}
 
 		/**
+		 * Gets the destination flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -379,12 +401,20 @@ public class DiagnosticFilter {
 		private static final Map<Integer, EmergencyRoutingStatus> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs an emergency routing status flag.
+		 *
+		 * @param value
+		 *     Flag value.
+		 */
 		EmergencyRoutingStatus(int value) {
 			this.bit = value + EMERGENCY_ROUTE_OFFSET;
 			this.value = value;
 		}
 
 		/**
+		 * Gets the emergency routing status flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -421,12 +451,20 @@ public class DiagnosticFilter {
 		private static final Map<Integer, PacketType> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a packet type flag for the diagnostic filters.
+		 *
+		 * @param value
+		 *     Flag value
+		 */
 		PacketType(int value) {
 			this.bit = value + PACKET_TYPE_OFFSET;
 			this.value = value;
 		}
 
 		/**
+		 * Gets the Packet type flag for the given value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -459,12 +497,20 @@ public class DiagnosticFilter {
 		private static final Map<Integer, PayloadStatus> MAP =
 				makeEnumBackingMap(values(), v -> v.value);
 
+		/**
+		 * Constructs a Payload flags for the diagnostic filters.
+		 *
+		 * @param value
+		 *     Value of the payload
+		 */
 		PayloadStatus(int value) {
 			this.bit = value + PAYLOAD_OFFSET;
 			this.value = value;
 		}
 
 		/**
+		 * Gets the Payload flag for this value.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.
@@ -503,6 +549,8 @@ public class DiagnosticFilter {
 		}
 
 		/**
+		 * Constructs Payload flags for the diagnostic filters.
+		 *
 		 * @param value
 		 *            The encoded value, without the shift.
 		 * @return The decoded value, or {@code null} if the decoding failed.

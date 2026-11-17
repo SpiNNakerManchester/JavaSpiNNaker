@@ -39,7 +39,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Write to memory on a BMP.
  */
 class BMPWriteSerialFlashProcess extends BMPCommandProcess {
+
 	/**
+	 * Construct a process to write to memory on a BMP.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -146,6 +149,8 @@ abstract class BMPWriteSFIterable implements Iterable<WriteSerialFlash> {
 	private ByteBuffer sendBuffer;
 
 	/**
+	 * Constructs an iterator for writing a stream of chunks.
+	 *
 	 * @param board
 	 *            Where the write messages are going.
 	 * @param address

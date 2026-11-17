@@ -26,13 +26,15 @@ public class JobListCompat {
 	private List<QueueJobCompat> objects;
 
 	/**
-	 * @return the jobs
+	 * {@return the jobs}
 	 */
 	public List<QueueJobCompat> getObjects() {
 		return objects;
 	}
 
 	/**
+	 * Set the jobs.
+	 *
 	 * @param objects
 	 *            the jobs to set
 	 */

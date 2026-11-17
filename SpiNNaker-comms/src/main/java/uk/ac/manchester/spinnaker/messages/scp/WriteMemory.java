@@ -31,7 +31,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code sark_cmd_write()} in {@code sark_base.c}.
  */
 public class WriteMemory extends SCPRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a write requested based on a core.
+	 *
 	 * @param core
 	 *            the core to write via
 	 * @param baseAddress
@@ -50,6 +53,10 @@ public class WriteMemory extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Constructs a write requested based on a Chip.
+	 *
+	 * Will use the Scamp core of that Chip.
+	 *
 	 * @param chip
 	 *            the chip to write via
 	 * @param baseAddress

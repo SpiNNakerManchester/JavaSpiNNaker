@@ -89,6 +89,8 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 public class AllocatorTask extends DatabaseAwareBean
 		implements PowerController {
 	/**
+	 * The No Dictection.
+	 *
 	 * @see #setPower(Connection,int,PowerState)
 	 */
 	private static final EnumSet<Direction> NO_PERIMETER =
@@ -834,16 +836,16 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		/**
-		 * @return The number of job records to copy over to the historical
-		 *         database.
+		 * {@return The number of job records to copy over to the historical
+		 *         database}
 		 */
 		int numJobs() {
 			return jobs.size();
 		}
 
 		/**
-		 * @return The number of board allocation records to copy over to the
-		 *         historical database.
+		 * {@return The number of board allocation records to copy over to the
+		 *         historical database}
 		 */
 		int numAllocs() {
 			return allocs.size();
@@ -1136,7 +1138,9 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		}
 
-		/** @return The estimated dimensions as a rectangle. */
+		/**
+		 * {@return The estimated dimensions as a rectangle}
+		 */
 		Rectangle getRect() {
 			return new Rectangle(width, height, TRIAD_DEPTH);
 		}
@@ -1459,7 +1463,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		void emergencyStop();
 
 		/**
-		 * Restart allocations after stopping, to allow more tests!
+		 * Restart allocations after stopping, to allow more tests.
 		 */
 		void restartAfterStop();
 	}
@@ -1477,6 +1481,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/**
+	 * testing method do not use.
+	 *
 	 * @param conn
 	 *            The DB connection
 	 * @return The test interface.
@@ -1523,6 +1529,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/**
+	 * Testing method do not use.
+	 *
 	 * @param conn
 	 *            The DB connection
 	 * @param histConn

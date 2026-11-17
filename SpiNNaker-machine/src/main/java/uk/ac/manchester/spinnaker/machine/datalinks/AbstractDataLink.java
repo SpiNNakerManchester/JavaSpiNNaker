@@ -44,6 +44,8 @@ public abstract class AbstractDataLink implements HasChipLocation {
 	public final Direction direction;
 
 	/**
+	 * Create an instance.
+	 *
 	 * @param location
 	 *            The location/chip being linked to
 	 * @param linkId

@@ -56,6 +56,8 @@ public class HeapElement {
 	private static final int BLOCK_HEADER_SIZE = 8;
 
 	/**
+	 * Constructs an element of one of the heaps.
+	 *
 	 * @param blockAddress
 	 *            The address of this element on the heap
 	 * @param nextAddress

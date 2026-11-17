@@ -128,6 +128,9 @@ class SpiNNaker1 implements SpiNNakerControl {
 	static final Factory FACTORY = SpiNNaker1::new;
 
 	/**
+	 * Constructs an Implementation of controller for one BMP
+	 *    of one SpiNNaker 1 based system.
+	 *
 	 * @param machine
 	 *            The machine hosting the boards and FPGAs.
 	 * @param bmp
@@ -195,7 +198,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	/**
-	 * Is a board new enough to be able to manage FPGAs?
+	 * Is a board new enough to be able to manage FPGAs.
 	 *
 	 * @param board
 	 *            The board number.

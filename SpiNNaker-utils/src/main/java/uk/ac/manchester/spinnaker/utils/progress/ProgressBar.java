@@ -194,7 +194,7 @@ public class ProgressBar implements Closeable {
 	}
 
 	/**
-	 * @return True if the progress bar is closed
+	 * {@return True if the progress bar is closed}
 	 */
 	public boolean isClosed() {
 		return closed;

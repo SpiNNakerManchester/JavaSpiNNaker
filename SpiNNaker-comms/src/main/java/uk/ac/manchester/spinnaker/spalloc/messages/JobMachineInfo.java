@@ -43,6 +43,8 @@ public final class JobMachineInfo {
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
 
 	/**
+	 * Constructs a description of a machine.
+	 *
 	 * @param width
 	 *            The width of the allocated machine chunk.
 	 * @param height
@@ -63,27 +65,37 @@ public final class JobMachineInfo {
 		this.boards = copy(boards);
 	}
 
-	/** @return The width of the allocated machine chunk. */
+	/**
+	 * {@return The width of the allocated machine chunk}
+	 */
 	public int getWidth() {
 		return width;
 	}
 
-	/** @return The height of the allocated machine chunk. */
+	/**
+	 * {@return The height of the allocated machine chunk}
+	 */
 	public int getHeight() {
 		return height;
 	}
 
-	/** @return How to talk to the allocated boards. */
+	/**
+	 * {@return How to talk to the allocated boards}
+	 */
 	public List<Connection> getConnections() {
 		return connections;
 	}
 
-	/** @return The name of the machine handling the job. */
+	/**
+	 * {@return The name of the machine handling the job}
+	 */
 	public String getMachineName() {
 		return machineName;
 	}
 
-	/** @return Locations of the allocated boards. */
+	/**
+	 * {@return Locations of the allocated boards}
+	 */
 	public List<BoardCoordinates> getBoards() {
 		return boards;
 	}

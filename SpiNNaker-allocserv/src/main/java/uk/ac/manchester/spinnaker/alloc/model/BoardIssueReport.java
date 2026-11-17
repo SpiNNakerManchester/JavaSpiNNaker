@@ -62,7 +62,9 @@ public class BoardIssueReport {
 		timestamp = row.getInstant("report_timestamp");
 	}
 
-	/** @return The report ID. */
+	/**
+	 * {@return The report ID}
+	 */
 	public int getId() {
 		return id;
 	}
@@ -71,7 +73,9 @@ public class BoardIssueReport {
 		this.id = id;
 	}
 
-	/** @return The board ID. */
+	/**
+	 * {@return The board ID}
+	 */
 	public int getBoardId() {
 		return boardId;
 	}
@@ -80,7 +84,9 @@ public class BoardIssueReport {
 		this.boardId = id;
 	}
 
-	/** @return What did they report? */
+	/**
+	 * {@return What did they report}
+	 */
 	public String getIssue() {
 		return issue;
 	}
@@ -89,7 +95,9 @@ public class BoardIssueReport {
 		this.issue = issue;
 	}
 
-	/** @return Who reported it? */
+	/**
+	 * {@return Who reported it}
+	 */
 	public String getReporter() {
 		return reporter;
 	}
@@ -98,7 +106,9 @@ public class BoardIssueReport {
 		this.reporter = reporter;
 	}
 
-	/** @return When was it reported? */
+	/**
+	 * {@return When was it reported}
+	 */
 	public Instant getTimestamp() {
 		return timestamp;
 	}

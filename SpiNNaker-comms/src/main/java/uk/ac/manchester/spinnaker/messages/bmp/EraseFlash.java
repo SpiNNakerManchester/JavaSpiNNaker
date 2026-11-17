@@ -36,6 +36,8 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	private static final int MEMORY_LIMIT = 524288;
 
 	/**
+	 * Construct a request to erase flash memory on a BMP.
+	 *
 	 * @param board
 	 *            the board with the BMP to write the memory of
 	 * @param baseAddress
@@ -77,7 +79,9 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
 		}
 
-		/** @return Where the buffer is located. */
+		/**
+		 * {@return Where the buffer is located}
+		 */
 		@Override
 		protected MemoryLocation parse(ByteBuffer buffer) {
 			return new MemoryLocation(buffer.getInt());

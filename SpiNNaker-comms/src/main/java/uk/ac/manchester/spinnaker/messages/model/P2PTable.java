@@ -115,7 +115,9 @@ public class P2PTable {
 		return ((COLUMN_SIZE * column) / NBBY) * WORD_SIZE;
 	}
 
-	/** @return The coordinates of chips in the table. */
+	/**
+	 * {@return The coordinates of chips in the table}
+	 */
 	public Set<ChipLocation> getChips() {
 		return copy(routes.keySet());
 	}

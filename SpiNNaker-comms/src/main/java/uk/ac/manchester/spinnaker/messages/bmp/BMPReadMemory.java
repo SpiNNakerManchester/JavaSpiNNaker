@@ -42,6 +42,8 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	}
 
 	/**
+	 * Construct a request to read a region of memory from a BMP.
+	 *
 	 * @param board
 	 *            which board to read the memory of
 	 * @param address
@@ -70,7 +72,9 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 			super("Read", CMD_READ, buffer);
 		}
 
-		/** @return The data read, in a little-endian read-only buffer. */
+		/**
+		 * {@return The data read, in a little-endian read-only buffer}
+		 */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
 			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);

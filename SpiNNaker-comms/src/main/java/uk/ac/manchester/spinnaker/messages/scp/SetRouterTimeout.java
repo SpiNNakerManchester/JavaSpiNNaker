@@ -31,7 +31,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code extra_monitor_support.c}.
  */
 public class SetRouterTimeout extends ReinjectorRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a request to set the timeeout.
+	 *
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 * @param timeoutMantissa

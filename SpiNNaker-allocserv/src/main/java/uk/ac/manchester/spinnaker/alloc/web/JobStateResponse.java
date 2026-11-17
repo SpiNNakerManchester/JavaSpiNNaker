@@ -140,7 +140,9 @@ public class JobStateResponse {
 				.path(SpinWSHandler.PATH).build(job.getId());
 	}
 
-	/** @return The formal state of the job */
+	/**
+	 * {@return The formal state of the job}
+	 */
 	public JobState getState() {
 		return state;
 	}
@@ -149,7 +151,9 @@ public class JobStateResponse {
 		this.state = state;
 	}
 
-	/** @return When the job started. */
+	/**
+	 * {@return When the job started}
+	 */
 	public Instant getStartTime() {
 		return startTime;
 	}
@@ -158,7 +162,9 @@ public class JobStateResponse {
 		this.startTime = startTime;
 	}
 
-	/** @return The reason the job was destroyed. */
+	/**
+	 * {@return The reason the job was destroyed}
+	 */
 	@JsonInclude(NON_NULL)
 	public String getReason() {
 		return reason;
@@ -168,7 +174,9 @@ public class JobStateResponse {
 		this.reason = reason;
 	}
 
-	/** @return What host (if any) is keeping the job alive? */
+	/**
+	 * {@return What host (if any) is keeping the job alive}
+	 */
 	@JsonInclude(NON_NULL)
 	public String getKeepaliveHost() {
 		if (state == DESTROYED) {
@@ -181,7 +189,9 @@ public class JobStateResponse {
 		this.keepaliveHost = keepaliveHost;
 	}
 
-	/** @return Who created the job? */
+	/**
+	 * {@return Who created the job}
+	 */
 	@JsonInclude(NON_NULL)
 	public String getOwner() {
 		return owner;
@@ -191,13 +201,17 @@ public class JobStateResponse {
 		this.owner = owner;
 	}
 
-	/** @return When the job finished. */
+	/**
+	 * {@return When the job finished}
+	 */
 	@JsonInclude(NON_NULL)
 	public Instant getFinishTime() {
 		return finishTime;
 	}
 
-	/** @return When the job last had a keep-alive message. */
+	/**
+	 * {@return When the job last had a keep-alive message}
+	 */
 	@JsonInclude(NON_NULL)
 	public Instant getKeepAliveTime() {
 		if (state == DESTROYED) {

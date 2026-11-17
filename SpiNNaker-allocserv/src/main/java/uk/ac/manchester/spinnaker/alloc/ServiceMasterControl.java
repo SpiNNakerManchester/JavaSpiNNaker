@@ -56,7 +56,7 @@ public class ServiceMasterControl {
 	}
 
 	/**
-	 * @return Whether periodic tasks should not run.
+	 * {@return Whether periodic tasks should not run}
 	 */
 	@ManagedAttribute(description = "Whether periodic tasks should not run.")
 	public synchronized boolean isPaused() {
@@ -64,6 +64,8 @@ public class ServiceMasterControl {
 	}
 
 	/**
+	 * Sets whether periodic tasks should not run.
+	 *
 	 * @param paused
 	 *            Whether periodic tasks should not run.
 	 */
@@ -94,7 +96,7 @@ public class ServiceMasterControl {
 	}
 
 	/**
-	 * @return Whether to use dummy transceivers for talking to the BMPs.
+	 * {@return Whether to use dummy transceivers for talking to the BMPs}
 	 */
 	@ManagedAttribute(
 			description = "Whether the service actually talks to BMPs; "
@@ -104,6 +106,8 @@ public class ServiceMasterControl {
 	}
 
 	/**
+	 * Set whether to use dummy transceivers for talking to the BMPs.
+	 *
 	 * @param dummyBMP
 	 *            Whether to use dummy transceivers for talking to the BMPs.
 	 */

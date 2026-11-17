@@ -62,13 +62,15 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the user id
+	 * {@return the user id}
 	 */
 	public final int getUserId() {
 		return userId;
 	}
 
 	/**
+	 * Sets the user id.
+	 *
 	 * @param userId
 	 *            the user id
 	 */
@@ -77,13 +79,15 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the username
+	 * {@return the username}
 	 */
 	public final String getUsername() {
 		return username;
 	}
 
 	/**
+	 * Sets the username.
+	 *
 	 * @param username
 	 *            the username
 	 */
@@ -92,7 +96,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the old password
+	 * {@return the old password}
 	 */
 	@NotBlank(message = "old password must be supplied")
 	public String getOldPassword() {
@@ -100,6 +104,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
+	 * Sets the old password.
+	 *
 	 * @param password
 	 *            the old password
 	 */
@@ -108,7 +114,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the first copy of the new password
+	 * {@return the first copy of the new password}
 	 */
 	@NotBlank(message = "new password must be supplied")
 	public String getNewPassword() {
@@ -116,6 +122,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
+	 * Sets the first copy of the new password.
+	 *
 	 * @param newPassword
 	 *            the first copy of the new password
 	 */
@@ -124,7 +132,7 @@ public class PasswordChangeRecord {
 	}
 
 	/**
-	 * @return the second copy of the new password
+	 * {@return the second copy of the new password}
 	 */
 	@NotBlank(message = "second copy of new password must be supplied")
 	public String getNewPassword2() {
@@ -132,6 +140,8 @@ public class PasswordChangeRecord {
 	}
 
 	/**
+	 * Sets the second copy of the new password.
+	 *
 	 * @param newPassword2
 	 *            the second copy of the new password
 	 */
@@ -139,13 +149,17 @@ public class PasswordChangeRecord {
 		this.newPassword2 = newPassword2;
 	}
 
-	/** @return whether the password is being changed at all */
+	/**
+	 * {@return whether the password is being changed at all}
+	 */
 	@AssertFalse(message = "old and new passwords must be different")
 	public boolean isNewPasswordSameAsOld() {
 		return newPassword.equals(oldPassword);
 	}
 
-	/** @return whether the two copies of the new password are the same */
+	/**
+	 * {@return whether the two copies of the new password are the same}
+	 */
 	@AssertTrue(message = "second copy of new password must be same as first")
 	public boolean isNewPasswordMatched() {
 		return newPassword.equals(newPassword2);

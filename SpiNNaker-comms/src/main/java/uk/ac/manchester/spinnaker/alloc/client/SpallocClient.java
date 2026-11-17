@@ -173,7 +173,7 @@ public interface SpallocClient {
 		int getLiveBoardCount();
 
 		/**
-		 * What boards in the machine are dead?
+		 * What boards in the machine are dead.
 		 *
 		 * @return The dead boards of the machine.
 		 */
@@ -482,7 +482,7 @@ public interface SpallocClient {
 		}
 
 		/**
-		 * @return The HTTP response code that triggered the exception.
+		 * {@return The HTTP response code that triggered the exception}
 		 */
 		public int getResponseCode() {
 			return responseCode;

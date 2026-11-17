@@ -83,17 +83,23 @@ public class BoardPhysicalCoordinates {
 		this.board = coords.b;
 	}
 
-	/** @return the cabinet ID */
+	/**
+	 * {@return the cabinet ID}
+	 */
 	public int getCabinet() {
 		return cabinet;
 	}
 
-	/** @return the frame ID within the cabinet */
+	/**
+	 * {@return the frame ID within the cabinet}
+	 */
 	public int getFrame() {
 		return frame;
 	}
 
-	/** @return the board ID within the frame */
+	/**
+	 * {@return the board ID within the frame}
+	 */
 	public Integer getBoard() {
 		return board;
 	}

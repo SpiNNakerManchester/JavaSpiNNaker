@@ -96,28 +96,28 @@ public class ChipResources {
 	}
 
 	/**
-	 * @return the number of cores.
+	 * {@return the number of cores}
 	 */
 	public int getCores() {
 		return cores;
 	}
 
 	/**
-	 * @return the monitors
+	 * {@return the monitors}
 	 */
 	public int getMonitors() {
 		return monitors;
 	}
 
 	/**
-	 * @return the SDRAM capacity
+	 * {@return the SDRAM capacity}
 	 */
 	public int getSdram() {
 		return sdram;
 	}
 
 	/**
-	 * @return the tags
+	 * {@return the tags}
 	 */
 	public List<Integer> getTags() {
 		if (tags == null) {
@@ -127,7 +127,7 @@ public class ChipResources {
 	}
 
 	/**
-	 * @return the number of router entries
+	 * {@return the number of router entries}
 	 */
 	public int getRouterEntries() {
 		return routerEntries;

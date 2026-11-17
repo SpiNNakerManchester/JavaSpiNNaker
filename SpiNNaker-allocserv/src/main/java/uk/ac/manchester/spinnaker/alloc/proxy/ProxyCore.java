@@ -98,6 +98,8 @@ public class ProxyCore implements AutoCloseable {
 	private final InetAddress localHost;
 
 	/**
+	 * Constructs the main proxy class for this web socket session.
+	 *
 	 * @param s
 	 *            The websocket session.
 	 * @param connections

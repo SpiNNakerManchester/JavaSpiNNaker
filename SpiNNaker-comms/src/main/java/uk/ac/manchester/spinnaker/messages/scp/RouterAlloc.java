@@ -39,6 +39,8 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 	private final int numEntries;
 
 	/**
+	 * Construct the Router allocate request.
+	 *
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID
@@ -71,7 +73,9 @@ public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
 			super("Router Allocation", CMD_ALLOC, buffer);
 		}
 
-		/** @return The base entry index allocated within the router. */
+		/**
+		 * {@return The base entry index allocated within the router}
+		 */
 		@Override
 		protected Integer parse(ByteBuffer buffer)
 				throws MemoryAllocationFailedException {

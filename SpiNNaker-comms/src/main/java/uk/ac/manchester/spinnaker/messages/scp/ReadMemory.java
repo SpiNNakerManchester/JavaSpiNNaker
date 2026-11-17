@@ -43,6 +43,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	}
 
 	/**
+	 * Constructs a read request using this core.
+	 *
 	 * @param core
 	 *            the core to read via
 	 * @param address
@@ -56,6 +58,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	}
 
 	/**
+	 * Constructs a read request using the scamp core on this chip.
+	 *
 	 * @param chip
 	 *            the chip to read via
 	 * @param address
@@ -85,7 +89,9 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 			super("Read", CMD_READ, buffer);
 		}
 
-		/** @return The data read, in a little-endian read-only buffer. */
+		/**
+		 * {@return The data read, in a little-endian read-only buffer}
+		 */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
 			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);

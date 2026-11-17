@@ -49,6 +49,8 @@ public final class FloodFillEnd extends SCPRequest<EmptyResponse> {
 	private static final int WAIT_BIT = 18;
 
 	/**
+	 * Constructs a flood fill request based only the neighbour.
+	 *
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 */
@@ -57,6 +59,8 @@ public final class FloodFillEnd extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Constructs a flood fill request based on all the paramaters.
+	 *
 	 * @param nearestNeighbourID
 	 *            The ID of the packet, between 0 and 127
 	 * @param appID

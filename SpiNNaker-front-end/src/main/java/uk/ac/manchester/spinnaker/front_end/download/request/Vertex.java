@@ -127,14 +127,14 @@ public class Vertex {
 	}
 
 	/**
-	 * @return The label, as received from Python.
+	 * {@return The label, as received from Python}
 	 */
 	public String getLabel() {
 		return label;
 	}
 
 	/**
-	 * @return The non-recording regions to download.
+	 * {@return The non-recording regions to download}
 	 */
 	public DownloadRegion[] getDownloadRegions() {
 		return downloadRegions;

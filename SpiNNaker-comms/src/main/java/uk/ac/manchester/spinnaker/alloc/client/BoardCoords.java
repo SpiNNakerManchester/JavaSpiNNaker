@@ -65,6 +65,8 @@ public class BoardCoords {
 	private final String address;
 
 	/**
+	 * Constructs a collection of board coordinates.
+	 *
 	 * @param x
 	 *            Logical triad X coordinate
 	 * @param y

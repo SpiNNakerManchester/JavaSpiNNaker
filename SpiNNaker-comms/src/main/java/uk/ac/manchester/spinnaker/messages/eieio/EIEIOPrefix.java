@@ -28,6 +28,8 @@ public enum EIEIOPrefix {
 	final int shift;
 
 	/**
+	 * Construct a prefix.
+	 *
 	 * @param value
 	 *            the value
 	 * @param shift
@@ -38,7 +40,9 @@ public enum EIEIOPrefix {
 		this.shift = shift;
 	}
 
-	/** @return the encoded form. */
+	/**
+	 * {@return the encoded form}
+	 */
 	public int getValue() {
 		return value;
 	}

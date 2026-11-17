@@ -78,6 +78,7 @@ limitations under the License.
 			<property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
 			<property name="accessModifiers" value="public, protected, package" />
 			<property name="validateThrows" value="true" />
+			<property name="allowInlineReturn" value="true" />
 		</module>
 		<module name="JavadocMissingLeadingAsterisk"/>
 		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
@@ -107,6 +108,7 @@ limitations under the License.
 		<!-- module name="RequireEmptyLineBeforeBlockTagGroup"/ not respected also docs with just return -->
 		<!-- module name="SingleLineJavadoc"/ not respected also docs with just return -->
 		<!-- module name="SummaryJavadoc"/ Currently not respected -->
+		<module name="SummaryJavadoc"/>
 		<!--  module name="WriteTag"/ No user defined tags required-->
 
 		<module name="ConstantName">

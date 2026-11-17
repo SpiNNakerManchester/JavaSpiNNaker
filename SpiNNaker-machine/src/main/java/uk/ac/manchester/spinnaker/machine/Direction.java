@@ -57,6 +57,8 @@ public enum Direction {
 	public final String label;
 
 	/**
+	 * Creates a forward direction.
+	 *
 	 * @param id
 	 *            ID of this direction.
 	 * @param xChange
@@ -111,7 +113,7 @@ public enum Direction {
 	}
 
 	/**
-	 * The Direction with this label
+	 * The Direction with this label.
 	 * <p>
 	 * The current implementation assumes the labels are lower-case and words
 	 * are separated by underscore (e.g., {@code north_east}).

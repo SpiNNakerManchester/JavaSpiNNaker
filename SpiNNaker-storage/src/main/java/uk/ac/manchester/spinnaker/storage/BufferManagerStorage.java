@@ -108,40 +108,42 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 
 		/**
 		 * What was the index of the region in the table of regions for the
-		 * core?
+		 * core.
 		 */
 		public final int regionIndex;
 
 		/**
-		 * Where should the data be downloaded from? <em>This is not necessarily
-		 * the start of the region.</em>
+		 * Where should the data be downloaded from.
+		 *
+		 * <em>This is not necessarily the start of the region.</em>
 		 */
 		@NotNull
 		public final MemoryLocation startAddress;
 
 		/**
-		 * How much data should be downloaded? <em>This is not necessarily the
-		 * size of the region.</em>
+		 * How much data should be downloaded.
+		 *
+		 * <em>This is not necessarily the size of the region</em>
 		 */
 		@Positive
 		public final int size;
 
 		/**
-		 * How much data was originally requested?
+		 * How much data was originally requested.
 		 */
 		@Positive
 		public final int realSize;
 
 		/**
 		 * How many extra bytes are being read at the start of the region in
-		 * order to get an aligned read?
+		 * order to get an aligned read.
 		 */
 		@PositiveOrZero
 		public final int initialIgnore;
 
 		/**
 		 * How many extra bytes are being read at the end of the region in order
-		 * to get an aligned read?
+		 * to get an aligned read.
 		 */
 		@PositiveOrZero
 		public final int finalIgnore;
@@ -191,14 +193,19 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 		}
 
 		/**
-		 * @return Whether this is an aligned buffer. Aligned buffers can be
-		 *         read with efficient reading techniques.
+		 * Whether this is an aligned buffer.
+		 *
+		 * Aligned buffers can be read with efficient reading techniques.
+		 *
+		 * @return Whether this is an aligned buffer
 		 */
 		public final boolean isAligned() {
 			return initialIgnore == 0 && finalIgnore == 0;
 		}
 
-		/** @return Whether this is a non-empty buffer. */
+		/**
+		 * {@return Whether this is a non-empty buffer}
+		 */
 		public final boolean isNonEmpty() {
 			return size > 0;
 		}
@@ -266,7 +273,9 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 			throws StorageException;
 
 	/**
-	 * Testing method!  Other usage not supported!
+	 * Testing method.
+	 *
+	 * Other usage not supported!
 	 *
 	 * @throws StorageException
 	 *     If there is an error writing to the database.

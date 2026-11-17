@@ -201,7 +201,9 @@ public class SQLiteBufferStorage
 	}
 
 	/**
-	 * Testing method!  Other usage not supported!
+	 * Testing method.
+	 *
+	 * Other usage not supported!
 	 *
 	 * @throws StorageException
 	 *     If there is an error writing to the database.

@@ -109,7 +109,7 @@ public class IssueReportRequest {
 		}
 
 		/**
-		 * Does this represent a valid way of identifying a board?
+		 * Does this represent a valid way of identifying a board.
 		 *
 		 * @return Yes if at least one way of giving coordinates is valid.
 		 */

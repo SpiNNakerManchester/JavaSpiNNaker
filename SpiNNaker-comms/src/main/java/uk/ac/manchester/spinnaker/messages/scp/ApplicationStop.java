@@ -69,6 +69,8 @@ public final class ApplicationStop extends SCPRequest<EmptyResponse> {
 	}
 
 	/**
+	 * Constructs a request to stop an application.
+	 *
 	 * @param appID
 	 *            The ID of the application
 	 */

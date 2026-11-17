@@ -136,6 +136,7 @@ public class RequestFailedException extends RuntimeException {
 		private static final long serialVersionUID = 3774531853141947270L;
 
 		/**
+		 * Construct a resource believed to no longer to exist.
 		 * @param message
 		 *            What message to use to say "its gone away".
 		 */
@@ -149,6 +150,8 @@ public class RequestFailedException extends RuntimeException {
 		private static final long serialVersionUID = 5991697173204757030L;
 
 		/**
+		 * Constructs a resource which cannot be located.
+		 *
 		 * @param message
 		 *            What message to use to say "not found".
 		 */
@@ -157,6 +160,9 @@ public class RequestFailedException extends RuntimeException {
 		}
 
 		/**
+		 * Constructs a resource which cannot be located,
+		 *     including the error thrown while looking for it.
+		 *
 		 * @param message
 		 *            What message to use to say "not found".
 		 * @param cause
@@ -172,6 +178,8 @@ public class RequestFailedException extends RuntimeException {
 		private static final long serialVersionUID = 7916573155067333350L;
 
 		/**
+		 * Constructs info that the client provided bad arguments in a request.
+		 *
 		 * @param message
 		 *            What message to use to say "bad arguments".
 		 */

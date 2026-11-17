@@ -95,6 +95,8 @@ public final class IPTag extends Tag {
 	}
 
 	/**
+	 * Create an IP tag.
+	 *
 	 * @param boardAddress
 	 *            The IP address of the board on which the tag is allocated
 	 * @param destination
@@ -113,6 +115,8 @@ public final class IPTag extends Tag {
 	}
 
 	/**
+	 * Create an IP tag.
+	 *
 	 * @param boardAddress
 	 *            The IP address of the board on which the tag is allocated
 	 * @param destination
@@ -134,6 +138,8 @@ public final class IPTag extends Tag {
 	}
 
 	/**
+	 * Create an IP tag.
+	 *
 	 * @param boardAddress
 	 *            The IP address of the board on which the tag is allocated
 	 * @param destination
@@ -215,24 +221,28 @@ public final class IPTag extends Tag {
 	}
 
 	/**
-	 * @return The IP address to which SDP packets with this tag will be sent.
+	 * {@return The IP address to which SDP packets with this tag will be sent}
 	 */
 	public InetAddress getIPAddress() {
 		return ipAddress;
 	}
 
-	/** @return Return if the SDP header is to be stripped. */
+	/**
+	 * {@return Return if the SDP header is to be stripped}
+	 */
 	public boolean isStripSDP() {
 		return stripSDP;
 	}
 
-	/** @return The identifier of traffic using this tag. */
+	/**
+	 * {@return The identifier of traffic using this tag}
+	 */
 	public TrafficIdentifier getTrafficIdentifier() {
 		return trafficIdentifier;
 	}
 
 	/**
-	 * @return The coordinates where users of this tag should send packets to.
+	 * {@return The coordinates where users of this tag should send packets to}
 	 */
 	public ChipLocation getDestination() {
 		return destination;

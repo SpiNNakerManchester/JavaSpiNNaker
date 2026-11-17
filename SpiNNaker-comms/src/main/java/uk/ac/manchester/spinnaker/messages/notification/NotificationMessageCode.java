@@ -38,7 +38,9 @@ public enum NotificationMessageCode {
 		this.value = value;
 	}
 
-	/** @return The value of this code. */
+	/**
+	 * {@return The value of this code}
+	 */
 	public int getValue() {
 		return value;
 	}

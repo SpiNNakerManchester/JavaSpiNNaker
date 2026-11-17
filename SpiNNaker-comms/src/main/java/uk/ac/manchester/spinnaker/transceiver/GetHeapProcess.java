@@ -42,6 +42,8 @@ final class GetHeapProcess extends TxrxProcess {
 	private static final int HEAP_BLOCK_HEADER_SIZE = 8;
 
 	/**
+	 * Construct a process to get the heap description.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

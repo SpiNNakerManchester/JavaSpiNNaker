@@ -45,6 +45,8 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private final int size;
 
 	/**
+	 * Create a request to allocate space in the SDRAM space using tag 0.
+	 *
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID
@@ -57,6 +59,8 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	/**
+	 * Create a request to allocate space in the SDRAM space using the tag.
+	 *
 	 * @param chip
 	 *            the chip to allocate on
 	 * @param appID
@@ -106,7 +110,9 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 			super("SDRAM Allocation", CMD_ALLOC, buffer);
 		}
 
-		/** @return The base address allocated. */
+		/**
+		 * {@return The base address allocated}
+		 */
 		@Override
 		protected MemoryLocation parse(ByteBuffer buffer)
 				throws MemoryAllocationFailedException {

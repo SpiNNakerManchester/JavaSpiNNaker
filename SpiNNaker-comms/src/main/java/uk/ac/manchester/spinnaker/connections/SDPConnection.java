@@ -46,6 +46,8 @@ public class SDPConnection extends UDPConnection<SDPMessage> {
 	private ChipLocation chip;
 
 	/**
+	 * Construct a UDP socket connection that talks SDP.
+	 *
 	 * @param remoteChip
 	 *            Which chip are we talking to? This is not necessarily the chip
 	 *            that is connected to the Ethernet connector on the SpiNNaker
@@ -115,7 +117,7 @@ public class SDPConnection extends UDPConnection<SDPMessage> {
 	}
 
 	/**
-	 * @return The SpiNNaker chip that we are talking to with this connection.
+	 * {@return The SpiNNaker chip that we are talking to with this connection}
 	 */
 	public ChipLocation getChip() {
 		return chip;

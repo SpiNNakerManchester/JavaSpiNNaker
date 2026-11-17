@@ -69,7 +69,9 @@ public class ServiceDescription {
 		}
 	}
 
-	/** @return The service version */
+	/**
+	 * {@return The service version}
+	 */
 	public Version getVersion() {
 		return version;
 	}
@@ -78,7 +80,9 @@ public class ServiceDescription {
 		this.version = version;
 	}
 
-	/** @return Where to work with jobs */
+	/**
+	 * {@return Where to work with jobs}
+	 */
 	public URI getJobsRef() {
 		return jobsRef;
 	}
@@ -87,7 +91,9 @@ public class ServiceDescription {
 		this.jobsRef = jobsRef;
 	}
 
-	/** @return Where to work with machines */
+	/**
+	 * {@return Where to work with machines}
+	 */
 	public URI getMachinesRef() {
 		return machinesRef;
 	}
@@ -97,14 +103,14 @@ public class ServiceDescription {
 	}
 
 	/**
-	 * @return the name of the HTTP header to pass the CSRF token in
+	 * {@return the name of the HTTP header to pass the CSRF token in}
 	 */
 	public String getCsrfHeader() {
 		return csrfHeader;
 	}
 
 	/**
-	 * @return the CSRF token
+	 * {@return the CSRF token}
 	 */
 	public String getCsrfToken() {
 		return csrfToken;

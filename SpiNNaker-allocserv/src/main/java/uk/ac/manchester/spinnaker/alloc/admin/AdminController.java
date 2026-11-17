@@ -265,13 +265,17 @@ public interface AdminController {
 
 		private static final int DECIMAL = 10;
 
-		/** @return The name of the group to create. */
+		/**
+		 * {@return The name of the group to create}
+		 */
 		@NotBlank
 		public String getName() {
 			return name;
 		}
 
 		/**
+		 * Sets the name of the group to create.
+		 *
 		 * @param name
 		 *            The name of the group to create.
 		 */
@@ -280,14 +284,19 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return The quota of the group to create, as a {@link String}. Empty
-		 *         if the group is quota-less.
+		 * the quota of the group to create, as a String.
+		 *
+		 * Empty if the group is quota-less.
+		 *
+		 * @return The quota of the group to create
 		 */
 		public String getQuota() {
 			return Objects.toString(quota, "");
 		}
 
 		/**
+		 * Sets the quota of the group to create, as a {@link String}.
+		 *
 		 * @param quota
 		 *            The quota of the group to create, as a {@link String}.
 		 */
@@ -300,7 +309,7 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return This request, as a partial group record.
+		 * {@return This request, as a partial group record}
 		 */
 		public GroupRecord toGroupRecord() {
 			var gr = new GroupRecord();
@@ -311,12 +320,16 @@ public interface AdminController {
 			return gr;
 		}
 
-		/** @return Whether the group has a quota. */
+		/**
+		 * {@return Whether the group has a quota}
+		 */
 		public boolean isQuotad() {
 			return quotaDefined;
 		}
 
 		/**
+		 * Sets whether the group has a quota.
+		 *
 		 * @param value
 		 *            Whether the group has a quota.
 		 */
@@ -525,13 +538,17 @@ public interface AdminController {
 
 		private boolean synched;
 
-		/** @return The board ID. */
+		/**
+		 * {@return The board ID}
+		 */
 		@Positive
 		public int getBoardId() {
 			return boardId;
 		}
 
 		/**
+		 * Sets the board ID.
+		 *
 		 * @param boardId
 		 *            The board ID.
 		 */
@@ -539,25 +556,33 @@ public interface AdminController {
 			this.boardId = boardId;
 		}
 
-		/** @return The BMP ID. */
+		/**
+		 * {@return The BMP ID}
+		 */
 		@Positive
 		public int getBmpId() {
 			return bmpId;
 		}
 
 		/**
+		 * Sets the BMP ID.
+		 *
 		 * @param bmpId The BMP ID.
 		 */
 		public void setBmpId(int bmpId) {
 			this.bmpId = bmpId;
 		}
 
-		/** @return The text of the blacklist, if present. */
+		/**
+		 * {@return The text of the blacklist, if present}
+		 */
 		public String getBlacklist() {
 			return blacklist;
 		}
 
 		/**
+		 * Sets the text of the blacklist.
+		 *
 		 * @param blacklist
 		 *            The text of the blacklist.
 		 */
@@ -566,7 +591,7 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return The parsed blacklist.
+		 * {@return The parsed blacklist}
 		 * @throws NullPointerException
 		 *             If no blacklist data is present.
 		 * @throws IllegalArgumentException
@@ -576,12 +601,16 @@ public interface AdminController {
 			return new Blacklist(blacklist);
 		}
 
-		/** @return Whether there is blacklist data present. */
+		/**
+		 * {@return Whether there is blacklist data present}
+		 */
 		public boolean isPresent() {
 			return present;
 		}
 
 		/**
+		 * Sets whether there is blacklist data present.
+		 *
 		 * @param present
 		 *            Whether there is blacklist data present.
 		 */
@@ -590,14 +619,17 @@ public interface AdminController {
 		}
 
 		/**
-		 * @return Whether the blacklist data is believed to be the same as the
-		 *         data on the board.
+		 * {@return Whether the blacklist data is believed to be the same
+		 *     as the data on the board}
 		 */
 		public boolean isSynched() {
 			return synched;
 		}
 
 		/**
+		 * Sets whether the blacklist data is believed to be the same as
+		 *     the data on the board.
+		 *
 		 * @param synched
 		 *            Whether the blacklist data is believed to be the same as
 		 *            the data on the board.

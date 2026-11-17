@@ -32,6 +32,8 @@ public class DockerCreateRequest {
 	private NetworkingConfig networkingConfig;
 
 	/**
+	 * Construct the request to create the docker.
+	 *
 	 * @param image
 	 *            The image to instantiate.
 	 * @param cmd
@@ -49,7 +51,7 @@ public class DockerCreateRequest {
 	}
 
 	/**
-	 * @return The image to instantiate.
+	 * {@return The image to instantiate}
 	 */
 	@JsonProperty("Image")
 	public String getImage() {
@@ -57,6 +59,8 @@ public class DockerCreateRequest {
 	}
 
 	/**
+	 * Set the image.
+	 *
 	 * @param image
 	 *            the image to set
 	 */
@@ -65,7 +69,7 @@ public class DockerCreateRequest {
 	}
 
 	/**
-	 * @return The command to run (as list of arguments).
+	 * {@return The command to run (as list of arguments)}
 	 */
 	@JsonProperty("Cmd")
 	public List<String> getCmd() {
@@ -73,6 +77,8 @@ public class DockerCreateRequest {
 	}
 
 	/**
+	 * Set the command.
+	 *
 	 * @param cmd
 	 *            the cmd to set
 	 */

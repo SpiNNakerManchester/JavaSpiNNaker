@@ -23,13 +23,16 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * A request to set the dropped packet reinjected packet types. There is no
+ * A request to clear reinjection queue. There is no
  * response payload.
  * <p>
  * Handled by {@code reinjection_clear()} in {@code extra_monitor_support.c}.
  */
 public class ClearReinjectionQueue extends ReinjectorRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a request to clear reinjection queue.
+	 *
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */

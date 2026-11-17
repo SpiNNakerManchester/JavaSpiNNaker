@@ -25,6 +25,8 @@ public class SpallocServerException extends Exception {
 	private static final long serialVersionUID = 3865188016221866202L;
 
 	/**
+	 * Constructs a server exception based on a message.
+	 *
 	 * @param msg
 	 *            The message of the exception.
 	 */
@@ -33,6 +35,8 @@ public class SpallocServerException extends Exception {
 	}
 
 	/**
+	 * Constructs a server exception based on the exception in the response.
+	 *
 	 * @param r
 	 *            The deserialised message from the server.
 	 */

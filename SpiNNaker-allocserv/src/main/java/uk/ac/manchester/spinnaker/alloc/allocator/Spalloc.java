@@ -1306,6 +1306,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	/** Used to assemble an issue-report email for sending. */
 	private static final class EmailBuilder {
 		/**
+		 * An efficient Formatter.
+		 *
 		 * More efficient than several String.format() calls, and much clearer
 		 * than a mess of direct {@link StringBuilder} calls!
 		 */
@@ -1314,6 +1316,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		private final int id;
 
 		/**
+		 * Constructs a builder of issue-report email for sending.
+		 *
 		 * @param id
 		 *            The job ID
 		 */
@@ -1367,7 +1371,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					report.address, report.numReports);
 		}
 
-		/** @return The assembled message body. */
+		/**
+		 * {@return The assembled message body}
+		 */
 		@Override
 		public String toString() {
 			return b.toString();

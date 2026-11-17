@@ -52,24 +52,30 @@ public interface Connection extends Closeable {
 	boolean isClosed();
 
 	/**
-	 * @return the local (host) IP address of the socket. Expected to be an IPv4
-	 *         address when talking to SpiNNaker.
+	 * The local (host) IP address of the socket.
+	 *
+	 * Expected to be an IPv4 address when talking to SpiNNaker
+	 *
+	 * @return the local (host) IP address of the socket.
 	 */
 	InetAddress getLocalIPAddress();
 
 	/**
-	 * @return the local (host) port of the socket.
+	 * {@return the local (host) port of the socket}
 	 */
 	int getLocalPort();
 
 	/**
-	 * @return the remote (board) IP address of the socket. Expected to be an
-	 *         IPv4 address when talking to SpiNNaker.
+	 * The remote (board) IP address of the socket
+	 *
+	 * Expected to be an IPv4 address when talking to SpiNNaker.
+	 *
+	 * @return the remote (board) IP address of the socket.
 	 */
 	InetAddress getRemoteIPAddress();
 
 	/**
-	 * @return the remote (board) port of the socket.
+	 * {@return the remote (board) port of the socket}
 	 */
 	int getRemotePort();
 

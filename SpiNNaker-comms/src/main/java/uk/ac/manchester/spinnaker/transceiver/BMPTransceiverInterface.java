@@ -83,8 +83,8 @@ public interface BMPTransceiverInterface extends AutoCloseable {
 	void bind(@Valid BMPCoords bmp);
 
 	/**
-	 * @return The currently bound BMP coordinates. Defaults to 0,0 if not set
-	 *         by {@link #bind(BMPCoords)}.
+	 * {@return The currently bound BMP coordinates. Defaults to 0,0 if not set
+	 *         by {@link #bind(BMPCoords)}}
 	 */
 	BMPCoords getBoundBMP();
 

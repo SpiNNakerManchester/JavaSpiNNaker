@@ -35,7 +35,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * if sent to a BMP).
  */
 public class IPTagSetTTO extends SCPRequest<IPTagSetTTO.Response> {
+
 	/**
+	 * Constructs a request to set the transient timeout.
+	 *
 	 * @param chip
 	 *            The chip to set the tag timout on.
 	 * @param tagTimeout

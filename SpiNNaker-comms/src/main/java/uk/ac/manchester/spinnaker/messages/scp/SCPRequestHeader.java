@@ -89,7 +89,9 @@ public final class SCPRequestHeader implements SerializableMessage {
 		return sequence;
 	}
 
-	/** @return The message's sequence number. */
+	/**
+	 * {@return The message's sequence number}
+	 */
 	public int getSequence() {
 		return sequence;
 	}

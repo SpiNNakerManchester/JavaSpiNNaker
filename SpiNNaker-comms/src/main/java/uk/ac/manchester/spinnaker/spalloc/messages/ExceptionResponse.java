@@ -26,7 +26,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 public class ExceptionResponse implements Response {
 	private String exception;
 
-	/** @return The exception message. Should not include a stack trace. */
+	/**
+	 * {@return The exception message. Should not include a stack trace}
+	 */
 	public String getException() {
 		return exception;
 	}

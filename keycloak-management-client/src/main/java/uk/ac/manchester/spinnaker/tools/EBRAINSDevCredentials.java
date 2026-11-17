@@ -50,13 +50,16 @@ interface EBRAINSDevCredentials {
 			+ "/protocol/openid-connect/token";
 
 	/**
-	 * @return The user that will do the registration. Must not be {@code null}.
+	 * {@return The user that will do the registration. Must not be {@code null}}
 	 */
 	String getUser();
 
 	/**
-	 * @return The password for the user that will do the registration. Must not
-	 *         be {@code null}.
+	 * The password for the user that will do the registration.
+	 *
+	 * Must not be {@code null}}
+	 *
+	 * {@return The password.
 	 */
 	String getPass();
 

@@ -44,6 +44,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	}
 
 	/**
+	 * Constructs a read request on the core.
+	 *
 	 * @param core
 	 *            the core to read via
 	 * @param link
@@ -60,6 +62,8 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	}
 
 	/**
+	 * Constructs a read request on the scamp core of this chip.
+	 *
 	 * @param chip
 	 *            the chip to read via
 	 * @param link
@@ -92,7 +96,9 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 			super("Read Link", CMD_LINK_READ, buffer);
 		}
 
-		/** @return The data read, as a read-only little-endian buffer. */
+		/**
+		 * {@return The data read, as a read-only little-endian buffer}
+		 */
 		@Override
 		protected ByteBuffer parse(ByteBuffer buffer) {
 			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);

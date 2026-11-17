@@ -43,12 +43,16 @@ public class JobsChangedNotification implements Notification {
 		setJobsChanged(List.of(jobID));
 	}
 
-	/** @return What jobs have changed. Not accurate. */
+	/**
+	 * {@return What jobs have changed. Not accurate}
+	 */
 	public List<Integer> getJobsChanged() {
 		return jobsChanged;
 	}
 
 	/**
+	 * Constructs a response that describes what jobs have changed state.
+	 *
 	 * @param jobsChanged
 	 *            What jobs have changed.
 	 */

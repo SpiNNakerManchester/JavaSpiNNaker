@@ -115,11 +115,13 @@ public interface SpallocJobAPI {
 		setPower(true);
 	}
 
-	/** @return The ID of the job. */
+	/**
+	 * {@return The ID of the job}
+	 */
 	int getID();
 
 	/**
-	 * @return The current state of the job.
+	 * {@return The current state of the job}
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -131,7 +133,7 @@ public interface SpallocJobAPI {
 			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
-	 * @return The current power state of the job.
+	 * {@return The current power state of the job}
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -143,6 +145,14 @@ public interface SpallocJobAPI {
 			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
+	 * The reason for destruction of the job.
+	 *
+	 * Will be or {@code null} if there is no reason
+	 * (perhaps because the job isn't destroyed).
+	 *
+	 * Note that you should use {@link #getState()} to determine if the job is
+	 * destroyed, not this method.
+	 *
 	 * @return The reason for destruction of the job, or {@code null} if there
 	 *         is no reason (perhaps because the job isn't destroyed). Note that
 	 *         you should use {@link #getState()} to determine if the job is
@@ -158,8 +168,8 @@ public interface SpallocJobAPI {
 			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
-	 * @return The list of connections, where each connection says what the
-	 *         hostname is to talk to a particular board's root chip.
+	 * {@return The list of connections, where each connection says what the
+	 *         hostname is to talk to a particular board's root chip}
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -220,8 +230,8 @@ public interface SpallocJobAPI {
 	}
 
 	/**
-	 * @return The name of the host that is the root chip of the whole
-	 *         allocation.
+	 * {@return The name of the host that is the root chip of the whole
+	 *         allocation}
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -233,7 +243,7 @@ public interface SpallocJobAPI {
 			throws IOException, SpallocServerException, InterruptedException;
 
 	/**
-	 * @return The dimensions of the machine in chips, e.g., for booting.
+	 * {@return The dimensions of the machine in chips, e.g., for booting}
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -247,7 +257,7 @@ public interface SpallocJobAPI {
 			SpallocServerException, IllegalStateException, InterruptedException;
 
 	/**
-	 * @return The name of the machine the job is allocated on.
+	 * {@return The name of the machine the job is allocated on}
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -261,7 +271,7 @@ public interface SpallocJobAPI {
 			IllegalStateException, InterruptedException;
 
 	/**
-	 * @return All the boards allocated to the job.
+	 * {@return All the boards allocated to the job}
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException

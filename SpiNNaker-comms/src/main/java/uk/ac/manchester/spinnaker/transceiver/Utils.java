@@ -113,8 +113,8 @@ public abstract class Utils {
 	}
 
 	/**
-	 * @return Get a new little-endian buffer sized suitably for SpiNNaker
-	 *         messages.
+	 * {@return Get a new little-endian buffer sized suitably for SpiNNaker
+	 *         messages}
 	 */
 	public static ByteBuffer newMessageBuffer() {
 		// TODO How big should this buffer be? 256 or (256 + header size)?

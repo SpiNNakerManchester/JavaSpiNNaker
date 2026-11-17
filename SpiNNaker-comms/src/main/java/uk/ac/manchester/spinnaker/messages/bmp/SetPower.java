@@ -41,6 +41,8 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
 
 	/**
+	 * Constructs a request to power on or power off boards.
+	 *
 	 * @param powerCommand
 	 *            The power command being sent
 	 * @param boards

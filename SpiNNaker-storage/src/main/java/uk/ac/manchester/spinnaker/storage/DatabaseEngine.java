@@ -111,7 +111,7 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 	}
 
 	/**
-	 * @return The DDL for initialising this kind of database.
+	 * {@return The DDL for initialising this kind of database}
 	 */
 	public abstract String getDDL();
 }

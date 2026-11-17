@@ -151,55 +151,76 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		private Map<@Valid TriadCoords, @IPAddress String> spinnakerIPs;
 
-		/** @return The name of the machine. */
+		/**
+		 * {@return The name of the machine}
+		 */
 		public String getName() {
 			return name;
 		}
 
-		/** @return The tags of the machine. */
+		/**
+		 * {@return The tags of the machine}
+		 */
 		public Set<String> getTags() {
 			return tags;
 		}
 
-		/** @return The width of the machine, in triads. */
+		/**
+		 * {@return The width of the machine, in triads}
+		 */
 		public int getWidth() {
 			return width;
 		}
 
-		/** @return The height of the machine, in triads. */
+		/**
+		 * {@return The height of the machine, in triads}
+		 */
 		public int getHeight() {
 			return height;
 		}
 
-		/** @return The depth of the machine, the number of boards per triad. */
+		/**
+		 * {@return The depth of the machine, the number of boards per triad}
+		 */
 		public int getDepth() {
 			return boardLocations.size() == 1 ? 1 : TRIAD_DEPTH;
 		}
 
-		/** @return The dead boards of the machine. */
+		/**
+		 * {@return The dead boards of the machine}
+		 */
 		public Set<TriadCoords> getDeadBoards() {
 			return deadBoards;
 		}
 
 		/**
-		 * @return The extra dead links of the machine. Doesn't include links to
-		 *         dead boards.
+		 * The extra dead links of the machine.
+		 *
+		 * Doesn't include links to dead boards.
+		 *
+		 * @return The extra dead links of the machine.
 		 */
 		public Map<TriadCoords, EnumSet<Link>> getDeadLinks() {
 			return deadLinks;
 		}
 
-		/** @return The logical-to-physical board location map. */
+		/**
+		 * {@return The logical-to-physical board location map}
+		 */
 		public Map<TriadCoords, PhysicalCoords> getBoardLocations() {
 			return boardLocations;
 		}
 
-		/** @return The IP addresses of the BMPs. */
+		/**
+		 * {@return The IP addresses of the BMPs}
+		 */
 		public Map<BMPCoords, String> getBmpIPs() {
 			return bmpIPs;
 		}
 
-		/** @return The IP addresses of the boards. */
+		/**
+		 * {@return The IP addresses of the boards}
+		 */
 		public Map<TriadCoords, String> getSpinnakerIPs() {
 			return spinnakerIPs;
 		}
@@ -263,7 +284,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/**
-		 * Does a board have a dead link in a given direction?
+		 * Does a board have a dead link in a given direction.
 		 *
 		 * @param board
 		 *            The location of the board
@@ -439,7 +460,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@Positive
 		private int secondsBeforeFree;
 
-		/** @return The machines to manage. */
+		/**
+		 * {@return The machines to manage}
+		 */
 		public List<Machine> getMachines() {
 			return machines;
 		}
@@ -448,7 +471,13 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.machines = copy(machines);
 		}
 
-		/** @return The port for the service to listen on. (Ignored) */
+		/**
+		 * The port for the service to listen on.
+		 *
+		 * No known usage.
+		 *
+		 * @return The port for the service to listen on.
+		 */
 		public int getPort() {
 			return port;
 		}
@@ -458,8 +487,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/**
-		 * @return The host address for the service to listen on. Empty = all
-		 *         interfaces. (Ignored)
+		 * The host address for the service to listen on.
+		 *
+		 * Empty = all interfaces. (Ignored)
+		 *
+		 * @return The host address for the service to listen on.
 		 */
 		public String getIp() {
 			return ip;
@@ -469,7 +501,13 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.ip = ip;
 		}
 
-		/** @return How often (in seconds) to check for timeouts. (Ignored) */
+		/**
+		 * How often (in seconds) to check for timeouts.
+		 *
+		 * No Known usage.
+		 *
+		 * @return How often (in seconds) to check for timeouts.
+		 */
 		public double getTimeoutCheckInterval() {
 			return timeoutCheckInterval;
 		}
@@ -478,7 +516,13 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.timeoutCheckInterval = timeoutCheckInterval;
 		}
 
-		/** @return How many retired jobs to retain. (Ignored) */
+		/**
+		 * How many retired jobs to retain.
+		 *
+		 * No Known usage.
+		 *
+		 * @return How many retired jobs to retain,
+		 */
 		public int getMaxRetiredJobs() {
 			return maxRetiredJobs;
 		}
@@ -487,7 +531,13 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.maxRetiredJobs = maxRetiredJobs;
 		}
 
-		/** @return Time to wait before freeing. (Ignored) */
+		/**
+		 * Time to wait before freeing.
+		 *
+		 * No known usage.
+		 *
+		 * @return Time to wait before freeing
+		 */
 		public int getSecondsBeforeFree() {
 			return secondsBeforeFree;
 		}
@@ -810,6 +860,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Testing method do not use.
+	 *
 	 * @param c
 	 *            How to talk to the DB.
 	 * @return The test interface.

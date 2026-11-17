@@ -41,6 +41,8 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ReadADC extends BMPRequest<ReadADC.Response> {
 	/**
+	 * Constructs a request for the board status data.
+	 *
 	 * @param board
 	 *            which board to request the ADC register from
 	 */
@@ -61,7 +63,9 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 			super("Read Board Status", CMD_BMP_INFO, buffer);
 		}
 
-		/** @return The ADC information. */
+		/**
+		 * {@return The ADC information}
+		 */
 		@Override
 		protected ADCInfo parse(ByteBuffer buffer) {
 			return new ADCInfo(buffer);

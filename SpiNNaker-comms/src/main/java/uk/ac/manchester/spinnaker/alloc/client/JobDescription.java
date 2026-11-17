@@ -63,53 +63,69 @@ public final class JobDescription {
 		this.proxyRef = proxyRef;
 	}
 
-	/** @return The state of the job. */
+	/** {@return The state of the job} */
 	public State getState() {
 		return state;
 	}
 
 	/**
-	 * @return Who owns the job. {@code null} if the information is shrouded
-	 *         from you.
+	 * Who owns the job.
+	 *
+	 * {@code null} if the information is shrouded from you.
+	 *
+	 * @return Who owns the job.
 	 */
 	public String getOwner() {
 		return owner;
 	}
 
-	/** @return When the job started. */
+	/**
+	 * {@return When the job started}
+	 */
 	@JsonProperty("start-time")
 	public Instant getStartTime() {
 		return startTime;
 	}
 
-	/** @return When the job was destroyed. {@code null} if not yet finished. */
+	/**
+	 * {@return When the job was destroyed. {@code null} if not yet finished}
+	 */
 	@JsonProperty("finish-time")
 	public Instant getFinishTime() {
 		return finishTime;
 	}
 
-	/** @return Why the job was destroyed. {@code null} if the job is alive. */
+	/**
+	 * {@return Why the job was destroyed. {@code null} if the job is alive}
+	 */
 	public String getReason() {
 		return reason;
 	}
 
 	/**
-	 * @return Which host is believed to be keeping a job alive. May be
-	 *         {@code null} if the information is not known or shrouded from
-	 *         you.
+	 * Which host is believed to be keeping a job alive.
+	 *
+	 * May be {@code null} if the information is not known
+	 * or shrouded from you.
+	 *
+	 * @return Which host is believed to be keeping a job alive.
 	 */
 	@JsonProperty("keepalive-host")
 	public String getKeepaliveHost() {
 		return keepaliveHost;
 	}
 
-	/** @return The most recent keepalive timestamp. */
+	/**
+	 * {@return The most recent keepalive timestamp}
+	 */
 	@JsonProperty("keep-alive-time")
 	public Instant getKeepaliveTime() {
 		return keepaliveTime;
 	}
 
-	/** @return The URL for connecting to the job's websocket-based proxy. */
+	/**
+	 * {@return The URL for connecting to the job's websocket-based proxy}
+	 */
 	@JsonProperty("proxy-ref")
 	public URI getProxyAddress() {
 		return proxyRef;

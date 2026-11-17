@@ -57,12 +57,16 @@ public class MachineDescription {
 
 	private Optional<Long> quota = Optional.empty();
 
-	/** @return the machine ID */
+	/**
+	 * {@return the machine ID}
+	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
+	 * Sets the machine ID.
+	 *
 	 * @param id
 	 *            the machine ID
 	 */
@@ -70,12 +74,16 @@ public class MachineDescription {
 		this.id = id;
 	}
 
-	/** @return the machine name */
+	/**
+	 * {@return the machine name}
+	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
+	 * Sets the machine name.
+	 *
 	 * @param name
 	 *            the machine name
 	 */
@@ -83,12 +91,16 @@ public class MachineDescription {
 		this.name = name;
 	}
 
-	/** @return the width of the machine in triads */
+	/**
+	 * {@return the width of the machine in triads}
+	 */
 	public int getWidth() {
 		return width;
 	}
 
 	/**
+	 * Sets the width of the machine in triads.
+	 *
 	 * @param width
 	 *            the width of the machine in triads
 	 */
@@ -96,12 +108,16 @@ public class MachineDescription {
 		this.width = width;
 	}
 
-	/** @return the height of the machine in triads */
+	/**
+	 * {@return the height of the machine in triads}
+	 */
 	public int getHeight() {
 		return height;
 	}
 
 	/**
+	 * Sets the height of the machine in triads.
+	 *
 	 * @param height
 	 *            the height of the machine in triads
 	 */
@@ -109,12 +125,16 @@ public class MachineDescription {
 		this.height = height;
 	}
 
-	/** @return the number of boards in use */
+	/**
+	 * {@return the number of boards in use}
+	 */
 	public int getNumInUse() {
 		return numInUse;
 	}
 
 	/**
+	 * Sets the number of boards in use.
+	 *
 	 * @param numInUse
 	 *            the number of boards in use
 	 */
@@ -122,12 +142,16 @@ public class MachineDescription {
 		this.numInUse = numInUse;
 	}
 
-	/** @return the in-service boards */
+	/**
+	 * {@return the in-service boards}
+	 */
 	public List<BoardCoords> getLive() {
 		return live;
 	}
 
 	/**
+	 * Sets the in-service boards.
+	 *
 	 * @param live
 	 *            the in-service boards
 	 */
@@ -136,6 +160,8 @@ public class MachineDescription {
 	}
 
 	/**
+	 * Sets the in-service boards.
+	 *
 	 * @param live
 	 *            the in-service boards
 	 */
@@ -143,12 +169,16 @@ public class MachineDescription {
 		this.live = copy(live.toList());
 	}
 
-	/** @return the out-of-service boards */
+	/**
+	 * {@return the out-of-service boards}
+	 */
 	public List<BoardCoords> getDead() {
 		return dead;
 	}
 
 	/**
+	 * Sets the out-of-service boards.
+	 *
 	 * @param dead
 	 *            the out-of-service boards
 	 */
@@ -157,6 +187,8 @@ public class MachineDescription {
 	}
 
 	/**
+	 * Sets the out-of-service boards.
+	 *
 	 * @param dead
 	 *            the out-of-service boards
 	 */
@@ -164,12 +196,16 @@ public class MachineDescription {
 		this.dead = copy(dead.toList());
 	}
 
-	/** @return the machine's jobs */
+	/**
+	 * {@return the machine's jobs}
+	 */
 	public List<JobInfo> getJobs() {
 		return jobs;
 	}
 
 	/**
+	 * Sets the machine's jobs.
+	 *
 	 * @param jobs
 	 *            the machine's jobs
 	 */
@@ -178,6 +214,8 @@ public class MachineDescription {
 	}
 
 	/**
+	 * Sets the machine's jobs.
+	 *
 	 * @param jobs
 	 *            the machine's jobs
 	 */
@@ -185,12 +223,16 @@ public class MachineDescription {
 		this.jobs = copy(jobs.toList());
 	}
 
-	/** @return the machine's tags */
+	/**
+	 * {@return the machine's tags}
+	 */
 	public List<String> getTags() {
 		return tags;
 	}
 
 	/**
+	 * Sets the machine's tags.
+	 *
 	 * @param tags
 	 *            the machine's tags
 	 */
@@ -199,6 +241,8 @@ public class MachineDescription {
 	}
 
 	/**
+	 * Sets the machine's tags.
+	 *
 	 * @param tags
 	 *            the machine's tags
 	 */
@@ -207,14 +251,16 @@ public class MachineDescription {
 	}
 
 	/**
-	 * @return the quota (if that information is to be exposed to the current
-	 *         user and is meaningful)
+	 * {@return the quota (if that information is to be exposed to the current
+	 *         user and is meaningful)}
 	 */
 	public Optional<Long> getQuota() {
 		return quota;
 	}
 
 	/**
+	 * Sets the current user's quota.
+	 *
 	 * @param quota
 	 *            the current user's quota
 	 */
@@ -232,12 +278,16 @@ public class MachineDescription {
 
 		private List<@Valid BoardCoords> boards = List.of();
 
-		/** @return the job ID */
+		/**
+		 * {@return the job ID}
+		 */
 		public int getId() {
 			return id;
 		}
 
 		/**
+		 * Sets the job ID.
+		 *
 		 * @param id
 		 *            the job ID
 		 */
@@ -245,12 +295,16 @@ public class MachineDescription {
 			this.id = id;
 		}
 
-		/** @return the URL for more detail */
+		/**
+		 * {@return the URL for more detail}
+		 */
 		public Optional<URI> getUrl() {
 			return Optional.ofNullable(url);
 		}
 
 		/**
+		 * Sets the URL for more detail.
+		 *
 		 * @param url
 		 *            the URL for more detail
 		 */
@@ -258,12 +312,16 @@ public class MachineDescription {
 			this.url = url;
 		}
 
-		/** @return the board coordinates of all boards allocated to the job */
+		/**
+		 * {@return the board coordinates of all boards allocated to the job}
+		 */
 		public List<BoardCoords> getBoards() {
 			return boards;
 		}
 
 		/**
+		 * Sets the board coordinates of all boards allocated to the job.
+		 *
 		 * @param boards
 		 *            the board coordinates of all boards allocated to the job
 		 */
@@ -272,6 +330,8 @@ public class MachineDescription {
 		}
 
 		/**
+		 * Sets the board coordinates of all boards allocated to the job.
+		 *
 		 * @param boards
 		 *            the board coordinates of all boards allocated to the job
 		 */
@@ -279,12 +339,16 @@ public class MachineDescription {
 			this.boards = copy(boards.toList());
 		}
 
-		/** @return the owner (if that information is to be exposed) */
+		/**
+		 * {@return the owner (if that information is to be exposed)}
+		 */
 		public Optional<String> getOwner() {
 			return owner;
 		}
 
 		/**
+		 * Sets the owner of the job.
+		 *
 		 * @param owner
 		 *            the owner of the job
 		 */

@@ -38,6 +38,8 @@ public final class DeadLink {
 		public final Direction direction;
 
 		/**
+		 * Sets the end of the dead link.
+		 *
 		 * @param board
 		 *            The board at the end of a dead link.
 		 * @param direction

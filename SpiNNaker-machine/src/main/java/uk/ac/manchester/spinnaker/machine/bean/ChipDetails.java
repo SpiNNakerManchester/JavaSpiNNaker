@@ -103,28 +103,28 @@ public class ChipDetails {
 	}
 
 	/**
-	 * @return the number of cores.
+	 * {@return the number of cores}
 	 */
 	public int getCores() {
 		return cores;
 	}
 
 	/**
-	 * @return the location of the board's Ethernet-enabled chip
+	 * {@return the location of the board's Ethernet-enabled chip}
 	 */
 	public ChipLocation getEthernet() {
 		return ethernet;
 	}
 
 	/**
-	 * @return the IP address
+	 * {@return the IP address}
 	 */
 	public InetAddress getIpAddress() {
 		return ipAddress;
 	}
 
 	/**
-	 * @return the dead links of the chip
+	 * {@return the dead links of the chip}
 	 */
 	@JsonIgnore
 	public Set<Direction> getDeadDirections() {

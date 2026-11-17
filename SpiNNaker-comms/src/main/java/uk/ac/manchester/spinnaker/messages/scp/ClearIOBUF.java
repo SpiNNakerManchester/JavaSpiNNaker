@@ -29,7 +29,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code simulation_control_scp_callback()} in {@code simulation.c}).
  */
 public class ClearIOBUF extends FECRequest<EmptyResponse> {
+
 	/**
+	 * Construct a request to clear the IOBUF on a core.
+	 *
 	 * @param core
 	 *            The core to clear the IOBUF of.
 	 */

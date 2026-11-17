@@ -50,6 +50,8 @@ public class EIEIOCommandMessage
 	}
 
 	/**
+	 * Constructs an EIEIO message containing a command.
+	 *
 	 * @param command
 	 *            The command in the message.
 	 */

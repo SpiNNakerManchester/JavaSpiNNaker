@@ -31,6 +31,8 @@ public final class BMPBoard {
 	public final int board;
 
 	/**
+	 * Create a board number wrapper.
+	 *
 	 * @param board
 	 *            The board number.
 	 */

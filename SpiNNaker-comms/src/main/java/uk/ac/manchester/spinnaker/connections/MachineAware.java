@@ -21,10 +21,14 @@ import uk.ac.manchester.spinnaker.machine.Machine;
  * This indicates a class that can be told about the machine.
  */
 public interface MachineAware {
-	/** @return The machine that the class was told about. */
+	/**
+	 * {@return The machine that the class was told about}
+	 */
 	Machine getMachine();
 
 	/**
+	 * Set the machine.
+	 *
 	 * @param machine
 	 *            The machine to tell the class about.
 	 */

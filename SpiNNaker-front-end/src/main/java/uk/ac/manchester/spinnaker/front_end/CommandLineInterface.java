@@ -433,11 +433,17 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private Machine machine;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <machineFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public MachineParam() {
 		}
 
-		/** @return The machine parsed from the named file. */
+		/**
+		 * {@return The machine parsed from the named file}
+		 */
 		@Override
 		public Machine get() {
 			return machine;
@@ -469,11 +475,17 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private IobufRequest request;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <iobufMapFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public IobufMapParam() {
 		}
 
-		/** @return The request parsed from the named file. */
+		/**
+		 * {@return The request parsed from the named file}
+		 */
 		@Override
 		public IobufRequest get() {
 			return request;
@@ -504,11 +516,17 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private Supplier<List<Gather>> gatherers;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <gatherFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public GatherersParam() {
 		}
 
-		/** @return The gatherers parsed from the named file. */
+		/**
+		 * {@return The gatherers parsed from the named file}
+		 */
 		@Override
 		public List<Gather> get() {
 			return gatherers.get();
@@ -542,11 +560,17 @@ public final class CommandLineInterface {
 				converter = Converter.class)
 		private Supplier<List<Placement>> placements;
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <placementFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public PlacementsParam() {
 		}
 
-		/** @return The placements parsed from the named file. */
+		/**
+		 * {@return The placements parsed from the named file}
+		 */
 		@Override
 		public List<Placement> get() {
 			return placements.get();
@@ -578,11 +602,17 @@ public final class CommandLineInterface {
 			arity = "1")
 		private ValueHolder<File> logfile = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <logfile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public LogfileParam() {
 		}
 
-		/** @return The folder for the run. */
+		/**
+		 * {@return The folder for the run}
+		 */
 		@Override
 		public File get() {
 			return logfile.getValue();
@@ -615,11 +645,17 @@ public final class CommandLineInterface {
 			arity = "1")
 		private ValueHolder<File> iobufDir = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <iobufDir>} parameter.
+		 *
+		 * @hidden
+		 */
 		public IobufDirParam() {
 		}
 
-		/** @return The folder for the run. */
+		/**
+		 * {@return The folder for the run}
+		 */
 		@Override
 		public File get() {
 			return iobufDir.getValue();
@@ -653,11 +689,17 @@ public final class CommandLineInterface {
 				arity = "1")
 		private ValueHolder<File> dbFile = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <dbFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public DbFileParam() {
 		}
 
-		/** @return The file of the buffer database. */
+		/**
+		 * {@return The file of the buffer database}
+		 */
 		@Override
 		public File get() {
 			return dbFile.getValue();
@@ -691,11 +733,17 @@ public final class CommandLineInterface {
 				arity = "1")
 		private ValueHolder<File> dsFile = new ValueHolder<>();
 
-		/** @hidden */
+		/**
+		 * Picocli Constructor for {@code <dsFile>} parameter.
+		 *
+		 * @hidden
+		 */
 		public DsFileParam() {
 		}
 
-		/** @return The file of the dataspec database. */
+		/**
+		 * {@return The file of the dataspec database}
+		 */
 		@Override
 		public File get() {
 			return dsFile.getValue();

@@ -53,6 +53,8 @@ class RouterControlProcess extends TxrxProcess {
 	private static final int NUM_REGISTERS = 16;
 
 	/**
+	 * Construct a process to control the rpiters.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker

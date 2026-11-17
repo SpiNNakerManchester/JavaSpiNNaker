@@ -202,7 +202,7 @@ public class Transceiver extends UDPTransceiver
 
 	private static final Set<Integer> BMP_MAJOR_VERSIONS = Set.of(1, 2);
 
-	/** How many times do we try to find SCAMP? */
+	/** How many times do we try to find SCAMP. */
 	private static final int INITIAL_FIND_SCAMP_RETRIES_COUNT = 3;
 
 	private static final int CONNECTION_CHECK_RETRY_COUNT = 3;
@@ -1055,7 +1055,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	/**
-	 * @return the application ID tracker for this transceiver.
+	 * {@return the application ID tracker for this transceiver}
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -2718,7 +2718,9 @@ public class Transceiver extends UDPTransceiver
 		log.info("total retries used: {}", retryCount);
 	}
 
-	/** @return The connection selectors used for BMP connections. */
+	/**
+	 * {@return The connection selectors used for BMP connections}
+	 */
 	public Map<BMPCoords,
 			ConnectionSelector<BMPConnection>> getBMPConnection() {
 		return bmpSelectors;

@@ -130,7 +130,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	}
 
 	/**
-	 * @return The coordinates of the BMP that manages this board.
+	 * {@return The coordinates of the BMP that manages this board}
 	 */
 	@JsonIgnore
 	public BMPCoords getBmpCoords() {

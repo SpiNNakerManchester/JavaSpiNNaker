@@ -47,6 +47,8 @@ public enum EIEIOType {
 	public final long maxValue;
 
 	/**
+	 * Constructs an EIEIO type.
+	 *
 	 * @param value
 	 *            the value
 	 * @param keyBytes
@@ -61,7 +63,9 @@ public enum EIEIOType {
 		this.maxValue = (1L << (keyBytes * NBBY)) - 1;
 	}
 
-	/** @return The encoded type. */
+	/**
+	 * {@return The encoded type}
+	 */
 	public int getValue() {
 		return value;
 	}

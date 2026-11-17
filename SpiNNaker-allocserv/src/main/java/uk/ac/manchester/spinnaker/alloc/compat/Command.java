@@ -46,7 +46,9 @@ public final class Command {
 	@Size(max = MAX_SIZE, message = "crazy number of keyword arguments")
 	private Map<@NotBlank String, @SaneParameter Object> kwargs = Map.of();
 
-	/** @return The name of the command. */
+	/**
+	 * {@return The name of the command}
+	 */
 	public String getCommand() {
 		return command;
 	}
@@ -55,7 +57,9 @@ public final class Command {
 		this.command = command;
 	}
 
-	/** @return The positional arguments to the command. */
+	/**
+	 * {@return The positional arguments to the command}
+	 */
 	public List<Object> getArgs() {
 		return args;
 	}
@@ -64,7 +68,9 @@ public final class Command {
 		this.args = new ArrayList<Object>(args);
 	}
 
-	/** @return The keyword arguments to the command. */
+	/**
+	 * {@return The keyword arguments to the command}
+	 */
 	public Map<String, Object> getKwargs() {
 		return kwargs;
 	}

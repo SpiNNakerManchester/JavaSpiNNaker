@@ -75,20 +75,22 @@ public class ChipBean {
 		this.resources = resources;
 	}
 
-	/** @return Location of the chip. */
+	/**
+	 * {@return Location of the chip}
+	 */
 	public ChipLocation getLocation() {
 		return location;
 	}
 
 	/**
-	 * @return the resources
+	 * {@return the resources}
 	 */
 	public ChipResources getResources() {
 		return resources;
 	}
 
 	/**
-	 * @return the resources
+	 * {@return the resources}
 	 */
 	public ChipDetails getDetails() {
 		return details;

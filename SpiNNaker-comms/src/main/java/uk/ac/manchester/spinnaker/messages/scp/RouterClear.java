@@ -30,7 +30,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code scamp-cmd.c}.
  */
 public class RouterClear extends SCPRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a request to clear the router on this chip.
+	 *
 	 * @param chip
 	 *            The coordinates of the chip to clear the router of
 	 */

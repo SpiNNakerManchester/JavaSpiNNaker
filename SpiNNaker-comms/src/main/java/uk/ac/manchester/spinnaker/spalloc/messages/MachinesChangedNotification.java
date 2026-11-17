@@ -29,7 +29,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 public class MachinesChangedNotification implements Notification {
 	private List<String> machinesChanged = List.of();
 
-	/** @return What machines have changed. */
+	/**
+	 * {@return What machines have changed}
+	 */
 	public List<String> getMachinesChanged() {
 		return machinesChanged;
 	}

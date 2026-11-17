@@ -50,23 +50,29 @@ public class ServiceVersion {
 	}
 
 	/**
-	 * @return The logical version number. Expected to at least
-	 *         <em>approximately</em> follow semver rules.
+	 * The logical version number.
+	 *
+	 * Expected to at least <em>approximately</em> follow semver rules.
+	 *
+	 * @return The logical version number.
 	 */
 	public Version getVersion() {
 		return v;
 	}
 
 	/**
-	 * @return The full version identifier. Conforms only to Maven conventions.
+	 * {@return The full version identifier. Conforms only to Maven conventions}
 	 */
 	public String getFullVersion() {
 		return fullVersion;
 	}
 
 	/**
-	 * @return The build timestamp. The format of this is not intended for
-	 *         further machine parsing.
+	 * The build timestamp.
+	 *
+	 * The format of this is not intended for further machine parsing
+	 *
+	 * @return The build timestamp.
 	 */
 	public String getBuildTimestamp() {
 		return buildTimestamp;

@@ -63,6 +63,8 @@ final class ProxiedTransceiver extends Transceiver {
 	private final Map<InetAddress, ChipLocation> hostToChip = new HashMap<>();
 
 	/**
+	 * Constructs a Transceiver using the proxy.
+	 *
 	 * @param version
 	 *            The version of the machine connected to.
 	 * @param connections

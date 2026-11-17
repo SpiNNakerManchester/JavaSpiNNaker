@@ -316,7 +316,9 @@ public enum SystemVariableDefinition {
 		}
 	}
 
-	/** @return Whether this is a variable with a usefully-defined default. */
+	/**
+	 * {@return Whether this is a variable with a usefully-defined default}
+	 */
 	public boolean isDefaultSpecified() {
 		return hasDefinedDefault;
 	}

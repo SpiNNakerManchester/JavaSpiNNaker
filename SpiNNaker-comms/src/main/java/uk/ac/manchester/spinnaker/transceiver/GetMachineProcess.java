@@ -85,6 +85,8 @@ class GetMachineProcess extends TxrxProcess {
 	private static final int THROTTLED = 3;
 
 	/**
+	 * Constructs a process to get a machine.
+	 *
 	 * @param connectionSelector
 	 *            How to talk to the machine.
 	 * @param ignoreChips

@@ -32,6 +32,8 @@ public final class TagInfo {
 	public final int fixedSize;
 
 	/**
+	 * Constructs the Information about a tag pool.
+	 *
 	 * @param transientTimeout
 	 *            The timeout for transient IP tags (i.e., responses to SCP
 	 *            commands).

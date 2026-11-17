@@ -38,7 +38,10 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  *      on GitHub</a>
  */
 public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
+
 	/**
+	 * Construct a request to write data to an FPGA register.
+	 *
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
 	 * @param register

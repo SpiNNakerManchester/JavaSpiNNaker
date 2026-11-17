@@ -34,7 +34,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class GetFPGAResetStatus
 		extends BMPRequest<GetFPGAResetStatus.Response> {
+
 	/**
+	 * Constructs a message to get the reset status.
+	 *
 	 * @param board
 	 *            Which board to get the FPGA reset status of.
 	 */
@@ -59,7 +62,9 @@ public class GetFPGAResetStatus
 			super("Read XIL_RST", CMD_READ, buffer);
 		}
 
-		/** @return The reset status of the FPGA. */
+		/**
+		 * {@return The reset status of the FPGA}
+		 */
 		@Override
 		protected Boolean parse(ByteBuffer buffer) {
 			int ioPortControlWord = buffer.order(LITTLE_ENDIAN).getInt();

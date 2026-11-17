@@ -46,7 +46,9 @@ public final class GroupRecord {
 		/** Marks an EBRAINS/HBP collabratory. */
 		COLLABRATORY;
 
-		/** @return Whether this is an internal group. */
+		/**
+		 * {@return Whether this is an internal group}
+		 */
 		public boolean isInternal() {
 			return ordinal() == 0;
 		}
@@ -80,7 +82,11 @@ public final class GroupRecord {
 	}
 
 	/**
-	 * @return The group identifier. Read-only; cannot be set by the service.
+	 * The group identifier.
+	 *
+	 * Read-only; cannot be set by the service.
+	 *
+	 * @return The group identifier
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -92,13 +98,17 @@ public final class GroupRecord {
 		this.groupId = groupId;
 	}
 
-	/** @return The group's name. */
+	/**
+	 * {@return The group's name}
+	 */
 	@NotBlank
 	public String getGroupName() {
 		return groupName;
 	}
 
 	/**
+	 * Sets the group's name.
+	 *
 	 * @param groupName
 	 *            The group's name.
 	 */
@@ -106,12 +116,16 @@ public final class GroupRecord {
 		this.groupName = groupName;
 	}
 
-	/** @return The quota of the group in board-seconds, if one exists. */
+	/**
+	 * {@return The quota of the group in board-seconds, if one exists}
+	 */
 	public Optional<Long> getQuota() {
 		return Optional.ofNullable(quota);
 	}
 
 	/**
+	 * Sets the quota of the group in board-seconds.
+	 *
 	 * @param quota
 	 *            The quota of the group in board-seconds, if one exists.
 	 */
@@ -119,7 +133,9 @@ public final class GroupRecord {
 		this.quota = quota;
 	}
 
-	/** @return What type of group is this. */
+	/**
+	 * {@return What type of group is this}
+	 */
 	public GroupType getType() {
 		return type;
 	}
@@ -128,12 +144,16 @@ public final class GroupRecord {
 		this.type = type;
 	}
 
-	/** @return The members of the group, if populated. */
+	/**
+	 * {@return The members of the group, if populated}
+	 */
 	public Map<String, URI> getMembers() {
 		return members;
 	}
 
 	/**
+	 * Sets the members of the group.
+	 *
 	 * @param members
 	 *            The members of the group.
 	 */

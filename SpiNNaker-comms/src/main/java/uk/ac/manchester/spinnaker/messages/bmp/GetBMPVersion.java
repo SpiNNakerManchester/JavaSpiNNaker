@@ -30,7 +30,10 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  * Calls or {@code cmd_ver()} in {@code bmp_cmd.c}.
  */
 public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
+
 	/**
+	 * Construct a request to read the software version.
+	 *
 	 * @param board
 	 *            The board to get the version from
 	 */
@@ -51,7 +54,9 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 			super("Read Version", CMD_VER, buffer);
 		}
 
-		/** @return The version information received. */
+		/**
+		 * {@return The version information received}
+		 */
 		@Override
 		protected VersionInfo parse(ByteBuffer buffer) {
 			return new VersionInfo(buffer, true);

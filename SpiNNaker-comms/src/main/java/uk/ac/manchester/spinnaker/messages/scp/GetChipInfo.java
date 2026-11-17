@@ -35,6 +35,8 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	private static final int SIZE_FLAG = 0x20;
 
 	/**
+	 * Construct request to read the chip information from a core, without size.
+	 *
 	 * @param chip
 	 *            the chip to read from
 	 */
@@ -43,6 +45,9 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 	}
 
 	/**
+	 * Construct request to read the chip information from a core,
+	 *     possibly with size.
+	 *
 	 * @param chip
 	 *            the chip to read from
 	 * @param withSize
@@ -73,7 +78,9 @@ public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
 			super("Version", CMD_INFO, buffer);
 		}
 
-		/** @return The chip summary information. */
+		/**
+		 *  {@return The chip summary information}
+		 */
 		@Override
 		protected ChipSummaryInfo parse(ByteBuffer buffer) {
 			return new ChipSummaryInfo(buffer, sdpHeader.getSource());

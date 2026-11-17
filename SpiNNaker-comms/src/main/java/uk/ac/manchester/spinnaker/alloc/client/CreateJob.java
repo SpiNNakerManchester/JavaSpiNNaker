@@ -89,6 +89,8 @@ public final class CreateJob {
 		private int height;
 
 		/**
+		 * Constructs a description of a rectangle.
+		 *
 		 * @param width
 		 *            The width of rectangle to ask for, in triads.
 		 * @param height
@@ -99,7 +101,9 @@ public final class CreateJob {
 			this.height = height;
 		}
 
-		/** @return The width of the allocation, in triads. */
+		/**
+		 * {@return The width of the allocation, in triads}
+		 */
 		public int getWidth() {
 			return width;
 		}
@@ -108,7 +112,9 @@ public final class CreateJob {
 			this.width = width;
 		}
 
-		/** @return The height of the allocation, in triads. */
+		/**
+		 * {@return The height of the allocation, in triads}
+		 */
 		public int getHeight() {
 			return height;
 		}
@@ -167,12 +173,16 @@ public final class CreateJob {
 			address = addr;
 		}
 
-		/** @return The triad X coordinate. */
+		/**
+		 * {@return The triad X coordinate}
+		 */
 		public Integer getX() {
 			return x;
 		}
 
 		/**
+		 * Sets the triad x coordinate.
+		 *
 		 * @param x
 		 *            The triad X coordinate.
 		 */
@@ -180,12 +190,16 @@ public final class CreateJob {
 			this.x = x;
 		}
 
-		/** @return The triad Y coordinate. */
+		/**
+		 * {@return The triad y coordinate}
+		 */
 		public Integer getY() {
 			return y;
 		}
 
 		/**
+		 * Sets the triad Y coordinate.
+		 *
 		 * @param y
 		 *            The triad Y coordinate.
 		 */
@@ -193,12 +207,16 @@ public final class CreateJob {
 			this.y = y;
 		}
 
-		/** @return The triad Z coordinate. */
+		/**
+		 * {@return The triad Z coordinate}
+		 */
 		public Integer getZ() {
 			return z;
 		}
 
 		/**
+		 * Sets the triad z coordinate.
+		 *
 		 * @param z
 		 *            The triad Z coordinate.
 		 */
@@ -206,12 +224,16 @@ public final class CreateJob {
 			this.z = z;
 		}
 
-		/** @return The cabinet number. */
+		/**
+		 * {@return The cabinet number}
+		 */
 		public Integer getCabinet() {
 			return cabinet;
 		}
 
 		/**
+		 * Sets the cabinet number.
+		 *
 		 * @param cabinet
 		 *            The cabinet number.
 		 */
@@ -219,12 +241,16 @@ public final class CreateJob {
 			this.cabinet = cabinet;
 		}
 
-		/** @return The frame number. */
+		/**
+		 * {@return The frame number}
+		 */
 		public Integer getFrame() {
 			return frame;
 		}
 
 		/**
+		 * Sets the frame number.
+		 *
 		 * @param frame
 		 *            The frame number.
 		 */
@@ -232,12 +258,16 @@ public final class CreateJob {
 			this.frame = frame;
 		}
 
-		/** @return The board number. */
+		/**
+		 * {@return The board number}
+		 */
 		public Integer getBoard() {
 			return board;
 		}
 
 		/**
+		 * Sets the board number.
+		 *
 		 * @param board
 		 *            The board number.
 		 */
@@ -245,12 +275,16 @@ public final class CreateJob {
 			this.board = board;
 		}
 
-		/** @return The board IP address. */
+		/**
+		 * {@return The board IP address}
+		 */
 		public String getAddress() {
 			return address;
 		}
 
 		/**
+		 * Sets the boards IP address.
+		 *
 		 * @param address
 		 *            The board IP address.
 		 */
@@ -364,14 +398,19 @@ public final class CreateJob {
 	}
 
 	/**
+	 * How long after a keepalive message will the job be auto-deleted?
+	 *
+	 * <em>Required.</em> Must be between 30 and 300 seconds.
+	 *
 	 * @return How long after a keepalive message will the job be auto-deleted?
-	 *         <em>Required.</em> Must be between 30 and 300 seconds.
 	 */
 	public Duration getKeepaliveInterval() {
 		return keepaliveInterval;
 	}
 
 	/**
+	 * Sets the interval between keep alive messages.
+	 *
 	 * @param keepaliveInterval
 	 *            How long after a keepalive message will the job be
 	 *            auto-deleted? <em>Required.</em> Must be between 30 and 300
@@ -382,14 +421,19 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The number of boards to request. May be {@code null} if a
-	 *         different type of request is made.
+	 * The number of boards to request.
+	 *
+	 * May be {@code null} if a different type of request is made.
+	 *
+	 * @return The number of boards to request
 	 */
 	public Integer getNumBoards() {
 		return numBoards;
 	}
 
 	/**
+	 * Sets the number of board to request.
+	 *
 	 * @param numBoards
 	 *            The number of boards to request.
 	 */
@@ -397,12 +441,16 @@ public final class CreateJob {
 		this.numBoards = numBoards;
 	}
 
-	/** @return The size of rectangle of boards to request. */
+	/**
+	 * {@return The size of rectangle of boards to request}
+	 */
 	public Dimensions getDimensions() {
 		return dimensions;
 	}
 
 	/**
+	 * Sets the size to request.
+	 *
 	 * @param dimensions
 	 *            The size of rectangle of boards to request.
 	 */
@@ -410,12 +458,16 @@ public final class CreateJob {
 		this.dimensions = dimensions;
 	}
 
-	/** @return The address of the specific board to request. */
+	/**
+	 * {@return The address of the specific board to request}
+	 */
 	public SpecificBoard getBoard() {
 		return board;
 	}
 
 	/**
+	 * Sets the address of the board.
+	 *
 	 * @param board
 	 *            The address of the specific board to request.
 	 */
@@ -424,14 +476,19 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return Which machine to allocate on. This and {@code tags} are mutually
-	 *         exclusive, but at least one must be given.
+	 * Which machine to allocate on.
+	 *
+	 * This and {@code tags} are mutually exclusive,
+	 * but at least one must be given.
+	 * @return Which machine to allocate on
 	 */
 	public String getMachineName() {
 		return machineName;
 	}
 
 	/**
+	 * Sets the machine name.
+	 *
 	 * @param machineName
 	 *            Which machine to allocate on. This and {@code tags} are
 	 *            mutually exclusive, but at least one must be given.
@@ -442,15 +499,20 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The tags to select which machine to allocate on. This and
-	 *         {@code machineName} are mutually exclusive, but at least one must
-	 *         be given.
+	 * The tags to select which machine to allocate on.
+	 *
+	 * This and {@code machineName} are mutually exclusive,
+	 * but at least one must be given.
+	 *
+	 * @return The tags to select which machine to allocate on.
 	 */
 	public List<String> getTags() {
 		return tags;
 	}
 
 	/**
+	 * Sets the tags.
+	 *
 	 * @param tags
 	 *            The tags to select which machine to allocate on. This and
 	 *            {@code machineName} are mutually exclusive, but at least one
@@ -468,15 +530,20 @@ public final class CreateJob {
 	}
 
 	/**
+	 * The maximum number of dead boards allowed in a rectangular allocation.
+	 *
+	 * Note that the allocation engine might increase this
+	 * if it decides to overallocate.
 	 * @return The maximum number of dead boards allowed in a rectangular
-	 *         allocation. Note that the allocation engine might increase this
-	 *         if it decides to overallocate.
+	 *         allocation.
 	 */
 	public Integer getMaxDeadBoards() {
 		return maxDeadBoards;
 	}
 
 	/**
+	 * Sets the number of dead boards.
+	 *
 	 * @param maxDeadBoards
 	 *            The maximum number of dead boards allowed in a rectangular
 	 *            allocation. Note that the allocation engine might increase
@@ -487,7 +554,11 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The owner; only works when the user is admin or NMPI.
+	 * The owner.
+	 *
+	 * Only works when the user is admin or NMPI.
+	 *
+	 * @return The owner.
 	 */
 	public String getOwner() {
 		return owner;
@@ -505,13 +576,15 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The group the quota for the job should be allocated against.
+	 * {@return The group the quota for the job should be allocated against}
 	 */
 	public String getGroup() {
 		return group;
 	}
 
 	/**
+	 * Sets the group.
+	 *
 	 * @param group
 	 *            The group the quota for the job should be allocated against.
 	 */
@@ -520,14 +593,16 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The collaboratory that the quota for the job should be allocated
-	 *         against.
+	 * {@return The collaboratory that the quota
+	 *     for the job should be allocated against}
 	 */
 	public String getNmpiCollab() {
 		return nmpiCollab;
 	}
 
 	/**
+	 * Sets the collaboratory.
+	 *
 	 * @param nmpiCollab
 	 *            The collaboratory that the quota for the job should be
 	 *            allocated against.
@@ -537,13 +612,15 @@ public final class CreateJob {
 	}
 
 	/**
-	 * @return The NMPI job that the quota should be allocated against.
+	 * {@return The NMPI job that the quota should be allocated against}
 	 */
 	public Integer getNmpiJobId() {
 		return nmpiJobId;
 	}
 
 	/**
+	 * Set the NMPI job.
+	 *
 	 * @param nmpiJobId
 	 *            The NMPI job that the quota should be allocated against.
 	 */

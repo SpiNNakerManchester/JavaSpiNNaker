@@ -50,7 +50,7 @@ public final class DownLink {
 		public final BoardCoords board;
 
 		/**
-		 * In which direction does this end of the link go?
+		 * In which direction does this end of the link go.
 		 */
 		@NotNull
 		public final Direction direction;

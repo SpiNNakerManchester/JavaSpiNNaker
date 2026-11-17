@@ -46,6 +46,8 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 	}
 
 	/**
+	 * Constructs a request to read a fixed route entry.
+	 *
 	 * @param chip
 	 *            The chip to get the route from.
 	 * @param appID
@@ -69,7 +71,9 @@ public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
 			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
 		}
 
-		/** @return the fixed route router route. */
+		/**
+		 * {@return the fixed route router route}
+		 */
 		@Override
 		protected RoutingEntry parse(ByteBuffer buffer) {
 			return new RoutingEntry(buffer.getInt());

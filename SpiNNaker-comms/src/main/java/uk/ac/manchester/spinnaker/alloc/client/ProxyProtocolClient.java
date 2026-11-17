@@ -88,12 +88,12 @@ interface ProxyProtocolClient extends AutoCloseable {
 
 	interface UnconnectedChannel extends Closeable {
 		/**
-		 * @return The "local" address for this channel.
+		 * {@return The "local" address for this channel}
 		 */
 		Inet4Address getAddress();
 
 		/**
-		 * @return The "local" port for this channel.
+		 * {@return The "local" port for this channel}
 		 */
 		int getPort();
 

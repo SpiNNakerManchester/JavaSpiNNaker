@@ -40,6 +40,8 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 	private static final int IPTAG_MAX = 255;
 
 	/**
+	 * A request information about IP tags for this Chip.
+	 *
 	 * @param chip
 	 *            The chip to query for information.
 	 */

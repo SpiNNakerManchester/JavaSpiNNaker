@@ -54,21 +54,23 @@ public abstract class Tag implements Comparable<Tag> {
 		this.port = port;
 	}
 
-	/** @return The board address of the tag. */
+	/**
+	 * {@return The board address of the tag}
+	 */
 	public InetAddress getBoardAddress() {
 		return boardAddress;
 	}
 
 	/**
-	 * @return The ID of the tag. Note that this is the only property used for
-	 *         determining order.
+	 * {@return The ID of the tag. Note that this is the only property used for
+	 *         determining order}
 	 */
 	public int getTag() {
 		return tagID;
 	}
 
 	/**
-	 * @return The port of the tagID, or {@code null} if there isn't one yet.
+	 * {@return The port of the tagID, or {@code null} if there isn't one yet}
 	 */
 	public Integer getPort() {
 		return port;

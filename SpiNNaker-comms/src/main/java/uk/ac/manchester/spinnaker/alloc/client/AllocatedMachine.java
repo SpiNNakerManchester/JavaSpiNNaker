@@ -78,30 +78,41 @@ public final class AllocatedMachine {
 		this.boards = boards;
 	}
 
-	/** @return Rectangle width, in triads. */
+	/**
+	 * {@return Rectangle width, in triads}
+	 */
 	public int getWidth() {
 		return width;
 	}
 
-	/** @return Rectangle height, in triads. */
+	/**
+	 * {@return Rectangle height, in triads}
+	 */
 	public int getHeight() {
 		return height;
 	}
 
 	/**
-	 * @return Depth of rectangle. 1 or 3. Only the single-board case uses a
-	 *         depth of 1.
+	 * Depth of rectangle.
+	 *
+	 * 1 or 3. Only the single-board case uses a depth of 1.
+	 *
+	 * @return Depth of rectangle.
 	 */
 	public int getDepth() {
 		return depth;
 	}
 
-	/** @return On what machine. */
+	/**
+	 * {@return On what machine}
+	 */
 	public String getMachineName() {
 		return machineName;
 	}
 
-	/** @return The hosting SpiNNaker machine. */
+	/**
+	 * {@return The hosting SpiNNaker machine}
+	 */
 	public Machine getMachine() {
 		return machine;
 	}
@@ -110,12 +121,16 @@ public final class AllocatedMachine {
 		this.machine = machine;
 	}
 
-	/** @return How to talk to boards. */
+	/**
+	 * {@return How to talk to boards}
+	 */
 	public List<ConnectionInfo> getConnections() {
 		return connections;
 	}
 
-	/** @return Where the boards are. */
+	/**
+	 * {@return Where the boards are}
+	 */
 	public List<BoardCoordinates> getBoards() {
 		return boards;
 	}
@@ -135,6 +150,8 @@ public final class AllocatedMachine {
 		private final String hostname;
 
 		/**
+		 * Constructs information about a connection to a board.
+		 *
 		 * @param chip
 		 *            Which root chip (of a board) is this about?
 		 * @param hostname
@@ -146,12 +163,16 @@ public final class AllocatedMachine {
 			this.hostname = hostname;
 		}
 
-		/** @return Which root chip (of a board) is this about? */
+		/**
+		 * {@return Which root chip (of a board) is this about}
+		 */
 		public ChipLocation getChip() {
 			return chip;
 		}
 
-		/** @return What's the IP address of the chip? */
+		/**
+		 * {@return What's the IP address of the chip}
+		 */
 		public String getHostname() {
 			return hostname;
 		}

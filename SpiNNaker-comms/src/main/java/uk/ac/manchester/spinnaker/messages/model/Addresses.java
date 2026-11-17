@@ -27,6 +27,8 @@ public final class Addresses {
 	public final InetAddress spinIPAddress;
 
 	/**
+	 * Constructs a holder of The IP addresses.
+	 *
 	 * @param bmpIPAddress
 	 *            The IPv4 address of the BMP.
 	 * @param spinIPAddress

@@ -121,20 +121,22 @@ public class V1CompatService {
 		}
 
 		/**
-		 * @return The executor to use.
+		 * {@return The executor to use}
 		 */
 		protected final ExecutorService getExecutor() {
 			return requireNonNull(srv.executor);
 		}
 
 		/**
-		 * @return The JSON mapper to use if necessary.
+		 * {@return The JSON mapper to use if necessary}
 		 */
 		protected final ObjectMapper getJsonMapper() {
 			return requireNonNull(srv.mapper);
 		}
 
-		/** @return The relevant properties. */
+		/**
+		 * {@return The relevant properties}
+		 */
 		protected final CompatibilityProperties getProperties() {
 			return srv.mainProps.getCompat();
 		}
@@ -269,7 +271,7 @@ public class V1CompatService {
 	}
 
 	/**
-	 * Not a public API!
+	 * Not a public API.
 	 *
 	 * @return Test interface.
 	 * @deprecated Only for testing.

@@ -29,6 +29,8 @@ class SimpleGrantedAuthority implements GrantedAuthority {
 	private final String role;
 
 	/**
+	 * Constructs a holder of a single basic role grant.
+	 *
 	 * @param role
 	 *            The role in this authority.
 	 */

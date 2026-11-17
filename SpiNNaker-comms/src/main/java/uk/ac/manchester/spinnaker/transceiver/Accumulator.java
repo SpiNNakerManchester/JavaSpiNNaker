@@ -102,7 +102,9 @@ interface Accumulator<T> {
 			maxpos = max(maxpos, after);
 		}
 
-		/** @return The accumulated data. */
+		/**
+		 * {@return The accumulated data}
+		 */
 		@Override
 		public ByteBuffer finish() {
 			if (!done) {
@@ -161,6 +163,8 @@ interface Accumulator<T> {
 		}
 
 		/**
+		 * Finish the process.
+		 *
 		 * @return Nothing; caller should already know the data stream and file.
 		 * @throws IOException
 		 *             if any of the writes to the file failed.

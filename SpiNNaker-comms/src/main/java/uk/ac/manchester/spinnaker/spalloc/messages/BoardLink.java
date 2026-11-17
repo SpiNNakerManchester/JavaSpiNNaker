@@ -51,6 +51,8 @@ public class BoardLink {
 	private final int link;
 
 	/**
+	 * Constructs a combination of x, y, z and a Link.
+	 *
 	 * @param x
 	 *            The X coordinate
 	 * @param y
@@ -69,28 +71,28 @@ public class BoardLink {
 	}
 
 	/**
-	 * @return the X coordinate
+	 * {@return the X coordinate}
 	 */
 	public int getX() {
 		return x;
 	}
 
 	/**
-	 * @return the Y coordinate
+	 * {@return the Y coordinate}
 	 */
 	public int getY() {
 		return y;
 	}
 
 	/**
-	 * @return the Z coordinate
+	 * {@return the Z coordinate}
 	 */
 	public int getZ() {
 		return z;
 	}
 
 	/**
-	 * @return the link number
+	 * {@return the link number}
 	 */
 	public int getLink() {
 		return link;

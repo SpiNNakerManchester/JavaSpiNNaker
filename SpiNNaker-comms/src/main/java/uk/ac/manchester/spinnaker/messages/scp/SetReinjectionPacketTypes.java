@@ -32,7 +32,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class SetReinjectionPacketTypes
 		extends ReinjectorRequest<EmptyResponse> {
+
 	/**
+	 * Constructs a request to set the dropped packet reinjected packet types.
+	 *
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 * @param multicast

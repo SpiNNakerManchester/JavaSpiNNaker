@@ -85,6 +85,8 @@ public final class VersionInfo {
 	}
 
 	/**
+	 * Extracts the version info from the buffer.
+	 *
 	 * @param buffer
 	 *            buffer holding an SCP packet containing version information
 	 * @param isBMP

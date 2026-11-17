@@ -39,7 +39,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Write to memory on a BMP.
  */
 class BMPWriteMemoryProcess extends BMPCommandProcess {
+
 	/**
+	 * Constructs a process to Write to memory on a BMP.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -147,6 +150,8 @@ abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
 	private ByteBuffer sendBuffer;
 
 	/**
+	 * Constructs the iterator for writing a stream of chunks.
+	 *
 	 * @param board
 	 *            Where the write messages are going.
 	 * @param address

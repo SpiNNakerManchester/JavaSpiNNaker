@@ -105,7 +105,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The user identifier. Read-only; cannot be set by the service.
+	 * The user identifier.
+	 *
+	 * Read-only; cannot be set by the service.
+	 *
+	 * @return The user identifier.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -114,16 +118,20 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the user identifier.
+	 *
+	 * Should be treated as Read-only within the administration interface;
+	 *     and not be set by the service.
+	 *
 	 * @param userId
-	 *            The user identifier. Read-only within the administration
-	 *            interface; cannot be set by the service.
+	 *            The user identifier.
 	 */
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
 	/**
-	 * @return The user's username.
+	 * {@return The user's username}
 	 */
 	@NotBlank
 	public String getUserName() {
@@ -131,6 +139,8 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the user's username.
+	 *
 	 * @param userName
 	 *            The user's username.
 	 */
@@ -139,8 +149,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The user's unencrypted password. <em>Never</em> returned by the
-	 *         service, but may be written.
+	 * The user's unencrypted password.
+	 *
+	 * Should <em>Never</em> be returned by the service.
+	 *
+	 * @return The user's unencrypted password
 	 */
 	@JsonInclude(NON_NULL)
 	public String getPassword() {
@@ -148,70 +161,94 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the user's unencrypted password.
+	 *
+	 * Should <em>Never</em> be returned by the service.
+	 *
 	 * @param password
-	 *            The user's unencrypted password. <em>Never</em> returned by
-	 *            the service, but may be written.
+	 *            The user's unencrypted password.
 	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
-	 * @return Whether the user has a password set. If they don't, they'll have
-	 *         to log in by other mechanisms (e.g., HBP/EBRAINS OpenID Connect).
+	 * Whether the user has a password set.
+	 *
+	 * If they don't, they'll have to log in by other mechanisms
+	 * (e.g., HBP/EBRAINS OpenID Connect).
+	 *
+	 * @return Whether the user has a password set
 	 */
 	public Boolean getHasPassword() {
 		return hasPassword;
 	}
 
 	/**
+	 * Sets whether the user has a password set.
+	 *
+	 * If they don't, they'll have to log in by other mechanisms
+	 *     (e.g., HBP/EBRAINS OpenID Connect).
+	 *
 	 * @param hasPassword
-	 *            Whether the user has a password set. If they don't, they'll
-	 *            have to log in by other mechanisms (e.g., HBP/EBRAINS OpenID
-	 *            Connect).
+	 *            Whether the user has a password set.
 	 */
 	public void setHasPassword(Boolean hasPassword) {
 		this.hasPassword = hasPassword;
 	}
 
 	/**
-	 * @return Whether this account is enabled. Disabled accounts
-	 *         <em>cannot</em> log into the service until explicitly enabled.
+	 * Whether this account is enabled.
+	 *
+	 * Disabled accounts <em>cannot</em> log into the service
+	 * until explicitly enabled.
+	 *
+	 * @return Whether this account is enabled.
 	 */
 	public Boolean getEnabled() {
 		return enabled;
 	}
 
 	/**
+	 * Set whether this account is enabled.
+	 *
+	 * Disabled accounts <em>cannot</em> log into the service
+	 *     until explicitly enabled.
+	 *
 	 * @param enabled
-	 *            Whether this account is enabled. Disabled accounts
-	 *            <em>cannot</em> log into the service until explicitly enabled.
+	 *            Whether this account is enabled.
 	 */
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	/**
-	 * @return Whether this account is temporarily locked. Locked accounts
-	 *         should unlock automatically after 24 hours. Can be explicitly set
-	 *         to {@code false} to force an unlock.
+	 * Whether this account is temporarily locked.
+	 *
+	 * Locked accounts should unlock automatically after 24 hours.
+	 * Can be explicitly set to {@code false} to force an unlock.
+	 *
+	 * @return Whether this account is temporarily locked
 	 */
 	public Boolean getLocked() {
 		return locked;
 	}
 
 	/**
+	 *  Sets whether this account is temporarily locked.
+	 *
+	 *  Locked accounts should unlock automatically after 24 hours.
+	 *  Can be explicitly set to {@code false} to force an unlock.
+	 *
 	 * @param locked
-	 *            Whether this account is temporarily locked. Locked accounts
-	 *            should unlock automatically after 24 hours. Can be explicitly
-	 *            set to {@code false} to force an unlock.
+	 *            Whether this account is temporarily locked.
 	 */
 	public void setLocked(Boolean locked) {
 		this.locked = locked;
 	}
 
 	/**
-	 * @return The permissions of the account.
+	 * {@return The permissions of the account}
 	 */
 	@NotNull(message = "a trust level must be given")
 	public TrustLevel getTrustLevel() {
@@ -219,6 +256,8 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the permissions of the account.
+	 *
 	 * @param trustLevel
 	 *            The permissions of the account.
 	 */
@@ -227,8 +266,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The time that the last successful login was. Read-only; cannot be
-	 *         set via the admin API.
+	 * The time that the last successful login was.
+	 *
+	 * Read-only; cannot be set via the admin API.
+	 *
+	 * @return The time that the last successful login was.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -241,8 +283,11 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The time that the last failed login was. Read-only; cannot be set
-	 *         via the admin API.
+	 * The time that the last failed login was.
+	 *
+	 * Read-only; cannot be set via the admin API}
+	 *
+	 * @return The time that the last failed login was.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -267,6 +312,8 @@ public final class UserRecord {
 	}
 
 	/**
+	 * Sets the groups that the user is a member of.
+	 *
 	 * @param groups
 	 *            The groups that the user is a member of.
 	 */
@@ -274,12 +321,16 @@ public final class UserRecord {
 		this.groups = groups;
 	}
 
-	/** @return The OpenID subject that this user relates to, if known. */
+	/**
+	 * {@return The OpenID subject that this user relates to, if known}
+	 */
 	public String getOpenIdSubject() {
 		return openIdSubject;
 	}
 
 	/**
+	 * Sets the OpenID subject that this user relates to.
+	 *
 	 * @param subject
 	 *            The OpenID subject that this user relates to.
 	 */
@@ -287,12 +338,16 @@ public final class UserRecord {
 		this.openIdSubject = subject;
 	}
 
-	/** @return Whether this is an internal user. */
+	/**
+	 * {@return Whether this is an internal user}
+	 */
 	public boolean isInternal() {
 		return isInternal;
 	}
 
 	/**
+	 * Sets whether this is an internal user.
+	 *
 	 * @param internal
 	 *            Whether this is an internal user.
 	 */
@@ -306,8 +361,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether this represents a request to use external authentication
-	 *         (instead of just not setting the password).
+	 * {@return Whether this represents a request to use external authentication
+	 *         (instead of just not setting the password)}
 	 */
 	@JsonIgnore
 	public boolean isExternallyAuthenticated() {

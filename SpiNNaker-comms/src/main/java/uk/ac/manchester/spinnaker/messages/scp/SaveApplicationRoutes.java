@@ -27,6 +27,9 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public final class SaveApplicationRoutes extends RouterTableRequest {
 	/**
+	 * Constructs a request to save the
+	 *     currently-installed application multicast router.
+	 *
 	 * @param core
 	 *            The coordinates of the monitor core.
 	 */

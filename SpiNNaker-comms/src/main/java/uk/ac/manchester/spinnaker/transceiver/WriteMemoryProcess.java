@@ -42,7 +42,10 @@ import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
  * Write to memory on SpiNNaker.
  */
 class WriteMemoryProcess extends TxrxProcess {
+
 	/**
+	 * Constructs a write request.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param retryTracker
@@ -57,6 +60,9 @@ class WriteMemoryProcess extends TxrxProcess {
 	}
 
 	/**
+	 * Constructs a write process
+	 *     specifying how much parallelization will be used.
+	 *
 	 * @param connectionSelector
 	 *            How to select how to communicate.
 	 * @param numChannels

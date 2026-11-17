@@ -919,8 +919,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	/**
-	 * @return The underlying client, allowing access to non-job-related
-	 *         operations.
+	 * {@return The underlying client, allowing access to non-job-related
+	 *         operations}
 	 */
 	public SpallocClient getClient() {
 		return client;

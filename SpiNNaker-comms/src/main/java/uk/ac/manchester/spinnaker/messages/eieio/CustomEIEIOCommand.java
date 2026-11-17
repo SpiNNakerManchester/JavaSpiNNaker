@@ -28,6 +28,8 @@ public class CustomEIEIOCommand implements EIEIOCommand {
 	private final int command;
 
 	/**
+	 * Construct a non-standard EIEIO message.
+	 *
 	 * @param command
 	 *            The ID value of the command.
 	 */

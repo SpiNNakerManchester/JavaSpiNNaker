@@ -47,6 +47,8 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	private final BasicExecutor executor;
 
 	/**
+	 * Constructs a base for executing data specifications.
+	 *
 	 * @param machine
 	 *            The description of the SpiNNaker machine.
 	 * @param db

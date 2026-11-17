@@ -103,18 +103,24 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		return header.getSize() + header.eieioType.payloadBytes;
 	}
 
-	/** @return The maximum number of elements that can fit in the packet. */
+	/**
+	 *  {@return The maximum number of elements that can fit in the packet}
+	 */
 	public int getMaxNumElements() {
 		return floorDiv(UDP_MESSAGE_MAX_SIZE - header.getSize(),
 				header.eieioType.keyBytes + header.eieioType.payloadBytes);
 	}
 
-	/** @return The number of elements in the packet. */
+	/**
+	 * {@return The number of elements in the packet}
+     */
 	public int getNumElements() {
 		return header.getCount();
 	}
 
-	/** @return The size of the packet with the current contents. */
+	/**
+	 * {@return The size of the packet with the current contents}
+	 */
 	public int getSize() {
 		return header.getSize()
 				+ (header.eieioType.keyBytes + header.eieioType.payloadBytes)
@@ -164,7 +170,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		addElement(new KeyDataElement(key));
 	}
 
-	/** @return The raw data of this message. */
+	/**
+	 * {@return The raw data of this message}
+	 */
 	public ByteBuffer getData() {
 		return data.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
@@ -283,6 +291,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		private byte count;
 
 		/**
+		 * Construct a EIEIO header for data packets based on the params.
+		 *
 		 * @param eieioType
 		 *            the type of message
 		 * @param tag
@@ -320,6 +330,8 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		}
 
 		/**
+		 * Construct a EZEIO header for data packets based on the buffer.
+		 *
 		 * @param buffer
 		 *            The buffer to deserialise from.
 		 */
@@ -360,7 +372,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			}
 		}
 
-		/** @return The number of items in the packet. */
+		/**
+		 * {@return The number of items in the packet}
+		 */
 		public byte getCount() {
 			return count;
 		}
@@ -387,7 +401,9 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 		private static final int SHORT_WIDTH = 2;
 
-		/** @return The unit size per data component. */
+		/**
+		 * {@return The unit size per data component}
+		 */
 		public int getSize() {
 			int size = SHORT_WIDTH;
 			if (prefix != null) {

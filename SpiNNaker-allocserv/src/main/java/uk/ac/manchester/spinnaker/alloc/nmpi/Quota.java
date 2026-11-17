@@ -35,13 +35,15 @@ public class Quota {
 	private String units;
 
 	/**
-	 * @return the total amount of quota assigned.
+	 * {@return the total amount of quota assigned}
 	 */
 	public double getLimit() {
 		return limit;
 	}
 
 	/**
+	 * Sets the limit to set.
+	 *
 	 * @param limit
 	 *            the limit to set.
 	 */
@@ -50,13 +52,15 @@ public class Quota {
 	}
 
 	/**
-	 * @return the usage of the quota assigned.
+	 * {@return the usage of the quota assigned}
 	 */
 	public double getUsage() {
 		return usage;
 	}
 
 	/**
+	 * Sets the usage to set.
+	 *
 	 * @param usage
 	 *            the usage to set.
 	 */
@@ -65,13 +69,15 @@ public class Quota {
 	}
 
 	/**
-	 * @return the platform that the quota is assigned to.
+	 * {@return the platform that the quota is assigned to}
 	 */
 	public String getPlatform() {
 		return platform;
 	}
 
 	/**
+	 * Sets the platform to set.
+	 *
 	 * @param platform
 	 *            the platform to set.
 	 */
@@ -80,13 +86,15 @@ public class Quota {
 	}
 
 	/**
-	 * @return the units in which the quota is measured.
+	 * {@return the units in which the quota is measured}
 	 */
 	public String getUnits() {
 		return units;
 	}
 
 	/**
+	 * Sets the units to set.
+	 *
 	 * @param units
 	 *            the units to set.
 	 */

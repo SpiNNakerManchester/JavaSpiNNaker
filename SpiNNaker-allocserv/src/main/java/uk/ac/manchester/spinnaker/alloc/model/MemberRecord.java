@@ -48,14 +48,16 @@ public class MemberRecord {
 	private URI userUrl;
 
 	/**
-	 * @return The ID of this membership. Distinct from both the user and the
-	 *         group.
+	 * {@return The ID of this membership. Distinct from both the user and the
+	 *         group}
 	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
+	 * Sets the ID of this membership.
+	 *
 	 * @param id
 	 *            The ID of this membership. Distinct from both the user and the
 	 *            group.
@@ -64,12 +66,16 @@ public class MemberRecord {
 		this.id = id;
 	}
 
-	/** @return The ID of the group that this is a membership of. */
+	/**
+	 * {@return The ID of the group that this is a membership of}
+	 */
 	public int getGroupId() {
 		return groupId;
 	}
 
 	/**
+	 * Sets the ID of the group that this is a membership of.
+	 *
 	 * @param groupId
 	 *            The ID of the group that this is a membership of.
 	 */
@@ -77,12 +83,16 @@ public class MemberRecord {
 		this.groupId = groupId;
 	}
 
-	/** @return The name of the group that this is a membership of. */
+	/**
+	 * {@return The name of the group that this is a membership of}
+	 */
 	public String getGroupName() {
 		return groupName;
 	}
 
 	/**
+	 * Sets the name of the group that this is a membership of.
+	 *
 	 * @param groupName
 	 *            The name of the group that this is a membership of.
 	 */
@@ -90,12 +100,16 @@ public class MemberRecord {
 		this.groupName = groupName;
 	}
 
-	/** @return The URL for the group that this is a membership of. */
+	/**
+	 * {@return The URL for the group that this is a membership of}
+	 */
 	public URI getGroupUrl() {
 		return groupUrl;
 	}
 
 	/**
+	 * Sets the URL for the group that this is a membership of.
+	 *
 	 * @param groupUrl
 	 *            The URL for the group that this is a membership of.
 	 */
@@ -103,12 +117,16 @@ public class MemberRecord {
 		this.groupUrl = groupUrl;
 	}
 
-	/** @return The ID of the user that this is a membership of. */
+	/**
+	 * {@return The ID of the user that this is a membership of}
+	 */
 	public int getUserId() {
 		return userId;
 	}
 
 	/**
+	 * Sets the ID of the user that this is a membership of.
+	 *
 	 * @param userId
 	 *            The ID of the user that this is a membership of.
 	 */
@@ -116,12 +134,16 @@ public class MemberRecord {
 		this.userId = userId;
 	}
 
-	/** @return The name of the user that this is a membership of. */
+	/**
+	 * {@return The name of the user that this is a membership of}
+	 */
 	public String getUserName() {
 		return userName;
 	}
 
 	/**
+	 * Set the name of the user that this is a membership of.
+	 *
 	 * @param userName
 	 *            The name of the user that this is a membership of.
 	 */
@@ -129,12 +151,16 @@ public class MemberRecord {
 		this.userName = userName;
 	}
 
-	/** @return The URL for the user that this is a membership of. */
+	/**
+	 * {@return The URL for the user that this is a membership of}
+	 */
 	public URI getUserUrl() {
 		return userUrl;
 	}
 
 	/**
+	 * Sets the URL for the user that this is a membership of.
+	 *
 	 * @param userUrl
 	 *            The URL for the user that this is a membership of.
 	 */

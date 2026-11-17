@@ -49,6 +49,8 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response>
 	}
 
 	/**
+	 * Constructs a request to get this IP tag on this Chip.
+	 *
 	 * @param chip
 	 *            The chip to get the tag from.
 	 * @param tag

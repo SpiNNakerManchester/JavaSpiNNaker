@@ -149,7 +149,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	/**
 	 * Has the execution of a job remained within its group's resource
-	 * allocation at this point?
+	 * allocation at this point.
 	 *
 	 * @param jobId
 	 *            What job is consuming resources?
@@ -163,7 +163,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 	/**
 	 * Has the execution of a job exceeded its group's resource allocation at
-	 * this point?
+	 * this point.
 	 *
 	 * @param jobId
 	 *            What job is consuming resources?
@@ -226,12 +226,16 @@ public class QuotaManager extends DatabaseAwareBean {
 			this.quota = row.getLong("quota");
 		}
 
-		/** @return The name of the group. */
+		/**
+		 * {@return The name of the group}
+		 */
 		public String getName() {
 			return name;
 		}
 
-		/** @return The new quota of the group. */
+		/**
+		 * {@return The new quota of the group}
+		 */
 		public Long getQuota() {
 			return quota;
 		}
@@ -666,6 +670,8 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Testing method, Do not use outside of tests.
+	 *
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 * @hidden

@@ -79,13 +79,15 @@ public class SessionRequest {
 	}
 
 	/**
-	 * @return the hardware platform to create the session in.
+	 * {@return the hardware platform to create the session in}
 	 */
 	public String getHardwarePlatform() {
 		return hardwarePlatform;
 	}
 
 	/**
+	 * Sets the Hardware Platform to set.
+	 *
 	 * @param hardwarePlatform
 	 *            the Hardware Platform to set
 	 */
@@ -94,13 +96,15 @@ public class SessionRequest {
 	}
 
 	/**
-	 * @return the specified configuration of the hardware to use.
+	 * {@return the specified configuration of the hardware to use}
 	 */
 	public Map<String, String> getHardwareConfig() {
 		return hardwareConfig;
 	}
 
 	/**
+	 * Sets  the Hardware Configuration to set.
+	 *
 	 * @param hardwareConfig
 	 *            the Hardware Configuration to set
 	 */

@@ -32,7 +32,10 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code cmd_fpga_read()} in {@code bmp_cmd.c}.
  */
 public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
+
 	/**
+	 * Constructs a request for the data from a FPGA's register.
+	 *
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
 	 * @param register
@@ -69,7 +72,9 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 			super("Read FPGA register", CMD_FPGA_READ, buffer);
 		}
 
-		/** @return The FPGA register contents, not further interpreted. */
+		/**
+		 * {@return The FPGA register contents, not further interpreted}
+		 */
 		@Override
 		protected Integer parse(ByteBuffer buffer) {
 			return buffer.getInt();

@@ -88,7 +88,7 @@ public class PyNNJobProcess implements JobProcess<PyNNJobParameters> {
 	/** The set of ignored directories in the outputs. */
 	private static final Set<String> IGNORED_DIRECTORIES = new HashSet<>();
 
-	/** The timeout for running jobs, in <em>hours.</em> */
+	/** The timeout for running jobs, in <em>hours</em>. */
 	private static final int RUN_TIMEOUT = 7 * 24;
 
 	/** The parameter to request a change in the timeout (also in hours). */

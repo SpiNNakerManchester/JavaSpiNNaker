@@ -80,7 +80,7 @@ public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 	}
 
 	/**
-	 * @return An iterator over the lines of the underlying reader.
+	 * {@return An iterator over the lines of the underlying reader}
 	 */
 	@Override
 	public Iterator<String> iterator() {

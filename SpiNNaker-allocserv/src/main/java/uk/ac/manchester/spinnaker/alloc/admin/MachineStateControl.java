@@ -194,10 +194,14 @@ public class MachineStateControl extends DatabaseAwareBean {
 		}
 
 		/**
-		 * @return The allocatable state of the board. If a board is not
-		 *         allocatable, it will not be handed out in new allocations to
-		 *         jobs, but can continue to be used by whatever job it is
-		 *         currently allocated to (if any).
+		 * The allocatable state of the board.
+		 *
+		 * If a board is not allocatable,
+		 * it will not be handed out in new allocations to jobs,
+		 * but can continue to be used by whatever job
+		 * it is currently allocated to (if any).
+		 *
+		 * @return The allocatable state of the board.
 		 */
 		public boolean getState() {
 			return executeRead(conn -> {
@@ -208,6 +212,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 		}
 
 		/**
+		 * Sets the allocatable state to set the board to.
+		 *
 		 * @param newValue
 		 *            The allocatable state to set the board to.
 		 */
@@ -219,7 +225,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return What job has been allocated to the board? */
+		/**
+		 * {@return What job has been allocated to the board}
+		 */
 		public Optional<Integer> getAllocatedJob() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_JOB)) {
@@ -228,7 +236,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return Is the board switched on? */
+		/**
+		 * {@return Is the board switched on}
+		 */
 		public boolean getPower() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -237,7 +247,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return When was the board last switched on? */
+		/**
+		 * {@return When was the board last switched on}
+		 */
 		public Optional<Instant> getPowerOnTime() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -246,7 +258,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return When was the board last switched off? */
+		/**
+		 * {@return When was the board last switched off}
+		 */
 		public Optional<Instant> getPowerOffTime() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -255,7 +269,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		/** @return What issues have been logged against the board? */
+		/**
+		 * {@return What issues have been logged against the board}
+		 */
 		public List<BoardIssueReport> getReports() {
 			return executeRead(conn -> {
 				try (var q = conn.query(GET_BOARD_REPORTS)) {
@@ -371,7 +387,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * @return The mapping from machine names+IDs to tags.
+	 * {@return The mapping from machine names+IDs to tags}
 	 */
 	public List<MachineTagging> getMachineTagging() {
 		return executeRead(conn -> {
@@ -398,8 +414,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * @return The unacknowledged reports about boards with potential problems
-	 *         in existing machines, categorised by machine.
+	 * {@return The unacknowledged reports about boards with potential problems
+	 *         in existing machines, categorised by machine}
 	 */
 	public Map<String, List<BoardIssueReport>> getMachineReports() {
 		return executeRead(conn -> {
@@ -827,6 +843,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 		private final int boardId;
 
 		/**
+		 * Constructs the Manager for the transactions used to safely talk
+		 *     with the BMP controller.
+		 *
 		 * @param operation
 		 *            The SQL to create the operation to carry out. Must
 		 *            generate an ID, so presumably is an {@code INSERT}.

@@ -31,7 +31,10 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  * {@code sark_base.c}, depending on which core the message is sent to.
  */
 public class GetVersion extends SCPRequest<GetVersion.Response> {
+
 	/**
+	 * A request to read the software version.
+	 *
 	 * @param core
 	 *            The location of the core to read from.
 	 */
@@ -52,7 +55,9 @@ public class GetVersion extends SCPRequest<GetVersion.Response> {
 			super("Version", CMD_VER, buffer);
 		}
 
-		/** @return The version information received. */
+		/**
+		 * {@return The version information received}
+		 */
 		@Override
 		protected VersionInfo parse(ByteBuffer buffer) {
 			return new VersionInfo(buffer, false);

@@ -39,8 +39,8 @@ public interface ConnectionProvider<APIType extends DatabaseAPI> {
 	Connection getConnection() throws SQLException;
 
 	/**
-	 * @return a storage interface that is suitable for providing support for a
-	 *         particular API.
+	 * {@return a storage interface that is suitable for providing support for a
+	 *         particular API}
 	 */
 	APIType getStorageInterface();
 }
