@@ -1261,7 +1261,7 @@ public interface SpallocAPI {
 		ChipLocation getChipRelativeTo(@NotNull ChipLocation rootChip);
 
 		/**
-		 * What machine is the board on?
+		 * What machine is the board on.
 		 *
 		 * @return name of machine
 		 */
