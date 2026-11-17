@@ -327,7 +327,7 @@ public class JobDescription {
 	 * The serialized request.
 	 *
 	 * Needs to be processed to hand out of {@link #getRequest()}.
-
+	 *
 	 * @return The serialized request
 	 */
 	public byte[] getRequestBytes() {

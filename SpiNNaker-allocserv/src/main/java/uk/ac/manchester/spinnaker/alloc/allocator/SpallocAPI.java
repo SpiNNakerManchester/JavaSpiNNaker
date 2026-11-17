@@ -839,7 +839,7 @@ public interface SpallocAPI {
 	interface Job extends Waitable {
 		/**
 		 * {@return Job ID}
-		 * */
+		 */
 		int getId();
 
 		/**
