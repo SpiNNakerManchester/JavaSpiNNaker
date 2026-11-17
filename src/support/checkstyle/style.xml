@@ -56,13 +56,13 @@ limitations under the License.
 			<property name="ignoreComments" value="true"/>
 		</module>
 		<!-- Javadoc Comments Checks -->
-		<!-- module name="AtclauseOrder"/  Not currently followed -->
-		<module name="BlockCommentEndPosition"/>
-		<module name="IllegalBlockTag">
-			<!-- None expected so check if one exists it is SpiNNakerTeam -->
-			<property name="tag" value="@author"/>
-			<property name="tagTextPattern" value="SpiNNakerTeam"/>
+		<module name="AtclauseOrder">
+			<property name="tagOrder"
+					  value="@version, @param, @return, @throws, @exception,
+					         @see, @since, @serial, @serialField,
+					         @serialData, @deprecated"/>
 		</module>
+		<module name="BlockCommentEndPosition"/>
 		<module name="InappropriateJavadocBlockTagsOnField"/>
 		<module name="InappropriateJavadocBlockTagsOnPackage"/>
 		<module name="InappropriateJavadocBlockTagsOnType"/>
