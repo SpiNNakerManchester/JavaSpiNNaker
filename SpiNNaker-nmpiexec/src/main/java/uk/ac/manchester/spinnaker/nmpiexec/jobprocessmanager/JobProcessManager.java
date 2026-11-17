@@ -544,7 +544,7 @@ abstract class JobManagerLogWriter implements LogWriter {
 	private final StringBuilder cached = new StringBuilder();
 
 	/**
-	 * Does the log have anything in it?
+	 * Does the log have anything in it.
 	 *
 	 * @return Whether the log cache is non-empty.
 	 */
