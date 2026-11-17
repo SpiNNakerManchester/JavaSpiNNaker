@@ -107,7 +107,7 @@ public class NMPIQueueManagerCompat implements NMPIQueueManager {
 	@Value("${nmpi.username}")
 	private String nmpiUsername;
 
-	/** The authorization header to use. **/
+	/** The authorization header to use. */
 	private String nmpiAuthHeader;
 
 	/**

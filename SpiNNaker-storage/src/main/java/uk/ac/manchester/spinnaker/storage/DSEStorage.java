@@ -58,7 +58,6 @@ public interface DSEStorage extends ProxyAwareStorage {
 			boolean loadSystemCores) throws StorageException;
 
 	/**
-	 *
 	 * Get a map of region id to size for regions with a none zero size.
 	 *
 	 * @param xyp

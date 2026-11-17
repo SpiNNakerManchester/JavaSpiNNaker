@@ -20,14 +20,13 @@ services:
       args:
         DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
     container_name: nmpi-host
-    env_file: .env
     ports:
       - "9090:9090"
     networks:
       - nmpi-network
     volumes:
-      - ./nmpi.properties:/app/nmpi.properties
-      - ./execute_pynn.bash:/app/execute_pynn.bash
+      - ${NMPI_PROPERTIES}:/app/nmpi.properties
+      - ${EXECUTE_PYNN}:/app/execute_pynn.bash
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_PATH}:/mnt/data/
 

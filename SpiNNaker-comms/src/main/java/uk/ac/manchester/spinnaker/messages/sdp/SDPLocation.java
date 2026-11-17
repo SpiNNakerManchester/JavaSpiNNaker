@@ -27,25 +27,25 @@ import uk.ac.manchester.spinnaker.machine.board.HasBMPLocation;
  */
 public class SDPLocation implements HasCoreLocation, HasBMPLocation {
 
-	/** Shift for major in hash code. **/
+	/** Shift for major in hash code. */
 	private static final int MAJOR_SHIFT = 24;
 
-	/** Shift for minor in hash code. **/
+	/** Shift for minor in hash code. */
 	private static final int MINOR_SHIFT = 16;
 
-	/** The first value. **/
+	/** The first value. */
 	final int major;
 
-	/** The second value. **/
+	/** The second value. */
 	final int minor;
 
-	/** The third value. **/
+	/** The third value. */
 	final int detail;
 
-	/** Was constructed from a core location. **/
+	/** Was constructed from a core location. */
 	private final boolean fromCoreLocation;
 
-	/** Was constructed from a BMP location. **/
+	/** Was constructed from a BMP location. */
 	private final boolean fromBMPLocation;
 
 	/**

@@ -50,11 +50,11 @@ abstract class SQLiteProxyStorage<T extends DatabaseAPI>
 	 * @param conn
 	 *            The connection to read the data from.
 	 * @return The proxy information.
-	 * @throws SQLException
-	 *             If there is an error reading the database.
 	 * @throws IllegalStateException
 	 *             If a bad row is retrieved; should be unreachable if SQL is
 	 *             synched to code.
+	 * @throws SQLException
+	 *             If there is an error reading the database.
 	 */
 	private ProxyInformation getProxyInfo(Connection conn) throws SQLException {
 		String spallocUri = null;

@@ -54,8 +54,8 @@ limitations under the License.
 		<spring.security.version>7.1.2</spring.security.version>
 
 		<cxf.version>4.2.4</cxf.version>
-		<jackson.version>2.22.4</jackson.version>
-		<jackson.annotations.version>2.22</jackson.annotations.version>
+		<jackson.version>2.23.0</jackson.version>
+		<jackson.annotations.version>2.23</jackson.annotations.version>
 		<sqlite.version>3.54.1.0</sqlite.version>
 		<keycloak.version>26.8.2</keycloak.version>
 		<swagger.version>5.34.1</swagger.version>
@@ -64,7 +64,7 @@ limitations under the License.
 		<mysql.version>26.10.0</mysql.version>
 		<testcontainers.version>2.0.5</testcontainers.version>
 		<jakarta.ws.version>4.0.0</jakarta.ws.version>
-		<resteasy.version>7.0.5.Final</resteasy.version>
+		<resteasy.version>7.0.6.Final</resteasy.version>
 	</properties>
 
 	<dependencyManagement>
@@ -258,7 +258,7 @@ limitations under the License.
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.21.0</version>
+				<version>3.22.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-cli</groupId>
@@ -621,12 +621,12 @@ limitations under the License.
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.6.4</version>
+					<version>3.7.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.7.0</version>
+					<version>3.8.0</version>
 				</plugin>
 				<plugin>
 					<groupId>uk.co.automatictester</groupId>

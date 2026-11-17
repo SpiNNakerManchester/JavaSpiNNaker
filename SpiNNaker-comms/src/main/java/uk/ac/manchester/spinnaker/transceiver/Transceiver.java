@@ -365,6 +365,9 @@ public class Transceiver extends UDPTransceiver
 	 *            The type of SpiNNaker board used within the SpiNNaker machine
 	 *            being used. May be {@code null} if the board in question can
 	 *            be assumed to be always already booted.
+	 * @param bmpConnectionData
+	 *            the details of the BMP connections used to boot multi-board
+	 *            systems
 	 * @param numberOfBoards
 	 *            a number of boards expected to be supported, or {@code null},
 	 *            which defaults to a single board
@@ -381,16 +384,13 @@ public class Transceiver extends UDPTransceiver
 	 *            An optional set of links to ignore in the machine. Requests
 	 *            for a "machine" will have these links excluded, as if they
 	 *            never existed.
-	 * @param bmpConnectionData
-	 *            the details of the BMP connections used to boot multi-board
-	 *            systems
 	 * @param autodetectBMP
 	 *            True if the BMP of version 4 or 5 boards should be
 	 *            automatically determined from the board IP address
-	 * @param bootPortNumber
-	 *            the port number used to boot the machine
 	 * @param scampConnections
 	 *            the list of connections used for SCAMP communications
+	 * @param bootPortNumber
+	 *            the port number used to boot the machine
 	 * @param maxSDRAMSize
 	 *            the max size each chip can say it has for SDRAM (mainly used
 	 *            in debugging purposes)

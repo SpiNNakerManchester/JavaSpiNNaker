@@ -18,9 +18,16 @@ spalloc:
     add-dummy-user: false
     dummy-random-pass: false
     openid:
-      id: ${EBRAINS_OPENID_CLIENT_ID}
-      secret: ${EBRAINS_OPENID_CLIENT_SECRET}
-      redirect: https://${SPRING_SERVER_HOST}/spalloc/system/perform_oidc/{action}/code/{registrationId}
+      introspection-uris:
+        hbp-ebrains:
+          type: spring
+          uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token/introspect
+          username_property: preferred_username
+        google:
+          type: token
+          uri: https://oauth2.googleapis.com/tokeninfo
+          username_property: email
+          token_parameter: access_token
   sqlite:
     performance-log: true
   compat:
@@ -50,7 +57,7 @@ spalloc:
     nmpi-api-key: ${SPALLOC_NMPI_API_KEY}
     nmpi-platform: SpiNNaker
   proxy:
-    local-host: ${SPALLOC_PROXY_LOCAL_HOST}
+    local-host: 0.0.0.0
 
 server:
   port: 9091
@@ -66,6 +73,20 @@ spring:
   mvc:
     servlet:
       path: /spalloc
+  security:
+    oauth2:
+      client:
+        registration:
+          hbp-ebrains:
+            client-name: HBP / EBRAINS
+            client-id: ${OIDC_EBRAINS_CLIENT_ID}
+            client-secret: ${OIDC_EBRAINS_CLIENT_SECRET}
+            redirect-uri: https://spinnaker.cs.man.ac.uk/spalloc/system/perform_oidc/{action}/code/{registrationId}
+          google:
+            client-name: Google
+            client-id: ${OIDC_GOOGLE_CLIENT_ID}
+            client-secret: ${OIDC_GOOGLE_CLIENT_SECRET}
+            redirect-uri: https://spinnaker.cs.man.ac.uk/spalloc/system/perform_oidc/{action}/code/{registrationId}
 
 cxf:
   path: /spalloc/srv

@@ -17,8 +17,6 @@ services:
     image: mysql:8.0
     container_name: spalloc-mysql-container
     environment:
-      SPRING_DATASOURCE_USERNAME: spalloc
-      SPRING_DATASOURCE_PASSWORD: spalloc
       MYSQL_ROOT_PASSWORD: spalloc-root
     healthcheck:
       test: ["CMD", "/usr/bin/mysql", "--database=spalloc_history", "--user=spalloc",  "--password=spalloc", "--execute", "SHOW DATABASES;"]
@@ -47,7 +45,6 @@ services:
     depends_on:
       spalloc-mysql-db:
         condition: service_healthy
-    env_file: spalloc.env
     environment:
       SPRING_DATASOURCE_USERNAME: spalloc
       SPRING_DATASOURCE_PASSWORD: spalloc
