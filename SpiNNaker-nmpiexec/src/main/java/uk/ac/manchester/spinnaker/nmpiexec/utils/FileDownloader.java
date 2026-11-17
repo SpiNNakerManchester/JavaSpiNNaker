@@ -67,9 +67,9 @@ public abstract class FileDownloader {
 	 *            The URL to connect to
 	 * @param userInfo
 	 *            The authentication to use, as username:password
+	 * @return The created connection
 	 * @throws IOException
 	 *             if an I/O error occurs
-	 * @return The created connection
 	 */
 	private static URLConnection createConnectionWithAuth(final URL url,
 			final String userInfo) throws IOException {
