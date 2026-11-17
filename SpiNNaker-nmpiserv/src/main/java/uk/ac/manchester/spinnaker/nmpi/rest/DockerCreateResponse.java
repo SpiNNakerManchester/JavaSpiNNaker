@@ -28,13 +28,15 @@ public class DockerCreateResponse {
 	private List<String> warnings;
 
 	/**
-	 * @return the id
+	 * {@return the id}
 	 */
 	public String getId() {
 		return id;
 	}
 
 	/**
+	 * Set the ID.
+	 *
 	 * @param id
 	 *            the id to set
 	 */
@@ -44,13 +46,15 @@ public class DockerCreateResponse {
 	}
 
 	/**
-	 * @return the warnings
+	 * {@return the warnings}
 	 */
 	public List<String> getWarnings() {
 		return warnings;
 	}
 
 	/**
+	 * Set the warnings.
+	 *
 	 * @param warnings
 	 *            the warnings to set
 	 */

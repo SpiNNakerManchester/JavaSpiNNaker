@@ -25,6 +25,8 @@ public class NMPILog {
 	private StringBuilder buffer;
 
 	/**
+	 * Construct the Neuromorphic Platform Interface log core.
+	 *
 	 * @param buffer
 	 *            The buffer holding the log contents.
 	 */

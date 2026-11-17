@@ -40,6 +40,8 @@ public class DockerInspectResponse {
 		}
 
 		/**
+		 * Set what is running.
+		 *
 		 * @param running
 		 *            whether it is running
 		 */
@@ -51,7 +53,7 @@ public class DockerInspectResponse {
 	private State state;
 
 	/**
-	 * @return the state descriptor
+	 * {@return the state descriptor}
 	 */
 	@JsonProperty("State")
 	public State getState() {
@@ -59,6 +61,8 @@ public class DockerInspectResponse {
 	}
 
 	/**
+	 * Set the state.
+	 *
 	 * @param state
 	 *            the state to set
 	 */
