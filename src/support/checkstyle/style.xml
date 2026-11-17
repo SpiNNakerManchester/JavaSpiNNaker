@@ -58,7 +58,10 @@ limitations under the License.
 		<!-- Javadoc Comments Checks -->
 		<!-- module name="AtclauseOrder"/  Not currently followed -->
 		<module name="BlockCommentEndPosition"/>
-		<!-- <module name="IllegalBlockTag"/> We have no user tags to check -->
+		<module name="IllegalBlockTag">
+			<!-- None expected so check if one exists it is SpiNNakerTeam -->
+			<property name="author" value="SpiNNakerTeam"/>
+		</module>
 		<module name="InappropriateJavadocBlockTagsOnField"/>
 		<module name="InappropriateJavadocBlockTagsOnPackage"/>
 		<module name="InappropriateJavadocBlockTagsOnType"/>
