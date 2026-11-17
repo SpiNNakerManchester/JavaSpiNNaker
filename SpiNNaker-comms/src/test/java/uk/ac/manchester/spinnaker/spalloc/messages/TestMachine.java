@@ -25,10 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
-/**
- *
- * @author Christian
- */
 public class TestMachine {
 
 	@Test

@@ -79,8 +79,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * The core of tasks that handle connections by clients.
- *
- * @author Donal Fellows
  */
 public abstract class V1CompatTask extends V1CompatService.Aware {
 	private static final Logger log = getLogger(V1CompatTask.class);

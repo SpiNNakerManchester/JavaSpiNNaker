@@ -22,8 +22,6 @@ import java.net.Socket;
 
 /**
  * A persistent remote connection.
- *
- * @author Andrew Rowley
  */
 final class Remote implements AutoCloseable {
 	/** How long to wait between retries of the connection. */

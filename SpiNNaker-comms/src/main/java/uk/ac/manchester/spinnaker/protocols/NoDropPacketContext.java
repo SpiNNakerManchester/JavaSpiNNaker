@@ -40,9 +40,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * packets is a network that can deadlock. It is not believed safe to use this
  * class on more than one board at a time, and it is definitely not safe to do
  * anything else than data transfers while the context is set.
- *
- * @author Donal Fellows
- * @author Alan Stokes
  */
 public class NoDropPacketContext implements AutoCloseable {
 	private static final Logger log = getLogger(NoDropPacketContext.class);

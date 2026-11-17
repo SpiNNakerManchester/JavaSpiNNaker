@@ -64,8 +64,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Administration interface.
- *
- * @author Donal Fellows
  */
 @Hidden
 @PreAuthorize(IS_ADMIN)

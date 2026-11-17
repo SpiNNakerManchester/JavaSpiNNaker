@@ -25,8 +25,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * The result of the IOBUF retrieval operations. Contains the notable errors and
  * warnings that were found.
- *
- * @author Donal Fellows
  */
 @JsonFormat(shape = OBJECT)
 public class NotableMessages {

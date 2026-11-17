@@ -33,8 +33,6 @@ import jakarta.validation.Payload;
 
 /**
  * Validates that a number looks like a UDP port. Always accepts {@code null}.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

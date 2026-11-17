@@ -30,10 +30,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 
-/**
- *
- * @author Christian-B
- */
 public class TestFpgaLinkId {
 
 	private int checkFpgaLink(FpgaId fpga, int linkId, int x, int y,

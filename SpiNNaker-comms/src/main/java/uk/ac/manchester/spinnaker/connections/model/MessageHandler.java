@@ -20,7 +20,6 @@ package uk.ac.manchester.spinnaker.connections.model;
  *
  * @param <MessageType>
  *            the type of message handled.
- * @author Donal Fellows
  */
 public interface MessageHandler<MessageType> {
 	/**

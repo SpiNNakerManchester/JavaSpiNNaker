@@ -20,8 +20,6 @@ import static java.lang.Integer.toHexString;
 
 /**
  * Miscellaneous mathematical functions.
- *
- * @author Donal Fellows
  */
 public abstract class MathUtils {
 	private MathUtils() {

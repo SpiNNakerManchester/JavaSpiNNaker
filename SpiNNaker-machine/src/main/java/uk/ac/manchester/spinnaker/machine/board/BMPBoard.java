@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.machine.board;
 
 /**
  * Wrapper for a board number so that it can't get mixed up with other integers.
- *
- * @author Donal Fellows
  */
 public final class BMPBoard {
 	/**

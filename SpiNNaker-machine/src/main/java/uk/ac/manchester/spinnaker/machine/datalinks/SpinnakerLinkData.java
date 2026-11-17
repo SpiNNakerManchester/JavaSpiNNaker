@@ -25,8 +25,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
  * A description of a data link that uses the SpiNNaker-link protocol.
- *
- * @author Christian-B
  */
 @Immutable
 public final class SpinnakerLinkData extends AbstractDataLink {

@@ -23,10 +23,6 @@ import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 public class TestIPTag {
 
 	private InetAddress createInetAddress(byte lastByte)

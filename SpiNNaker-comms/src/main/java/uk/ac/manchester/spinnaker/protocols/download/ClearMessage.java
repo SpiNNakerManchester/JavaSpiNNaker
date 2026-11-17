@@ -27,8 +27,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * A message used to request fast data transfer from SpiNNaker to Host.
- *
- * @author Alan Stokes
  */
 
 public final class ClearMessage extends GatherProtocolMessage {

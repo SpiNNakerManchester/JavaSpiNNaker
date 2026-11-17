@@ -21,8 +21,6 @@ package uk.ac.manchester.spinnaker.utils;
  * This allows the object to be final and therefore passed into inner classes.
  * <p>
  * This is <i>not</i> thread safe.
- *
- * @author Christian-B
  */
 public final class Counter {
 	private int count;

@@ -40,8 +40,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
 /**
  * Utility functions to support {@link V1CompatService}.
- *
- * @author Donal Fellows
  */
 abstract class Utils {
 	private static final Logger log = getLogger(V1CompatService.class);
@@ -53,8 +51,6 @@ abstract class Utils {
 	 * The notification handler task core implementation. This is
 	 * <em>designed</em> to be interrupted; the task does not complete until it
 	 * is interrupted or an exception is thrown!
-	 *
-	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
 	interface Notifier {

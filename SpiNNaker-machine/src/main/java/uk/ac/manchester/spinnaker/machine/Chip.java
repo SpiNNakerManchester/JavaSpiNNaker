@@ -43,8 +43,6 @@ import uk.ac.manchester.spinnaker.machine.tags.TagID;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/router.py">
  *      Python Router Version</a>
- *
- * @author Christian-B
  */
 public class Chip implements HasChipLocation {
 	@Valid

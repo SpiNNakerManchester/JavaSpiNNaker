@@ -34,8 +34,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 
 /**
  * Handler for {@link DataAccessException}.
- *
- * @author Donal Fellows
  */
 @Component
 @Provider

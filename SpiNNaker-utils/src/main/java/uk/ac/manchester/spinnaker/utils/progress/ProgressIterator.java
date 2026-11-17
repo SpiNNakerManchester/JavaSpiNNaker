@@ -31,7 +31,6 @@ import java.util.NoSuchElementException;
  *
  * @param <E>
  *            Type of Element to be iterated over.
- * @author Christian-B
  */
 public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	private final ProgressBar bar;

@@ -28,8 +28,6 @@ import org.springframework.jdbc.UncategorizedSQLException;
 
 /**
  * Miscellaneous database-related utility operations.
- *
- * @author Donal Fellows
  */
 public abstract class Utils {
 	private static final int TRIM_LENGTH = 80;

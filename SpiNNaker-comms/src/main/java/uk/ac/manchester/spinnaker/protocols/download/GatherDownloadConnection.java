@@ -47,8 +47,6 @@ import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
 
 /**
  * A connection for handling the Data Speed Up protocol.
- *
- * @author Donal Fellows
  */
 final class GatherDownloadConnection implements AutoCloseable {
 	private long lastSend = 0L;

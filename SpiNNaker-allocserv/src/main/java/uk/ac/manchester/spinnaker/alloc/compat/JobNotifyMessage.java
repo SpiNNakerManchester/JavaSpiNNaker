@@ -24,8 +24,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A job notification message.
- *
- * @author Donal Fellows
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class JobNotifyMessage {

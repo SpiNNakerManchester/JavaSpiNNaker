@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Used to build a {@link Machine} from JSON.
- *
- * @author Christian-B
  */
 @UsedInJavadocOnly(Machine.class)
 public class MachineBean {

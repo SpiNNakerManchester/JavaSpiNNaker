@@ -29,8 +29,6 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.TransactedWithResult;
 /**
  * A support class to make accessing the database a bit simpler. It factors out
  * some common patterns.
- *
- * @author Donal Fellows
  */
 public abstract class DatabaseAwareBean extends SQLQueries {
 	/** The application database. */
@@ -121,8 +119,6 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 	 * Encapsulation of a connection. Can either do the management itself or use
 	 * a connection managed outside; the difference is important mainly during
 	 * testing as tests often use in-memory DBs.
-	 *
-	 * @author Donal Fellows
 	 */
 	protected abstract class AbstractSQL implements AutoCloseable {
 		/** The connection. */

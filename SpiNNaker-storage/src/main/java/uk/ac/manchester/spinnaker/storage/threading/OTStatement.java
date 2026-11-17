@@ -23,8 +23,6 @@ import java.sql.Statement;
 
 /**
  * A single-threaded database statement wrapper.
- *
- * @author Donal Fellows
  */
 class OTStatement extends OTWrapper implements Statement {
 	private final Statement s;

@@ -23,8 +23,6 @@ import java.sql.SQLException;
 
 /**
  * A single-threaded database metadata wrapper.
- *
- * @author Donal Fellows
  */
 final class OTMeta extends OTWrapper implements DatabaseMetaData {
 	private final DatabaseMetaData m;

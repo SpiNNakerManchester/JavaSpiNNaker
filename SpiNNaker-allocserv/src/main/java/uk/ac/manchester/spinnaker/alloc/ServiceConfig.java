@@ -102,7 +102,6 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
  * are no public methods in this class that can be called by non-framework code.
  *
  * @see SecurityConfig
- * @author Donal Fellows
  */
 @Import({JaxRsConfig.class, MvcConfig.class, SecurityConfig.class})
 @PropertySource("classpath:service.properties")
@@ -271,8 +270,6 @@ public class ServiceConfig extends Application {
 	 * SSL/TLS for us. In theory, CXF should do this itself; this is the kind of
 	 * obscure rubbish that frameworks are supposed to handle for us. In
 	 * practice, it doesn't. Yuck.
-	 *
-	 * @author Donal Fellows
 	 */
 	@Component
 	@Role(ROLE_SUPPORT)
@@ -368,8 +365,6 @@ public class ServiceConfig extends Application {
 	 * ask for the current request session to help. An example of such a context
 	 * is in configuring the access control rules on the paths, which has to be
 	 * done prior to any message session existing.
-	 *
-	 * @author Donal Fellows
 	 */
 	@Component
 	@Role(ROLE_SUPPORT)

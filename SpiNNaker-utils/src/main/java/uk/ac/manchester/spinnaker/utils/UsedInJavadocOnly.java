@@ -29,8 +29,6 @@ import java.lang.annotation.Target;
  * Marks that the given class is used for Javadoc generation only, but needs to
  * be referenced for Checkstyle. With this, the classes in question are
  * genuinely used, but only at the source level; no runtime code is generated.
- *
- * @author Donal Fellows
  */
 @Retention(SOURCE)
 @Target({ TYPE, METHOD, CONSTRUCTOR, FIELD, PACKAGE })

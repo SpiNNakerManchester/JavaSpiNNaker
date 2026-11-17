@@ -48,8 +48,6 @@ import java.util.function.Consumer;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/chip.py">
  *      Python Version</a>
- *
- * @author Christian-B
  */
 public final class SpiNNakerTriadGeometry {
 	private static SpiNNakerTriadGeometry spinn5TriadGeometry = null;

@@ -25,8 +25,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
  * A description of a particular inter-board link.
- *
- * @author Christian-B
  */
 @Immutable
 public final class FPGALinkData extends AbstractDataLink {

@@ -26,8 +26,6 @@ import uk.ac.manchester.spinnaker.messages.model.CPUState;
 
 /**
  * Cores failed to reach a given state within a timeout.
- *
- * @author Donal Fellows
  */
 public class CoresNotInStateException extends SpinnmanException {
 	private static final long serialVersionUID = 1790369744408178478L;

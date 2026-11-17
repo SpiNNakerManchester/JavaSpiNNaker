@@ -28,8 +28,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Misc services related to password handling.
- *
- * @author Donal Fellows
  */
 @Component
 public class PasswordServices {

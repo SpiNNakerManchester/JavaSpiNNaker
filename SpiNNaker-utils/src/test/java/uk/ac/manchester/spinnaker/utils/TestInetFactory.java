@@ -20,10 +20,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import uk.ac.manchester.spinnaker.utils.InetFactory.Inet6NotSupportedException;
 
-/**
- *
- * @author Christian-B
- */
 public class TestInetFactory {
 	/** Name of a host that isn't going away soon because we control it. */
 	private static final String WELL_KNOWN_NAME = "apt.cs.manchester.ac.uk";

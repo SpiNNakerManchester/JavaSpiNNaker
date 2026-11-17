@@ -24,10 +24,6 @@ import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
 import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
-/**
- *
- * @author Christian-B
- */
 public class TestSpinnakerLinkData {
 
 	private static final ChipLocation CHIP00 = new ChipLocation(0, 0);

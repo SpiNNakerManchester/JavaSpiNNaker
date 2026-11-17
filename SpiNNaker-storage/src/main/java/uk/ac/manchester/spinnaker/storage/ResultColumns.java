@@ -24,8 +24,6 @@ import java.lang.annotation.Target;
 
 /**
  * Used to document what columns are supposed to be returned by the DQL.
- *
- * @author Donal Fellows
  */
 @Retention(SOURCE)
 @Target(FIELD)

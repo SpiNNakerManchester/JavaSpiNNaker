@@ -20,8 +20,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Non-boot operations that may be performed on a BMP.
- *
- * @author Donal Fellows
  */
 @UsedInJavadocOnly(ADCInfo.class)
 public enum NonBootOperation {

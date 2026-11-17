@@ -22,8 +22,6 @@ import java.net.UnknownHostException;
 
 /**
  * Convenience methods for creating IPv4 Addresses.
- *
- * @author Christian-B
  */
 public abstract class InetFactory {
 	private InetFactory() {

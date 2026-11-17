@@ -35,8 +35,6 @@ import com.google.errorprone.annotations.Immutable;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/processor.py">
  *      Python Version</a>
- *
- * @author Christian-B
  */
 @Immutable
 public final class Processor implements Comparable<Processor> {

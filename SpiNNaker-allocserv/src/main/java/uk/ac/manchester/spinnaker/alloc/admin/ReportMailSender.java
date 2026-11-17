@@ -34,8 +34,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.ReportProperties;
 
 /**
  * Basic email sending service.
- *
- * @author Donal Fellows
  */
 @Component
 @Role(ROLE_SUPPORT)

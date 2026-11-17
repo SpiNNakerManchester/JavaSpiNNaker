@@ -1480,7 +1480,6 @@ public class Transceiver extends UDPTransceiver
 	 * state.
 	 *
 	 * @see ExecuteLock
-	 * @author Donal Fellows
 	 */
 	private static final class FloodLock {
 		private int count = 0;
@@ -1521,7 +1520,6 @@ public class Transceiver extends UDPTransceiver
 	 * easier.
 	 *
 	 * @see FloodLock
-	 * @author Donal Fellows
 	 */
 	private final class ExecuteLock implements AutoCloseable {
 		private final Semaphore lock;

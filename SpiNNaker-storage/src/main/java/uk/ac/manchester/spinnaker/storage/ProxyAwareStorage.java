@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.storage;
 /**
  * Storage interface that knows how to get information about the proxy system
  * from the DB.
- *
- * @author Donal Fellows
  */
 public interface ProxyAwareStorage extends DatabaseAPI {
 	/**

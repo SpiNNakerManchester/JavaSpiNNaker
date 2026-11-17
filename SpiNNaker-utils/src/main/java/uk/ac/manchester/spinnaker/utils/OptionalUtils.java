@@ -22,8 +22,6 @@ import java.util.function.Supplier;
 
 /**
  * Extra utilities for working with {@link Optional} in Java 8.
- *
- * @author Donal Fellows
  */
 public abstract class OptionalUtils {
 	private OptionalUtils() {

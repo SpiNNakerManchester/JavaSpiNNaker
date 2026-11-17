@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 /**
  * The strings that describe the roles that may be granted.
- *
- * @author Donal Fellows
  */
 public interface Grants {
 	/**

@@ -36,8 +36,6 @@ import java.util.concurrent.Executor;
 
 /**
  * A single-threaded database connection wrapper.
- *
- * @author Donal Fellows
  */
 final class OTConnection extends OTWrapper implements Connection {
 	private final Connection conn;

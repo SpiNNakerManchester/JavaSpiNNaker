@@ -20,8 +20,6 @@ import java.util.HashSet;
 
 /**
  * Some of the printing utilities used by testing code.
- *
- * @author Donal Fellows
  */
 public abstract class Utils {
 	private Utils() {
@@ -88,7 +86,6 @@ public abstract class Utils {
 	 * Describes a binary field in an encoded word.
 	 *
 	 * @see #printWordAsBinary(String,int,Field[])
-	 * @author Donal Fellows
 	 */
 	public static class Field {
 		private int from;

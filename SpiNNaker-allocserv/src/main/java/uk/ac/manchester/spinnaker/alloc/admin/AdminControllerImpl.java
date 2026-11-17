@@ -129,8 +129,6 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * Implements the logic supporting the JSP views and maps them into URL space.
- *
- * @author Donal Fellows
  */
 @Controller("mvc.adminUI")
 @PreAuthorize(IS_ADMIN)

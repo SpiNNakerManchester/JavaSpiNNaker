@@ -43,8 +43,6 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
  * <p>
  * Arguably everything in here really ought to be in {@link Blacklist} itself,
  * but that's necessarily in code that can't see into the database.
- *
- * @author Donal Fellows
  */
 @Component
 public class BlacklistStore extends DatabaseAwareBean {

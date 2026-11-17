@@ -32,14 +32,10 @@ import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 /**
  * The description of machines known to the service. A list of
  * {@link BriefMachineDescription}s.
- *
- * @author Donal Fellows
  */
 public final class MachinesResponse {
 	/**
 	 * A brief, summary description of a machine.
-	 *
-	 * @author Donal Fellows
 	 */
 	public static final class BriefMachineDescription {
 		/** The name of the machine. */

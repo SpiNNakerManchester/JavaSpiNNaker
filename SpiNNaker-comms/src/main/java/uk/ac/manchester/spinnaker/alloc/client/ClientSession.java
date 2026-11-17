@@ -62,8 +62,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * Manages the login session. This allows us to avoid the (heavy) cost of the
  * password hashing algorithm used, at least most of the time.
- *
- * @author Donal Fellows
  */
 @UsedInJavadocOnly(URLConnection.class)
 final class ClientSession implements Session {

@@ -47,8 +47,6 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
  * accepts requests to store data (after it has been retrieved from SpiNNaker)
  * in parallel and passes them to a worker thread so that only that thread needs
  * to hold a write transaction open.
- *
- * @author Donal Fellows
  */
 public class RecordingRegionDataGatherer extends DataGatherer {
 	/**

@@ -36,8 +36,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Model of a board, for configuration purposes.
- *
- * @author Donal Fellows
  */
 public class BoardRecord {
 	// TODO convert to structured form

@@ -61,8 +61,6 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/machine.py">
  *      Python Version</a>
- *
- * @author Christian-B
  */
 public class Machine implements MappableIterable<Chip> {
 	/** Size of the machine along the X and Y axes, in chips. */

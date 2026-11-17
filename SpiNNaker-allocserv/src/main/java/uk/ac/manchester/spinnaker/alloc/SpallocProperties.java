@@ -48,8 +48,6 @@ import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 /**
  * Spalloc service management properties. These are all intended to be set via
  * the configuration file.
- *
- * @author Donal Fellows
  */
 @ConfigurationProperties("spalloc")
 @Validated

@@ -24,8 +24,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * Like a {@linkplain CoreLocation core location}, but for BMPs. Note that board
  * numbers are <em>not</em> restricted in range like core numbers.
- *
- * @author Donal Fellows
  */
 @UsedInJavadocOnly(CoreLocation.class)
 public final class BMPLocation implements HasBMPLocation {

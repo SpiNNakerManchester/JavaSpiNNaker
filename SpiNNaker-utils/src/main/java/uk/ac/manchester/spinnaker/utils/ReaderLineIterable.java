@@ -46,9 +46,6 @@ import java.util.NoSuchElementException;
  * during an early {@link Iterator#next()} or {@link Iterator#hasNext()}
  * including during the reader closed done then. The recommended way to make
  * sure close is called is with a {@code try}-with-resources statement.
- *
- * @author Donal Fellows
- * @author Christian
  */
 public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 	private final BufferedReader r;

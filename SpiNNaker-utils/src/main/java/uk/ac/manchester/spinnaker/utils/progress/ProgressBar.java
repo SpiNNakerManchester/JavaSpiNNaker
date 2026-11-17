@@ -31,8 +31,6 @@ import java.io.PrintStream;
  * arrives. (or if {@link #close()} is called before that update). The timer is
  * stopped and the duration written when {@link #close()} is called. If
  * {@link #close()} is not called the duration is never written out.
- *
- * @author Christian-B
  */
 public class ProgressBar implements Closeable {
 	// An int when we need an index

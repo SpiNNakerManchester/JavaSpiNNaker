@@ -19,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The interface supported by any object that is associated with a chip.
- *
- * @author Donal Fellows
  */
 public interface HasChipLocation {
 	/**

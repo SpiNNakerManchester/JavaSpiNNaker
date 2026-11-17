@@ -40,7 +40,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/machine.py">
  *      Python Version</a>
- * @author Christian-B
  */
 public class VirtualMachine extends Machine {
 	/**

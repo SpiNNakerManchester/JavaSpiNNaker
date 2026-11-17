@@ -21,8 +21,6 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 /**
  * The actual queries used by the data access layer.
- *
- * @author Donal Fellows
  */
 abstract class SQL {
 	private SQL() {

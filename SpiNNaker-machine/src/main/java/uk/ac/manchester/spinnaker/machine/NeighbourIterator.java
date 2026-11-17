@@ -19,8 +19,6 @@ import java.util.Iterator;
 
 /**
  * Iterates over the coordinates of the neighbours of a chip.
- *
- * @author Christian-B
  */
 class NeighbourIterator implements Iterator<ChipLocation> {
 	private Iterator<Link> linksIter;

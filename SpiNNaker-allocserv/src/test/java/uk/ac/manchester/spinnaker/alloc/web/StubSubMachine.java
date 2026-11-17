@@ -26,8 +26,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 /**
  * A sub-machine that just throws {@link UnsupportedOperationException} for
  * every operation. Subclass to add the behaviours you want.
- *
- * @author Donal Fellows
  */
 public abstract class StubSubMachine implements SpallocAPI.SubMachine {
 	@Override

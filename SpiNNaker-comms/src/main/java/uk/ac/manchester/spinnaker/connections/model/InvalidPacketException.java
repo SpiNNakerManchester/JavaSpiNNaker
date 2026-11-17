@@ -19,8 +19,6 @@ import java.io.IOException;
 
 /**
  * Indicates that a packet with an unsupported format was received.
- *
- * @author Donal Fellows
  */
 public class InvalidPacketException extends IOException {
 	private static final long serialVersionUID = -2509633246846245166L;

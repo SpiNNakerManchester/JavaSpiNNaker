@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A message indicating an operation succeeded.
- *
- * @author Donal Fellows
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class ReturnResponse {

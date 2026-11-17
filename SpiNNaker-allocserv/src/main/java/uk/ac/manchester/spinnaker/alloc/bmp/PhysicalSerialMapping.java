@@ -42,8 +42,6 @@ import org.springframework.stereotype.Component;
  * <p>
  * The original form of blacklists stores them according to their physical board
  * ID because that's what is easily available during commissioning.
- *
- * @author Donal Fellows
  */
 @Component
 class PhysicalSerialMapping {

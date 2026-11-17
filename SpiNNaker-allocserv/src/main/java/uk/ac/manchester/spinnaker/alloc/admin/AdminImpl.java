@@ -52,8 +52,6 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 /**
  * Implements the service administration interface.
- *
- * @author Donal Fellows
  */
 @Service("admin")
 @Path(BASE_PATH)

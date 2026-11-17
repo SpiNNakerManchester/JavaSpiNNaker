@@ -34,8 +34,6 @@ import jakarta.validation.Payload;
 /**
  * Validates that a number looks like a tag identifier. Always accepts
  * {@code null}.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

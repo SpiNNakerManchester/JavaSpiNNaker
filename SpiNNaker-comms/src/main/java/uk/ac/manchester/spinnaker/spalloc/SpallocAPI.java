@@ -46,8 +46,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The interface exposed by the low-level Spalloc Client.
- *
- * @author Donal Fellows
  */
 @UsedInJavadocOnly({
 	JobsChangedNotification.class,

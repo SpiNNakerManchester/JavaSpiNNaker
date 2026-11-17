@@ -37,8 +37,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to report an issue with some boards.
- *
- * @author Donal Fellows
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class IssueReportRequest {

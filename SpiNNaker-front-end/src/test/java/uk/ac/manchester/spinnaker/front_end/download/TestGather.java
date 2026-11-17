@@ -23,10 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 
-/**
- *
- * @author Christian-B
- */
 public class TestGather {
 
 	@Test

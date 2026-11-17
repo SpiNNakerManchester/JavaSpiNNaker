@@ -29,8 +29,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * The interface supported by the DSE part of the storage system.
- *
- * @author Donal Fellows
  */
 public interface DSEStorage extends ProxyAwareStorage {
 	/**
@@ -144,8 +142,6 @@ public interface DSEStorage extends ProxyAwareStorage {
 
 	/**
 	 * A ethernet which allows data specifications to be loaded.
-	 *
-	 * @author Donal Fellows
 	 */
 	abstract class Ethernet {
 		/**

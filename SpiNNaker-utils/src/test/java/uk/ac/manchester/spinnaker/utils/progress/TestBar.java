@@ -24,10 +24,6 @@ import java.io.PrintStream;
 import org.junit.jupiter.api.Test;
 
 
-/**
- *
- * @author Christian-B
- */
 @SuppressWarnings("resource")
 public class TestBar {
 

@@ -172,8 +172,6 @@ public interface SpiNNakerControl {
 
 	/**
 	 * A guide for how to make a BMP controller.
-	 *
-	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
 	interface Factory {

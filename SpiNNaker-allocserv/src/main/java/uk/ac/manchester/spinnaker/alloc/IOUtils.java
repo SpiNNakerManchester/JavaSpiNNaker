@@ -23,8 +23,6 @@ import java.io.ObjectOutputStream;
 
 /**
  * Utility wrappers for I/O.
- *
- * @author Donal Fellows
  */
 public abstract class IOUtils {
 	private IOUtils() {

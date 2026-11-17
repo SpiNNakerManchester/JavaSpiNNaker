@@ -61,8 +61,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * Initial handler for web sockets. Maps a particular websocket to a
  * {@linkplain ProxyCore proxy handler} that processes messages received and
  * sends messages the other way.
- *
- * @author Donal Fellows
  */
 @Component
 public class SpinWSHandler extends BinaryWebSocketHandler

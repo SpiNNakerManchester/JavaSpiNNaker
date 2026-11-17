@@ -36,8 +36,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Executes the host based data specification.
- *
- * @author Donal Fellows
  */
 public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	private final TransceiverInterface txrx;

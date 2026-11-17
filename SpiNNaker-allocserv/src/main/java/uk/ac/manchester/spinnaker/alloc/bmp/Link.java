@@ -21,8 +21,6 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 /**
  * Describes a part of a request that modifies the power of an FPGA-managed
  * inter-board link to be off.
- *
- * @author Donal Fellows
  */
 public final class Link {
 	/** The database ID of the board that the FPGA is located on. */

@@ -154,8 +154,6 @@ public class TxrxProcess {
 
 	/**
 	 * The API of a single request.
-	 *
-	 * @author Donal Fellows
 	 */
 	private interface Req {
 		/**
@@ -499,10 +497,6 @@ public class TxrxProcess {
 	 * {@link TxrxProcess#numWaits} fields of the enclosing class respectively.
 	 * This seems to help with the timeout issue; when a timeout is received,
 	 * all requests for which a reply has not been received can also timeout.
-	 *
-	 * @author Andrew Mundy
-	 * @author Andrew Rowley
-	 * @author Donal Fellows
 	 */
 	class RequestPipeline {
 		/** The connection over which the communication is to take place. */
@@ -993,8 +987,6 @@ public class TxrxProcess {
 
 	/**
 	 * There's a duplicate sequence number! This really shouldn't happen.
-	 *
-	 * @author Donal Fellows
 	 */
 	static class DuplicateSequenceNumberException
 			extends IllegalThreadStateException {

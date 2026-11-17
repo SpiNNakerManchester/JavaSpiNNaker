@@ -21,9 +21,6 @@ import java.time.Duration;
 
 /**
  * Constants relating to physical units.
- *
- * @author Christian-B
- * @author Donal Fellows
  */
 public final class UnitConstants {
 	private UnitConstants() {

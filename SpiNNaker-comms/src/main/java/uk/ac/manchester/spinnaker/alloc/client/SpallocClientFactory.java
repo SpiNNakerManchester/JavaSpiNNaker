@@ -86,8 +86,6 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
  * <em>except</em> for
  * {@linkplain SpallocClient.Job#getTransceiver() transceivers}, as transceivers
  * usually need to be closed.
- *
- * @author Donal Fellows
  */
 public class SpallocClientFactory {
 	private static final Logger log = getLogger(SpallocClientFactory.class);

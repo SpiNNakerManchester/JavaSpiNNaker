@@ -24,7 +24,6 @@ import java.util.Map;
  * The type of the Keys of the maps is irrelevant. It is not even required that
  * keys in each map are of the same type.
  *
- * @author Christian-B
  * @param <V>
  *            class of objects to be supplied by the final iterator.
  */

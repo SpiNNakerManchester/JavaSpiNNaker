@@ -135,8 +135,6 @@ public abstract class ControllerUtils {
 
 	/**
 	 * Creates a {@link ModelAndView} on demand.
-	 *
-	 * @author Donal Fellows
 	 */
 	@Immutable
 	public static final class ViewFactory {

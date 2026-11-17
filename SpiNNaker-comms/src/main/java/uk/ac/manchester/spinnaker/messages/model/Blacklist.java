@@ -77,8 +77,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * board-relative and all processor IDs are physical; the boot process applies
  * blacklists before inter-board links are brought up and before the
  * virtual-to-physical core mapping is established.
- *
- * @author Donal Fellows
  */
 public final class Blacklist implements Serializable {
 	private static final long serialVersionUID = -7759940789892168209L;

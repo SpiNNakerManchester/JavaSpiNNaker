@@ -42,9 +42,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages waiting for values.
- *
- * @author Donal Fellows
- * @author Andrew Rowley
  */
 @Service
 public class Epochs {
@@ -191,9 +188,6 @@ public class Epochs {
 
 	/**
 	 * A waitable epoch checkpoint.
-	 *
-	 * @author Donal Fellows
-	 * @author Andrew Rowley
 	 */
 	public final class Epoch {
 		private final EpochMap map;
@@ -270,8 +264,6 @@ public class Epochs {
 /**
  * A weak mapping from an ID to the epoch handles that care about it. Handles
  * will be removed when they get garbage collected.
- *
- * @author Donal Fellows
  */
 class EpochMap {
 	/** The value in {@link #map} leaves. Shared. Unimportant. */

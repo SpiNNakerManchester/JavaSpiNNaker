@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 /**
  * Default values for various configuration file options.
- *
- * @author Donal Fellows
  */
 public abstract class JobConstants {
 	private JobConstants() {

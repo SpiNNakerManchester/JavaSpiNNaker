@@ -25,8 +25,6 @@ import com.google.errorprone.annotations.CheckReturnValue;
 
 /**
  * Utilities for waiting very short periods of time.
- *
- * @author Donal Fellows
  */
 public abstract class WaitUtils {
 	@UsedInJavadocOnly(LockSupport.class)

@@ -43,7 +43,6 @@ import java.util.function.Supplier;
  *            The type of elements returned by the iterator. Note that it is
  *            <em>strongly</em> recommended to not ever return {@code null};
  *            consider using {@link Optional} instead of that.
- * @author Donal Fellows
  */
 public interface MappableIterable<T> extends Iterable<T> {
 	/**
@@ -383,7 +382,6 @@ public interface MappableIterable<T> extends Iterable<T> {
  *
  * @param <T>
  *            The type of values in the iterator.
- * @author Donal Fellows
  */
 abstract class IteratorSupport<T> implements Iterator<T> {
 	/**

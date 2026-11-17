@@ -24,10 +24,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 
-/**
- *
- * @author Christian-B
- */
 public class TestPlacements {
 
 	@Test

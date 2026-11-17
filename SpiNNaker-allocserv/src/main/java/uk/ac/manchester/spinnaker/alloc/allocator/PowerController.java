@@ -20,8 +20,6 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 
 /**
  * A service that knows how to initiate the setting of the power state of a job.
- *
- * @author Donal Fellows
  */
 public interface PowerController {
 	/**

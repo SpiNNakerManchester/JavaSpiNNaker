@@ -34,8 +34,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 
 /**
  * Describes an allocation of part of a machine to a job.
- *
- * @author Donal Fellows
  */
 public class SubMachineResponse {
 	/** Rectangle width. */

@@ -24,8 +24,6 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * Describes basic information about a user that they'd use to change their
  * password.
- *
- * @author Donal Fellows
  */
 public class PasswordChangeRecord {
 	private int userId;

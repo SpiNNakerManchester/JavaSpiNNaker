@@ -38,8 +38,6 @@ import java.util.Calendar;
 
 /**
  * A single-threaded database prepared statement wrapper.
- *
- * @author Donal Fellows
  */
 class OTPrepared extends OTStatement implements PreparedStatement {
 	private final PreparedStatement s;

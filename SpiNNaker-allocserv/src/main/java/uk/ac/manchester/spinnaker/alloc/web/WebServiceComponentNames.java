@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 /**
  * Names of parts of this web service.
- *
- * @author Donal Fellows
  */
 public interface WebServiceComponentNames {
 	/** The overall service name in URL space. */

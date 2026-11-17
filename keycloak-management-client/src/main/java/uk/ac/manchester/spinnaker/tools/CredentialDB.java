@@ -30,8 +30,6 @@ import org.sqlite.SQLiteConnection;
  * Database access code. Essential to allow us to avoid needing to query the
  * user a lot and to keep the registration access token so we can update the
  * client in the future (as those are deeply magical and only issued once).
- *
- * @author Donal Fellows
  */
 public class CredentialDB implements AutoCloseable {
 	private static final Logger log = getLogger(CredentialDB.class);
@@ -68,8 +66,6 @@ public class CredentialDB implements AutoCloseable {
 	 * Credentials loaded from the database. This assumes that there's only ever
 	 * one set of developer credentials in the DB, which is deeply simplistic,
 	 * but true in practice.
-	 *
-	 * @author Donal Fellows
 	 */
 	final class DBContainedCredentials implements EBRAINSDevCredentials {
 		private final String name;

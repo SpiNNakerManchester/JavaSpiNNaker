@@ -37,8 +37,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 /**
  * A job that just throws {@link UnsupportedOperationException} for every
  * operation. Subclass to add the behaviours you want.
- *
- * @author Donal Fellows
  */
 public abstract class StubJob implements Job {
 	@Override

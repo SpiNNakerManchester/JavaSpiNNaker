@@ -22,8 +22,6 @@ import java.sql.Connection;
 /**
  * A wrapper for an SQL connection that enforces that it is only used from its
  * creating thread.
- *
- * @author Donal Fellows
  */
 public final class OneThread {
 	/** The thread to which a connection (and related classes) are bound. */

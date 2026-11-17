@@ -311,8 +311,6 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	/**
 	 * Helper class representing a rectangle of triads.
-	 *
-	 * @author Donal Fellows
 	 */
 	private static final class Rectangle {
 		private final int width;
@@ -1065,8 +1063,6 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * Converts a number of boards into a close-to-square size to search for.
 	 * <p>
 	 * With the big machine's level of resources, that's good enough. For now.
-	 *
-	 * @author Donal Fellows
 	 */
 	private static final class DimensionEstimate {
 		/** The estimated width, in triads. */

@@ -33,8 +33,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A context class that loads up the system router tables while it is active.
- *
- * @author Donal Fellows
  */
 public class SystemRouterTableContext implements AutoCloseable {
 	private static final Logger log = getLogger(SystemRouterTableContext.class);

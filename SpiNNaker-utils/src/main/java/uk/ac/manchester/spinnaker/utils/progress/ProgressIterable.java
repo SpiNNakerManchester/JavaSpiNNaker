@@ -39,7 +39,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * Calling {@link #iterator()} more than once is supported but could result in
  * mixed output if they are run at the same time.
  *
- * @author Christian-B
  * @param <E>
  *            Type of elements to be iterated over.
  */

@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.messages.model;
 /**
  * Application identifiers are used by SCAMP to tie various resources to their
  * owners.
- *
- * @author Donal Fellows
  */
 public final class AppID {
 	/**

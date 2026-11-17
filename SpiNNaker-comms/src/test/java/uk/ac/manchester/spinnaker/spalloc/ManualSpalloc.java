@@ -24,8 +24,6 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
  * This is a manual tool to help understanding state while running tests.
  * <p>
  * This is <i>not</i> intended to be an automated test.
- *
- * @author Christian-B
  */
 public final class ManualSpalloc {
 	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";

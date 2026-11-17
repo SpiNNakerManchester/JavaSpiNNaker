@@ -38,8 +38,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The keycloak registration client.
- *
- * @author Donal Fellows
  */
 public class GetDevId extends CredentialDB {
 	private static final Logger log = getLogger(GetDevId.class);
@@ -58,8 +56,6 @@ public class GetDevId extends CredentialDB {
 
 	/**
 	 * A username and password that are prompted for on the console.
-	 *
-	 * @author Donal Fellows
 	 */
 	static final class ConsoleCredentials implements EBRAINSDevCredentials {
 		private final Console console = System.console();

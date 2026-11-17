@@ -15,7 +15,5 @@
  */
 /**
  * Abstract model classes for connections.
- *
- * @author Donal Fellows
  */
 package uk.ac.manchester.spinnaker.connections.model;

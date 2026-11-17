@@ -18,10 +18,6 @@ package uk.ac.manchester.spinnaker.utils;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- *
- * @author Christian
- */
 public class TestOneShotEvent {
 	private static void sleep(int ms) {
 		try {

@@ -85,8 +85,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * is a <em>prototype bean</em>; Spring will instantiate it whenever needed.
  * It's consumed by {@link V1CompatService}, which uses it to implement the
  * handler for a particular connection.
- *
- * @author Donal Fellows
  */
 @Component
 @Prototype

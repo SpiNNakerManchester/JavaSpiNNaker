@@ -33,9 +33,6 @@ import uk.ac.manchester.spinnaker.machine.ValidY;
 
 /**
  * Extra monitor core information.
- *
- * @author Christian-B
- * @author Alan Stokes
  */
 @JsonFormat(shape = OBJECT)
 public class Monitor implements HasCoreLocation {

@@ -37,7 +37,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * The base class of a request following the BMP protocol.
  *
- * @author Donal Fellows
  * @param <T>
  *            The type of the response to the request.
  */

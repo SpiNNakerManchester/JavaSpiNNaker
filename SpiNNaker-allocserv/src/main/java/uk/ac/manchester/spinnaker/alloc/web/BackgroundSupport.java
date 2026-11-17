@@ -32,8 +32,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * Enables a web service class to move processing a request into a background
  * task easily.
- *
- * @author Donal Fellows
  */
 @UsedInJavadocOnly(Response.class)
 public abstract class BackgroundSupport {
@@ -44,8 +42,6 @@ public abstract class BackgroundSupport {
 	 * An action that produces a response, usually handled asynchronously. Care
 	 * should be taken as the action may be run on a thread other than the
 	 * thread that creates it.
-	 *
-	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
 	protected interface BackgroundAction {

@@ -82,9 +82,6 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 
 /**
  * Communications integration test.
- *
- * @author Andrew Rowley
- * @author Donal Fellows
  */
 @org.junit.jupiter.api.Tag("integration")
 @NotThreadSafe
