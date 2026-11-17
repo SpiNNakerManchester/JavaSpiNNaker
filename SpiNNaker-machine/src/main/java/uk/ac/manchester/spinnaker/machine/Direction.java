@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.machine;
 
 /**
  * A direction from one SpiNNaker chip to another.
- *
- * @author Christian-B
  */
 public enum Direction {
 	/** Direction 0 typically towards a location x + 1, y. */

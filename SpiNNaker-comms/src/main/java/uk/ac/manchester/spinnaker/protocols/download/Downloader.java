@@ -402,8 +402,6 @@ public class Downloader implements AutoCloseable {
 /**
  * Exception that indicates a total (i.e., unrecoverable) failure to do a
  * download.
- *
- * @author Donal Fellows
  */
 final class TimeoutException extends Exception {
 	private static final long serialVersionUID = 1L;
@@ -411,8 +409,6 @@ final class TimeoutException extends Exception {
 
 /**
  * Exception that indicates a bad sequence number in a download.
- *
- * @author Donal Fellows
  */
 final class InsaneSequenceNumberException extends IllegalStateException {
 	private static final long serialVersionUID = 2L;
@@ -433,7 +429,6 @@ final class InsaneSequenceNumberException extends IllegalStateException {
  * for this; they don't have any useful info at all.
  *
  * @see BufferOverflowException
- * @author Donal Fellows
  */
 final class ReceivingBufferOverflowedException extends RuntimeException {
 	private static final long serialVersionUID = 3L;

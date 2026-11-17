@@ -20,8 +20,6 @@ import static uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus.SHIFT;
 
 /**
  * A router timeout, originally stored as an 8-bit unsigned float.
- *
- * @author Donal Fellows
  */
 public final class RouterTimeout {
 	private static final int MANTISSA_OFFSET = 16;

@@ -21,8 +21,6 @@ import java.nio.ByteBuffer;
 
 /**
  * Main interface for deserialising a message.
- *
- * @author Donal Fellows
  */
 public abstract class EIEIOMessageFactory {
 	private EIEIOMessageFactory() {

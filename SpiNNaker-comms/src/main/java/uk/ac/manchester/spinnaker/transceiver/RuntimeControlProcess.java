@@ -48,8 +48,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * A process for controlling an application running on a SpiNNaker core. The
  * operations on this process <em>do not make sense when applied to a SCAMP
  * core;</em> they only apply to application cores.
- *
- * @author Donal Fellows
  */
 class RuntimeControlProcess extends TxrxProcess {
 	private static final int BUF_HEADER_BYTES = 16;

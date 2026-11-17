@@ -28,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  * @see UserRecord
  * @see GroupRecord
- * @author Donal Fellows
  */
 @JsonInclude(NON_NULL)
 public class MemberRecord {

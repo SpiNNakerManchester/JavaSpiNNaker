@@ -43,8 +43,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * A request to create a job.
- *
- * @author Donal Fellows
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class CreateJobRequest {

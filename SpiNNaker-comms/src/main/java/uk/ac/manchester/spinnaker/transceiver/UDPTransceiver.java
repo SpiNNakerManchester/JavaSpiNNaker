@@ -50,8 +50,6 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * A simple transceiver for UDP connections. In particular, handles managing the
  * connection listeners for EIEIO connections and ensuring that connections are
  * not double-registered.
- *
- * @author Donal Fellows
  */
 public abstract class UDPTransceiver implements Closeable {
 	private static final Logger log = getLogger(UDPTransceiver.class);

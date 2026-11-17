@@ -24,8 +24,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 /**
  * Creates a mapper that can handle the sort of JSON mappings used in SpiNNaker
  * code.
- *
- * @author Christian-B
  */
 public final class MapperFactory {
 	/**

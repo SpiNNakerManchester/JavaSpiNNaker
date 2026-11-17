@@ -29,7 +29,6 @@ import java.nio.ByteBuffer;
  *
  * @param <T>
  *            The type of the result of accumulation.
- * @author Donal Fellows
  */
 interface Accumulator<T> {
 	/**

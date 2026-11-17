@@ -33,8 +33,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 
 /**
  * Handler for {@link SQLException}.
- *
- * @author Donal Fellows
  */
 @Component
 @Provider

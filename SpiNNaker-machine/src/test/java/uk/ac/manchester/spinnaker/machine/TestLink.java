@@ -18,10 +18,6 @@ package uk.ac.manchester.spinnaker.machine;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 public class TestLink {
 
 	private final ChipLocation chip00 = new ChipLocation(0, 0);

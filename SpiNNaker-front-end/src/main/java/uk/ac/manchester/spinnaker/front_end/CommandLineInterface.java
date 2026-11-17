@@ -80,8 +80,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * The main command line interface.
- *
- * @author Donal Fellows
  */
 @Command(subcommands = CommandLine.HelpCommand.class, //
 		mixinStandardHelpOptions = true, //
@@ -423,7 +421,6 @@ public final class CommandLineInterface {
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
-	 * @author Donal Fellows
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
@@ -465,7 +462,6 @@ public final class CommandLineInterface {
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
-	 * @author Donal Fellows
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
@@ -506,7 +502,6 @@ public final class CommandLineInterface {
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
-	 * @author Donal Fellows
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
@@ -550,7 +545,6 @@ public final class CommandLineInterface {
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
-	 * @author Donal Fellows
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
@@ -680,7 +674,6 @@ public final class CommandLineInterface {
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
-	 * @author Christian Brenninkmeijer
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
@@ -724,7 +717,6 @@ public final class CommandLineInterface {
 	 * <p>
 	 * Do not make instances of this class yourself; leave that to picocli.
 	 *
-	 * @author Christian Brenninkmeijer
 	 * @see ArgGroup
 	 * @see Parameters
 	 */
@@ -774,8 +766,6 @@ public final class CommandLineInterface {
 
 /**
  * The descriptions of various commands.
- *
- * @author Donal Fellows
  */
 interface CommandDescriptions {
 	/** Description of {@code download} command. */
@@ -818,8 +808,6 @@ interface CommandDescriptions {
 
 /**
  * The descriptions of various parameters to commands, many of which are shared.
- *
- * @author Donal Fellows
  */
 interface ParamDescriptions {
 	/** Description of {@code gatherFile} parameter. */

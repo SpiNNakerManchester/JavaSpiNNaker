@@ -23,8 +23,6 @@ import com.google.errorprone.annotations.Immutable;
 /**
  * A location in SpiNNaker or BMP memory. Does not say which address space this
  * is in.
- *
- * @author Donal Fellows
  */
 @Immutable
 public final class MemoryLocation implements Comparable<MemoryLocation> {

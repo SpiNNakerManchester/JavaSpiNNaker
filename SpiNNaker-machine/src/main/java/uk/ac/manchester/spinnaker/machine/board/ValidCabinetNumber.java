@@ -34,8 +34,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 /**
  * Validates that a cabinet number is in a sane range.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

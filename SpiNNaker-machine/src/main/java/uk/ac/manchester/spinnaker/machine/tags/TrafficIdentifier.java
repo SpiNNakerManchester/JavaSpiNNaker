@@ -22,8 +22,6 @@ import java.util.Map;
  * The types of traffic an {@link IPTag} can handle. Note that this is
  * <em>not</em> a closed set; there are <em>definitely</em> traffic identifiers
  * not listed in here.
- *
- * @author Christian-B
  */
 public final class TrafficIdentifier {
 	private static final Map<String, TrafficIdentifier> MAP = new HashMap<>();

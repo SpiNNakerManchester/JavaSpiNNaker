@@ -30,8 +30,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 
 /**
  * The list of jobs.
- *
- * @author Donal Fellows
  */
 public final class ListJobsResponse {
 	/** The list of jobs, by URI. Clients should not construct these by hand. */

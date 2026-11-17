@@ -19,8 +19,6 @@ import com.google.errorprone.annotations.Immutable;
 
 /**
  * Describes whether an issue with a board was reported successfully.
- *
- * @author Donal Fellows
  */
 @Immutable
 public class IssueReportResponse {

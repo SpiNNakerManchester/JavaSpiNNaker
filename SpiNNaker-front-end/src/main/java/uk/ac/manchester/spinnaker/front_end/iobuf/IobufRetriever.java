@@ -49,8 +49,6 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * Retrieves and processes IOBUFs.
- *
- * @author Donal Fellows
  */
 public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	private static final Logger log = getLogger(IobufRetriever.class);

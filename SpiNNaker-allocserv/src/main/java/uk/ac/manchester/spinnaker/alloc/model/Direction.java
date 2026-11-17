@@ -34,7 +34,6 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  * of {@code c}, and {@code f} is vertically north of {@code d}.
  *
  * @see uk.ac.manchester.spinnaker.alloc.admin.DirInfo DirInfo
- * @author Donal Fellows
  */
 public enum Direction {
 	// Order must match that in database

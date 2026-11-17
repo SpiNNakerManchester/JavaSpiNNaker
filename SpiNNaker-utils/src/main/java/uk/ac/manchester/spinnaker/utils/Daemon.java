@@ -19,8 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * A thread that is a daemon by default.
- *
- * @author Donal Fellows
  */
 public class Daemon extends Thread {
 	/**

@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 /**
  * Base class for sendable SDP-based messages. SDP-based messages are those
  * messages that have an SDP header.
- *
- * @author Donal Fellows
  */
 public abstract class SpinnakerRequest implements SerializableMessage {
 	private static final int SDP_SOURCE_PORT = 7;
@@ -85,8 +83,6 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	/**
 	 * A special source location that is the source for an SDP packet. <b>Note
 	 * that this is not a real core location!</b>
-	 *
-	 * @author Donal Fellows
 	 */
 	private static class SDPSource implements HasCoreLocation {
 		private final int x;

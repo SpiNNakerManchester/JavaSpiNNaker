@@ -51,8 +51,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
  * How to actually talk to an SQLite database.
- *
- * @author Donal Fellows
  */
 public class SQLiteBufferStorage
 		extends SQLiteProxyStorage<BufferManagerStorage>

@@ -24,10 +24,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- *
- * @author Christian-B
- */
 public class TestChip {
 	private static final ChipLocation LOCATION_00 = new ChipLocation(0, 0);
 

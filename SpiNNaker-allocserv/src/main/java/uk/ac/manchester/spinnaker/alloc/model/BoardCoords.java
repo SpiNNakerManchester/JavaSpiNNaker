@@ -32,8 +32,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * Basic coordinates of a board. The result of a DB query.
- *
- * @author Donal Fellows
  */
 @Immutable
 public final class BoardCoords {

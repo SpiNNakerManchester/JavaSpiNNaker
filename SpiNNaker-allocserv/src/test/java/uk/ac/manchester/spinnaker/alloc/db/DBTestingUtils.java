@@ -38,8 +38,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Miscellaneous shared bits and pieces for testing the database code.
- *
- * @author Donal Fellows
  */
 abstract class DBTestingUtils {
 	/** Not equal to any {@code machine_id}. */

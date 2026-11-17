@@ -26,8 +26,6 @@ import com.google.errorprone.annotations.CheckReturnValue;
 
 /**
  * How to ping a host to test for (ICMP) network connectivity.
- *
- * @author Donal Fellows
  */
 public abstract class Ping {
 	private static final int PING_DELAY = 500;

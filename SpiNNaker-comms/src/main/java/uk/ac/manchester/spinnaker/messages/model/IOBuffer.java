@@ -29,8 +29,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
  * The contents of IOBUF for a core.
- *
- * @author Donal Fellows
  */
 public class IOBuffer implements HasCoreLocation {
 	private final HasCoreLocation core;

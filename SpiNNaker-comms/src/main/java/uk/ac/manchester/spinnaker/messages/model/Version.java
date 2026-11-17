@@ -24,8 +24,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A three-part semantic version description.
- *
- * @author Donal Fellows
  */
 public final class Version implements Comparable<Version> {
 	// There is no standard Version class. WRYYYYYYYYYYYYYYYY!!!!

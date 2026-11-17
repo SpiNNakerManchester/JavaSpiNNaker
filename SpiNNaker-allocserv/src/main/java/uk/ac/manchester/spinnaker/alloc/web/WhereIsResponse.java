@@ -33,8 +33,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 /**
  * Describes the result of a where-is style request.
- *
- * @author Donal Fellows
  */
 @JsonInclude(NON_NULL)
 public class WhereIsResponse {

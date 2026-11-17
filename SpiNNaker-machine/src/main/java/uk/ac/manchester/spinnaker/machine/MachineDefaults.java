@@ -28,8 +28,6 @@ import java.util.Map;
 /**
  * Default values for a SpiNNaker machine comprised of SpiNNaker-1 chips running
  * on boards of version 2 through 5.
- *
- * @author Christian-B
  */
 public final class MachineDefaults {
 	private MachineDefaults() {

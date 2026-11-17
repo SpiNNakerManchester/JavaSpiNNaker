@@ -35,7 +35,6 @@ import org.slf4j.Logger;
  *
  * @param <T>
  *            The type of elements of the lists retrieved.
- * @author Donal Fellows
  */
 abstract class ListFetchingIter<T> implements Iterator<List<T>> {
 	private static final Logger log = getLogger(ListFetchingIter.class);

@@ -58,8 +58,6 @@ import uk.ac.manchester.spinnaker.alloc.nmpi.SessionResponse;
 
 /**
  * Manages user quotas.
- *
- * @author Donal Fellows
  */
 @Service
 public class QuotaManager extends DatabaseAwareBean {
@@ -213,8 +211,6 @@ public class QuotaManager extends DatabaseAwareBean {
 	/**
 	 * Describes the result of the {@link QuotaManager#addQuota(int,int)}
 	 * operation.
-	 *
-	 * @author Donal Fellows
 	 */
 	public static final class AdjustedQuota {
 		private final String name;
@@ -694,8 +690,6 @@ public class QuotaManager extends DatabaseAwareBean {
 /**
  * Wrapper round the proxy and its API key. Does a bit of wrapping and
  * unwrapping of arguments and results.
- *
- * @author Donal Fellows
  */
 final class NMPI {
 	private final NMPIv3API proxy;

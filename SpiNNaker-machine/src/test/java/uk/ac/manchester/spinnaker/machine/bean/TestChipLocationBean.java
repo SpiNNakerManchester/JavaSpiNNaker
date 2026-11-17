@@ -21,10 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
-/**
- *
- * @author Christian
- */
 public class TestChipLocationBean {
 
 	@Test

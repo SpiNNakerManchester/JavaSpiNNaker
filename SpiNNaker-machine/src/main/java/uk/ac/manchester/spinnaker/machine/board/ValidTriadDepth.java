@@ -35,8 +35,6 @@ import jakarta.validation.constraints.Positive;
  * Validates that a machine's depth is in a sane range. Note that only machines
  * with a single board typically have a depth other than 3, and the current
  * implementation never uses a depth of 2.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

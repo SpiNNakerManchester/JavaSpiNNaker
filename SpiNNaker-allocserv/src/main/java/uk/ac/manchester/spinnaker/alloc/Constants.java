@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.alloc;
 
 /**
  * Miscellaneous constants.
- *
- * @author Donal Fellows
  */
 public interface Constants {
 	/** The number of boards in a triad. */

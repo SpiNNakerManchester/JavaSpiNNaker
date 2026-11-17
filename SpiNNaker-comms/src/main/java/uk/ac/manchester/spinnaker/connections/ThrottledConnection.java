@@ -45,8 +45,6 @@ import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
  * that this does not bother to implement the full connection API.
- *
- * @author Donal Fellows
  */
 public class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);

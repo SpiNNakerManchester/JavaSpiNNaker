@@ -29,7 +29,6 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
  *
  * @param <T>
  *            The actual type of transceiver produced.
- * @author Donal Fellows
  */
 public interface TransceiverFactoryAPI<T extends BMPTransceiverInterface> {
 	/**

@@ -34,7 +34,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 /**
  * Wrapper that handles how to perform transactions.
  *
- * @author Donal Fellows
  * @param <APIType>
  *            The type of the connections used inside this class. Probably the
  *            type of the concrete subclass of this class.
@@ -84,7 +83,6 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	 *
 	 * @param <T>
 	 *            The type of the result of the call
-	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
 	interface CallWithResult<T> {
@@ -103,7 +101,6 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	/**
 	 * A wrapped piece of code that doesn't produce a result.
 	 *
-	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
 	interface CallWithoutResult {

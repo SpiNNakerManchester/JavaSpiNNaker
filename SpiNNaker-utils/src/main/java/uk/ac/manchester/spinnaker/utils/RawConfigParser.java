@@ -35,8 +35,6 @@ import com.google.errorprone.annotations.ForOverride;
 
 /**
  * A cut-down limited version of the parser used in Python.
- *
- * @author Donal Fellows
  */
 public class RawConfigParser {
 	// Regular expressions for parsing section headers and options

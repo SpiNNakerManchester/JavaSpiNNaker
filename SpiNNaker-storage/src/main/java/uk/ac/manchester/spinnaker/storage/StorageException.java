@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.storage;
 
 /**
  * Exceptions caused by the storage system.
- *
- * @author Donal Fellows
  */
 public class StorageException extends Exception {
 	private static final long serialVersionUID = 3553555491656536568L;

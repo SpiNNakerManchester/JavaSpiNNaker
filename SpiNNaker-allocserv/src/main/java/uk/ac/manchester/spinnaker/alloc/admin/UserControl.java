@@ -54,8 +54,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * User and group administration DAO.
- *
- * @author Donal Fellows
  */
 @Service
 public class UserControl extends DatabaseAwareBean {

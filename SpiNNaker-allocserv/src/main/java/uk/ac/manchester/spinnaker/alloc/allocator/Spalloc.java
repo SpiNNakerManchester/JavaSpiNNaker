@@ -105,8 +105,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * The core implementation of the Spalloc service.
- *
- * @author Donal Fellows
  */
 @Service
 public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
@@ -1974,8 +1972,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	/**
 	 * Board location implementation. Does not retain database connections after
 	 * creation.
-	 *
-	 * @author Donal Fellows
 	 */
 	private final class BoardLocationImpl implements BoardLocation {
 		private JobImpl job;

@@ -41,8 +41,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * Remembers job objects so that they can be closed when the state of a
  * job invalidates them. This class takes care to be thread-safe. The
  * information it holds is <em>not</em> persistent.
- *
- * @author Donal Fellows
  */
 @Component
 class JobObjectRememberer {

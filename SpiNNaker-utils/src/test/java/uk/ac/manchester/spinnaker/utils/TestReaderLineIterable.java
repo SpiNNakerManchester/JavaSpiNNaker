@@ -26,10 +26,6 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 @SuppressWarnings({"unused", "resource"})
 public class TestReaderLineIterable {
 

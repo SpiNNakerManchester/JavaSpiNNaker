@@ -24,8 +24,6 @@ import java.nio.ByteBuffer;
 
 /**
  * The message giving a block of data for booting.
- *
- * @author Donal Fellows
  */
 class BootDataBlock extends BootMessage {
 	private static final int BOOT_DATA_OPERAND_1 =

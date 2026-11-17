@@ -49,8 +49,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/buffer_manager.py">
  *      Python Version</a>
- *
- * @author Christian-B
  */
 public class DataReceiver extends BoardLocalSupport implements AutoCloseable {
 	private final BufferedReceivingData receivedData;

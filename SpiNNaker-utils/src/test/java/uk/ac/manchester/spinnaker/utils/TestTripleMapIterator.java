@@ -22,10 +22,6 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- *
- * @author Christian-B
- */
 @SuppressWarnings("unused")
 public class TestTripleMapIterator {
 

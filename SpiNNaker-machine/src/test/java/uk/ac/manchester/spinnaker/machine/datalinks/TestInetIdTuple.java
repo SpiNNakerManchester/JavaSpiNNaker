@@ -20,10 +20,6 @@ import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 public class TestInetIdTuple {
 	@Test
 	public void testEquals() throws UnknownHostException {

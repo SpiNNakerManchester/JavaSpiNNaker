@@ -45,8 +45,6 @@ import com.google.errorprone.annotations.Immutable;
  * Finally, it can also be deserialised from the string form created by the
  * {@link #toString()} method:
  * <pre>[c:3,f:2]</pre>
- *
- * @author Donal Fellows
  */
 @Immutable
 @JsonDeserialize(using = BMPCoords.Deserializer.class)

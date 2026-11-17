@@ -38,8 +38,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * A transceiver where every operation (except the few mandatory ones) fails
  * with {@link UnsupportedOperationException}. A suitable base for partial
  * implementations.
- *
- * @author Donal Fellows
  */
 public abstract class UnimplementedBMPTransceiver
 		implements BMPTransceiverInterface {

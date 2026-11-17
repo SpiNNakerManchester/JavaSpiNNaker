@@ -33,9 +33,6 @@ import com.google.errorprone.annotations.Immutable;
  * The location of a {@link Chip} as an X and Y tuple.
  * <p>
  * This class is final as it is used a key in maps.
- *
- * @author Alan Stokes
- * @author Donal Fellows
  */
 @Immutable
 @JsonFormat(shape = ARRAY)

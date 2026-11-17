@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 /**
  * Message codes used in proxy operations.
- *
- * @author Donal Fellows
  */
 public enum ProxyOp {
 	/**

@@ -26,10 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.utils.Counter;
 
-/**
- *
- * @author Christian-B
- */
 public class TestIterable {
 
 	private static final String PERCENTS =

@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 
 /**
  * Describes a newly-created job.
- *
- * @author Donal Fellows
  */
 @Immutable
 public class CreateJobResponse {

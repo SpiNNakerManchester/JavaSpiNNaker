@@ -49,8 +49,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * significantly lower limits for the number of messages in flight than SCAMP.
  * <p>
  * Does not inherit from {@link TxrxProcess} for ugly type reasons.
- *
- * @author Donal Fellows
  */
 class BMPCommandProcess {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
@@ -285,10 +283,6 @@ class BMPCommandProcess {
 	 * <i>intermediateChannelWaits</i> parameters respectively. This seems to
 	 * help with the timeout issue; when a timeout is received, all requests for
 	 * which a reply has not been received can also timeout.
-	 *
-	 * @author Andrew Mundy
-	 * @author Andrew Rowley
-	 * @author Donal Fellows
 	 */
 	private final class RequestPipeline<T extends BMPResponse> {
 		/** The connection over which the communication is to take place. */

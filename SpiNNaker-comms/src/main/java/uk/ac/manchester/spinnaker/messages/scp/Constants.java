@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /**
  * Constants used elsewhere in this package only.
- *
- * @author Donal Fellows
  */
 abstract class Constants {
 	private Constants() {

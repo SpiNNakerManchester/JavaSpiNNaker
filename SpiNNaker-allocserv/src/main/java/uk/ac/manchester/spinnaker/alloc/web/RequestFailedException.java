@@ -39,8 +39,6 @@ import org.springframework.stereotype.Component;
 /**
  * Thrown to indicate various sorts of problems with the service. Very much like
  * a {@link WebApplicationException} except with a different handling strategy.
- *
- * @author Donal Fellows
  */
 public class RequestFailedException extends RuntimeException {
 	private static final long serialVersionUID = -7522760691720854101L;
@@ -206,7 +204,6 @@ public class RequestFailedException extends RuntimeException {
 	/**
 	 * Handler for {@link RequestFailedException}.
 	 *
-	 * @author Donal Fellows
 	 * @hidden
 	 */
 	@Component

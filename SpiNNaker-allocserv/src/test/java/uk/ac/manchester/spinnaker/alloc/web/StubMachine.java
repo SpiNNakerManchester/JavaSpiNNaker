@@ -32,8 +32,6 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 /**
  * A machine that just throws {@link UnsupportedOperationException} for every
  * operation. Subclass to add the behaviours you want.
- *
- * @author Donal Fellows
  */
 public abstract class StubMachine implements Machine {
 	@Override

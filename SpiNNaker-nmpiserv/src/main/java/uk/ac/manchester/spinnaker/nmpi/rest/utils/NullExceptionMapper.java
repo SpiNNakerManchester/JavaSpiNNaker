@@ -28,8 +28,6 @@ import org.slf4j.Logger;
 
 /**
  * Convert NPEs into complaints about their most likely causes, bad inputs.
- *
- * @author Donal Fellows
  */
 @Provider
 public class NullExceptionMapper

@@ -35,8 +35,6 @@ import uk.ac.manchester.spinnaker.alloc.model.DownLink;
 
 /**
  * The description of an individual machine.
- *
- * @author Donal Fellows
  */
 public final class MachineResponse {
 	/** The name of the machine. */

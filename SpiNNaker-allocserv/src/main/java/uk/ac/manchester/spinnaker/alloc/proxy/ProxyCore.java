@@ -54,8 +54,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 /**
  * The main proxy class for a particular web socket session. It's bound to a
  * job, which should be running at the time that the web socket is opened.
- *
- * @author Donal Fellows
  */
 public class ProxyCore implements AutoCloseable {
 	private static final Logger log = getLogger(ProxyCore.class);

@@ -59,8 +59,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Implementation of the old style Spalloc interface. Delegates handling a
  * single connection to a {@link V1CompatTask} instance (manufactured by Spring
  * as a {@linkplain Prototype prototype} bean).
- *
- * @author Donal Fellows
  */
 @Service("spalloc-v1-compatibility-service")
 @UsedInJavadocOnly(Prototype.class)

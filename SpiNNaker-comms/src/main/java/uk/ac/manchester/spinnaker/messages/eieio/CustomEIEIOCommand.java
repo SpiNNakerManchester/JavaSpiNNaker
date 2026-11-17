@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.messages.eieio;
  * A non-standard EIEIO command. Note that its constructor is not exposed.
  *
  * @see EIEIOCommandID#get(int)
- * @author Donal Fellows
  */
 public class CustomEIEIOCommand implements EIEIOCommand {
 	// Must be power of 2 (minus 1)

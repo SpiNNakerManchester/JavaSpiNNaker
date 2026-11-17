@@ -33,8 +33,6 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
 
 /**
  * The description of the overall service.
- *
- * @author Donal Fellows
  */
 public class ServiceDescription {
 	private Version version;

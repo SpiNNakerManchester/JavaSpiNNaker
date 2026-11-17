@@ -37,7 +37,6 @@ import com.google.errorprone.annotations.MustBeClosed;
  * but they are faster when dealing with write-heavy workloads (particularly
  * important for the {@link BufferManagerDatabaseEngine}).
  *
- * @author Donal Fellows
  * @param <APIType>
  *            The type of the higher-level access interface that can be used to
  *            work with the database this class makes connections to.

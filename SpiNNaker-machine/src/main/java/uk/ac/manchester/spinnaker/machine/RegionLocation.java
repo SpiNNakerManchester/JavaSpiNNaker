@@ -26,8 +26,6 @@ import com.google.errorprone.annotations.Immutable;
 
 /**
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
- *
- * @author Christian-B
  */
 @Immutable
 public final class RegionLocation

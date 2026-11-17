@@ -20,8 +20,6 @@ import static java.lang.System.currentTimeMillis;
 
 /**
  * Utility operations for working with timestamps.
- *
- * @author Donal Fellows
  */
 abstract class Utils {
 	private Utils() {

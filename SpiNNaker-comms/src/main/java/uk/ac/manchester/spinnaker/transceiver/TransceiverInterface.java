@@ -109,8 +109,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * handling and variant-type handling by Python.
  * <p>
  * Note that operations on a BMP are <strong>always</strong> thread-unsafe.
- *
- * @author Donal Fellows
  */
 public interface TransceiverInterface extends BMPTransceiverInterface {
 	/**

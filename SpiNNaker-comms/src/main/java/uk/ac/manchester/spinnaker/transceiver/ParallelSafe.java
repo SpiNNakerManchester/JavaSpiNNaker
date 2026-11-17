@@ -29,7 +29,6 @@ import java.lang.annotation.Target;
  *
  * @see Transceiver
  * @see TransceiverInterface
- * @author Donal Fellows
  */
 @Documented
 @Inherited

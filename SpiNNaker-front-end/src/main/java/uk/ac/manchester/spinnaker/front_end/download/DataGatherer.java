@@ -66,9 +66,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Implementation of the SpiNNaker Fast Data Download Protocol.
- *
- * @author Donal Fellows
- * @author Alan Stokes
  */
 public abstract class DataGatherer extends BoardLocalSupport
 		implements AutoCloseable {
@@ -162,8 +159,6 @@ public abstract class DataGatherer extends BoardLocalSupport
 	/**
 	 * Trivial POJO holding the pairing of monitor and list of lists of memory
 	 * blocks.
-	 *
-	 * @author Donal Fellows
 	 */
 	private static final class WorkItems {
 		/**

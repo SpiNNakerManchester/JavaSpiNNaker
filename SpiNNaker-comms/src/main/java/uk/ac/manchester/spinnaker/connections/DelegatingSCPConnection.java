@@ -26,8 +26,6 @@ import java.nio.ByteBuffer;
  * An SCP connection that actually delegates message sending and receiving to
  * another connection. Note that closing a delegating connection does nothing;
  * the socket is only closed when the real underlying connection is closed.
- *
- * @author Donal Fellows
  */
 @SuppressWarnings("ForOverride")
 public class DelegatingSCPConnection extends SCPConnection {

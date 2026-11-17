@@ -41,8 +41,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIsMachineChipCommand;
 /**
  * A possibly Mock Client that if it can not create an actual connection
  *      provides a number of canned replies.
- *
- * @author Christian
  */
 public class MockConnectedClient extends SpallocClient {
 	private static final Logger log = getLogger(MockConnectedClient.class);

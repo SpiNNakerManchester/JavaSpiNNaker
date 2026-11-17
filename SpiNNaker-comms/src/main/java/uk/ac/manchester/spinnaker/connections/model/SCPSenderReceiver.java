@@ -25,8 +25,6 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 /**
  * Sends an SCP request and receives a response to it.
- *
- * @author Donal Fellows
  */
 public interface SCPSenderReceiver extends Connection {
 	/**

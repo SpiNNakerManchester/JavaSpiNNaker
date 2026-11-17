@@ -28,8 +28,6 @@ import java.util.function.Supplier;
  * serializable if the default value is literal and serializable, in addition to
  * the usual constraints of maps.
  *
- * @author Donal Fellows
- *
  * @param <K>
  *            The type of keys.
  * @param <V>
@@ -271,7 +269,6 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * An advanced factory that has access to the key when it is creating the
 	 * value to associate with it.
 	 *
-	 * @author Donal Fellows
 	 * @param <K>
 	 *            The type of keys.
 	 * @param <V>

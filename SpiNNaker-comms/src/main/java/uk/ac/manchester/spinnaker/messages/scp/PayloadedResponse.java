@@ -25,7 +25,6 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /**
  * A response that holds a payload.
  *
- * @author Donal Fellows
  * @param <T>
  *            The type of parsed payload value.
  * @param <E>

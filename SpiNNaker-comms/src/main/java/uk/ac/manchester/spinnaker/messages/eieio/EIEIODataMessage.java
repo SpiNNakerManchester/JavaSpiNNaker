@@ -32,9 +32,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * An EIEIO message containing data.
- *
- * @author Sergio Davies
- * @author Donal Fellows
  */
 public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		MappableIterable<AbstractDataElement> {

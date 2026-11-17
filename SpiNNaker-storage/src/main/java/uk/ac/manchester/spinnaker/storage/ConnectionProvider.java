@@ -22,7 +22,6 @@ import java.sql.SQLException;
  * Indicates a class that can provide database connections to
  * suitably-configured databases.
  *
- * @author Donal Fellows
  * @param <APIType>
  *            The type of the higher-level access interface that can be used to
  *            work with the database this class makes connections to.

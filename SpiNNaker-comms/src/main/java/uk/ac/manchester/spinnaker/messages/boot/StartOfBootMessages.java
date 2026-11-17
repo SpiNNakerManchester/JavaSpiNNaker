@@ -19,8 +19,6 @@ import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_STA
 
 /**
  * The message indicating the start of a flood fill for booting.
- *
- * @author Donal Fellows
  */
 class StartOfBootMessages extends BootMessage {
 

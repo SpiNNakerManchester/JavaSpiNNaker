@@ -28,10 +28,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
-/**
- *
- * @author Christian-B
- */
 public class TestAbstractDataLink {
 	private static InetAddress localhost() throws UnknownHostException {
 		byte[] bytes = {127, 0, 0, 1};

@@ -37,8 +37,6 @@ import uk.ac.manchester.spinnaker.connections.UDPPacket;
 
 /**
  * The low-level handler for proxy connections.
- *
- * @author Donal Fellows
  */
 public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	private static final Logger log = getLogger(ProxyUDPConnection.class);

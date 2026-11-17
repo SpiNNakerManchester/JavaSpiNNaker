@@ -23,10 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-/**
- *
- * @author Christian-B
- */
 public class TestMultiCastRoutingEntry {
 
 	public TestMultiCastRoutingEntry() {

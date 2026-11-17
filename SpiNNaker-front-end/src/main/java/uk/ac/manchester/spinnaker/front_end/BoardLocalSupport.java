@@ -40,8 +40,6 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver.ConnectionDescriptor;
 
 /**
  * A class for making things easier to do on a per-board basis.
- *
- * @author Donal Fellows
  */
 public abstract class BoardLocalSupport {
 	private static final String BOARD_ROOT = "boardRoot";
@@ -110,8 +108,6 @@ public abstract class BoardLocalSupport {
 
 	/**
 	 * A context that can be pushed to state in logging what board is the root.
-	 *
-	 * @author Donal Fellows
 	 */
 	protected final class BoardLocal implements AutoCloseable {
 		private MDCCloseable context;

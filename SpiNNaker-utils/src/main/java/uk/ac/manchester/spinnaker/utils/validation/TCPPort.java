@@ -34,7 +34,6 @@ import jakarta.validation.Payload;
 /**
  * Validates that a number looks like a TCP port. Always accepts {@code null}.
  *
- * @author Donal Fellows
  * @see UDPPort
  */
 @Documented

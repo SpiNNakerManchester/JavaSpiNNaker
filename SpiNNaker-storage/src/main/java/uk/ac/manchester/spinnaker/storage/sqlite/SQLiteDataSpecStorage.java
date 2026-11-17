@@ -45,8 +45,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 
 /**
  * How to actually talk to an SQLite database.
- *
- * @author Donal Fellows
  */
 public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
 		implements DSEStorage {

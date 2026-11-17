@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 /**
  * The possible states of a spalloc job. In particular, the {@link #READY} state
  * indicates that the job is running/ready to run.
- *
- * @author Donal Fellows
  */
 @JsonFormat(shape = NUMBER)
 public enum State {

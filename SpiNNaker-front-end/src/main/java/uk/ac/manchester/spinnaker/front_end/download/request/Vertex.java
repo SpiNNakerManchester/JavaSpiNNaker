@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * Vertex recording region information.
- *
- * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
 public class Vertex {

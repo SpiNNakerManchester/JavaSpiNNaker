@@ -36,8 +36,6 @@ import org.slf4j.Logger;
 
 /**
  * Replacement management engine for compacted IOBUFs.
- *
- * @author Donal Fellows
  */
 class Replacer {
 	private static final Logger log = getLogger(Replacer.class);
@@ -168,8 +166,6 @@ class Replacer {
 	/**
 	 * An exception that wraps an {@link IOException} so it can pass out of a
 	 * spliterator.
-	 *
-	 * @author Donal Fellows
 	 */
 	public static final class WrappedException extends RuntimeException {
 		private static final long serialVersionUID = 1L;

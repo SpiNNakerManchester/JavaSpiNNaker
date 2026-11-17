@@ -33,8 +33,6 @@ import jakarta.validation.constraints.Positive;
 
 /**
  * Validates that a machine's width (in triads) is in a sane range.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

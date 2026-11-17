@@ -22,8 +22,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * Used to group a MemoryLocation and a ByteBuffer object together.
- *
- * @author Christian
  */
 public class RegionInfo {
 

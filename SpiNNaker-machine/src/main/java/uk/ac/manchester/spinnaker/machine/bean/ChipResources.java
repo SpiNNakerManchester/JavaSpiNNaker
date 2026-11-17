@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Bean to represent values on a Chip that are typically the same on all Chips.
- *
- * @author Christian-B
  */
 @JsonDeserialize(builder = ChipResources.Builder.class)
 public class ChipResources {

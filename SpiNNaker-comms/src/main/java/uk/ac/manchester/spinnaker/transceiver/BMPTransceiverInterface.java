@@ -70,8 +70,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * <p>
  * Note that operations on a particular BMP (i.e., with the same
  * {@link BMPCoords}) are <strong>always</strong> thread-unsafe.
- *
- * @author Donal Fellows
  */
 public interface BMPTransceiverInterface extends AutoCloseable {
 	/**

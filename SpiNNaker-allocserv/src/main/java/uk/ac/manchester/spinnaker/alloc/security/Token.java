@@ -24,8 +24,6 @@ import org.springframework.security.core.Authentication;
 /**
  * A saved authentication token. Categorically only ever valid in the session
  * for which it was created; if the session changes, it cannot be reused.
- *
- * @author Donal Fellows
  */
 final class Token implements Serializable {
 	private static final long serialVersionUID = -439034988839648948L;

@@ -38,7 +38,6 @@ import jakarta.validation.Payload;
  * Validates that a string looks like an IP address. A string is considered to
  * be a valid IP address if it looks like a dotted quad.
  *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

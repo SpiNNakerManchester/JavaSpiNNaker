@@ -20,8 +20,6 @@ import java.sql.SQLException;
 
 /**
  * A single-threaded database result set metadata wrapper.
- *
- * @author Donal Fellows
  */
 final class OTRSMeta extends OTWrapper implements ResultSetMetaData {
 	private final ResultSetMetaData m;

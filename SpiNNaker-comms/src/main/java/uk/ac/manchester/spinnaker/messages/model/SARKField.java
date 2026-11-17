@@ -24,8 +24,6 @@ import java.lang.annotation.Target;
 
 /**
  * A field that has an equivalent in a structure in SARK (or SCAMP, or the BMP).
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(SOURCE)

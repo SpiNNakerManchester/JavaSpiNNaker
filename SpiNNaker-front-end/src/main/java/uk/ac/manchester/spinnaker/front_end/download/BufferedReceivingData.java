@@ -43,7 +43,6 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNFrontEndCommon/blob/master/spinn_front_end_common/interface/buffer_management/storage_objects/buffered_receiving_data.py">
  *      Python Version</a>
- * @author Christian-B
  */
 class BufferedReceivingData {
 	private static final Logger log = getLogger(BufferedReceivingData.class);

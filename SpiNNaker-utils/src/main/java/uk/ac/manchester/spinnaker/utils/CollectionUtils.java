@@ -51,7 +51,6 @@ import java.util.stream.Stream;
  * Utilities for working with collections. Things that it would be nice if they
  * were in Java itself, but which aren't.
  *
- * @author Donal Fellows
  * @see MappableIterable
  */
 public abstract class CollectionUtils {

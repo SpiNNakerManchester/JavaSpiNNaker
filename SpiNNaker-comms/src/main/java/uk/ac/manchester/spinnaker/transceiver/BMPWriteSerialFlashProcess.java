@@ -136,8 +136,6 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess {
  * permitted to fail!
  * <p>
  * This can only produce an iterator <em>once</em>.
- *
- * @author Donal Fellows
  */
 abstract class BMPWriteSFIterable implements Iterable<WriteSerialFlash> {
 	private final BMPBoard board;

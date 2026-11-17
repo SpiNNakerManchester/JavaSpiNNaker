@@ -44,8 +44,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
 /**
  * Tests the Spalloc Client ideally using an actual connection but with a backup
  * of canned replies if the connection fails/times out.
- *
- * @author Christian
  */
 @SuppressWarnings("unused")
 public class TestMockClient {

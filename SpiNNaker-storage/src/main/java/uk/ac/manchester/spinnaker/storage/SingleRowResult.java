@@ -24,8 +24,6 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a query that will only produce <em>at most</em> one row.
- *
- * @author Donal Fellows
  */
 @Retention(SOURCE)
 @Target(FIELD)

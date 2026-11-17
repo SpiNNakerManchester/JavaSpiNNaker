@@ -30,8 +30,6 @@ import uk.ac.manchester.spinnaker.machine.ValidY;
 
 /**
  * Vertex placement information.
- *
- * @author Christian-B
  */
 @JsonFormat(shape = OBJECT)
 public class Placement implements HasCoreLocation {
