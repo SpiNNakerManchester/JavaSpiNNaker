@@ -25,38 +25,36 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment"> * The strings that describe the roles that may be granted.</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a name="Grants" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/Grants.html#Grants">Grants</a> {
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to create jobs, manipulate</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">	 * them, and read their details. Note that many features are locked to the</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">	 * owner of the job or admins. Users should also have {@link #GRANT_READER}.</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	String GRANT_USER = <span class="jxr_string">"ROLE_USER"</span>;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to get general machine</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">	 * information and summaries of jobs. Without this, only the service root</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">	 * (and the parts required for logging in) will be visible.</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	String GRANT_READER = <span class="jxr_string">"ROLE_READER"</span>;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to use administrative</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 * actions. Admins should also have {@link #GRANT_USER} and</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">	 * {@link #GRANT_READER}.</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	String GRANT_ADMIN = <span class="jxr_string">"ROLE_ADMIN"</span>;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to run NMPI jobs only on</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">	 * behalf of other users.  This is equivalent to {@link #GRANT_USER} but</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">	 * with this additional benefit.</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	String GRANT_NMPI_EXEC = <span class="jxr_string">"ROLE_NMPI_EXEC"</span>;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  }
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a name="Grants" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/Grants.html#Grants">Grants</a> {
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to create jobs, manipulate</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">	 * them, and read their details. Note that many features are locked to the</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">	 * owner of the job or admins. Users should also have {@link #GRANT_READER}.</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  	String GRANT_USER = <span class="jxr_string">"ROLE_USER"</span>;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to get general machine</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">	 * information and summaries of jobs. Without this, only the service root</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">	 * (and the parts required for logging in) will be visible.</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	String GRANT_READER = <span class="jxr_string">"ROLE_READER"</span>;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to use administrative</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 * actions. Admins should also have {@link #GRANT_USER} and</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 * {@link #GRANT_READER}.</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  	String GRANT_ADMIN = <span class="jxr_string">"ROLE_ADMIN"</span>;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">	 * The authority used to grant a user permission to run NMPI jobs only on</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">	 * behalf of other users.  This is equivalent to {@link #GRANT_USER} but</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">	 * with this additional benefit.</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	String GRANT_NMPI_EXEC = <span class="jxr_string">"ROLE_NMPI_EXEC"</span>;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

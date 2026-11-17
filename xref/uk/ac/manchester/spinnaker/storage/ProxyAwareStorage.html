@@ -26,21 +26,19 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment"> * Storage interface that knows how to get information about the proxy system</em>
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> * from the DB.</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a name="ProxyAwareStorage" href="../../../../../uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html#ProxyAwareStorage">ProxyAwareStorage</a> <strong class="jxr_keyword">extends</strong> <a name="DatabaseAPI" href="../../../../../uk/ac/manchester/spinnaker/storage/DatabaseAPI.html#DatabaseAPI">DatabaseAPI</a> {
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">	 * Get the proxy information from the database.</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">	 * @return The proxy information, or {@code null} if none defined. When</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">	 *         there is no proxy, only direct connections to SpiNNaker are</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">	 *         possible.</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">	 * @throws StorageException</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">	 *             If anything goes wrong.</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	ProxyInformation getProxyInformation() <strong class="jxr_keyword">throws</strong> StorageException;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  }
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a name="ProxyAwareStorage" href="../../../../../uk/ac/manchester/spinnaker/storage/ProxyAwareStorage.html#ProxyAwareStorage">ProxyAwareStorage</a> <strong class="jxr_keyword">extends</strong> <a name="DatabaseAPI" href="../../../../../uk/ac/manchester/spinnaker/storage/DatabaseAPI.html#DatabaseAPI">DatabaseAPI</a> {
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">	 * Get the proxy information from the database.</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">	 * @return The proxy information, or {@code null} if none defined. When</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">	 *         there is no proxy, only direct connections to SpiNNaker are</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">	 *         possible.</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">	 * @throws StorageException</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">	 *             If anything goes wrong.</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	ProxyInformation getProxyInformation() <strong class="jxr_keyword">throws</strong> StorageException;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
