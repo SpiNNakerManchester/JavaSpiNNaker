@@ -41,7 +41,6 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 /**
  * A data gatherer that can fetch DSE regions.
  *
- * @author Donal Fellows
  * @deprecated This class uses an unimplemented API call that needs to be fixed
  *             but hasn't been yet. It also assumes that there are no shared
  *             regions.

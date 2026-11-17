@@ -36,10 +36,6 @@ import java.util.Set;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 public class TestVirtualMachine {
 
 	@Test

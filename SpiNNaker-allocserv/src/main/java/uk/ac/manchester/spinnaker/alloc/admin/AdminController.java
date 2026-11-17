@@ -55,8 +55,6 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * The API for the controller for the admin user interface.
- *
- * @author Donal Fellows
  */
 @RequestMapping(AdminController.BASE_PATH)
 @PreAuthorize(IS_ADMIN)
@@ -252,8 +250,6 @@ public interface AdminController {
 
 	/**
 	 * Model used when creating a group. No other purpose.
-	 *
-	 * @author Donal Fellows
 	 */
 	class CreateGroupModel {
 		private String name = "";

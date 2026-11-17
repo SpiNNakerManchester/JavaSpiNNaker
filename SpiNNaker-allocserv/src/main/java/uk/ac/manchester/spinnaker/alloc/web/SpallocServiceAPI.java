@@ -302,8 +302,6 @@ public interface SpallocServiceAPI {
 
 	/**
 	 * Interface to a particular machine.
-	 *
-	 * @author Donal Fellows
 	 */
 	interface MachineAPI {
 		/**
@@ -437,8 +435,6 @@ public interface SpallocServiceAPI {
 
 	/**
 	 * Interface to a particular job.
-	 *
-	 * @author Donal Fellows
 	 */
 	interface JobAPI {
 		/**
@@ -807,8 +803,6 @@ public interface SpallocServiceAPI {
 
 /**
  * Names of things used on Swagger documentation.
- *
- * @author Donal Fellows
  */
 abstract class DocConstants {
 	private DocConstants() {

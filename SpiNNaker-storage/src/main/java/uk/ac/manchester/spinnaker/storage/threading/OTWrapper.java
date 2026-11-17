@@ -29,8 +29,6 @@ import java.sql.Wrapper;
 
 /**
  * Core wrapper functionality, and single-threadedness enforcement point.
- *
- * @author Donal Fellows
  */
 abstract class OTWrapper implements Wrapper {
 	private final OneThread ot;

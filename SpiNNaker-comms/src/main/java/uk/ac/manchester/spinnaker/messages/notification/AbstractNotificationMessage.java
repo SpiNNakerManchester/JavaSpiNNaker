@@ -21,8 +21,6 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 /**
  * A base class for concrete notification messages.
- *
- * @author Donal Fellows
  */
 public abstract class AbstractNotificationMessage
 		implements NotificationMessage {

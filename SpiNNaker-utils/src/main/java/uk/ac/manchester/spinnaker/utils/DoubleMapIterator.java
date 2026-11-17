@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
  *
  * @param <V>
  *            Class of the Object to be supplied by the final Iterator.
- * @author Christian-B
  */
 final class DoubleMapIterator<V> implements Iterator<V> {
 	private final Iterator<? extends Map<?, V>> outer;

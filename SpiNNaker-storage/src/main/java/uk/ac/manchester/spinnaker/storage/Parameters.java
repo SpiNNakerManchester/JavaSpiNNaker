@@ -24,8 +24,6 @@ import java.lang.annotation.Target;
 
 /**
  * Used to document what parameters are present in the DQL/DML.
- *
- * @author Donal Fellows
  */
 @Retention(SOURCE)
 @Target(FIELD)

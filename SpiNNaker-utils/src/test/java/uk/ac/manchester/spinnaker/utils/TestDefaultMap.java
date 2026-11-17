@@ -23,10 +23,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.utils.DefaultMap.KeyAwareFactory;
 
-/**
- *
- * @author Christian-B
- */
 public class TestDefaultMap {
 
 	public TestDefaultMap() {

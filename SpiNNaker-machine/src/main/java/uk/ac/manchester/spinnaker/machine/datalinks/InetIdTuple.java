@@ -22,8 +22,6 @@ import com.google.errorprone.annotations.Immutable;
 
 /**
  * A tuple of an IP address and a SpiNNaker link ID.
- *
- * @author Christian-B
  */
 @Immutable
 public final class InetIdTuple {

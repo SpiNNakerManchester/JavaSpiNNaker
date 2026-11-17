@@ -21,8 +21,6 @@ import java.util.Map;
 
 /**
  * Command IDs for the SDP packets for data in.
- *
- * @author Donal Fellows
  */
 public enum FastDataInCommandID {
 	/** Host to Gatherer: start accepting data bound for location. */

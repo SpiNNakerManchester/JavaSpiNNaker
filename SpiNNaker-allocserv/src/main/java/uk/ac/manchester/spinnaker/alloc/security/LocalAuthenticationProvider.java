@@ -39,7 +39,6 @@ import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
  * @param <TestAPI>
  *            The type of the test interface. Not important for non-test
  *            purposes.
- * @author Donal Fellows
  */
 public interface LocalAuthenticationProvider<TestAPI>
 		extends AuthenticationProvider {

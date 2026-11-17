@@ -137,8 +137,6 @@ class BMPWriteMemoryProcess extends BMPCommandProcess {
  * permitted to fail!
  * <p>
  * This is a one-shot iterable.
- *
- * @author Donal Fellows
  */
 abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
 	private final BMPBoard board;

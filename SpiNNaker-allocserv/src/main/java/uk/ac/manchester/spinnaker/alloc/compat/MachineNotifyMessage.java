@@ -24,8 +24,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A machine notification message.
- *
- * @author Donal Fellows
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class MachineNotifyMessage {

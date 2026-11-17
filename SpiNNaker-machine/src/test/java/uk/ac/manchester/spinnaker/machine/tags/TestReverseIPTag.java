@@ -21,10 +21,6 @@ import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 public class TestReverseIPTag {
 
 	private InetAddress createInetAddress(byte lastByte)

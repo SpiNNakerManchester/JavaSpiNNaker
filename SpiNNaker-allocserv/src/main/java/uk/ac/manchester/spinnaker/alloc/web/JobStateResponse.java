@@ -39,8 +39,6 @@ import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;
 
 /**
  * The state of a job.
- *
- * @author Donal Fellows
  */
 public class JobStateResponse {
 	private JobState state;

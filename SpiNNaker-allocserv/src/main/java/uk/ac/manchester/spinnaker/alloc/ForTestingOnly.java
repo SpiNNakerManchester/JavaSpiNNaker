@@ -32,7 +32,6 @@ import java.util.Arrays;
  * any other reason! Methods tagged with this <em>should</em> also be tagged
  * {@link Deprecated @Deprecated}; classes/interfaces tagged with this need not.
  *
- * @author Donal Fellows
  */
 @Documented
 @Retention(CLASS)

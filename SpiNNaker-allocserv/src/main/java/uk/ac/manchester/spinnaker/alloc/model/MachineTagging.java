@@ -33,8 +33,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Describes a tagging of a machine.
- *
- * @author Donal Fellows
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class MachineTagging {

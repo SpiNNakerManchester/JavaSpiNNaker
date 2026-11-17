@@ -25,10 +25,6 @@ import java.nio.ReadOnlyBufferException;
 
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Donal
- */
 public class TestByteBufferUtils {
 	@Test
 	public void testSlice() {

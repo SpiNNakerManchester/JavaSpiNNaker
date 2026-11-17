@@ -26,10 +26,6 @@ import static org.hamcrest.Matchers.*;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 public class TestRouter {
 
 	private static final ChipLocation CHIP00 = new ChipLocation(0, 0);

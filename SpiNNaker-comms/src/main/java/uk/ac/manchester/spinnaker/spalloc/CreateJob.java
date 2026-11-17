@@ -53,8 +53,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * An abstract, high-level request to create a job.
- *
- * @author Donal Fellows
  */
 public class CreateJob {
 	private final List<@NotNull @PositiveOrZero Integer> args =

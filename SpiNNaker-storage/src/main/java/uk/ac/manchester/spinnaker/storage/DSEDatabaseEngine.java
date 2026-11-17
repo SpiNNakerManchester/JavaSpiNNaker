@@ -24,8 +24,6 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
 
 /**
  * A database interface for talking to the DSE database.
- *
- * @author Donal Fellows
  */
 public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
 	private static String sqlDDL = loadResource("dse.sql");

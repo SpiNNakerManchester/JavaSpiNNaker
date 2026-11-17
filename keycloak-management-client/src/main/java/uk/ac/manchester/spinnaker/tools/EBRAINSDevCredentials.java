@@ -38,8 +38,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Developer credentials for initial access to client registration using the
  * HBP/EBRAINS Keycloak service.
- *
- * @author Donal Fellows
  */
 interface EBRAINSDevCredentials {
 	/** The content type for submitting an HTML form (or equivalent). */

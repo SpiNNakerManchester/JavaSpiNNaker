@@ -47,8 +47,6 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * <pre>[3, 2, 1]</pre>
  * and can also be deserialized from its {@linkplain #toString() string form}:
  * <pre>[x:3,y:2,z:1]</pre>
- *
- * @author Donal Fellows
  */
 @JsonDeserialize(using = TriadCoords.Deserializer.class)
 public final class TriadCoords implements Comparable<TriadCoords> {

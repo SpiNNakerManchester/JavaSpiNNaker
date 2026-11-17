@@ -30,8 +30,6 @@ import jakarta.validation.constraints.Pattern;
 
 /**
  * Validates that a string looks like a comma-separated tag list.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

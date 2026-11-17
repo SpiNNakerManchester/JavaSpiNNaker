@@ -37,9 +37,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Data speed up packet gatherer description.
- *
- * @author Christian-B
- * @author Alan Stokes
  */
 @JsonFormat(shape = OBJECT)
 public class Gather implements HasCoreLocation {

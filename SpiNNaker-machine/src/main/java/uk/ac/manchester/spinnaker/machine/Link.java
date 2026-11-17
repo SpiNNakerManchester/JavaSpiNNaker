@@ -32,7 +32,6 @@ import com.google.errorprone.annotations.Immutable;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/link.py">
  *      Python Version</a>
- * @author Christian-B
  */
 @Immutable
 public final class Link {

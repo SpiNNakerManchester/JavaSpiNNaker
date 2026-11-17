@@ -336,8 +336,6 @@ public class FastDataIn implements AutoCloseable {
 
 	/**
 	 * Contains flags for seen missing sequence numbers.
-	 *
-	 * @author Alan Stokes
 	 */
 	private static final class SeenFlags {
 		private boolean seenEnd;
@@ -446,8 +444,6 @@ public class FastDataIn implements AutoCloseable {
 
 	/**
 	 * Exception thrown when something mad comes back off SpiNNaker.
-	 *
-	 * @author Donal Fellows
 	 */
 	static class BadDataInMessageException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
@@ -461,9 +457,6 @@ public class FastDataIn implements AutoCloseable {
 
 	/**
 	 * Exception thrown when something mad comes back off SpiNNaker.
-	 *
-	 * @author Donal Fellows
-	 * @author Alan Stokes
 	 */
 	static class CrazySequenceNumberException extends RuntimeException {
 		private static final long serialVersionUID = 1L;

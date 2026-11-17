@@ -32,8 +32,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * anyway, as it will then block until the write is definitely done. Using
  * Buffered writing means that the write may or may not have happened at the
  * time of the response. </blockquote>
- *
- * @author Donal Fellows
  */
 public abstract class CommonMemoryLocations {
 	private CommonMemoryLocations() {

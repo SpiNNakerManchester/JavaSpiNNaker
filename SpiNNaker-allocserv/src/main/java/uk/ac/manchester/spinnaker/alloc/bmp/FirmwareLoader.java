@@ -70,8 +70,6 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
 /**
  * Handles loading of firmware into a BMP or an FPGA.
- *
- * @author Donal Fellows
  */
 @Component
 @Prototype
@@ -298,8 +296,6 @@ public class FirmwareLoader {
 	/**
 	 * Instructions to set a register on one or more FPGAs. This is done not
 	 * just immediately, but also during BMP boot.
-	 *
-	 * @author Donal Fellows
 	 */
 	public static class RegisterSet {
 		private final FPGA fpga;

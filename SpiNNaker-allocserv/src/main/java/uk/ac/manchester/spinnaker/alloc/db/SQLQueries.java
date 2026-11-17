@@ -44,8 +44,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * <p>
  * The schema they query against (defined in {@code spalloc.sql}) is: <br>
  * <img src="doc-files/schema.png" width="95%" alt="Database Schema">
- *
- * @author Donal Fellows
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
 // @formatter:off

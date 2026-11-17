@@ -57,8 +57,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
  * The basic communications layer of the spalloc client. This client assumes
  * that the protocol is line-oriented, but does not assume anything about the
  * formatting of the contents of the lines.
- *
- * @author Donal Fellows
  */
 public abstract class SpallocConnection implements Closeable {
 	private static final Logger log = getLogger(SpallocConnection.class);

@@ -80,8 +80,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages the BMPs of machines controlled by Spalloc.
- *
- * @author Donal Fellows
  */
 @Service("bmpController")
 @ManagedResource("Spalloc:type=BMPController,name=bmpController")
@@ -453,8 +451,6 @@ public class BMPController extends DatabaseAwareBean {
 	 * <p>
 	 * This is the message that is sent from the main thread to the per-BMP
 	 * worker threads.
-	 *
-	 * @author Donal Fellows
 	 */
 	private final class PowerRequest extends Request {
 		private final List<BMPBoard> powerOnBoards = new ArrayList<>();
@@ -743,8 +739,6 @@ public class BMPController extends DatabaseAwareBean {
 	/**
 	 * A request to read or write information on a BMP. Includes blacklists,
 	 * serial numbers, temperature data, etc.
-	 *
-	 * @author Donal Fellows
 	 */
 	private final class BoardRequest extends Request {
 		private final NonBootOperation op;

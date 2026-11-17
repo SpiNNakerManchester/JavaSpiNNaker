@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 /**
  * The FPGAs that manage inter-board links.
  *
- * @author Christian-B
  * @see FpgaEnum
  */
 public enum FpgaId {

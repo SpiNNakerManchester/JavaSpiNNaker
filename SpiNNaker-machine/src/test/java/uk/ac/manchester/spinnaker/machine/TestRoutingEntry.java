@@ -26,10 +26,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- *
- * @author Christian-B
- */
 public class TestRoutingEntry {
 
 	public TestRoutingEntry() {

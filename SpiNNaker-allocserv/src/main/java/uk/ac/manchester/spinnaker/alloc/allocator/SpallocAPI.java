@@ -81,8 +81,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * The API of the core service that interacts with the database.
- *
- * @author Donal Fellows
  */
 public interface SpallocAPI {
 	/**
@@ -810,8 +808,6 @@ public interface SpallocAPI {
 
 	/**
 	 * A thing that may be waited upon.
-	 *
-	 * @author Donal Fellows
 	 */
 	interface Waitable {
 		/**
@@ -833,8 +829,6 @@ public interface SpallocAPI {
 
 	/**
 	 * Describes a particular job known to the allocator.
-	 *
-	 * @author Donal Fellows
 	 */
 	interface Job extends Waitable {
 		/**
@@ -1063,8 +1057,6 @@ public interface SpallocAPI {
 
 	/**
 	 * Describes a list of jobs known to the allocator.
-	 *
-	 * @author Donal Fellows
 	 */
 	interface Jobs extends Waitable {
 		/**
@@ -1094,8 +1086,6 @@ public interface SpallocAPI {
 	/**
 	 * Describes a particular machine known to the allocator. Must implement
 	 * equality by ID or name (both are unique).
-	 *
-	 * @author Donal Fellows
 	 */
 	interface Machine extends Waitable {
 		/**
@@ -1237,8 +1227,6 @@ public interface SpallocAPI {
 	 * Describes the locations of boards in a machine. Note that instances of
 	 * this class are expected to be fully instantiated; reading from them will
 	 * <em>not</em> touch the database.
-	 *
-	 * @author Donal Fellows
 	 */
 	interface BoardLocation {
 		/**

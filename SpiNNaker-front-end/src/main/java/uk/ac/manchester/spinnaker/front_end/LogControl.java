@@ -40,8 +40,6 @@ import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuild
 /**
  * Utilities for working with the log. <em>This should be the only place in our
  * Java code that directly talks about log4j.</em>
- *
- * @author Donal Fellows
  */
 public final class LogControl {
 

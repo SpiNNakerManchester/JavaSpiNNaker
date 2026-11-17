@@ -36,8 +36,6 @@ import java.util.Map;
 
 /**
  * A single-threaded database callable statement wrapper.
- *
- * @author Donal Fellows
  */
 final class OTCallable extends OTPrepared implements CallableStatement {
 	private final CallableStatement s;

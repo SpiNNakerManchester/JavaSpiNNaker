@@ -23,10 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.Machine;
 
-/**
- *
- * @author Christian
- */
 public class TestMachineBean {
 
 	@Test

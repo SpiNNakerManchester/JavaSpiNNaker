@@ -21,7 +21,6 @@ import java.util.function.Function;
  * A simple class that can optionally hold a single value. <i>This class is
  * modifiable.</i>
  *
- * @author Donal Fellows
  * @param <T>
  *            The type of value to hold.
  */

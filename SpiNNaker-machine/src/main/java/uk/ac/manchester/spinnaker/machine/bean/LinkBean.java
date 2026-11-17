@@ -30,8 +30,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * A {@linkplain Link link} between two {@linkplain Chip chips}. At this point
  * of the JSON model, the chip coordinates of the source are implicit.
- *
- * @author Christian-B
  */
 @UsedInJavadocOnly({Chip.class, Link.class})
 public class LinkBean {

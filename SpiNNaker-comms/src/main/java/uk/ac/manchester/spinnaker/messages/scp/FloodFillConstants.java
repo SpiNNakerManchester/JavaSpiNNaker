@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /**
  * Various constants used in the flood fill sub-protocol.
- *
- * @author Donal Fellows
  */
 abstract class FloodFillConstants {
 	private FloodFillConstants() {

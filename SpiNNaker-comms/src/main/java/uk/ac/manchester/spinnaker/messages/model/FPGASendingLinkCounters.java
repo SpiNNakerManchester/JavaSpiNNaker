@@ -23,7 +23,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/spio/tree/master/designs/spinnaker_fpgas">
  *      Spio documentation</a>
- * @author Donal Fellows
  */
 @SARKStruct("spio")
 public enum FPGASendingLinkCounters {

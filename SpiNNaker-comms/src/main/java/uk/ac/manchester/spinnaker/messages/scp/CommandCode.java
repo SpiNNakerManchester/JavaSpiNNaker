@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /**
  * All command codes usable in SCP-like messages.
- *
- * @author Donal Fellows
  */
 public interface CommandCode {
 	/**

@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.storage;
 
 /**
  * Interface that real database interfaces are subclasses of.
- *
- * @author Donal Fellows
  */
 public interface DatabaseAPI {
 }

@@ -24,10 +24,6 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ
 
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Christian-B
- */
 public class TestProcessor {
 
 	private void checkDifferent(Processor p1, Processor p2) {

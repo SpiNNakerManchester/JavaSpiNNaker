@@ -36,8 +36,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * {@link PreparedStatement#executeQuery()} instead of
  * {@link PreparedStatement#executeUpdate()}. This limitation only applies to
  * that driver.
- *
- * @author Donal Fellows
  */
 @Retention(SOURCE)
 @Target(FIELD)

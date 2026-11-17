@@ -50,8 +50,6 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 /**
  * Tests of inserts, updates and deletes. Ensures that the SQL and the schema
  * remain synchronized.
- *
- * @author Donal Fellows
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)

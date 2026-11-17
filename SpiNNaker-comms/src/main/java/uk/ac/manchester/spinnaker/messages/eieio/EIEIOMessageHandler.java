@@ -19,8 +19,6 @@ import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 
 /**
  * Handles a message received from an EIEIO connection.
- *
- * @author Donal Fellows
  */
 public interface EIEIOMessageHandler
 		extends MessageHandler<EIEIOMessage<? extends EIEIOHeader>> {

@@ -48,7 +48,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * An API for talking to the Spalloc service.
  *
  * @see SpallocClientFactory
- * @author Donal Fellows
  */
 public interface SpallocClient {
 	/**

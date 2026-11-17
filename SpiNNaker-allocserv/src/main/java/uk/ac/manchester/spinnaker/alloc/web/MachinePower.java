@@ -25,8 +25,6 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 /**
  * Describes the current state of power of the machine (or at least the portion
  * of it allocated to a job), or a state that the user wants us to switch into.
- *
- * @author Donal Fellows
  */
 @Immutable
 public class MachinePower {

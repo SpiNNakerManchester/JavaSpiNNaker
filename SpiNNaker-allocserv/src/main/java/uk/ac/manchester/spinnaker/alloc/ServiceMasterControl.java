@@ -29,8 +29,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
  * Control over general aspects of the service's manageability. Not exposed as
  * part of service because this includes the bits that shut the service off when
  * disabled.
- *
- * @author Donal Fellows
  */
 @Service("control")
 @ManagedResource("Spalloc:type=ServiceMasterControl,name=control")

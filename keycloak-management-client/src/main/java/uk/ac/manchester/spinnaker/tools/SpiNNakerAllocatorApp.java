@@ -25,8 +25,6 @@ import org.keycloak.representations.idm.ClientRepresentation;
  * Information about the {@code SpiNNaker-allocserv} application. Note that this
  * information is only really usable by the administrator of the deployment at
  * Manchester.
- *
- * @author Donal Fellows
  */
 public interface SpiNNakerAllocatorApp {
 	/** The ID of the service. */

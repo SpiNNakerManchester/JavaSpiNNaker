@@ -25,8 +25,6 @@ import java.lang.annotation.Target;
 /**
  * A structure that has an equivalent in a structure in SARK (or SCAMP, or the
  * BMP).
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(SOURCE)
@@ -44,8 +42,6 @@ public @interface SARKStruct {
 
 	/**
 	 * The supported APIs for mapped structures.
-	 *
-	 * @author Donal Fellows
 	 */
 	enum API {
 		/** This identifies a structure defined by SARK. */

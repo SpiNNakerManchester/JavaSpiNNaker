@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.compat;
  * An exception that a task operation may throw. Such exceptions are converted
  * into suitable classic spalloc error response messages by the service message
  * handling layer.
- *
- * @author Donal Fellows
  * @see ExceptionResponse
  */
 public final class TaskException extends Exception {

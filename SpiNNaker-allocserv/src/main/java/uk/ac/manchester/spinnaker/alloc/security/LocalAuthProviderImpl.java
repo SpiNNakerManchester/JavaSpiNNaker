@@ -97,7 +97,6 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
  * primarily focused on the {@code user_info} database table.
  *
  * @see AuthProperties Configuration properties
- * @author Donal Fellows
  */
 @Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
@@ -652,7 +651,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * times, and then calling {@link #apply(int)} once. Closing this resource
 	 * removes temporary storage; it does not support nested use.
 	 *
-	 * @author Donal Fellows
 	 */
 	private final class GroupSynch extends AbstractSQL {
 		private final Update insert;

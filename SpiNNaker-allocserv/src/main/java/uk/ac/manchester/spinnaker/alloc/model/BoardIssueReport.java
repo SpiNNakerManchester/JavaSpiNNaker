@@ -27,8 +27,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * A report of an issue with a board.
- *
- * @author Donal Fellows
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class BoardIssueReport {

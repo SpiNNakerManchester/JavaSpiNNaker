@@ -35,8 +35,6 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
 /**
  * Common base for executing data specifications.
- *
- * @author Donal Fellows
  */
 public abstract class ExecuteDataSpecification extends BoardLocalSupport
 		implements AutoCloseable {

@@ -23,8 +23,6 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * connection it is being sent down prior to it being sent. This is intended to
  * allow information about the connection to be used in producing the parsed
  * response object.
- *
- * @author Donal Fellows
  */
 public interface ConnectionAwareMessage extends SerializableMessage {
 	/**

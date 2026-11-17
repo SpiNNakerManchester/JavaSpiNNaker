@@ -23,9 +23,6 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 /**
  * An EIEIO message containing a command.
- *
- * @author Sergio Davies
- * @author Donal Fellows
  */
 public class EIEIOCommandMessage
 		implements EIEIOMessage<EIEIOCommandMessage.Header> {

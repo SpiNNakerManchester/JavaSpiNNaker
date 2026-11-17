@@ -42,8 +42,6 @@ import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 
 /**
  * Tests of queries. Ensures that the SQL and the schema remain synchronized.
- *
- * @author Donal Fellows
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)

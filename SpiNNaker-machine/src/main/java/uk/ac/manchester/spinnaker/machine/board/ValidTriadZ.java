@@ -33,8 +33,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 /**
  * Validates that a triad Z coordinate is in a sane range.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

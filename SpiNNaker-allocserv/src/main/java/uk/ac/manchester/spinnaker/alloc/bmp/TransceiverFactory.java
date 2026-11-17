@@ -60,8 +60,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Can support running with a dummy transceiver (but not in production, of
  * course). Set the {@code spalloc.transceiver.dummy} configuration value to
  * {@code true} to enable that.
- *
- * @author Donal Fellows
  */
 @Service("transceiverFactory")
 public class TransceiverFactory

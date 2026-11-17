@@ -31,8 +31,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * The primary interface to the database. It conceptually represents an SQLite
  * database that can have connections opened on it.
- *
- * @author Donal Fellows
  */
 public interface DatabaseAPI {
 	/**
@@ -666,8 +664,6 @@ public interface DatabaseAPI {
 	/**
 	 * Common shared API between {@link Query} and {@link Update}. This supports
 	 * prepared statements within the general mechanisms of this API.
-	 *
-	 * @author Donal Fellows
 	 */
 	interface StatementCommon extends AutoCloseable {
 		/**
@@ -691,8 +687,6 @@ public interface DatabaseAPI {
 	 * Wrapping a prepared query to be more suitable for Java 8 onwards. This
 	 * supports prepared statements that yield {@linkplain ResultSet result
 	 * sets}.
-	 *
-	 * @author Donal Fellows
 	 */
 	@UsedInJavadocOnly(ResultSet.class)
 	interface Query extends StatementCommon {
@@ -745,8 +739,6 @@ public interface DatabaseAPI {
 	 * <p>
 	 * Note that, as a security measure, most database connectors do not support
 	 * putting multiple statements in a single prepared statement.
-	 *
-	 * @author Donal Fellows
 	 */
 	@UsedInJavadocOnly(GeneratesID.class)
 	interface Update extends StatementCommon {

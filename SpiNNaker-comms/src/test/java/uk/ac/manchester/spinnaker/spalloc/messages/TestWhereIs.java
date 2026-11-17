@@ -24,10 +24,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
-/**
- *
- * @author micro
- */
 public class TestWhereIs {
 
 	@Test

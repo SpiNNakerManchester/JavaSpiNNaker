@@ -26,10 +26,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 
-/**
- *
- * @author Christian-B
- */
 public class TestFpgaLinkData {
 
 	private static ChipLocation location00 = new ChipLocation(0, 0);

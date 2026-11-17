@@ -29,8 +29,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Descriptor used for converting JSON into a {@link Chip}.
- *
- * @author Christian-B
  */
 @JsonFormat(shape = ARRAY)
 @UsedInJavadocOnly(Chip.class)

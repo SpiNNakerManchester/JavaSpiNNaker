@@ -38,8 +38,6 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
  * Test that the database engine interface works and that the queries are
  * synchronised with the schema. Deliberately does not do meaningful testing of
  * the data in the database.
- *
- * @author Donal Fellows
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)

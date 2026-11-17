@@ -76,8 +76,6 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 
 /**
  * How to manage the state of a machine and boards in it.
- *
- * @author Donal Fellows
  */
 @Service
 public class MachineStateControl extends DatabaseAwareBean {
@@ -478,8 +476,6 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Exception thrown when the machine state can't be read from or written to
 	 * a BMP. This includes when a blacklist can't be accessed or when the
 	 * machine state structure can't be read.
-	 *
-	 * @author Donal Fellows
 	 */
 	public static final class MachineStateException extends RuntimeException {
 		private static final long serialVersionUID = -6450838951059318431L;
@@ -832,8 +828,6 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	/**
 	 * Manages the transactions used to safely talk with the BMP controller.
-	 *
-	 * @author Donal Fellows
 	 */
 	private final class Op implements AutoCloseable {
 		private final int op;

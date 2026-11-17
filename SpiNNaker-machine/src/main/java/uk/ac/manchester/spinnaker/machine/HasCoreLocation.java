@@ -17,8 +17,6 @@ package uk.ac.manchester.spinnaker.machine;
 
 /**
  * The interface supported by any object that is associated with a core.
- *
- * @author dkf
  */
 public interface HasCoreLocation extends HasChipLocation {
 	/**

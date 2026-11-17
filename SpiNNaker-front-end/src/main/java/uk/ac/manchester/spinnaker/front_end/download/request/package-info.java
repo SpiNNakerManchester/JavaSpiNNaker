@@ -15,7 +15,5 @@
  */
 /**
  * Classes used to describe the JSON requests to the data transfer code.
- *
- * @author Donal Fellows
  */
 package uk.ac.manchester.spinnaker.front_end.download.request;

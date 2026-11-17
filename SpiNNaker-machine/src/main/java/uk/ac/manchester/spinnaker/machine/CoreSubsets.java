@@ -38,7 +38,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/core_subsets.py">
  *      Python Version</a>
- * @author Christian-B
  */
 public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	private final Map<@Valid ChipLocation,

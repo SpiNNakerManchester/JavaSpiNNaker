@@ -32,8 +32,6 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 /**
  * A thread pool designed for simple task execution with combining of
  * exceptions.
- *
- * @author Donal Fellows
  */
 public class BasicExecutor implements AutoCloseable {
 	private final ExecutorService executor;
@@ -133,8 +131,6 @@ public class BasicExecutor implements AutoCloseable {
 
 	/**
 	 * The type of task that this executor can run.
-	 *
-	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
 	public interface SimpleCallable {
@@ -149,8 +145,6 @@ public class BasicExecutor implements AutoCloseable {
 
 	/**
 	 * Holds the future results of the submitted tasks.
-	 *
-	 * @author Donal Fellows
 	 */
 	public static final class Tasks {
 		@GuardedBy("this")

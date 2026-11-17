@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.model;
 /**
  * The state of the boards or links of a machine, or what they should be
  * switched to.
- *
- * @author Donal Fellows
  */
 public enum PowerState {
 	/** Switched off. */

@@ -41,8 +41,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The details of a {@link Chip}.
- *
- * @author Christian-B
  */
 @UsedInJavadocOnly(Chip.class)
 public class ChipDetails {

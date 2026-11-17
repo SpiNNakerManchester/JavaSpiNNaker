@@ -25,10 +25,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-/**
- *
- * @author Christian-B
- */
 public class TestCoreSubsets {
 
 	public TestCoreSubsets() {

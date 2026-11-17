@@ -69,8 +69,6 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
  * operations described by users into the form understood by the service core,
  * and for converting the responses. It also handles the transfer of calls onto
  * suitable worker threads, where appropriate.
- *
- * @author Donal Fellows
  */
 @Service("service")
 @Path(SERV)

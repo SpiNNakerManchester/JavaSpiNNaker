@@ -39,10 +39,6 @@ import static org.hamcrest.Matchers.*;
 import static java.net.InetAddress.getByAddress;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- *
- * @author Christian-B
- */
 public class TestMachine {
 	public TestMachine() {
 	}

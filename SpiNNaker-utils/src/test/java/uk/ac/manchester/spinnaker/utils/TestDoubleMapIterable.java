@@ -19,10 +19,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- *
- * @author Christian-B
- */
 public class TestDoubleMapIterable {
 
 	@SuppressWarnings("unused")

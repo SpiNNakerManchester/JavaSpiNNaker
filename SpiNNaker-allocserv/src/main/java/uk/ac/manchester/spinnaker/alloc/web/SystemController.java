@@ -45,8 +45,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The main web interface controller.
- *
- * @author Donal Fellows
  */
 @RequestMapping(SystemController.ROOT_PATH)
 public interface SystemController {

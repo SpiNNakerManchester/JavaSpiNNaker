@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * Based on the
  * <a href="https://drive.google.com/open?id=0B9312BuJXntlVWowQlJ3RE8wWVE"> FPGA
  * Diagram</a>
- *
- * @author Christian-B
  */
 public enum FpgaEnum implements HasChipLocation {
 

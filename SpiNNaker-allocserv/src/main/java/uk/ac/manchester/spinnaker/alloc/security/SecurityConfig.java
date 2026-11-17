@@ -90,8 +90,6 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * <em>interfaces</em> of classes (or methods of those interfaces) that are
  * Spring Beans in order for the security interception to be applied correctly.
  * This is the <em>only</em> combination that is known to work reliably.
- *
- * @author Donal Fellows
  */
 @EnableWebSecurity
 @Role(ROLE_APPLICATION)

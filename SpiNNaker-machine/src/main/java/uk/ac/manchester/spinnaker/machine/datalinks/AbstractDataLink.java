@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
  * Abstract Root of all Data Links.
- *
- * @author Christian-B
  */
 @Immutable
 public abstract class AbstractDataLink implements HasChipLocation {

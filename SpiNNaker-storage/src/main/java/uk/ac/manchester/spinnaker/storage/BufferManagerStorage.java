@@ -29,8 +29,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * The interface supported by the storage system.
- *
- * @author Donal Fellows
  */
 public interface BufferManagerStorage extends ProxyAwareStorage {
 
@@ -93,8 +91,6 @@ public interface BufferManagerStorage extends ProxyAwareStorage {
 
 	/**
 	 * A region descriptor. Not expected to support useful notions of equality.
-	 *
-	 * @author Donal Fellows
 	 */
 	class Region {
 		private static final int INT_SIZE = 4;

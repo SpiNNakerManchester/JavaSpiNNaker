@@ -49,9 +49,6 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 /**
  * Implementation of the Data Specification Executor that uses the Fast Data In
  * protocol to upload the results to a SpiNNaker machine.
- *
- * @author Donal Fellows
- * @author Alan Stokes
  */
 public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	private static final Logger log =

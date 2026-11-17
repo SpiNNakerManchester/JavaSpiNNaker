@@ -25,16 +25,12 @@ import com.google.errorprone.annotations.Immutable;
 
 /**
  * Describes a link that is disabled.
- *
- * @author Donal Fellows
  */
 @Immutable
 @JsonFormat(shape = ARRAY)
 public final class DownLink {
 	/**
 	 * Describes one end of a link that is disabled.
-	 *
-	 * @author Donal Fellows
 	 */
 	@Immutable
 	public static final class End {

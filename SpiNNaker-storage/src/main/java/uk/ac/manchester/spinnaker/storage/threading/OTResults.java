@@ -41,8 +41,6 @@ import java.util.Map;
 
 /**
  * A single-threaded database result set wrapper.
- *
- * @author Donal Fellows
  */
 final class OTResults extends OTWrapper implements ResultSet {
 	private final ResultSet r;

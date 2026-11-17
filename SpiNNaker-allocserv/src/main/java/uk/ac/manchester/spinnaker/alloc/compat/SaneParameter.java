@@ -34,8 +34,6 @@ import jakarta.validation.Payload;
  * Validates that an argument is a sane value to pass in a classic spalloc API
  * call. That means "is it a string, a boolean or a number"? Null is not
  * permitted.
- *
- * @author Donal Fellows
  */
 @Documented
 @Retention(RUNTIME)

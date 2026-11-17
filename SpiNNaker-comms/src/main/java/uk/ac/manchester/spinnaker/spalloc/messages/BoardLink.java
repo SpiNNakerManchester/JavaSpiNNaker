@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
 
 /**
  * A combination of x, y, z and a Link.
- *
- * @author Christian
  */
 @JsonPropertyOrder({
 	"x", "y", "z", "link"

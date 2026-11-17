@@ -24,8 +24,6 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
 
 /**
  * A database interface for talking to the buffer manager database.
- *
- * @author Donal Fellows
  */
 public class BufferManagerDatabaseEngine
 		extends DatabaseEngine<BufferManagerStorage> {

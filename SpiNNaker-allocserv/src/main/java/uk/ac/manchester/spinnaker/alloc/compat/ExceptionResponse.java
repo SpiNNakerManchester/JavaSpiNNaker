@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A message indicating an operation failed.
- *
- * @author Donal Fellows
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class ExceptionResponse {

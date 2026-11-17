@@ -43,7 +43,6 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
  * horizontally offset from 0,0,0. (Also, the real boards are slightly offset
  * from this layout.)
  *
- * @author Donal Fellows
  * @see Direction
  * @see MachineDefinitionLoader
  */

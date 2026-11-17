@@ -27,10 +27,6 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-/**
- *
- * @author Christian
- */
 public class TestJson {
 
 	private static ObjectMapper createMapper() {

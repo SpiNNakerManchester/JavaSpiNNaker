@@ -28,8 +28,6 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 /**
  * A message participating in the fast-data-download protocol. This protocol
  * looks like SDP in general.
- *
- * @author Donal Fellows
  */
 public abstract class GatherProtocolMessage extends SDPMessage {
 	/**

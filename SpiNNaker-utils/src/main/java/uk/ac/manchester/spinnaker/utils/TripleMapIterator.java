@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
  *
  * @param <V>
  *            class of objects to be supplied by the this iterator.
- * @author Christian-B
  */
 final class TripleMapIterator<V> implements Iterator<V> {
 	private final Iterator<? extends Map<?, ? extends Map<?, V>>> outer;
