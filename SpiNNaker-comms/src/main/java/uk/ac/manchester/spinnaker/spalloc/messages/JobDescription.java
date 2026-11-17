@@ -150,7 +150,7 @@ public final class JobDescription {
 	 * This is not necessarily validated!
 	 *
 	 * @return The job's owner.
-	 * */
+	 */
 	public String getOwner() {
 		return owner;
 	}

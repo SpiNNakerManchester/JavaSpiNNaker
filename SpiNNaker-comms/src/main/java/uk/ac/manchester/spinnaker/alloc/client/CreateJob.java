@@ -480,7 +480,6 @@ public final class CreateJob {
 	 *
 	 * This and {@code tags} are mutually exclusive,
 	 * but at least one must be given.
-
 	 * @return Which machine to allocate on
 	 */
 	public String getMachineName() {
@@ -535,7 +534,6 @@ public final class CreateJob {
 	 *
 	 * Note that the allocation engine might increase this
 	 * if it decides to overallocate.
-
 	 * @return The maximum number of dead boards allowed in a rectangular
 	 *         allocation.
 	 */
