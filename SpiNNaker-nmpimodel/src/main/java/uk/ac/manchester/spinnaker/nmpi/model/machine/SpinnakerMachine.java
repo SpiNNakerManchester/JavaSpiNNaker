@@ -264,7 +264,9 @@ public class SpinnakerMachine
 		this.height = height;
 	}
 
-	/** @return width &times; height */
+	/**
+	 * {@return width &times; height}
+	 */
 	public int getArea() {
 		return width * height;
 	}
