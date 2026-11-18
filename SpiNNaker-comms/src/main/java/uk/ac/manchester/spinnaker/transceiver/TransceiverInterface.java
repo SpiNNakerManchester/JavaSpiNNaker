@@ -3092,8 +3092,6 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If the communications were interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
 	 */
 	@ParallelSafe
 	void clearIPTag(@TagID int tag, InetAddress boardAddress)

@@ -56,12 +56,12 @@ public interface SpallocAPI {
 	 * Request the version of the spalloc server.
 	 *
 	 * @return the server's version.
-	 * @throws SpallocServerException
-	 *             if the server returns an exception response.
 	 * @throws IOException
 	 *             if network communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             if the server returns an exception response.
 	 */
 	default Version version()
 			throws IOException, SpallocServerException, InterruptedException {

@@ -2688,11 +2688,11 @@ public class Transceiver extends UDPTransceiver
 	 * @param powerOffMachine
 	 *            if true, the machine is sent a power down command via its BMP
 	 *            (if it has one)
+	 * @throws IOException
+	 *             If anything goes wrong with networking
 	 * @throws InterruptedException
 	 *             If interrupted while waiting for the machine to power down
 	 *             (only if that is requested).
-	 * @throws IOException
-	 *             If anything goes wrong with networking
 	 */
 	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
 			throws IOException, InterruptedException {
