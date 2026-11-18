@@ -118,8 +118,6 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *
 	 * @param gatherers
 	 *             The receivers of data from the machine.
-	 * @throws StorageException
-	 *             If the database can't be talked to.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws IllegalStateException
@@ -129,6 +127,8 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database can't be talked to.
 	 */
 	public void loadCores(List<Gather> gatherers)
 			throws StorageException, IOException, ProcessException,

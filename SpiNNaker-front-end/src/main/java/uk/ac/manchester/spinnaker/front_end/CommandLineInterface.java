@@ -213,16 +213,16 @@ public final class CommandLineInterface {
 	 *            If {@code true}, only run the DSE for application vertices. If
 	 *            {@code false}, only run the DSE for system vertices. If
 	 *            {@code null}, run the DSE for all vertices.
+	 * @throws ExecutionException
+	 *             If there was a problem in the parallel queue.
 	 * @throws IOException
 	 *             If the communications fail.
+	 * @throws InterruptedException
+	 *             If the wait for everything to complete is interrupted.
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database is in an illegal state.
-	 * @throws ExecutionException
-	 *             If there was a problem in the parallel queue.
-	 * @throws InterruptedException
-	 *             If the wait for everything to complete is interrupted.
 	 * @throws URISyntaxException
 	 *             If the proxy URI is provided but not valid.
 	 */
@@ -259,16 +259,16 @@ public final class CommandLineInterface {
 	 * @param reportFolder
 	 *            Directory containing reports. If {@link Optional#empty()}, no
 	 *            report will be written.
+	 * @throws ExecutionException
+	 *             If there was a problem in the parallel queue.
 	 * @throws IOException
 	 *             If the communications fail.
+	 * @throws InterruptedException
+	 *             If the wait for everything to complete is interrupted.
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database is in an illegal state.
-	 * @throws ExecutionException
-	 *             If there was a problem in the parallel queue.
-	 * @throws InterruptedException
-	 *             If the wait for everything to complete is interrupted.
 	 * @throws URISyntaxException
 	 *             If a proxy URI is provided but invalid.
 	 */

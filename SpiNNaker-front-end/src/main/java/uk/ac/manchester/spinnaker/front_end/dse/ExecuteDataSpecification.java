@@ -83,8 +83,6 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 *            The tasks to run.
 	 * @param mapper
 	 *            Gets how to implement a task.
-	 * @throws StorageException
-	 *             If the database can't be talked to.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws IllegalStateException
@@ -94,6 +92,8 @@ public abstract class ExecuteDataSpecification extends BoardLocalSupport
 	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database can't be talked to.
 	 */
 	protected final void processTasksInParallel(Collection<Ethernet> tasks,
 			Function<Ethernet, SimpleCallable> mapper) throws StorageException,

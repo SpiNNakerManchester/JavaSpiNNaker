@@ -49,11 +49,11 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *            The DSE database.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws SpinnmanException
 	 *             If there is an issue creating the transceiver.
 	 * @throws StorageException
@@ -79,8 +79,6 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 * @param system
 	 *            If {@code true}, loads system cores. If {@code false}, loads
 	 *            non-system (i.e., application) cores.
-	 * @throws StorageException
-	 *             If the database can't be talked to.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws IllegalStateException
@@ -90,6 +88,8 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws StorageException
+	 *             If the database can't be talked to.
 	 */
 	public void loadCores(boolean system)
 			throws StorageException, IOException, ProcessException,
