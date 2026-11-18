@@ -55,12 +55,12 @@ public abstract class BackgroundSupport {
 		 *         {@link Response} and not a {@link Throwable}, it will be
 		 *         returned as the entity that populates a {@code 200 OK} (and
 		 *         so must be convertible to JSON).
-		 * @throws RequestFailedException
-		 *             If anything goes wrong. This is the <em>expected</em>
-		 *             exception type; it is <em>not</em> logged.
 		 * @throws Exception
 		 *             If anything goes wrong. This is reported as an
 		 *             <em>unexpected</em> exception and logged.
+		 * @throws RequestFailedException
+		 *             If anything goes wrong. This is the <em>expected</em>
+		 *             exception type; it is <em>not</em> logged.
 		 */
 		Object respond() throws RequestFailedException, Exception;
 	}

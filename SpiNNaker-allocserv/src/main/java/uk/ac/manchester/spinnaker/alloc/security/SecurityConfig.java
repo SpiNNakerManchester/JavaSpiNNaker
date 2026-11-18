@@ -151,10 +151,10 @@ public class SecurityConfig {
 	 * @param props
 	 *            Configuration properties
 	 * @return the custom trust manager, <em>already injected</em>
-	 * @throws IOException
-	 *             If the trust store can't be loaded because of I/O
 	 * @throws GeneralSecurityException
 	 *             If there is a security problem with the trust store
+	 * @throws IOException
+	 *             If the trust store can't be loaded because of I/O
 	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
 	 *      Overflow</a>
 	 */
