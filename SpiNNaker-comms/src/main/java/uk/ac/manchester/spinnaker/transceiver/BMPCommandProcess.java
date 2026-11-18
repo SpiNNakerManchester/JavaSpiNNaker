@@ -119,10 +119,10 @@ class BMPCommandProcess {
 	 * @return The successful response to the request.
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws ProcessException
-	 *             If the other side responds with a failure code
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
 	 */
 	<T extends BMPResponse> T execute(BMPRequest<T> request)
 			throws IOException, ProcessException, InterruptedException {
@@ -152,10 +152,10 @@ class BMPCommandProcess {
 	 * @return The successful response to the request.
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws ProcessException
-	 *             If the other side responds with a failure code
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
 	 */
 	<T, R extends BMPRequest.PayloadedResponse<T>> T call(BMPRequest<R> request)
 			throws IOException, ProcessException, InterruptedException {
@@ -180,10 +180,10 @@ class BMPCommandProcess {
 	 * @return The successful response to the request.
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws ProcessException
-	 *             If the other side responds with a failure code
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
 	 */
 	<T extends BMPResponse> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException, InterruptedException {
@@ -209,10 +209,10 @@ class BMPCommandProcess {
 	 * @return The list of successful responses.
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws ProcessException
-	 *             If the other side responds with a failure code
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
 	 */
 	<T extends BMPResponse> List<T> execute(
 			Iterable<? extends BMPRequest<T>> requests)
@@ -249,10 +249,10 @@ class BMPCommandProcess {
 	 * @return The list of successful responses.
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws ProcessException
-	 *             If the other side responds with a failure code
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
 	 */
 	<T extends BMPResponse> List<T> execute(
 			Iterable<? extends BMPRequest<T>> requests, int retries)

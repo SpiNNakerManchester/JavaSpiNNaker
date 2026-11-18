@@ -112,10 +112,10 @@ public class FastDataIn implements AutoCloseable {
 	 * @param iptag The IPTag to use for communications.
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming of the tag.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming of the tag.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")

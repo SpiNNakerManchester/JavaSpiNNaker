@@ -193,10 +193,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job-creation request builder.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, Integer timeout, CreateJob builder)
@@ -213,10 +213,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job-creation request builder.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, CreateJob builder)
@@ -231,10 +231,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job-creation request builder.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	public SpallocJob(CreateJob builder)
@@ -252,12 +252,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job-creation request builder.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
 	 * @throws IllegalArgumentException
 	 *             If a bad builder is given.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	public SpallocJob(SpallocClient client, CreateJob builder)
 			throws IOException, SpallocServerException, InterruptedException {
@@ -293,10 +293,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job-creation request builder.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	public SpallocJob(SpallocClient client, Integer timeout, CreateJob builder)
 			throws IOException, SpallocServerException, InterruptedException {
@@ -328,12 +328,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job-creation request builder.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws InterruptedException
-	 *             If interrupted while waiting.
 	 * @throws IllegalArgumentException
 	 *             If a bad builder is given.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -362,12 +362,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job ID
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws JobDestroyedException
-	 *             If the job doesn't exist (any more).
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	public SpallocJob(int id) throws IOException, SpallocServerException,
@@ -384,12 +384,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job ID
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws JobDestroyedException
-	 *             If the job doesn't exist (any more).
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, int id)
@@ -409,12 +409,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job ID
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws JobDestroyedException
-	 *             If the job doesn't exist (any more).
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	public SpallocJob(String hostname, Integer timeout, int id)
@@ -452,12 +452,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *            The job ID
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws JobDestroyedException
-	 *             If the job doesn't exist (any more).
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws JobDestroyedException
+	 *             If the job doesn't exist (any more).
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -568,12 +568,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws SpallocServerException
-	 *             If the spalloc server rejects the operation request.
-	 * @throws InterruptedException
-	 *             If interrupted while waiting.
 	 * @throws IllegalStateException
 	 *             If the server is not compatible with this client.
+	 * @throws InterruptedException
+	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the spalloc server rejects the operation request.
 	 */
 	protected void assertCompatibleVersion()
 			throws IOException, SpallocServerException, InterruptedException {
@@ -796,12 +796,12 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @param finishTime
 	 *            when our timeout expires, or {@code null} for never
 	 * @return True if the state has changed, or false on timeout
-	 * @throws SpallocServerException
-	 *             If the server throws an exception.
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @throws SpallocServerException
+	 *             If the server throws an exception.
 	 */
 	private boolean doWaitForAChange(Long finishTime)
 			throws IOException, SpallocServerException, InterruptedException {

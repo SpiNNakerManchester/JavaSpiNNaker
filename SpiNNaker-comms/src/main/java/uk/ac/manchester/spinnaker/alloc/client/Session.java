@@ -145,10 +145,10 @@ interface Session {
 		 * Perform the action.
 		 *
 		 * @return The result of the action.
-		 * @throws IOException
-		 *             If network I/O fails.
 		 * @throws Exn
 		 *             If another failure happens.
+		 * @throws IOException
+		 *             If network I/O fails.
 		 */
 		@Override
 		T call() throws Exn, IOException;
@@ -164,10 +164,10 @@ interface Session {
 	 * @param action
 	 *            The action to be repeated if it fails due to session expiry.
 	 * @return The result of the action
-	 * @throws IOException
-	 *             If things go wrong.
 	 * @throws Exn
 	 *             If another kind of failure happens.
+	 * @throws IOException
+	 *             If things go wrong.
 	 */
 	<T, Exn extends Exception> T withRenewal(Action<T, Exn> action)
 			throws Exn, IOException;
@@ -188,10 +188,10 @@ interface Session {
 	 * @param url
 	 *            Where the websocket connects.
 	 * @return The connected websocket.
-	 * @throws InterruptedException
-	 *             If interrupted during connection
 	 * @throws IOException
 	 *             If there are network problems
+	 * @throws InterruptedException
+	 *             If interrupted during connection
 	 * @throws RuntimeException
 	 *             For various reasons
 	 */

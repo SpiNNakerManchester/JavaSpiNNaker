@@ -58,10 +58,10 @@ class GetCPUInfoProcess extends TxrxProcess {
 	 * @return The CPU information, in undetermined order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	MappableIterable<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException {

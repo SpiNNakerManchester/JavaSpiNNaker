@@ -55,10 +55,10 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 *            the fixed route entry
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException, InterruptedException {
@@ -76,10 +76,10 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 *            The ID of the application with which to associate the routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
 			AppID appID)
@@ -96,10 +96,10 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 * @return The route.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException, InterruptedException {
@@ -116,10 +116,10 @@ class FixedRouteControlProcess extends TxrxProcess {
 	 * @return The route.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
