@@ -75,17 +75,17 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *            The DSE Database.
 	 * @throws IOException
 	 *             If IO goes wrong.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws URISyntaxException
-	 *             If the proxy URI is provided but not valid.
-	 * @throws StorageException
-	 *             If there is an error reading the database.
-	 * @throws SpinnmanException
-	 *            If there is an error creating the transceiver.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 * @throws SpinnmanException
+	 *            If there is an error creating the transceiver.
+	 * @throws StorageException
+	 *             If there is an error reading the database.
+	 * @throws URISyntaxException
+	 *             If the proxy URI is provided but not valid.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -122,13 +122,13 @@ public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If the database can't be talked to.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void loadCores(List<Gather> gatherers)
 			throws StorageException, IOException, ProcessException,

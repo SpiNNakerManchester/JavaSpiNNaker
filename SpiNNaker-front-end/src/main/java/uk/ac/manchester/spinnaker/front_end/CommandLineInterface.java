@@ -308,14 +308,14 @@ public final class CommandLineInterface {
 	 * 			  The path to the directory where the iobuff would be written
 	 * @throws IOException
 	 *             If the communications fail.
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If interrupted (not expected).
-	 * @throws URISyntaxException
-	 *             If the proxy URI is invalid
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If there is an error reading the database
+	 * @throws URISyntaxException
+	 *             If the proxy URI is invalid
 	 */
 	// see https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/1218
 	@Command(name = "iobuf", description = IOBUF_DESC)
@@ -350,12 +350,12 @@ public final class CommandLineInterface {
 	 *            The path where the log should write.
 	 * @throws IOException
 	 *             If the communications fail
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             If the database is in an illegal state
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 * @throws URISyntaxException
 	 *             If the proxy URI is invalid
 	 */
@@ -388,13 +388,13 @@ public final class CommandLineInterface {
 	 *            The path where the log should write.
 	 * @throws IOException
 	 *             If the communications fail
+	 * @throws InterruptedException
+	 *             If things are interrupted while waiting for all the downloads
+	 *             to be done
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             If the database is in an illegal state
-	 * @throws InterruptedException
-	 *             If things are interrupted while waiting for all the downloads
-	 *             to be done
 	 * @throws URISyntaxException
 	 *             If the URI of the proxy is invalid
 	 */

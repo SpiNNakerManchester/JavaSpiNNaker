@@ -51,15 +51,15 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If the transceiver can't talk to its sockets.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
-	 * @throws URISyntaxException
-	 *             If the URI is not valid.
-	 * @throws StorageException
-	 *             If the database cannot be read.
-	 * @throws SpinnmanException
-	 *             If there is an issue creating the transceiver.
 	 * @throws IllegalStateException
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
+	 * @throws SpinnmanException
+	 *             If there is an issue creating the transceiver.
+	 * @throws StorageException
+	 *             If the database cannot be read.
+	 * @throws URISyntaxException
+	 *             If the URI is not valid.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -83,13 +83,13 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 	 *             If the database can't be talked to.
 	 * @throws IOException
 	 *             If the transceiver can't talk to its sockets.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 * @throws IllegalStateException
 	 *             If an unexpected exception occurs in any of the parallel
 	 *             tasks.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void loadCores(boolean system)
 			throws StorageException, IOException, ProcessException,
@@ -135,10 +135,10 @@ public class HostExecuteDataSpecification extends ExecuteDataSpecification {
 		 * @return How many bytes were actually written.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
-		 * @throws ProcessException
-		 *             If SCAMP rejects the request.
 		 * @throws InterruptedException
 		 *             If communications are interrupted.
+		 * @throws ProcessException
+		 *             If SCAMP rejects the request.
 		 */
 		protected int writeRegion(HasCoreLocation core, ByteBuffer content,
 				MemoryLocation baseAddress)

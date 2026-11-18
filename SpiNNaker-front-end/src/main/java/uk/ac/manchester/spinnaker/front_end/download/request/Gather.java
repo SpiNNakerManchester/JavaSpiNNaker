@@ -132,12 +132,12 @@ public class Gather implements HasCoreLocation {
 	 *
 	 * @param txrx
 	 *            spinnman instance
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	public void updateTransactionIdFromMachine(TransceiverInterface txrx)
 			throws IOException, ProcessException, InterruptedException {
