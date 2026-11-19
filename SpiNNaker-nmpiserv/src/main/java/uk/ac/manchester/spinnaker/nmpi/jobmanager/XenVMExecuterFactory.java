@@ -183,9 +183,9 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 		 * Get a virtual machine.
 		 *
 		 * @return a VM handle
-		 * @throws XmlRpcException
-		 *             something went wrong
 		 * @throws IOException
+		 *             something went wrong
+		 * @throws XmlRpcException
 		 *             something went wrong
 		 */
 		VM getVirtualMachine() throws XmlRpcException, IOException {
@@ -204,9 +204,9 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 		 * @param vm
 		 *            the VM that the block device is attached to.
 		 * @return the block device
-		 * @throws XmlRpcException
-		 *             something went wrong
 		 * @throws IOException
+		 *             something went wrong
+		 * @throws XmlRpcException
 		 *             something went wrong
 		 */
 		VBD getVirtualBlockDevice(final VM vm)
@@ -226,9 +226,9 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 		 * @param suffix
 		 *            The operational suffix
 		 * @return The label
-		 * @throws XmlRpcException
-		 *             something went wrong
 		 * @throws XenAPIException
+		 *             something went wrong
+		 * @throws XmlRpcException
 		 *             something went wrong
 		 */
 		String getLabel(final VDI vdi, final String suffix)
@@ -242,9 +242,9 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 		 * @param disk
 		 *            The block device hosting the image.
 		 * @return the disk image.
-		 * @throws XmlRpcException
-		 *             something went wrong
 		 * @throws XenAPIException
+		 *             something went wrong
+		 * @throws XmlRpcException
 		 *             something went wrong
 		 */
 		VDI getBaseVDI(final VBD disk) throws XmlRpcException, XenAPIException {
@@ -447,9 +447,9 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 		 *            The job manager.
 		 * @param baseUrl
 		 *            the service root URL.
-		 * @throws XmlRpcException
-		 *             something went wrong
 		 * @throws IOException
+		 *             something went wrong
+		 * @throws XmlRpcException
 		 *             something went wrong
 		 */
 		Executer(final JobManager jobManager, final URL baseUrl)
@@ -493,9 +493,9 @@ public class XenVMExecuterFactory implements JobExecuterFactory {
 		 *
 		 * @param conn
 		 *            The underlying connection to the Xen server.
-		 * @throws XmlRpcException
-		 *             something went wrong
 		 * @throws IOException
+		 *             something went wrong
+		 * @throws XmlRpcException
 		 *             something went wrong
 		 */
 		synchronized void createVm(final XenConnection conn)
