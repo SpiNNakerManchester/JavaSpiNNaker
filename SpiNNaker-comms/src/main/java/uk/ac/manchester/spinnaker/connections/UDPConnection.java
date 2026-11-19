@@ -718,6 +718,12 @@ public abstract class UDPConnection<T> implements Connection {
 				localAddr(), isClosed() ? "|" : "", remoteAddr());
 	}
 
+	/**
+	 * Mark this connection as being used.
+	 *
+	 * @throws ConcurrentModificationException
+	 *    If the connection is already being used.
+	 */
 	public synchronized void setInUse() {
 		if (inUse) {
 			throw new ConcurrentModificationException(
@@ -726,6 +732,11 @@ public abstract class UDPConnection<T> implements Connection {
 		this.inUse = true;
 	}
 
+	/**
+	 * Mark this connection as not being used.
+	 *
+	 * Multiple calls are allowed.
+	 */
 	public synchronized void setNotInUse() {
 		this.inUse = false;
 	}
