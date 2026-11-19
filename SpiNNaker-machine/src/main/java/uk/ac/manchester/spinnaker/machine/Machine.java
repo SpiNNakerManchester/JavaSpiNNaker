@@ -154,7 +154,7 @@ public class Machine implements MappableIterable<Chip> {
 
 	/**
 	 * Provides a machine without abnormal chips or links.
-	 * <p>
+	 *
 	 * This may be the original machine or it may be a shallow near-copy.
 	 * <p>
 	 * Once this method is run it is expected that the original {@link Machine}
@@ -162,9 +162,11 @@ public class Machine implements MappableIterable<Chip> {
 	 * possible. Changes made to the original {@link Machine} may or may not
 	 * effect the new {@link Machine}. This includes changes made to the chips,
 	 * their routers or their processors.
-	 * <p>
+	 *
+	 *
 	 * For what makes up an abnormal link see {@link #findAbnormalLinks()}.
-	 * <p>
+	 *
+	 *
 	 * For what makes up an abnormal chip see {@link #findAbnormalChips()}.
 	 *
 	 * @return A {@code Machine} (possibly the original one) without the
@@ -176,9 +178,9 @@ public class Machine implements MappableIterable<Chip> {
 
 	/**
 	 * Provides a machine without ignored chips or links.
-	 * <p>
+	 *
 	 * This may be the original machine or it may be a shallow near copy.
-	 * <p>
+	 *
 	 * Once this method is run it is expected that the original {@link Machine}
 	 * is no longer used. The original internal objects are reused whenever
 	 * possible. Changes made to the original {@link Machine} may or may not
