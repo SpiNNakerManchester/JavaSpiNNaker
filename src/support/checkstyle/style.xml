@@ -71,8 +71,8 @@ limitations under the License.
 		<module name="JavadocContentLocation"/>
 		<module name="JavadocEndCommentDelimiter"/>
 		<module name="JavadocLeadingAsteriskAlign" />
-		<!-- module name="JavadocLinkFirstOccurrence"/  We do use multiple links -->
-		<!-- module name="JavadocLinkWellKnownApi"/ We current do have these links -->
+		<!-- module name="JavadocLinkFirstOccurrence"/  Multiple link are fine -->
+		<!-- module name="JavadocLinkWellKnownApi"/ These links are fine -->
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
 			<property name="accessModifiers" value="public, protected" />
@@ -88,7 +88,7 @@ limitations under the License.
 		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
 		<module name="JavadocNoErrorInThrowsTag"/>
 		<!-- module name="JavadocPackage"/  In checker section -->
-		<!-- module name="JavadocParagraph"/ We currently do not have a new before a <p> tag -->
+		<!-- module name="JavadocParagraph"/ Not a style we use -->
 		<module name="JavadocParamOrder"/>
 		<!-- module name="JavadocRegexp"/ Currently no regex we want to avoid -->
 		<module name="JavadocSeeTagOrder"/>
@@ -98,7 +98,7 @@ limitations under the License.
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />
 		</module>
-		<!-- module name="JavadocUtilizingTrailingSpace"/ We use too much indentation -->
+		<!-- module name="JavadocUtilizingTrailingSpace"/ Giving false possitive. -->
 		<module name="JavadocVariable">
 			<property name="accessModifiers" value="package" />
 			<property name="ignoreNamePattern" value="log|logger" />
