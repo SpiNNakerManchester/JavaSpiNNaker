@@ -722,7 +722,7 @@ public abstract class UDPConnection<T> implements Connection {
 	 * Mark this connection as being used.
 	 *
 	 * @throws ConcurrentModificationException
-	 *    If the connection is already being used.
+	 *     If the connection is already being used.
 	 */
 	public synchronized void setInUse() {
 		if (inUse) {
