@@ -75,10 +75,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the core where the monitor is running.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void clearQueue(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
@@ -92,10 +92,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the cores where the monitors are running.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void clearQueue(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
@@ -112,10 +112,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the core where the monitor is running.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void resetCounters(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
@@ -129,10 +129,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the cores where the monitors are running.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void resetCounters(CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException {
@@ -157,10 +157,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            If nearest-neighbour should be set
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void setPacketTypes(CoreLocation monitorCore, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
@@ -184,10 +184,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            If nearest-neighbour should be set
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void setPacketTypes(CoreSubsets monitorCoreSubsets, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
@@ -210,10 +210,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            The exponent of the timeout value, between 0 and 15.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void setTimeout(CoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent)
@@ -233,10 +233,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            The exponent of the timeout value, between 0 and 15.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
 			int timeoutExponent)
@@ -259,10 +259,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            The exponent of the timeout value, between 0 and 15.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void setEmergencyTimeout(CoreLocation monitorCore, int timeoutMantissa,
 			int timeoutExponent)
@@ -282,10 +282,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            The exponent of the timeout value, between 0 and 15.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void setEmergencyTimeout(CoreSubsets monitorCoreSubsets,
 			int timeoutMantissa, int timeoutExponent)
@@ -304,10 +304,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the extra monitor core on the chip with the router.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void saveApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
@@ -322,10 +322,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the cores where the monitors are running.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void saveApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
@@ -343,10 +343,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the extra monitor core on the chip with the router.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void loadSystemRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
@@ -361,10 +361,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the extra monitor cores on the chips with the routers.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void loadSystemRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
@@ -382,10 +382,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the extra monitor core on the chip with the router.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void loadApplicationRouterTable(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
@@ -400,10 +400,10 @@ class RouterControlProcess extends TxrxProcess {
 	 *            the extra monitor cores on the chips with the routers.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void loadApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException, InterruptedException {
@@ -421,10 +421,10 @@ class RouterControlProcess extends TxrxProcess {
 	 * @return The reinjection status.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	ReinjectionStatus getReinjectionStatus(CoreLocation monitorCore)
 			throws IOException, ProcessException, InterruptedException {
@@ -439,10 +439,10 @@ class RouterControlProcess extends TxrxProcess {
 	 * @return The map from cores to their reinjection statuses.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCoreSubsets)
@@ -463,10 +463,10 @@ class RouterControlProcess extends TxrxProcess {
 	 * @return The diagnostics from the chip's router.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException, InterruptedException {

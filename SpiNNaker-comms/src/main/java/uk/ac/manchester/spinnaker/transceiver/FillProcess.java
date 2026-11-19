@@ -71,12 +71,12 @@ class FillProcess extends TxrxProcess {
 	 *            The type of data to fill with.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
 	 * @throws IllegalArgumentException
 	 *             If the size doesn't match the alignment of the data type.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void fillMemory(HasChipLocation chip, MemoryLocation baseAddress, int data,
 			int size, FillDataType dataType)

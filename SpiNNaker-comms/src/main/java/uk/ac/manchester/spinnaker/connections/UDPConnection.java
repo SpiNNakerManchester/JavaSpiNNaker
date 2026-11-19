@@ -362,14 +362,14 @@ public abstract class UDPConnection<T> implements Connection {
 	 * @param timeout
 	 *            The timeout in milliseconds
 	 * @return The data received, in a little-endian buffer
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
 	 * @throws EOFException
 	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
 	 */
 	public final ByteBuffer receive(int timeout)
 			throws SocketTimeoutException, IOException, InterruptedException {
@@ -388,12 +388,12 @@ public abstract class UDPConnection<T> implements Connection {
 	 * @param timeout
 	 *            The timeout in milliseconds
 	 * @return The data received, in a little-endian buffer
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
 	 */
 	@ForOverride
 	protected ByteBuffer doReceive(int timeout)
@@ -430,10 +430,10 @@ public abstract class UDPConnection<T> implements Connection {
 	 * @param timeout
 	 *            The timeout in milliseconds
 	 * @return The datagram packet received
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
 	 * @throws IOException
 	 *             If an error occurs receiving the data
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
 	 */
 	@ForOverride
 	protected UDPPacket doReceiveWithAddress(int timeout)
@@ -459,10 +459,10 @@ public abstract class UDPConnection<T> implements Connection {
 	 * @return the received message
 	 * @throws IOException
 	 *             If there is an error receiving the message
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker message is invalid
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 */
 	public T receiveMessage() throws IOException, InterruptedException {
 		return receiveMessage(0);
@@ -478,12 +478,12 @@ public abstract class UDPConnection<T> implements Connection {
 	 * @return the received message
 	 * @throws IOException
 	 *             If there is an error receiving the message
+	 * @throws IllegalArgumentException
+	 *             If one of the fields of the SpiNNaker message is invalid
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
 	 * @throws SocketTimeoutException
 	 *             If there is a timeout during receiving
-	 * @throws IllegalArgumentException
-	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
 	public abstract T receiveMessage(int timeout)
 			throws IOException, InterruptedException;

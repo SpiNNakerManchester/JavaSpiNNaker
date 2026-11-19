@@ -108,10 +108,10 @@ public final class RecordingRegion {
 	 *         per channel that the recording subsystem there knows about.
 	 * @throws IOException
 	 *             If the reading goes wrong
-	 * @throws ProcessException
-	 *             If the data in the read goes wrong
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If the data in the read goes wrong
 	 */
 	public static List<RecordingRegion> getRecordingRegionDescriptors(
 			TransceiverInterface txrx, Placement placement)

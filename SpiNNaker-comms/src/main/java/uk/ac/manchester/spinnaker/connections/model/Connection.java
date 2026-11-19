@@ -104,14 +104,14 @@ public interface Connection extends Closeable {
 	 * @param timeout
 	 *            The timeout in milliseconds, or {@code null} to wait forever
 	 * @return The data received, in a little-endian buffer
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
 	 * @throws EOFException
 	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
 	 */
 	ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException, InterruptedException;
@@ -124,12 +124,12 @@ public interface Connection extends Closeable {
 	 *            The timeout in milliseconds
 	 * @return The datagram packet received; caller is responsible for only
 	 *         accessing the valid part of the buffer.
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
 	 * @throws EOFException
 	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
 	 */
 	UDPPacket receiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException;

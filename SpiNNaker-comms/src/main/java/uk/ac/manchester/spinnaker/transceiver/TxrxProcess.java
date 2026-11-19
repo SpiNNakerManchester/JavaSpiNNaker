@@ -328,10 +328,10 @@ public class TxrxProcess {
 	 *
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws ProcessException
-	 *             an exception that wraps the original exception that occurred.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             an exception that wraps the original exception that occurred.
 	 */
 	protected final void finishBatch()
 			throws ProcessException, IOException, InterruptedException {
@@ -413,10 +413,10 @@ public class TxrxProcess {
 	 *            The request to send
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws ProcessException
-	 *             If the other side responds with a failure code
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
 	 */
 	public final void call(SCPRequest<EmptyResponse> request)
 					throws IOException, ProcessException, InterruptedException {
@@ -441,10 +441,10 @@ public class TxrxProcess {
 	 * @return The successful response to the request
 	 * @throws IOException
 	 *             If the communications fail
-	 * @throws ProcessException
-	 *             If the other side responds with a failure code
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
 	 */
 	public final <T,
 			R extends PayloadedResponse<T, ?>> T retrieve(SCPRequest<R> request)

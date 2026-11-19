@@ -86,10 +86,10 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *            the core where the IOBUF is.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void clearIOBUF(CoreLocation core)
 			throws IOException, ProcessException, InterruptedException {
@@ -103,10 +103,10 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *            the cores where the IOBUFs are.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void clearIOBUF(CoreSubsets coreSubsets)
 			throws IOException, ProcessException, InterruptedException {
@@ -131,10 +131,10 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *            the cores to update the information of.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	void updateRuntime(Integer runTimesteps, int currentTime, int syncTimesteps,
 			CoreSubsets coreSubsets)
@@ -184,10 +184,10 @@ class RuntimeControlProcess extends TxrxProcess {
 	 *         whatever order they are produced in.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	MappableIterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws ProcessException, IOException, InterruptedException {
