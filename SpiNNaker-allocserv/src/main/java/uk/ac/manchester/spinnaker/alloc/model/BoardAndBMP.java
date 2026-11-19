@@ -39,6 +39,11 @@ public class BoardAndBMP {
 		this.bmp = new BMPAndMachine(result);
 	}
 
+	/**
+	 * Make a new Board-and-BMP from the provided state.
+	 *
+	 * @param bs
+	 */
 	public BoardAndBMP(BoardState bs) {
 		this.boardId = bs.board;
 		this.bmp = new BMPAndMachine(bs);

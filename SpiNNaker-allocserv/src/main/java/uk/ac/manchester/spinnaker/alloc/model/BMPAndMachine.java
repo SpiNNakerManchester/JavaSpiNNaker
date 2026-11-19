@@ -39,6 +39,12 @@ public class BMPAndMachine {
 		this.bmpId = result.getInt("bmp_id");
 	}
 
+	/**
+	 * Construct a Board-and-BMP with this state.
+	 *
+	 * @param bs
+	 *
+	 */
 	public BMPAndMachine(BoardState bs) {
 		this.machineId = bs.machineId;
 		this.bmpId = bs.bmpId;
