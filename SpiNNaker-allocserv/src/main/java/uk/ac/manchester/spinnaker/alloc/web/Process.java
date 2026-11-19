@@ -31,6 +31,7 @@ public class Process {
 	 * Construct a Process based on the provided CPU info.
 	 *
 	 * @param info
+	 *    Information for CPU.
 	 */
 	public Process(CPUInfo info) {
 		this.info = info;
@@ -89,7 +90,7 @@ public class Process {
 	}
 
 	/**
-	 * {@return Name of the runtime error or empty if no error)
+	 * {@return Name of the runtime error or empty if no error}
 	 */
 	public String getRteName() {
 		if (!isRte()) {

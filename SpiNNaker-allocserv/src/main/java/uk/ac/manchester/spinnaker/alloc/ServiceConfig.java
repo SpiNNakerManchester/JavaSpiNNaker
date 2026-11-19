@@ -397,9 +397,9 @@ public class ServiceConfig extends Application {
 		 * Provides the base url.
 		 *
 		 * @param suffix
-		 *    End of the URL
+		 *     End of the URL
 		 * @return
-		 *    Servlet path + "/" + the suffix
+		 *     Servlet path + "/" + the suffix
 		 */
 		public String baseUrl(String suffix) {
 			var prefix = mvcServletPath;

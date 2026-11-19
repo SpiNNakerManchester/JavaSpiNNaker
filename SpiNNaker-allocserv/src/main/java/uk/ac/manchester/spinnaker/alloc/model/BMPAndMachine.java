@@ -43,6 +43,7 @@ public class BMPAndMachine {
 	 * Construct a Board-and-BMP with this state.
 	 *
 	 * @param bs
+	 *     State of the board.
 	 *
 	 */
 	public BMPAndMachine(BoardState bs) {
