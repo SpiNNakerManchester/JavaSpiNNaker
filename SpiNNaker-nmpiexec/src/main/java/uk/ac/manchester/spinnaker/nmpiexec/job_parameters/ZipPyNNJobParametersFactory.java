@@ -74,10 +74,10 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	 * @param workingDirectory
 	 *            The directory to extract into
 	 * @return True if extracted, False if failed
-	 * @throws IOException
-	 *             If there is a general error in extraction
 	 * @throws ArchiveException
 	 *             If the archive cannot be read for other reasons
+	 * @throws IOException
+	 *             If there is a general error in extraction
 	 */
 	private void extractAutodetectedArchive(final File output,
 			final File workingDirectory) throws IOException, ArchiveException {
@@ -96,10 +96,10 @@ class ZipPyNNJobParametersFactory extends JobParametersFactory {
 	 * @param setupScript
 	 *            The setup script
 	 * @return The constructed parameters
-	 * @throws IOException
-	 *             If there is an error with the file
 	 * @throws ArchiveException
 	 *            If there is an error with the archive
+	 * @throws IOException
+	 *             If there is an error with the file
 	 */
 	private JobParameters constructParameters(final Job job,
 			final File workingDirectory, final URL url,
