@@ -16,6 +16,7 @@
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
+import static org.apache.cxf.transports.http.configuration.ConnectionType.CLOSE;
 
 import java.util.List;
 
@@ -28,7 +29,10 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 
+import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.transport.http.HTTPConduit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
@@ -135,8 +139,12 @@ public interface NMPIQueue {
 	static NMPIQueue createClient(String url) {
 		var mapper = new ObjectMapper();
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, NMPIQueue.class,
+		var proxy = JAXRSClientFactory.create(url, NMPIQueue.class,
 				List.of(createProvider()));
+		ClientConfiguration config = WebClient.getConfig(proxy);
+		HTTPConduit conduit = config.getHttpConduit();
+		conduit.getClient().setConnection(CLOSE);
+		return proxy;
 	}
 
 	/**
