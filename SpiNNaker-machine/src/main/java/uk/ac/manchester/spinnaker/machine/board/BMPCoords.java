@@ -81,9 +81,7 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 	 * Create an instance from its serial form. This is the form produced by
 	 * {@link #toString()}. The serial form (where the numbers may vary) is:
 	 *
-	 * <pre>
-	 * [c:34,f:12]
-	 * </pre>
+	 * {@code [c:34,f:12]}
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.

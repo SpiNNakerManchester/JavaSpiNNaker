@@ -87,9 +87,7 @@ public final class PhysicalCoords implements Comparable<PhysicalCoords> {
 	 * Create an instance from its serial form. The serial form (where the
 	 * numbers may vary) is:
 	 *
-	 * <pre>
-	 * [c:34,f:12,b:23]
-	 * </pre>
+	 * {@code :[c:34,f:12,b:23]}
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.

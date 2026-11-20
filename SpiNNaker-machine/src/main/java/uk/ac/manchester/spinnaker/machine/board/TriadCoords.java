@@ -95,9 +95,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 * Create an instance from its serial form. The serial form (where the
 	 * numbers may vary) is:
 	 *
-	 * <pre>
-	 * [x:3,y:5,z:2]
-	 * </pre>
+	 * {@code [x:3,y:5,z:2]}
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.
