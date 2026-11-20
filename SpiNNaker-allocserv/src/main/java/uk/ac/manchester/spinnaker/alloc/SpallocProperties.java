@@ -1325,7 +1325,7 @@ public class SpallocProperties {
 	}
 
 	/**
-	 * The introspection properties
+	 * The introspection properties.
 	 */
 	public static class IntrospectionProperties {
 		/** The introspection URI. */
