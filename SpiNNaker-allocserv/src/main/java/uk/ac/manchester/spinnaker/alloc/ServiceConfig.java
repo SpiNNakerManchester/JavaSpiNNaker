@@ -392,7 +392,6 @@ public class ServiceConfig extends Application {
 			return prefix + suffix;
 		}
 
-
 		/**
 		 * Provides the base url.
 		 *
