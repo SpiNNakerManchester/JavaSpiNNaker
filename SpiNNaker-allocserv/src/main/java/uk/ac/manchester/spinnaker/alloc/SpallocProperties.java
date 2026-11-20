@@ -53,6 +53,9 @@ import uk.ac.manchester.spinnaker.utils.validation.TCPPort;
 @Validated
 public class SpallocProperties {
 
+	/**
+	 * The type of Introspection to be used.
+	 */
 	public enum IntrospectionType {
 		/** Use the standard Spring introspection. */
 		SPRING,
@@ -1321,6 +1324,9 @@ public class SpallocProperties {
 		}
 	}
 
+	/**
+	 * The introspection properties
+	 */
 	public static class IntrospectionProperties {
 		/** The introspection URI. */
 		private String uri;
