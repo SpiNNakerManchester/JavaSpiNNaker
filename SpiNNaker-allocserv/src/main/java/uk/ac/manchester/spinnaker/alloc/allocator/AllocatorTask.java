@@ -147,6 +147,14 @@ public class AllocatorTask extends DatabaseAwareBean
 	// instead set by setter in postconstruct of BMPController
 	private BMPController bmpController;
 
+	/**
+	 * Sets the BMP controller.
+	 *
+	 * Overides any previously set contrioller.
+	 *
+	 * @param bmpController
+	 *     Control to set.
+	 */
 	public void setBMPController(BMPController bmpController) {
 		this.bmpController = bmpController;
 	}
@@ -295,6 +303,9 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 	}
 
+	/**
+	 * Triggers a stop.
+	 */
 	public void emergencyStop() {
 		synchronized (futures) {
 			emergencyStop = true;
