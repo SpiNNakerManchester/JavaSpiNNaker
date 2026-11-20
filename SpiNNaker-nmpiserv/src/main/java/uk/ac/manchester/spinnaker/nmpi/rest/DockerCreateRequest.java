@@ -124,7 +124,7 @@ public class DockerCreateRequest {
 		}
 
 		/**
-		 * {return network ID to itself}
+		 * {@return network ID to itself}
 		 */
 		@JsonAnyGetter
 		public Map<String, Object> getDynamicProperties() {
