@@ -55,6 +55,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
+/**
+ * The protocol for talking to a particular extra monitor core
+ * on a particular board.
+ */
 public class FastDataIn implements AutoCloseable {
 
 	private static final Logger log = getLogger(FastDataIn.class);
