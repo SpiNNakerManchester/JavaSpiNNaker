@@ -36,12 +36,14 @@ public abstract class JAXRSClientCreator {
 	/**
 	 * Creates a JAX-RS client for the given interface and URL.
 	 *
+	 * @param <T>
+	 *            The type of the REST service interface.
 	 * @param url
 	 *            The base URL of the REST service.
 	 * @param clazz
 	 *            The interface class of the REST service.
-	 * @param <T>
-	 *            The type of the REST service interface.
+	 * @param provider
+	 * 		      The JSON provider to use for serialization/deserialization.
 	 * @return A client proxy for the REST service.
 	 */
 	public static <T> T createClient(String url, Class<T> clazz,
@@ -54,6 +56,18 @@ public abstract class JAXRSClientCreator {
 		return proxy;
 	}
 
+	/**
+	 * Creates a JAX-RS client for the given interface and URL, using a default
+	 * JSON provider with snake_case naming strategy.
+	 *
+	 * @param <T>
+	 *            The type of the REST service interface.
+	 * @param url
+	 *            The base URL of the REST service.
+	 * @param clazz
+	 *            The interface class of the REST service.
+	 * @return A client proxy for the REST service.
+	 */
 	public static <T> T createClient(String url, Class<T> clazz) {
 		return createClient(url, clazz, new JacksonJsonProvider(
 				new ObjectMapper().setPropertyNamingStrategy(SNAKE_CASE)));
