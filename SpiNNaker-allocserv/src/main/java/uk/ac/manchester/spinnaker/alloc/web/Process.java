@@ -31,7 +31,7 @@ public class Process {
 	 * Construct a Process based on the provided CPU info.
 	 *
 	 * @param info
-	 *    Information for CPU.
+	 *     Information for CPU.
 	 */
 	public Process(CPUInfo info) {
 		this.info = info;
