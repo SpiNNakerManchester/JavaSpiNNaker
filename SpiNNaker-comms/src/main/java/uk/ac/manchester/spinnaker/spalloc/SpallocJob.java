@@ -67,12 +67,12 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
  * In its simplest form, a {@link SpallocJob} can be used as a context manager
  * like so:
  *
- * <pre>
+ * {@snippet :
  * try (var j = new SpallocJob(new CreateJob(6).owner(me))) {
  *     myApplication.boot(j.getHostname(), j.getDimensions());
  *     myApplication.run(j.getHostname());
  * }
- * </pre>
+ * }
  *
  * In this example a six-board machine is requested and the
  * {@code try}-with-resources context is entered once the allocation has been
@@ -83,13 +83,13 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
  * For more fine-grained control, the same functionality is available via
  * various methods:
  *
- * <pre>
+ * {@snippet :
  * var j = new SpallocJob(new CreateJob(6).owner(me)));
  * j.waitUntilReady();
  * myApplication.boot(j.getHostname(), j.getDimensions());
  * myApplication.run(j.getHostname());
  * j.destroy();
- * </pre>
+ * }
  *
  * <b>Note:</b> <blockquote class="note"> More complex applications may wish to
  * log the following properties of their job to support later debugging efforts:

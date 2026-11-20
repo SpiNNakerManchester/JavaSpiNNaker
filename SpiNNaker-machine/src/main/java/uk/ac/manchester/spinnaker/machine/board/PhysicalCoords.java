@@ -37,15 +37,15 @@ import com.google.errorprone.annotations.Immutable;
  *
  * <h2>Serialisation Formats</h2>
  * Defaults to being serialised as a JSON object:
- * <pre>{"cabinet": 3, "frame": 2, "board": 1}</pre>
+ * {@code {"cabinet": 3, "frame": 2, "board": 1}}
  * and can be deserialized from that, or:
- * <pre>{"c": 3, "f": 2, "b": 1}</pre>
+ * {@code {"c": 3, "f": 2, "b": 1}}
  * It can also accept being deserialised from a JSON array, for a more compact
  * notation:
- * <pre>[3, 2, 1]</pre>
+ * {@code [3, 2, 1]}
  * Finally, it can also be deserialised from the string form created by the
  * {@link #toString()} method:
- * <pre>[c:3,f:2,b:1]</pre>
+ * {@code [c:3,f:2,b:1]}
  */
 @Immutable
 @JsonDeserialize(using = PhysicalCoords.Deserializer.class)
