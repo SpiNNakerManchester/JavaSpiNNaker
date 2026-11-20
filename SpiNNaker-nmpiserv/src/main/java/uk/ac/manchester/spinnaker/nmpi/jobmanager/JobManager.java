@@ -462,6 +462,11 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 			final int waitTime) {
 		final var machines = getMachineForJob(id);
 
+		// If there are no machines allocated, return false
+		if (isNull(machines) || machines.isEmpty()) {
+			return new JobMachineAllocated(false);
+		}
+
 		// Return false if any machine is gone
 		if (!machines.stream().allMatch(this::isMachineAvailable)) {
 			return new JobMachineAllocated(false);
