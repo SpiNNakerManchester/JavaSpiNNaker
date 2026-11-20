@@ -15,10 +15,8 @@
  */
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
-import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.util.List;
 import java.util.Map;
 
 import jakarta.ws.rs.Consumes;
@@ -27,12 +25,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-
 import uk.ac.manchester.spinnaker.nmpi.model.Icinga2CheckResult;
+import uk.ac.manchester.spinnaker.nmpi.rest.utils.JAXRSClientCreator;
 
 /**
  * Interface to the Icinga2 API for status monitoring.
@@ -63,9 +57,6 @@ public interface Icinga2 {
 	 * @return A proxy of the API.
 	 */
 	static Icinga2 createClient(String url) {
-		var mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, Icinga2.class,
-				List.of(new JacksonJsonProvider()));
+		return JAXRSClientCreator.createClient(url, Icinga2.class);
 	}
 }

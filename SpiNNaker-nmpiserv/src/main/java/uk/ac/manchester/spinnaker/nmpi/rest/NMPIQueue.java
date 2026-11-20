@@ -15,9 +15,6 @@
  */
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
-import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
-import static org.apache.cxf.transports.http.configuration.ConnectionType.CLOSE;
-
 import java.util.List;
 
 import jakarta.ws.rs.Consumes;
@@ -29,12 +26,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 
-import org.apache.cxf.jaxrs.client.ClientConfiguration;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.transport.http.HTTPConduit;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import uk.ac.manchester.spinnaker.nmpi.model.QueueEmpty;
@@ -42,6 +33,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.QueueJob;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueJobCompat;
 import uk.ac.manchester.spinnaker.nmpi.model.QueueNextResponse;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.CustomJacksonJsonProvider;
+import uk.ac.manchester.spinnaker.nmpi.rest.utils.JAXRSClientCreator;
 import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
 
 /**
@@ -137,14 +129,8 @@ public interface NMPIQueue {
 	 * @return A proxy of the API.
 	 */
 	static NMPIQueue createClient(String url) {
-		var mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		var proxy = JAXRSClientFactory.create(url, NMPIQueue.class,
-				List.of(createProvider()));
-		ClientConfiguration config = WebClient.getConfig(proxy);
-		HTTPConduit conduit = config.getHttpConduit();
-		conduit.getClient().setConnection(CLOSE);
-		return proxy;
+		return JAXRSClientCreator.createClient(
+				url, NMPIQueue.class, createProvider());
 	}
 
 	/**
