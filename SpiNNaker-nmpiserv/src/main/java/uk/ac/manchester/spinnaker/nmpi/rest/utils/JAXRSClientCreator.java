@@ -47,7 +47,7 @@ public abstract class JAXRSClientCreator {
 	public static <T> T createClient(String url, Class<T> clazz,
 			JacksonJsonProvider provider) {
 		var proxy = JAXRSClientFactory.create(url, clazz,
-				List.of(), true);
+				List.of(provider), true);
 		ClientConfiguration config = WebClient.getConfig(proxy);
 		HTTPConduit conduit = config.getHttpConduit();
 		conduit.getClient().setConnection(CLOSE);
