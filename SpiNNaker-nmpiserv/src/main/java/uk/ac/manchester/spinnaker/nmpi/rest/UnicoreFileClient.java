@@ -15,10 +15,7 @@
  */
 package uk.ac.manchester.spinnaker.nmpi.rest;
 
-import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
-
 import java.io.InputStream;
-import java.util.List;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.HeaderParam;
@@ -26,11 +23,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.WebApplicationException;
-
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import uk.ac.manchester.spinnaker.nmpi.rest.utils.JAXRSClientCreator;
 
 /**
  * An interface to the UNICORE storage REST API.
@@ -68,9 +61,6 @@ public interface UnicoreFileClient {
 	 * @return A proxy of the API.
 	 */
 	static UnicoreFileClient createClient(String url) {
-		var mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, UnicoreFileClient.class,
-				List.of(new JacksonJsonProvider()));
+		return JAXRSClientCreator.createClient(url, UnicoreFileClient.class);
 	}
 }
