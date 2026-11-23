@@ -113,16 +113,16 @@ class BoardWorker {
 	 *
 	 * @param xyp
 	 *            The coordinates of the core to malloc on.
-	 * @throws IOException
-	 *             If anything goes wrong with I/O.
-	 * @throws ProcessException
-	 *             If SCAMP rejects the request.
 	 * @throws DataSpecificationException
 	 *             If the instructions to build the data are wrong.
-	 * @throws StorageException
-	 *             If the database access fails.
+	 * @throws IOException
+	 *             If anything goes wrong with I/O.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SCAMP rejects the request.
+	 * @throws StorageException
+	 *             If the database access fails.
 	 */
 	protected void mallocCore(CoreLocation xyp) throws
 			IOException, ProcessException, StorageException,
@@ -153,16 +153,16 @@ class BoardWorker {
 	 *            the coordinates of the core to load.
 	 * @param regionsToWrite
 	 *            a list to add the regions that need to be written to.
-	 * @throws IOException
-	 *             If anything goes wrong with I/O.
-	 * @throws ProcessException
-	 *             If SCAMP rejects the request.
 	 * @throws DataSpecificationException
 	 *             If the instructions to build the data are wrong.
-	 * @throws StorageException
-	 *             If the database access fails.
+	 * @throws IOException
+	 *             If anything goes wrong with I/O.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SCAMP rejects the request.
+	 * @throws StorageException
+	 *             If the database access fails.
 	 */
 	protected void loadCoreTable(CoreLocation xyp,
 			List<RegionInfo> regionsToWrite)

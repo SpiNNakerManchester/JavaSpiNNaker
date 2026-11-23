@@ -242,29 +242,29 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new query. Usage pattern:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT)) {
 		 *     for (var value : q.call(mapper, argument1, argument2)) {
 		 *         // Do something with the mapped row
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT)) {
 		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT)) {
 		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 *
 		 * @param sql
 		 *            The SQL of the query.
@@ -280,29 +280,29 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new query. Usage pattern:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT, false)) {
 		 *     for (var value : q.call(mapper, argument1, argument2)) {
 		 *         // Do something with the mapped row
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT, false)) {
 		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT, false)) {
 		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 *
 		 * @param sql
 		 *            The SQL of the query.
@@ -320,29 +320,29 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new query.
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(sqlSelectResource)) {
 		 *     for (var value : q.call(mapper, argument1, argument2)) {
 		 *         // Do something with the mapped row
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(sqlSelectResource)) {
 		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(sqlSelectResource)) {
 		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 *
 		 * @param sqlResource
 		 *            Reference to the SQL of the query.
@@ -358,29 +358,29 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new query.
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(sqlSelectResource, false)) {
 		 *     for (var value : q.call(mapper, argument1, argument2)) {
 		 *         // Do something with the mapped row
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(sqlSelectResource, false)) {
 		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(sqlSelectResource, false)) {
 		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 *
 		 * @param sqlResource
 		 *            Reference to the SQL of the query.
@@ -399,29 +399,29 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new query. Usage pattern:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(new SQL(SQL_SELECT))) {
 		 *     for (var value : q.call(mapper, argument1, argument2)) {
 		 *         // Do something with the mapped row
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(new SQL(SQL_SELECT))) {
 		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(new SQL(SQL_SELECT))) {
 		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 *
 		 * @param sql
 		 *            The SQL of the query.
@@ -437,29 +437,29 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new query. Usage pattern:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT, false)) {
 		 *     for (var value : q.call(mapper, argument1, argument2)) {
 		 *         // Do something with the mapped row
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT, false)) {
 		 *     q.call(mapper, argument1, argument2).forEach(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var q = conn.query(SQL_SELECT, false)) {
 		 *     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
 		 *         // Do something with the mapped row
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 *
 		 * @param sql
 		 *            The SQL of the query.
@@ -477,27 +477,26 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new update. Usage pattern:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(SQL_UPDATE)) {
 		 *     int numRows = u.call(argument1, argument2);
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(SQL_INSERT)) {
 		 *     for (var key : u.keys(argument1, argument2)) {
 		 *         // Do something with the key
 		 *     }
 		 * }
-		 * </pre>
-		 * or even:
-		 * <pre>
+		 * }
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(SQL_INSERT)) {
 		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
 		 *         // Do something with the key
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * <p>
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
 		 * you should use a {@link Query} with the {@code lockType} set to
@@ -518,27 +517,27 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new update.
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(sqlUpdateResource)) {
 		 *     int numRows = u.call(argument1, argument2);
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(sqlInsertResource)) {
 		 *     for (var key : u.keys(argument1, argument2)) {
 		 *         // Do something with the key
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or even:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(sqlInsertResource)) {
 		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
 		 *         // Do something with the key
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * <p>
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
 		 * you should use a {@link Query} with the {@code lockType} set to
@@ -559,27 +558,27 @@ public interface DatabaseAPI {
 		// @formatter:off
 		/**
 		 * Create a new update. Usage pattern:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(new SQL(SQL_UPDATE))) {
 		 *     int numRows = u.call(argument1, argument2);
 		 * }
-		 * </pre>
+		 * }
 		 * or:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(new SQL(SQL_INSERT))) {
 		 *     for (var key : u.keys(argument1, argument2)) {
 		 *         // Do something with the key
 		 *     }
 		 * }
-		 * </pre>
+		 * }
 		 * or even:
-		 * <pre>
+		 * {@snippet lang="java" :
 		 * try (var u = conn.update(new SQL(SQL_INSERT))) {
 		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
 		 *         // Do something with the key
 		 *     });
 		 * }
-		 * </pre>
+		 * }
 		 * <p>
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
 		 * you should use a {@link Query} with the {@code lockType} set to

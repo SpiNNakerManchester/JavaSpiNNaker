@@ -55,7 +55,7 @@ public interface SpiNNakerAllocatorApp {
 	/**
 	 * Create a proposed description of the service. From the wiki:
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * # Send the creation request
 	 * curl -X POST OIDC_CLIENT_CREATE_URL \
 	 *  -H "Authorization: Bearer ${clb_dev_token}" \
@@ -84,7 +84,7 @@ public interface SpiNNakerAllocatorApp {
 	 *
 	 * # Pretty print the JSON response
 	 * json_pp;
-	 * </pre>
+	 * }
 	 *
 	 * @param clientId
 	 *            The client ID

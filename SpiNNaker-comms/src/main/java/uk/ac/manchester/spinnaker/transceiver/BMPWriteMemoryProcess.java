@@ -70,10 +70,10 @@ class BMPWriteMemoryProcess extends BMPCommandProcess {
 	 *            does so. The contents of the buffer will not be modified.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data)
@@ -103,10 +103,10 @@ class BMPWriteMemoryProcess extends BMPCommandProcess {
 	 *            How many bytes should be copied from the stream?
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(BMPBoard board, MemoryLocation baseAddress,
 			InputStream data, int bytesToWrite)

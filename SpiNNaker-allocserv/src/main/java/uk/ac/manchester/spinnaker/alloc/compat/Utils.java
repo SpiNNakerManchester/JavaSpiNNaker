@@ -57,12 +57,12 @@ abstract class Utils {
 		/**
 		 * How to wait for an event and send a notification about it.
 		 *
-		 * @throws InterruptedException
-		 *             If the wait is interrupted.
 		 * @throws DataAccessException
 		 *             If database access fails.
 		 * @throws IOException
 		 *             If network access fails.
+		 * @throws InterruptedException
+		 *             If the wait is interrupted.
 		 */
 		void waitAndNotify()
 				throws InterruptedException, DataAccessException, IOException;

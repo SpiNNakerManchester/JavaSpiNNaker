@@ -75,10 +75,10 @@ final class GatherDownloadConnection implements AutoCloseable {
 	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -104,10 +104,10 @@ final class GatherDownloadConnection implements AutoCloseable {
 	 * @return The next transaction ID to use.
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
 	 */
 	public int getNextTransactionId(HasCoreLocation gatherCore)
 			throws ProcessException, IOException, InterruptedException {

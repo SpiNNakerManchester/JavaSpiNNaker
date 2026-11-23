@@ -72,10 +72,10 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 	 *            <i>limit</i> (exclusive)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			ByteBuffer data)
@@ -110,10 +110,10 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 	 *            problems.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
@@ -150,10 +150,10 @@ class WriteMemoryFloodProcess extends TxrxProcess {
 	 *            The data in a file, which will be fully transferred.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or access to the file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			File dataFile)

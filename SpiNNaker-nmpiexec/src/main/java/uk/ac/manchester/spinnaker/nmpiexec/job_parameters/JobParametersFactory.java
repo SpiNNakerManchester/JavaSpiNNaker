@@ -48,10 +48,10 @@ public abstract class JobParametersFactory {
 	 * @param setupScript
 	 *            The setup script to run
 	 * @return A job description to be executed
-	 * @throws UnsupportedJobException
-	 *             If the factory does not support the job
 	 * @throws JobParametersFactoryException
 	 *             If there was an error getting the parameters
+	 * @throws UnsupportedJobException
+	 *             If the factory does not support the job
 	 */
 	public abstract JobParameters getJobParameters(Job job,
 			File workingDirectory, String setupScript)

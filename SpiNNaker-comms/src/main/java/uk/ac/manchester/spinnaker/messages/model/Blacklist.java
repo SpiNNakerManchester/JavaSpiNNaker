@@ -321,10 +321,10 @@ public final class Blacklist implements Serializable {
 	 *
 	 * @param line
 	 *            The line's contents.
-	 * @throws IllegalArgumentException
-	 *             On most parse errors.
 	 * @throws ArrayIndexOutOfBoundsException
 	 *             On a bad direction.
+	 * @throws IllegalArgumentException
+	 *             On most parse errors.
 	 */
 	private void parseLine(String line) {
 		var m = CHIP_PATTERN.matcher(line);
@@ -548,10 +548,10 @@ public final class Blacklist implements Serializable {
 	 *
 	 * @param in
 	 *            Where to read from.
-	 * @throws IOException
-	 *             If input fails.
 	 * @throws ClassNotFoundException
 	 *             if the class of a serialized object could not be found.
+	 * @throws IOException
+	 *             If input fails.
 	 * @see ObjectInputStream#defaultReadObject()
 	 */
 	private void readObject(ObjectInputStream in)
