@@ -958,53 +958,54 @@
 <a class="jxr_linenumber" name="L950" href="#L950">950</a> 		<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L951" href="#L951">951</a> <em class="jxr_javadoccomment">		 * Constructs a timeout exception recording the request</em>
 <a class="jxr_linenumber" name="L952" href="#L952">952</a> <em class="jxr_javadoccomment">		 *     and how long it was tried.</em>
-<a class="jxr_linenumber" name="L953" href="#L953">953</a> <em class="jxr_javadoccomment">		 * @param req</em>
-<a class="jxr_linenumber" name="L954" href="#L954">954</a> <em class="jxr_javadoccomment">		 *            The request that timed out.</em>
-<a class="jxr_linenumber" name="L955" href="#L955">955</a> <em class="jxr_javadoccomment">		 * @param timeout</em>
-<a class="jxr_linenumber" name="L956" href="#L956">956</a> <em class="jxr_javadoccomment">		 *            The length of timeout, in milliseconds.</em>
-<a class="jxr_linenumber" name="L957" href="#L957">957</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L958" href="#L958">958</a> 		SendTimedOutException(Req req, <strong class="jxr_keyword">int</strong> timeout, <strong class="jxr_keyword">int</strong> seqNum) {
-<a class="jxr_linenumber" name="L959" href="#L959">959</a> 			<strong class="jxr_keyword">super</strong>(format(
-<a class="jxr_linenumber" name="L960" href="#L960">960</a> 					<span class="jxr_string">"Operation %s timed out after %f seconds with seq num %d"</span>,
-<a class="jxr_linenumber" name="L961" href="#L961">961</a> 					req.getCommand(), timeout / (<strong class="jxr_keyword">double</strong>) MSEC_PER_SEC, seqNum));
-<a class="jxr_linenumber" name="L962" href="#L962">962</a> 		}
-<a class="jxr_linenumber" name="L963" href="#L963">963</a> 	}
-<a class="jxr_linenumber" name="L964" href="#L964">964</a> 
-<a class="jxr_linenumber" name="L965" href="#L965">965</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L966" href="#L966">966</a> <em class="jxr_javadoccomment">	 * Indicates that a request could not be sent.</em>
-<a class="jxr_linenumber" name="L967" href="#L967">967</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L968" href="#L968">968</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> SendFailedException <strong class="jxr_keyword">extends</strong> IOException {
-<a class="jxr_linenumber" name="L969" href="#L969">969</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = -5555562816486761027L;
-<a class="jxr_linenumber" name="L970" href="#L970">970</a> 
-<a class="jxr_linenumber" name="L971" href="#L971">971</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L972" href="#L972">972</a> <em class="jxr_javadoccomment">		 * Constructs a fail to send exception recording the request</em>
-<a class="jxr_linenumber" name="L973" href="#L973">973</a> <em class="jxr_javadoccomment">		 *     and how many times it was tried.</em>
-<a class="jxr_linenumber" name="L974" href="#L974">974</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">		 * @param req</em>
-<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">		 *            The request that timed out.</em>
-<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">		 * @param numRetries</em>
-<a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">		 *            How many attempts to send it were made.</em>
-<a class="jxr_linenumber" name="L979" href="#L979">979</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L980" href="#L980">980</a> 		SendFailedException(Req req, <strong class="jxr_keyword">int</strong> numRetries) {
-<a class="jxr_linenumber" name="L981" href="#L981">981</a> 			<strong class="jxr_keyword">super</strong>(format(
-<a class="jxr_linenumber" name="L982" href="#L982">982</a> 					<span class="jxr_string">"Errors sending request %s to %s over %d retries: %s"</span>,
-<a class="jxr_linenumber" name="L983" href="#L983">983</a> 					req.getCommand(), req.getDestination(),
-<a class="jxr_linenumber" name="L984" href="#L984">984</a> 					numRetries, req.getRetryReasons()));
-<a class="jxr_linenumber" name="L985" href="#L985">985</a> 		}
-<a class="jxr_linenumber" name="L986" href="#L986">986</a> 	}
-<a class="jxr_linenumber" name="L987" href="#L987">987</a> 
-<a class="jxr_linenumber" name="L988" href="#L988">988</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L989" href="#L989">989</a> <em class="jxr_javadoccomment">	 * There's a duplicate sequence number! This really shouldn't happen.</em>
-<a class="jxr_linenumber" name="L990" href="#L990">990</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L991" href="#L991">991</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> DuplicateSequenceNumberException
-<a class="jxr_linenumber" name="L992" href="#L992">992</a> 			<strong class="jxr_keyword">extends</strong> IllegalThreadStateException {
-<a class="jxr_linenumber" name="L993" href="#L993">993</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = -4033792283948201730L;
-<a class="jxr_linenumber" name="L994" href="#L994">994</a> 
-<a class="jxr_linenumber" name="L995" href="#L995">995</a> 		DuplicateSequenceNumberException() {
-<a class="jxr_linenumber" name="L996" href="#L996">996</a> 			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
-<a class="jxr_linenumber" name="L997" href="#L997">997</a> 		}
-<a class="jxr_linenumber" name="L998" href="#L998">998</a> 	}
-<a class="jxr_linenumber" name="L999" href="#L999">999</a> }
+<a class="jxr_linenumber" name="L953" href="#L953">953</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L954" href="#L954">954</a> <em class="jxr_javadoccomment">		 * @param req</em>
+<a class="jxr_linenumber" name="L955" href="#L955">955</a> <em class="jxr_javadoccomment">		 *            The request that timed out.</em>
+<a class="jxr_linenumber" name="L956" href="#L956">956</a> <em class="jxr_javadoccomment">		 * @param timeout</em>
+<a class="jxr_linenumber" name="L957" href="#L957">957</a> <em class="jxr_javadoccomment">		 *            The length of timeout, in milliseconds.</em>
+<a class="jxr_linenumber" name="L958" href="#L958">958</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L959" href="#L959">959</a> 		SendTimedOutException(Req req, <strong class="jxr_keyword">int</strong> timeout, <strong class="jxr_keyword">int</strong> seqNum) {
+<a class="jxr_linenumber" name="L960" href="#L960">960</a> 			<strong class="jxr_keyword">super</strong>(format(
+<a class="jxr_linenumber" name="L961" href="#L961">961</a> 					<span class="jxr_string">"Operation %s timed out after %f seconds with seq num %d"</span>,
+<a class="jxr_linenumber" name="L962" href="#L962">962</a> 					req.getCommand(), timeout / (<strong class="jxr_keyword">double</strong>) MSEC_PER_SEC, seqNum));
+<a class="jxr_linenumber" name="L963" href="#L963">963</a> 		}
+<a class="jxr_linenumber" name="L964" href="#L964">964</a> 	}
+<a class="jxr_linenumber" name="L965" href="#L965">965</a> 
+<a class="jxr_linenumber" name="L966" href="#L966">966</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L967" href="#L967">967</a> <em class="jxr_javadoccomment">	 * Indicates that a request could not be sent.</em>
+<a class="jxr_linenumber" name="L968" href="#L968">968</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L969" href="#L969">969</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> SendFailedException <strong class="jxr_keyword">extends</strong> IOException {
+<a class="jxr_linenumber" name="L970" href="#L970">970</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = -5555562816486761027L;
+<a class="jxr_linenumber" name="L971" href="#L971">971</a> 
+<a class="jxr_linenumber" name="L972" href="#L972">972</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L973" href="#L973">973</a> <em class="jxr_javadoccomment">		 * Constructs a fail to send exception recording the request</em>
+<a class="jxr_linenumber" name="L974" href="#L974">974</a> <em class="jxr_javadoccomment">		 *     and how many times it was tried.</em>
+<a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">		 * @param req</em>
+<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">		 *            The request that timed out.</em>
+<a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">		 * @param numRetries</em>
+<a class="jxr_linenumber" name="L979" href="#L979">979</a> <em class="jxr_javadoccomment">		 *            How many attempts to send it were made.</em>
+<a class="jxr_linenumber" name="L980" href="#L980">980</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L981" href="#L981">981</a> 		SendFailedException(Req req, <strong class="jxr_keyword">int</strong> numRetries) {
+<a class="jxr_linenumber" name="L982" href="#L982">982</a> 			<strong class="jxr_keyword">super</strong>(format(
+<a class="jxr_linenumber" name="L983" href="#L983">983</a> 					<span class="jxr_string">"Errors sending request %s to %s over %d retries: %s"</span>,
+<a class="jxr_linenumber" name="L984" href="#L984">984</a> 					req.getCommand(), req.getDestination(),
+<a class="jxr_linenumber" name="L985" href="#L985">985</a> 					numRetries, req.getRetryReasons()));
+<a class="jxr_linenumber" name="L986" href="#L986">986</a> 		}
+<a class="jxr_linenumber" name="L987" href="#L987">987</a> 	}
+<a class="jxr_linenumber" name="L988" href="#L988">988</a> 
+<a class="jxr_linenumber" name="L989" href="#L989">989</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L990" href="#L990">990</a> <em class="jxr_javadoccomment">	 * There's a duplicate sequence number! This really shouldn't happen.</em>
+<a class="jxr_linenumber" name="L991" href="#L991">991</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L992" href="#L992">992</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> DuplicateSequenceNumberException
+<a class="jxr_linenumber" name="L993" href="#L993">993</a> 			<strong class="jxr_keyword">extends</strong> IllegalThreadStateException {
+<a class="jxr_linenumber" name="L994" href="#L994">994</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = -4033792283948201730L;
+<a class="jxr_linenumber" name="L995" href="#L995">995</a> 
+<a class="jxr_linenumber" name="L996" href="#L996">996</a> 		DuplicateSequenceNumberException() {
+<a class="jxr_linenumber" name="L997" href="#L997">997</a> 			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
+<a class="jxr_linenumber" name="L998" href="#L998">998</a> 		}
+<a class="jxr_linenumber" name="L999" href="#L999">999</a> 	}
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
