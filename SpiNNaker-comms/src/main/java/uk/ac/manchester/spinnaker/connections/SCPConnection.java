@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.utils.Daemon;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * An SDP connection to talk SCP (SpiNNaker Control Protocol) to SC&amp;MP on a
+ * An SDP connection to talk SCP (SpiNNaker Control Protocol) to SCAMP on a
  * SpiNNaker system, and to the cores managed by it. In general, an
  * {@code SCPConnection} is thread safe when used via a {@link TxrxProcess}, but
  * not all operations that can be invoked that way are;

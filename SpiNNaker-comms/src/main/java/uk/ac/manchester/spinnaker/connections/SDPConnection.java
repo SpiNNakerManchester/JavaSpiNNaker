@@ -31,7 +31,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 /**
  * A UDP socket connection that talks SDP (SpiNNaker Datagram Protocol) to
  * SpiNNaker. An inbound SDP packet can be routed from the initially receiving
- * SC&amp;MP core to any core, and an outbound SDP packet can be routed from any
+ * SCAMP core to any core, and an outbound SDP packet can be routed from any
  * core to the outside world (provided an {@link IPTag} or {@link ReverseIPTag}
  * is configured to handle routing of the message on an Ethernet-equipped chip).
  * <p>
