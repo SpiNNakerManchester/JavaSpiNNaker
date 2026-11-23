@@ -161,7 +161,6 @@ class OTPrepared extends OTStatement implements PreparedStatement {
 
 	/** {@inheritDoc} */
 	@Override
-	@Deprecated
 	public final void setUnicodeStream(int parameterIndex, InputStream x,
 			int length) throws SQLException {
 		validateThread();
