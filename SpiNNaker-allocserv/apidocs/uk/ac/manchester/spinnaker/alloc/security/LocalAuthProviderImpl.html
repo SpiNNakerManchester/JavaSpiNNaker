@@ -183,7 +183,9 @@ implements <a href="LocalAuthenticationProvider.html" title="interface in uk.ac.
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAccessToken()" class="member-name-link">getAccessToken</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The OpenID access token or an error message.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mapAuthorities(org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority,java.util.Collection)" class="member-name-link">mapAuthorities</a><wbr>(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/core/oidc/user/OidcUserAuthority.html" title="class or interface in org.springframework.security.oauth2.core.oidc.user" class="external-link">OidcUserAuthority</a>&nbsp;user,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/GrantedAuthority.html" title="class or interface in org.springframework.security.core" class="external-link">GrantedAuthority</a>&gt;&nbsp;ga)</code></div>
@@ -346,6 +348,14 @@ implements <a href="LocalAuthenticationProvider.html" title="interface in uk.ac.
 <section class="detail" id="getAccessToken()">
 <h3>getAccessToken</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getAccessToken</span>()</div>
+<div class="block">The OpenID access token or an error message.
+ <p>
+ If not authentication pr a non OpenID one is used
+ this will return an error message.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Token or a message.</dd>
+</dl>
 </section>
 </li>
 <li>

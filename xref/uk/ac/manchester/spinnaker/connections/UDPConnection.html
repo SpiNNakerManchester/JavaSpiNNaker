@@ -726,18 +726,29 @@
 <a class="jxr_linenumber" name="L718" href="#L718">718</a> 				localAddr(), isClosed() ? <span class="jxr_string">"|"</span> : <span class="jxr_string">""</span>, remoteAddr());
 <a class="jxr_linenumber" name="L719" href="#L719">719</a> 	}
 <a class="jxr_linenumber" name="L720" href="#L720">720</a> 
-<a class="jxr_linenumber" name="L721" href="#L721">721</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setInUse() {
-<a class="jxr_linenumber" name="L722" href="#L722">722</a> 		<strong class="jxr_keyword">if</strong> (inUse) {
-<a class="jxr_linenumber" name="L723" href="#L723">723</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ConcurrentModificationException(
-<a class="jxr_linenumber" name="L724" href="#L724">724</a> 					<span class="jxr_string">"Connection "</span> + <strong class="jxr_keyword">this</strong> + <span class="jxr_string">" is already in use!"</span>);
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> 		}
-<a class="jxr_linenumber" name="L726" href="#L726">726</a> 		<strong class="jxr_keyword">this</strong>.inUse = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L727" href="#L727">727</a> 	}
-<a class="jxr_linenumber" name="L728" href="#L728">728</a> 
-<a class="jxr_linenumber" name="L729" href="#L729">729</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setNotInUse() {
-<a class="jxr_linenumber" name="L730" href="#L730">730</a> 		<strong class="jxr_keyword">this</strong>.inUse = false;
-<a class="jxr_linenumber" name="L731" href="#L731">731</a> 	}
-<a class="jxr_linenumber" name="L732" href="#L732">732</a> }
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> <em class="jxr_javadoccomment">	 * Mark this connection as being used.</em>
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L724" href="#L724">724</a> <em class="jxr_javadoccomment">	 * @throws ConcurrentModificationException</em>
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> <em class="jxr_javadoccomment">	 *     If the connection is already being used.</em>
+<a class="jxr_linenumber" name="L726" href="#L726">726</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L727" href="#L727">727</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setInUse() {
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> 		<strong class="jxr_keyword">if</strong> (inUse) {
+<a class="jxr_linenumber" name="L729" href="#L729">729</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ConcurrentModificationException(
+<a class="jxr_linenumber" name="L730" href="#L730">730</a> 					<span class="jxr_string">"Connection "</span> + <strong class="jxr_keyword">this</strong> + <span class="jxr_string">" is already in use!"</span>);
+<a class="jxr_linenumber" name="L731" href="#L731">731</a> 		}
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> 		<strong class="jxr_keyword">this</strong>.inUse = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L733" href="#L733">733</a> 	}
+<a class="jxr_linenumber" name="L734" href="#L734">734</a> 
+<a class="jxr_linenumber" name="L735" href="#L735">735</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L736" href="#L736">736</a> <em class="jxr_javadoccomment">	 * Mark this connection as not being used.</em>
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">	 * Multiple calls are allowed.</em>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L740" href="#L740">740</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setNotInUse() {
+<a class="jxr_linenumber" name="L741" href="#L741">741</a> 		<strong class="jxr_keyword">this</strong>.inUse = false;
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> 	}
+<a class="jxr_linenumber" name="L743" href="#L743">743</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

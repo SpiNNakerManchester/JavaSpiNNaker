@@ -197,7 +197,9 @@ implements <a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinna
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#emergencyStop(java.lang.String)" class="member-name-link">emergencyStop</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;commandCode)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Triggers a spalloc stop.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getJob(uk.ac.manchester.spinnaker.alloc.security.Permit,int)" class="member-name-link">getJob</a><wbr>(<a href="../security/Permit.html" title="class in uk.ac.manchester.spinnaker.alloc.security">Permit</a>&nbsp;permit,
  int&nbsp;id)</code></div>
@@ -625,9 +627,13 @@ implements <a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinna
 <section class="detail" id="emergencyStop(java.lang.String)">
 <h3>emergencyStop</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">emergencyStop</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;commandCode)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocAPI.html#emergencyStop(java.lang.String)">SpallocAPI</a></code></span></div>
+<div class="block">Triggers a spalloc stop.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="SpallocAPI.html#emergencyStop(java.lang.String)">emergencyStop</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>commandCode</code> - Command needed to stop spalloc.</dd>
 </dl>
 </section>
 </li>

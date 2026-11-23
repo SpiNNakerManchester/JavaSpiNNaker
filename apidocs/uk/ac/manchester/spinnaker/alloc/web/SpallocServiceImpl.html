@@ -177,7 +177,9 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getJwtToken()" class="member-name-link">getJwtToken</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The OpenID access token or an error message.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpallocServiceAPI.MachineAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.MachineAPI</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMachine(java.lang.String,jakarta.ws.rs.core.UriInfo,jakarta.ws.rs.core.SecurityContext)" class="member-name-link">getMachine</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs/jakarta.ws.rs/jakarta/ws/rs/core/UriInfo.html" title="class or interface in jakarta.ws.rs.core" class="external-link">UriInfo</a>&nbsp;ui,
@@ -376,9 +378,16 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <section class="detail" id="getJwtToken()">
 <h3>getJwtToken</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getJwtToken</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#getJwtToken()">SpallocServiceAPI</a></code></span></div>
+<div class="block">The OpenID access token or an error message.
+ <p>
+ If not authentication pr a non OpenID one is used
+ this will return an error message.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="SpallocServiceAPI.html#getJwtToken()">getJwtToken</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></code></dd>
+<dt>Returns:</dt>
+<dd>Token or a message.</dd>
 </dl>
 </section>
 </li>

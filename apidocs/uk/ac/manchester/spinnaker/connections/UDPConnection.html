@@ -292,10 +292,14 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInUse()" class="member-name-link">setInUse</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Mark this connection as being used.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNotInUse()" class="member-name-link">setNotInUse</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Mark this connection as not being used.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setReceivePacketSize(int)" class="member-name-link">setReceivePacketSize</a><wbr>(int&nbsp;receivePacketSize)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -844,12 +848,20 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <section class="detail" id="setInUse()">
 <h3>setInUse</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setInUse</span>()</div>
+<div class="block">Mark this connection as being used.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ConcurrentModificationException.html" title="class or interface in java.util" class="external-link">ConcurrentModificationException</a></code> - If the connection is already being used.</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setNotInUse()">
 <h3>setNotInUse</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setNotInUse</span>()</div>
+<div class="block">Mark this connection as not being used.
+
+ Multiple calls are allowed.</div>
 </section>
 </li>
 </ul>
