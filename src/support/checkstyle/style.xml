@@ -48,7 +48,18 @@ limitations under the License.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
+		<!-- Annotation Checks -->
+		<module name="AnnotationLocation"/>
+		<!-- module name="AnnotationOnSameLine"/ Considered not good practice. -->
+		<module name="AnnotationUseStyle"/>
+		<module name="MissingDeprecated"/>
+		<module name="MissingOverride"/>
+		<module name="MissingOverrideOnRecordAccessor"/>
+		<module name="OpenjdkAnnotationLocation"/>
+		<module name="PackageAnnotation"/>
+		<module name="SuppressWarnings"/>
 		<module name="SuppressWarningsHolder" />
+
 		<property name="tabWidth" value="4" />
 		<module name="RegexpSinglelineJava">
 			<property name="format" value="^\t* "/>
