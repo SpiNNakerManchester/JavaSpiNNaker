@@ -1482,13 +1482,11 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @param conn
 	 *            The DB connection
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	TestAPI getTestAPI(Connection conn) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
@@ -1532,12 +1530,11 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @param histConn
 	 *            The historical DB connection
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
+	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	HistTestAPI getHistTestAPI(Connection conn, Connection histConn) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new HistTestAPI() {

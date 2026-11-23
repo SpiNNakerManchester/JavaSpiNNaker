@@ -1268,14 +1268,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * Testing method, other use not supported.
 	 *
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@Override
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	public TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
