@@ -51,7 +51,7 @@ limitations under the License.
 		<!-- Annotation Checks -->
 		<module name="AnnotationLocation"/>
 		<!-- module name="AnnotationOnSameLine"/ Considered not good practice. -->
-		<module name="AnnotationUseStyle"/>
+		<!-- module name="AnnotationUseStyle"/ not always COMPACT_NO_ARRAY -->
 		<!--module name="MissingDeprecated"/ using both override and Deprecated tags -->
 		<module name="MissingOverride"/>
 		<module name="MissingOverrideOnRecordAccessor"/>
