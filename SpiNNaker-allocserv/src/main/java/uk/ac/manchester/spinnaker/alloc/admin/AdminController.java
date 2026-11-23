@@ -588,10 +588,10 @@ public interface AdminController {
 
 		/**
 		 * {@return The parsed blacklist}
-		 * @throws NullPointerException
-		 *             If no blacklist data is present.
 		 * @throws IllegalArgumentException
 		 *             If the string is invalid.
+		 * @throws NullPointerException
+		 *             If no blacklist data is present.
 		 */
 		public Blacklist getParsedBlacklist() {
 			return new Blacklist(blacklist);

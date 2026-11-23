@@ -101,14 +101,14 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 *
 	 * @param boards
 	 *            Which boards are we planning to load the firmware on?
+	 * @throws FirmwareLoaderException
+	 *             If something goes wrong.
+	 * @throws IOException
+	 *             If the network fails or the packaged bitfiles are unreadable
 	 * @throws InterruptedException
 	 *             If interrupted while sleeping
 	 * @throws ProcessException
 	 *             If a BMP rejects a message
-	 * @throws IOException
-	 *             If the network fails or the packaged bitfiles are unreadable
-	 * @throws FirmwareLoaderException
-	 *             If something goes wrong.
 	 */
 	@UsedInJavadocOnly(FirmwareLoaderException.class)
 	private void loadFirmware(List<BMPBoard> boards)
@@ -203,12 +203,12 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param board
 	 *            The board number.
 	 * @return True if the board can manage FPGAs.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If network I/O fails.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
 	 */
 	private boolean canBoardManageFPGAs(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException {

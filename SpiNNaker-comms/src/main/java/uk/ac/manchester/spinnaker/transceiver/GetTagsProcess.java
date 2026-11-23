@@ -55,10 +55,10 @@ class GetTagsProcess extends TxrxProcess {
 	 * @return The allocated tags in ID order. Unallocated tags are absent.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	Collection<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {
@@ -89,10 +89,10 @@ class GetTagsProcess extends TxrxProcess {
 	 *         that tag.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException, InterruptedException {

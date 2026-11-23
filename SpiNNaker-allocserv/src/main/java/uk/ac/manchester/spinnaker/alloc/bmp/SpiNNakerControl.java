@@ -50,12 +50,12 @@ public interface SpiNNakerControl {
 	 *
 	 * @param boards
 	 *            The local-relative boards to switch on.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
 	 * @throws IOException
 	 *             If network I/O fails or we reach the limit on retries.
 	 * @throws InterruptedException
 	 *             If we're interrupted.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
 	 */
 	void powerOnAndCheck(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException;
@@ -66,12 +66,12 @@ public interface SpiNNakerControl {
 	 *
 	 * @param link
 	 *            The link to turn off.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If network I/O fails.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
 	 */
 	void setLinkOff(Link link)
 			throws ProcessException, IOException, InterruptedException;
@@ -82,12 +82,12 @@ public interface SpiNNakerControl {
 	 *
 	 * @param boards
 	 *            The local-relative ids of the boards to turn off.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
 	 * @throws IOException
 	 *             If network I/O fails or we reach the limit on retries.
 	 * @throws InterruptedException
 	 *             If we're interrupted.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
 	 */
 	void powerOff(Collection<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException;
@@ -98,12 +98,12 @@ public interface SpiNNakerControl {
 	 * @param board
 	 *            The board to read from.
 	 * @return The serial number.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
 	 * @throws IOException
 	 *             If network I/O fails or we reach the limit on retries.
 	 * @throws InterruptedException
 	 *             If we're interrupted.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
 	 */
 	String readSerial(BMPBoard board)
 			throws ProcessException, InterruptedException, IOException;
@@ -114,12 +114,12 @@ public interface SpiNNakerControl {
 	 * @param board
 	 *            The board to read from.
 	 * @return The temperature (and fan speed and voltage) data.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
 	 * @throws IOException
 	 *             If network I/O fails or we reach the limit on retries.
 	 * @throws InterruptedException
 	 *             If we're interrupted.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
 	 */
 	ADCInfo readTemp(BMPBoard board)
 			throws ProcessException, IOException, InterruptedException;
@@ -130,12 +130,12 @@ public interface SpiNNakerControl {
 	 * @param board
 	 *            The board to read the blacklist from.
 	 * @return The blacklist.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
 	 * @throws IOException
 	 *             If network I/O fails or we reach the limit on retries.
 	 * @throws InterruptedException
 	 *             If we're interrupted.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
 	 */
 	Blacklist readBlacklist(BMPBoard board)
 			throws ProcessException, InterruptedException, IOException;
@@ -147,12 +147,12 @@ public interface SpiNNakerControl {
 	 *            The board to write the blacklist to.
 	 * @param blacklist
 	 *            The blacklist to write.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
 	 * @throws IOException
 	 *             If network I/O fails or we reach the limit on retries.
 	 * @throws InterruptedException
 	 *             If we're interrupted.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
 	 */
 	void writeBlacklist(BMPBoard board, Blacklist blacklist)
 			throws ProcessException, InterruptedException, IOException;

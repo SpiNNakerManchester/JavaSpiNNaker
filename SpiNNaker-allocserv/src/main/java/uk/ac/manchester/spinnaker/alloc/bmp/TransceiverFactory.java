@@ -195,10 +195,10 @@ public class TransceiverFactory
 	 *            The information about the BMP and the boards to manage.
 	 * @throws IOException
 	 *             If network access fails
-	 * @throws SpinnmanException
-	 *             If transceiver building fails
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws SpinnmanException
+	 *             If transceiver building fails
 	 */
 	private Transceiver makeTransceiver(BMPConnectionData data)
 			throws IOException, SpinnmanException, InterruptedException {

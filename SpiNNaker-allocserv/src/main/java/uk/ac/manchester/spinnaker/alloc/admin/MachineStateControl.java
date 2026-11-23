@@ -724,10 +724,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The board's blacklist.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws MachineStateException
-	 *             If the read fails.
 	 * @throws InterruptedException
 	 *             If interrupted.
+	 * @throws MachineStateException
+	 *             If the read fails.
 	 */
 	public Optional<Blacklist> readBlacklistFromMachine(int boardId, int bmpId)
 			throws InterruptedException {
@@ -748,11 +748,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            The blacklist to write.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws MachineStateException
-	 *             If the write fails.
 	 * @throws InterruptedException
 	 *             If interrupted. Note that interrupting the thread does
 	 *             <em>not</em> necessarily halt the write of the blacklist.
+	 * @throws MachineStateException
+	 *             If the write fails.
 	 */
 	public void writeBlacklistToMachine(int boardId, int bmpId,
 			@Valid Blacklist blacklist) throws InterruptedException {
@@ -770,10 +770,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The serial number.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws MachineStateException
-	 *             If the write fails.
 	 * @throws InterruptedException
 	 *             If interrupted.
+	 * @throws MachineStateException
+	 *             If the write fails.
 	 */
 	public String getSerialNumber(BoardState board)
 			throws InterruptedException {
@@ -795,10 +795,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The board's temperature data.
 	 * @throws DataAccessException
 	 *             If access to the DB fails.
-	 * @throws MachineStateException
-	 *             If the read fails.
 	 * @throws InterruptedException
 	 *             If interrupted.
+	 * @throws MachineStateException
+	 *             If the read fails.
 	 */
 	public Optional<ADCInfo> readTemperatureFromMachine(int boardId, int bmpId)
 			throws InterruptedException {
@@ -874,12 +874,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 *            How to convert the row containing the result into the
 		 *            actual result of the transaction.
 		 * @return The wrapped result, or empty if the operation times out.
+		 * @throws DataAccessException
+		 *             If there is a problem accessing the database.
 		 * @throws InterruptedException
 		 *             If the thread is interrupted.
 		 * @throws MachineStateException
 		 *             If the BMP throws an exception.
-		 * @throws DataAccessException
-		 *             If there is a problem accessing the database.
 		 */
 		<T> Optional<T> getResult(RowMapper<T> retriever)
 				throws InterruptedException, MachineStateException,
@@ -917,12 +917,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * result. Used instead of {@link #getResult(Function)} when the value
 		 * of the result is not interesting at all.
 		 *
+		 * @throws DataAccessException
+		 *             If there is a problem accessing the database.
 		 * @throws InterruptedException
 		 *             If the thread is interrupted.
 		 * @throws MachineStateException
 		 *             If the BMP throws an exception.
-		 * @throws DataAccessException
-		 *             If there is a problem accessing the database.
 		 */
 		void completed() throws DataAccessException, MachineStateException,
 				InterruptedException {

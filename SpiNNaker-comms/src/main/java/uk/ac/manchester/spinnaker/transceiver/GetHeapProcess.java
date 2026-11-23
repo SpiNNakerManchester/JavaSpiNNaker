@@ -67,10 +67,10 @@ final class GetHeapProcess extends TxrxProcess {
 	 * @return A list of block descriptors, in block chain order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
@@ -104,10 +104,10 @@ final class GetHeapProcess extends TxrxProcess {
 	 * @return A list of block descriptors, in block chain order.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	List<HeapElement> getFreeBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
@@ -139,10 +139,10 @@ final class GetHeapProcess extends TxrxProcess {
 	 * @return The number of bytes free in the heap.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	int getFreeSpace(HasChipLocation chip, SystemVariableDefinition heap)
 			throws IOException, ProcessException, InterruptedException {
@@ -159,10 +159,10 @@ final class GetHeapProcess extends TxrxProcess {
 	 * @return The heap header.
 	 * @throws IOException
 	 *             If anything goes wrong with networking
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	private HeapHeader getHeapHeader(HasChipLocation chip,
 			SystemVariableDefinition heap)
@@ -183,10 +183,10 @@ final class GetHeapProcess extends TxrxProcess {
 	 * @return The memory block header.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	private BlockHeader getBlockHeader(HasChipLocation chip,
 			MemoryLocation address)
@@ -208,10 +208,10 @@ final class GetHeapProcess extends TxrxProcess {
 	 * @return Data read, wrapped as little-endian integer buffer.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	private IntBuffer readFromAddress(HasChipLocation chip,
 			MemoryLocation address, long size)

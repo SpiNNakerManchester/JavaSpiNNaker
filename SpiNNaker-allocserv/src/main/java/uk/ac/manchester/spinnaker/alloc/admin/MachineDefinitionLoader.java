@@ -575,11 +575,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @return The machines from that file. Not {@code null}.
 	 * @throws IOException
 	 *             If anything goes wrong with file access.
-	 * @throws JsonParseException
-	 *             if underlying input contains invalid JSON content
 	 * @throws JsonMappingException
 	 *             if the input JSON structure does not match the structure of
 	 *             JSONified spalloc configuration
+	 * @throws JsonParseException
+	 *             if underlying input contains invalid JSON content
 	 */
 	public List<Machine> readMachineDefinitions(File file)
 			throws IOException, JsonParseException, JsonMappingException {
@@ -597,11 +597,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @return The machines from that stream.
 	 * @throws IOException
 	 *             If anything goes wrong with file access.
-	 * @throws JsonParseException
-	 *             if underlying input contains invalid JSON content
 	 * @throws JsonMappingException
 	 *             if the input JSON structure does not match the structure of
 	 *             JSONified spalloc configuration
+	 * @throws JsonParseException
+	 *             if underlying input contains invalid JSON content
 	 */
 	public List<Machine> readMachineDefinitions(InputStream stream)
 			throws IOException, JsonParseException, JsonMappingException {
@@ -672,13 +672,13 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *
 	 * @param stream
 	 *            The JSON configuration file.
-	 * @throws JsonParseException
-	 *             if underlying input contains invalid JSON content
+	 * @throws IOException
+	 *             If the file can't be read
 	 * @throws JsonMappingException
 	 *             if the input JSON structure does not match the structure of
 	 *             JSONified spalloc configuration
-	 * @throws IOException
-	 *             If the file can't be read
+	 * @throws JsonParseException
+	 *             if underlying input contains invalid JSON content
 	 */
 	public void loadMachineDefinitions(InputStream stream)
 			throws JsonParseException, JsonMappingException, IOException {
