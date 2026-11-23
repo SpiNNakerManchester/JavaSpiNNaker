@@ -216,7 +216,7 @@ public enum SystemVariableDefinition {
 	/** A (virtual) copy of the router FR register. */
 	fixed_route_copy(INT, 0xf4),
 	/** A pointer to the board information structure. */
-	board_info(ADDRESS, 0xf8),
+	board_info(ADDRESS, 0xf8);
 
 	/** The data type of the variable. */
 	public final DataType type;
