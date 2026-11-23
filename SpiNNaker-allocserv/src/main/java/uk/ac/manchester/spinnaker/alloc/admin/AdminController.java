@@ -589,8 +589,6 @@ public interface AdminController {
 		/**
 		 * {@return The parsed blacklist}
 		 *
-		 * @throws NullPointerException
-		 *             If no blacklist data is present.
 		 * @throws IllegalArgumentException
 		 *             If the string is invalid.
 		 * @throws NullPointerException
