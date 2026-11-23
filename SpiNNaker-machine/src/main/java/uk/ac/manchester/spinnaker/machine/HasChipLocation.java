@@ -47,11 +47,11 @@ public interface HasChipLocation {
 	}
 
 	/**
-	 * Get the core of the chip that will be running SC&amp;MP. This is always
-	 * core 0 of the chip, as the core that runs SC&amp;MP always maps itself to
+	 * Get the core of the chip that will be running SCAMP. This is always
+	 * core 0 of the chip, as the core that runs SCAMP always maps itself to
 	 * be virtual core ID 0.
 	 *
-	 * @return The location of the SC&amp;MP core.
+	 * @return The location of the SCAMP core.
 	 */
 	@JsonIgnore
 	default HasCoreLocation getScampCore() {

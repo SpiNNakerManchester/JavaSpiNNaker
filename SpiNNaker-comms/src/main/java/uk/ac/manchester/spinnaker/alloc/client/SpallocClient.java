@@ -267,7 +267,7 @@ public interface SpallocClient {
 		 *            If {@code true}, will wait until the jobs may have
 		 *            changed. (Best-effort only; waiting time is bounded at 30
 		 *            seconds.)
-		 * @return The job description &amp; state. Check the state to see
+		 * @return The job description and state. Check the state to see
 		 *         whether the job has had resources allocated yet.
 		 * @throws IOException
 		 *             If communication fails.
@@ -277,7 +277,7 @@ public interface SpallocClient {
 		/**
 		 * Get a description of a job. Includes the state of the job.
 		 *
-		 * @return The job description &amp; state. Check the state to see
+		 * @return The job description and state. Check the state to see
 		 *         whether the job has had resources allocated yet.
 		 * @throws IOException
 		 *             If communication fails.

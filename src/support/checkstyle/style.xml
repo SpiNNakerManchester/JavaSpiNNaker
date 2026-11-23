@@ -52,7 +52,7 @@ limitations under the License.
 		<module name="AnnotationLocation"/>
 		<!-- module name="AnnotationOnSameLine"/ Considered not good practice. -->
 		<!-- module name="AnnotationUseStyle"/ not always COMPACT_NO_ARRAY -->
-		<!--module name="MissingDeprecated"/ using both override and Deprecated tags -->
+		<module name="MissingDeprecated"/>
 		<module name="MissingOverride"/>
 		<module name="MissingOverrideOnRecordAccessor"/>
 		<module name="OpenjdkAnnotationLocation"/>
@@ -119,9 +119,9 @@ limitations under the License.
 		<module name="MissingJavadocType"/>
 		<module name="NonEmptyAtclauseDescription"/>
 		<module name="PreferCodeOrSnippetJavadocInlineTag"/>
-		<!-- module name="PreferLiteralJavadocInlineTag"/ currently we use html tags -->
+		<module name="PreferLiteralJavadocInlineTag"/>
 		<!-- module name="RequireEmptyLineBeforeBlockTagGroup"/ not respected also docs with just return -->
-		<!-- module name="SingleLineJavadoc"/ not respected also docs with just return -->
+		<module name="SingleLineJavadoc"/>
 		<!-- module name="SummaryJavadoc"/ Currently not respected -->
 		<module name="SummaryJavadoc"/>
 		<!--  module name="WriteTag"/ No user defined tags required-->

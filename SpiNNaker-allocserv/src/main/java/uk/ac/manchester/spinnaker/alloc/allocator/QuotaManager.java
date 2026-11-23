@@ -669,13 +669,11 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * Testing method, Do not use outside of tests.
 	 *
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
