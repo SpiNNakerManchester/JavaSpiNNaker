@@ -52,7 +52,7 @@ limitations under the License.
 		<module name="AnnotationLocation"/>
 		<!-- module name="AnnotationOnSameLine"/ Considered not good practice. -->
 		<module name="AnnotationUseStyle"/>
-		<module name="MissingDeprecated"/>
+		<!--module name="MissingDeprecated"/ using both override and Deprecated tags -->
 		<module name="MissingOverride"/>
 		<module name="MissingOverrideOnRecordAccessor"/>
 		<module name="OpenjdkAnnotationLocation"/>
