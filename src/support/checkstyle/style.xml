@@ -56,7 +56,7 @@ limitations under the License.
 			<property name="ignoreComments" value="true"/>
 		</module>
 		<!-- Javadoc Comments Checks -->
-		<!-- module name="AtclauseOrder"/  Not currently followed -->
+		<module name="AtclauseOrder"/>
 		<module name="BlockCommentEndPosition"/>
 		<module name="IllegalBlockTag">
 			<!-- None expected so check if one exists it is SpiNNakerTeam -->
@@ -103,7 +103,7 @@ limitations under the License.
 			<property name="accessModifiers" value="package" />
 			<property name="ignoreNamePattern" value="log|logger" />
 		</module>
-		<!-- module name="MissingJavadocMethod"/ Some missing -->
+		<module name="MissingJavadocMethod"/>
 		<module name="MissingJavadocPackage"/>
 		<!-- module name="MissingJavadocType"/ Some missing -->
 		<module name="NonEmptyAtclauseDescription"/>

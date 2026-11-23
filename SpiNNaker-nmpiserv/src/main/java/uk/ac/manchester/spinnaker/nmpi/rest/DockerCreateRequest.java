@@ -86,6 +86,9 @@ public class DockerCreateRequest {
 		this.cmd = cmd;
 	}
 
+	/**
+	 * {@return Network configuration based on the provided name.}
+	 */
 	@JsonProperty("NetworkingConfig")
 	public NetworkingConfig getNetworkingConfig() {
 		return networkingConfig;
@@ -94,10 +97,19 @@ public class DockerCreateRequest {
 	public static final class NetworkingConfig {
 		private final EndpointsConfig endpointsConfig;
 
+		/**
+		 * Construct a Network configuration with an end point to the name.
+		 *
+		 * @param networkName
+		 *     Name of the end point
+		 */
 		public NetworkingConfig(final String networkName) {
 			this.endpointsConfig = new EndpointsConfig(networkName);
 		}
 
+		/**
+		 * {@return The end point configuration based on the network name}
+		 */
 		@JsonProperty("EndpointsConfig")
 		public EndpointsConfig getEndpointsConfig() {
 			return endpointsConfig;
@@ -111,6 +123,9 @@ public class DockerCreateRequest {
 			this.networkID = networkName;
 		}
 
+		/**
+		 * {@return network ID to itself}
+		 */
 		@JsonAnyGetter
 		public Map<String, Object> getDynamicProperties() {
 			return Map.of(networkID, Map.of("NetworkID", networkID));
