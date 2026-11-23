@@ -41,7 +41,7 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = TagIDValidator.class)
 public @interface TagID {
 	/**
-	 * Whether to allow the SC&amp;MP-dedicated tag.
+	 * Whether to allow the SCAMP-dedicated tag.
 	 *
 	 * @return Whether 0 is allowed.
 	 */

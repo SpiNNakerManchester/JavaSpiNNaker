@@ -302,7 +302,7 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/**
-	 * {@return The clock divisors for system &amp; router clocks}
+	 * {@return The clock divisors for system and router clocks}
 	 */
 	public int getClockDivisor() {
 		return read(clock_divisor);
