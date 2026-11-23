@@ -146,6 +146,9 @@ public class ThrottledConnection implements Closeable {
 		}
 	}
 
+	/**
+	 * {@return The location of the Chip connected to}
+	 */
 	public ChipLocation getLocation() {
 		return connection.getChip();
 	}

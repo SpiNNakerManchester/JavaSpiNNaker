@@ -99,11 +99,11 @@ public abstract class Utils {
 	 * @param host
 	 *            The address of the SpiNNaker board to which the message should
 	 *            be sent
+	 * @throws IOException
+	 *             If anything goes wrong
 	 * @deprecated Call
 	 *             {@link UDPConnection#sendPortTriggerMessage(InetAddress)}
 	 *             directly instead.
-	 * @throws IOException
-	 *             If anything goes wrong
 	 */
 	@Deprecated(forRemoval = true)
 	@InlineMe(replacement = "connection.sendPortTriggerMessage(host)")

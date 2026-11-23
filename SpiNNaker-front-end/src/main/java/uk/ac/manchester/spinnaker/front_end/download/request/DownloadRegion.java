@@ -33,6 +33,9 @@ public class DownloadRegion {
 
 	private final int size;
 
+	/**
+	 * Constructs a new download region using the location 0.
+	 */
 	public DownloadRegion() {
 		this.index = 0;
 		this.address = new MemoryLocation(0);

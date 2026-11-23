@@ -331,6 +331,12 @@ public interface SpallocAPI {
 	void reportProblem(@IPAddress String address, HasChipLocation coreLocation,
 			String description, Permit permit);
 
+	/**
+	 * Triggers a spalloc stop.
+	 *
+	 * @param commandCode
+	 *     Command needed to stop spalloc.
+	 */
 	void emergencyStop(String commandCode);
 
 	/**

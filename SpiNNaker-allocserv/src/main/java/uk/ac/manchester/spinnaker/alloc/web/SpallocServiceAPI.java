@@ -296,6 +296,14 @@ public interface SpallocServiceAPI {
 			@QueryParam("commandCode") String commandCode,
 			@Suspended AsyncResponse response);
 
+	/**
+	 * The OpenID access token or an error message.
+	 * <p>
+	 * If not authentication pr a non OpenID one is used
+	 * this will return an error message.
+	 *
+	 * @return Token or a message.
+	 */
 	@GET
 	@Path("/jwtToken")
 	String getJwtToken();
