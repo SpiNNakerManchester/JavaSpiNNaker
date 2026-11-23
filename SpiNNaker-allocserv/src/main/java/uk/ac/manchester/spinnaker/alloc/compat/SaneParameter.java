@@ -38,7 +38,7 @@ import jakarta.validation.Payload;
 @Documented
 @Retention(RUNTIME)
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
-@Constraint(validatedBy = { IsSaneValidator.class })
+@Constraint(validatedBy = IsSaneValidator.class)
 public @interface SaneParameter {
 	/**
 	 * Message on constraint violated.
