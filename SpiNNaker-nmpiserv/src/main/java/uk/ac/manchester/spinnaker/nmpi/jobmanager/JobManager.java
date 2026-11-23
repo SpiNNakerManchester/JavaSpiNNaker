@@ -27,7 +27,6 @@ import static java.util.stream.Collectors.toList;
 import static jakarta.ws.rs.core.Response.ok;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.apache.commons.io.FileUtils.forceDelete;
 import static org.apache.commons.io.FileUtils.forceMkdir;
@@ -332,38 +331,40 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	 *            The name of the machine to find.
 	 * @param remove
 	 *            Whether the machine found should be removed or not.
-	 * @return The machine found
-	 * @throws WebApplicationException
-	 *             if machine not found
+	 * @return The machine found or {@code null} if not found.
 	 */
 	private SpinnakerMachine findMachine(final int id,
 			final String machineName, final boolean remove) {
 		var machines = allocatedMachines.get(id);
 		if (isNull(machines)) {
-			throw new WebApplicationException(
-					"No machines found for job " + id, NOT_FOUND);
+			return null;
 		}
 		for (var machine : machines) {
 			if (machine.getMachineName().equals(machineName)) {
 				if (remove) {
 					machines.remove(machine);
 				}
+				if (machines.isEmpty()) {
+					allocatedMachines.remove(id);
+				}
 				return machine;
 			}
 		}
-		throw new WebApplicationException(
-				"Machine " + machineName + " does not exist for job " + id,
-				BAD_REQUEST);
+		return null;
 	}
 
 	@Override
 	public void releaseMachine(final int id, final String machineName) {
 		synchronized (allocatedMachines) {
 			var machine = findMachine(id, machineName, true);
-			try {
-				machineManager.releaseMachine(machine);
-			} catch (IOException e) {
-				throw new InternalServerErrorException(e);
+			// If there is no machine, it has already been released,
+			// so do nothing
+			if (!isNull(machine)) {
+				try {
+					machineManager.releaseMachine(machine);
+				} catch (IOException e) {
+					throw new InternalServerErrorException(e);
+				}
 			}
 		}
 	}
@@ -373,6 +374,11 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 			final boolean powerOn) {
 		synchronized (allocatedMachines) {
 			var machine = findMachine(id, machineName, false);
+			if (isNull(machine)) {
+				throw new WebApplicationException(
+						"Machine " + machineName + " does not exist for job "
+						+ id, BAD_REQUEST);
+			}
 			try {
 				machineManager.setMachinePower(machine, powerOn);
 			} catch (IOException e) {
@@ -386,6 +392,11 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 			final String machineName, final int chipX, final int chipY) {
 		synchronized (allocatedMachines) {
 			var machine = findMachine(id, machineName, false);
+			if (isNull(machine)) {
+				throw new WebApplicationException(
+						"Machine " + machineName + " does not exist for job "
+						+ id, BAD_REQUEST);
+			}
 			try {
 				return machineManager.getChipCoordinates(machine, chipX, chipY);
 			} catch (IOException e) {
@@ -450,6 +461,11 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 	public JobMachineAllocated checkMachineLease(final int id,
 			final int waitTime) {
 		final var machines = getMachineForJob(id);
+
+		// If there are no machines allocated, return false
+		if (isNull(machines) || machines.isEmpty()) {
+			return new JobMachineAllocated(false);
+		}
 
 		// Return false if any machine is gone
 		if (!machines.stream().allMatch(this::isMachineAvailable)) {
