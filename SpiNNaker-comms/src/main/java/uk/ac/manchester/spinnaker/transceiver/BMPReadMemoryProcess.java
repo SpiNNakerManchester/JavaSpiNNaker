@@ -65,10 +65,10 @@ class BMPReadMemoryProcess extends BMPCommandProcess {
 	 * @return The accumulation (if defined for the accumulator type).
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	private <T> T read(BMPBoard board, MemoryLocation address, int size,
 			Accumulator<T> accum)
@@ -93,10 +93,10 @@ class BMPReadMemoryProcess extends BMPCommandProcess {
 	 *            determines how much memory to read.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void read(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer receivingBuffer)
@@ -118,10 +118,10 @@ class BMPReadMemoryProcess extends BMPCommandProcess {
 	 * @return the filled buffer
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	ByteBuffer read(BMPBoard board, MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException, InterruptedException {
@@ -143,10 +143,10 @@ class BMPReadMemoryProcess extends BMPCommandProcess {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void read(BMPBoard board, MemoryLocation baseAddress, int size,
 			RandomAccessFile dataFile)
@@ -168,10 +168,10 @@ class BMPReadMemoryProcess extends BMPCommandProcess {
 	 * @throws IOException
 	 *             If anything goes wrong with networking or with access to the
 	 *             file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void read(BMPBoard board, MemoryLocation baseAddress, int size,
 			File dataFile)

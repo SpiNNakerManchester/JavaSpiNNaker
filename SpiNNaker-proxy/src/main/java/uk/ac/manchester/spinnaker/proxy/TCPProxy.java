@@ -40,7 +40,7 @@ import picocli.CommandLine.Spec;
  * <p>
  * Typically called via:
  *
- * <pre>java -jar spinnaker-proxy.jar LOCAL_PORT REMOTE_HOST REMOTE_PORT</pre>
+ * {@code java -jar spinnaker-proxy.jar LOCAL_PORT REMOTE_HOST REMOTE_PORT}
  */
 public class TCPProxy {
 	/** The maximum size of a read from a TCP socket. */

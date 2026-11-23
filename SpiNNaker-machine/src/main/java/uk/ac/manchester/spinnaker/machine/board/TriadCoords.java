@@ -41,12 +41,12 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * <img src="doc-files/DirInfo1.png" width="450" alt="24-board layout">
  * <h2>Serialisation Formats</h2>
  * Defaults to being serialised as a JSON object:
- * <pre>{"x": 3, "y": 2, "z": 1}</pre>
+ * {@code {"x": 3, "y": 2, "z": 1}}
  * and can also be deserialized from that, but can also accept being
  * deserialised from a JSON array:
- * <pre>[3, 2, 1]</pre>
+ * {@code [3, 2, 1]}
  * and can also be deserialized from its {@linkplain #toString() string form}:
- * <pre>[x:3,y:2,z:1]</pre>
+ * {@code [x:3,y:2,z:1]}
  */
 @JsonDeserialize(using = TriadCoords.Deserializer.class)
 public final class TriadCoords implements Comparable<TriadCoords> {
@@ -95,9 +95,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 * Create an instance from its serial form. The serial form (where the
 	 * numbers may vary) is:
 	 *
-	 * <pre>
-	 * [x:3,y:5,z:2]
-	 * </pre>
+	 * {@code [x:3,y:5,z:2]}
 	 *
 	 * @param serialForm
 	 *            The form to deserialise.

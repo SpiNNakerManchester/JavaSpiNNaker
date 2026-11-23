@@ -81,10 +81,10 @@ public class JobProcessManager implements CommandLineRunner {
 	 *
 	 * @param args
 	 *            The command line arguments.
-	 * @throws IllegalArgumentException
-	 *            If an unrecognized argument is found.
 	 * @throws IOException
 	 *            If an authentication token can't be read.
+	 * @throws IllegalArgumentException
+	 *            If an unrecognized argument is found.
 	 */
 	public void run(String... args) throws IOException {
 		String serverUrl = null;

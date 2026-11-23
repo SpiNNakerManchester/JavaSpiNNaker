@@ -119,10 +119,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            not be updated by this method.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, ByteBuffer data)
@@ -147,10 +147,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            How many bytes should be copied from the stream?
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, InputStream data, int bytesToWrite)
@@ -174,10 +174,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            transferred.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or access to the file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, File dataFile)
@@ -203,10 +203,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            not be updated by this method.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data)
@@ -229,10 +229,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            How many bytes should be copied from the stream?
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			InputStream data, int bytesToWrite)
@@ -254,10 +254,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            transferred.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or access to the file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			File dataFile)
@@ -281,10 +281,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            The way to create messages to send to do the writing.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	private <T extends SCPRequest<EmptyResponse>> void writeMemoryFlow(
 			MemoryLocation baseAddress, ByteBuffer data,
@@ -313,10 +313,10 @@ class WriteMemoryProcess extends TxrxProcess {
 	 *            The way to create messages to send to do the writing.
 	 * @throws IOException
 	 *             If anything goes wrong with networking or the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	private <T extends SCPRequest<EmptyResponse>> void writeMemoryFlow(
 			MemoryLocation baseAddress, InputStream data, int bytesToWrite,
