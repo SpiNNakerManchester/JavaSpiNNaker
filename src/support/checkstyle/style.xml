@@ -93,7 +93,7 @@ limitations under the License.
 		<!-- module name="JavadocRegexp"/ Currently no regex we want to avoid -->
 		<module name="JavadocSeeTagOrder"/>
 		<module name="JavadocTagContinuationIndentation"/>
-		<!-- module name="JavadocThrowsOrder"/ Lots of places this is not followed tey. -->
+		<module name="JavadocThrowsOrder"/>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />
@@ -105,9 +105,9 @@ limitations under the License.
 		</module>
 		<module name="MissingJavadocMethod"/>
 		<module name="MissingJavadocPackage"/>
-		<!-- module name="MissingJavadocType"/ Some missing -->
+		<module name="MissingJavadocType"/>
 		<module name="NonEmptyAtclauseDescription"/>
-		<!-- module name="PreferCodeOrSnippetJavadocInlineTag"/ currently we use html tags -->
+		<module name="PreferCodeOrSnippetJavadocInlineTag"/>
 		<!-- module name="PreferLiteralJavadocInlineTag"/ currently we use html tags -->
 		<module name="RequireEmptyLineBeforeBlockTagGroup"/>
 		<!-- module name="SingleLineJavadoc"/ not respected also docs with just return -->

@@ -56,12 +56,12 @@ public abstract class IOUtils {
 	 * @param cls
 	 *            The class that the object is expected to conform to.
 	 * @return The deserialized object.
-	 * @throws IOException
-	 *             If the object isn't deserializable.
-	 * @throws ClassNotFoundException
-	 *             If the data doesn't represent a known class.
 	 * @throws ClassCastException
 	 *             If the data is not an object of the expected class.
+	 * @throws ClassNotFoundException
+	 *             If the data doesn't represent a known class.
+	 * @throws IOException
+	 *             If the object isn't deserializable.
 	 */
 	public static <T> T deserialize(byte[] bytes, Class<T> cls)
 			throws ClassNotFoundException, IOException {

@@ -396,10 +396,10 @@ public class Transceiver extends UDPTransceiver
 	 *            in debugging purposes)
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -493,10 +493,10 @@ public class Transceiver extends UDPTransceiver
 	 *            be assumed to be always already booted.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	@MustBeClosed
 	public Transceiver(InetAddress hostname, MachineVersion version)
@@ -517,10 +517,10 @@ public class Transceiver extends UDPTransceiver
 	 *            transceiver may make additional connections.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	@MustBeClosed
 	public Transceiver(MachineVersion version,
@@ -541,10 +541,10 @@ public class Transceiver extends UDPTransceiver
 	 * @return The created transceiver.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	@MustBeClosed
 	public static Transceiver makeWithDescriptors(MachineVersion version,
@@ -578,10 +578,10 @@ public class Transceiver extends UDPTransceiver
 	 *            If not {@code null}, the maximum SDRAM size to allow.
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws SpinnmanException
+	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
 	@SuppressWarnings("MustBeClosed")
 	public Transceiver(MachineVersion version,
@@ -886,10 +886,10 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @throws IOException
 	 *             if the OS has networking troubles
-	 * @throws ProcessException
-	 *             if SpiNNaker rejects a message
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             if SpiNNaker rejects a message
 	 */
 	void updateMachine()
 			throws IOException, ProcessException, InterruptedException {
@@ -949,10 +949,10 @@ public class Transceiver extends UDPTransceiver
 	 *         initially given connections in the constructor
 	 * @throws IOException
 	 *             if networking fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	@CheckReturnValue
 	@SuppressWarnings("MustBeClosed")
@@ -1059,10 +1059,10 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	public AppIdTracker getAppIdTracker()
 			throws IOException, ProcessException, InterruptedException {
@@ -1193,12 +1193,12 @@ public class Transceiver extends UDPTransceiver
 	 *
 	 * @param request
 	 *            The request to make.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a request.
 	 * @throws IOException
 	 *             If anything fails with networking.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a request.
 	 */
 	protected void call(SCPRequest<EmptyResponse> request)
 			throws ProcessException, IOException, InterruptedException {
@@ -1219,12 +1219,12 @@ public class Transceiver extends UDPTransceiver
 	 * @param request
 	 *            The request to make.
 	 * @return The successful response to the request.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a request.
 	 * @throws IOException
 	 *             If anything fails with networking.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a request.
 	 */
 	protected <T, R extends PayloadedResponse<T, ?>> T get(
 			SCPRequest<R> request)
@@ -1670,10 +1670,10 @@ public class Transceiver extends UDPTransceiver
 	 * @return The response from the request.
 	 * @throws IOException
 	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
 	 */
 	private <T extends BMPRequest.BMPResponse> T call(BMPCoords bmp,
 			BMPRequest<T> request)
@@ -1697,10 +1697,10 @@ public class Transceiver extends UDPTransceiver
 	 * @return The response from the request.
 	 * @throws IOException
 	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
 	 */
 	private <T extends BMPRequest.BMPResponse> T call(BMPCoords bmp,
 			int timeout, int retries, BMPRequest<T> request)
@@ -1724,10 +1724,10 @@ public class Transceiver extends UDPTransceiver
 	 * @return The response from the request.
 	 * @throws IOException
 	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
 	 */
 	private <T, R extends BMPRequest.PayloadedResponse<T>> T get(BMPCoords bmp,
 			BMPRequest<R> request)
@@ -1754,10 +1754,10 @@ public class Transceiver extends UDPTransceiver
 	 * @return The response from the request.
 	 * @throws IOException
 	 *             If networking fails.
-	 * @throws ProcessException
-	 *             If the BMP rejects the message.
 	 * @throws InterruptedException
 	 *             If the thread is interrupted.
+	 * @throws ProcessException
+	 *             If the BMP rejects the message.
 	 */
 	private <T, R extends BMPRequest.PayloadedResponse<T>> T get(BMPCoords bmp,
 			int timeout, int retries, BMPRequest<R> request)

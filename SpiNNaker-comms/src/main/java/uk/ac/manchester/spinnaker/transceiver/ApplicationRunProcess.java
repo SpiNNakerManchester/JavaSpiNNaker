@@ -53,10 +53,10 @@ class ApplicationRunProcess extends TxrxProcess {
 	 *            before returning.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
 			throws ProcessException, IOException, InterruptedException {

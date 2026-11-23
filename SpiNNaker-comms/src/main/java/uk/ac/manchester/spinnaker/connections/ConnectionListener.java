@@ -153,13 +153,13 @@ public final class ConnectionListener<MessageType> extends Thread
 	/**
 	 * Receive a message and fire it off into the registered callbacks.
 	 *
-	 * @throws SocketTimeoutException
-	 *             If the connection receive times out.
 	 * @throws IOException
 	 *             If other things go wrong with the comms, or if the callbacks
 	 *             throw it.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws SocketTimeoutException
+	 *             If the connection receive times out.
 	 */
 	private void runStep() throws IOException, InterruptedException {
 		var message = connection.receiveMessage(timeout);

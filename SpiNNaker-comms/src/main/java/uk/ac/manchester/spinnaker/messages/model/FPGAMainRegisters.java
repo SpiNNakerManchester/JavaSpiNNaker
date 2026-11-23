@@ -30,13 +30,13 @@ public enum FPGAMainRegisters {
 	VERS(0x00, 32),
 	/**
 	 * Compile flags.
-	 * <pre>
+	 * {@snippet :
 	 * {   5: chip scope,
 	 *     4: peripheral support,
 	 *     3: ring support,
 	 *     2: north/south on front,
 	 *   1-0: FPGA ID }
-	 * </pre>
+	 * }
 	 */
 	FLAG(0x04, 6),
 	/** Peripheral MC route key. (default: {@code 0xFFFFFFFF}) */
@@ -46,30 +46,30 @@ public enum FPGAMainRegisters {
 	/**
 	 * Scrambler on. (default: 0xF)
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * { 3: ring link,
 	 *   2: peripheral link,
 	 *   1: board-to-board link1,
 	 *   0: board-to-board link0 }
-	 * </pre>
+	 * }
 	 */
 	SCRM(0x10, true, 4),
 	/**
 	 * Enable SpiNNaker chip (2-of-7) link. (Default: {@code 0x00000000})
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * { 0: Link 0 SpiNN-&gt;FPGA enable,
 	 *   1: Link 0 FPGA-&gt;SpiNN enable,
 	 *   2: Link 1 SpiNN-&gt;FPGA enable,
 	 *   3: Link 1 FPGA-&gt;SpiNN enable,
 	 *   ... }
-	 * </pre>
+	 * }
 	 */
 	SLEN(0x14, true, 32),
 	/**
 	 * Override status LED. (default: {@code 0x0F})
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * { 7: DIM_RING,
 	 *   6: DIM_PERIPH,
 	 *   5: DIM_B2B1,
@@ -78,40 +78,40 @@ public enum FPGAMainRegisters {
 	 *   2: FORCE_ERROR_PERIPH,
 	 *   1: FORCE_ERROR_B2B1,
 	 *   0: FORCE_ERROR_B2B0 }
-	 * </pre>
+	 * }
 	 */
 	LEDO(0x18, true, 8),
 	/**
 	 * Receive equalization. (default: {@code 0x0A})
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * { 7-6: RING_RXEQMIX,
 	 *   5-4: PERIPH_RXEQMIX,
 	 *   3-2: B2B1_RXEQMIX,
 	 *   1-0: B2B0_RXEQMIX }
-	 * </pre>
+	 * }
 	 */
 	RXEQ(0x1C, true, 8),
 	/**
 	 * Transmit driver swing. (default: {@code 0x0066})
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * { 15-12: RING_TXDIFFCTRL,
 	 *    11-8: PERIPH_TXDIFFCTRL,
 	 *     7-4: B2B1_TXDIFFCTRL,
 	 *     3-0: B2B0_TXDIFFCTRL }
-	 * </pre>
+	 * }
 	 */
 	TXDS(0x20, true, 16),
 	/**
 	 * Transmit pre-emphasis. (default: {@code 0x012})
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * { 11-9: RING_TXPREEMPHASIS,
 	 *    8-6: PERIPH_TXPREEMPHASIS,
 	 *    5-3: B2B1_TXPREEMPHASIS,
 	 *    2-0: B2B0_TXPREEMPHASIS }
-	 * </pre>
+	 * }
 	 */
 	TXPE(0x24, true, 12);
 

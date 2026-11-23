@@ -98,10 +98,10 @@ public class DirectDataGatherer extends DataGatherer {
 	 * @return The region location table, as an integer buffer.
 	 * @throws IOException
 	 *             If IO fails
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the message.
 	 */
 	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
 			throws IOException, ProcessException, InterruptedException {

@@ -92,10 +92,10 @@ public interface SCPSenderReceiver extends Connection {
 	 *         where the payload starts.
 	 * @throws IOException
 	 *             If there is an error receiving the message
-	 * @throws SocketTimeoutException
-	 *             If there is a timeout before a message is received
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws SocketTimeoutException
+	 *             If there is a timeout before a message is received
 	 */
 	default SCPResultMessage receiveSCPResponse(Integer timeout)
 			throws SocketTimeoutException, IOException, InterruptedException {
@@ -114,10 +114,10 @@ public interface SCPSenderReceiver extends Connection {
 	 *         where the payload starts.
 	 * @throws IOException
 	 *             If there is an error receiving the message
-	 * @throws SocketTimeoutException
-	 *             If there is a timeout before a message is received
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws SocketTimeoutException
+	 *             If there is a timeout before a message is received
 	 */
 	SCPResultMessage receiveSCPResponse(int timeout)
 			throws SocketTimeoutException, IOException, InterruptedException;

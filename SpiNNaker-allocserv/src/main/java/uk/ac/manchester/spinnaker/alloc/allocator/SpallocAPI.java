@@ -1039,9 +1039,9 @@ public interface SpallocAPI {
 		 * @param gathererCore The core that will do the gathering.
 		 * @param iptag The IPTag to use.
 		 * @return A FastDataIn instance.
-		 * @throws ProcessException if there is an issue setting up the tag.
 		 * @throws IOException if there is an issue communicating.
 		 * @throws InterruptedException if the operation is interrupted.
+		 * @throws ProcessException if there is an issue setting up the tag.
 		 */
 		@MustBeClosed
 		FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
@@ -1052,9 +1052,9 @@ public interface SpallocAPI {
 		 *
 		 * @param iptag The IPTag to use.
 		 * @return A Downloader instance.
-		 * @throws ProcessException if there is an issue setting up the tag.
 		 * @throws IOException if there is an issue communicating.
 		 * @throws InterruptedException if the operation is interrupted.
+		 * @throws ProcessException if there is an issue setting up the tag.
 		 */
 		@MustBeClosed
 		Downloader getDownloader(IPTag iptag)
