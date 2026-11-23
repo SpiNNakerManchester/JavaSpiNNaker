@@ -857,12 +857,10 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @param c
 	 *            How to talk to the DB.
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	@ForTestingOnly
 	TestAPI getTestAPI(Connection c) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

@@ -635,7 +635,6 @@ enum DataSectorTypes {
 	/** Chunk describes some registers to set. */
 	REGISTER(4),
 	/** Chunk is not recognised. */
-	@Deprecated
 	UNKNOWN(-1);
 
 	/** The value of the chunk's type code. */
