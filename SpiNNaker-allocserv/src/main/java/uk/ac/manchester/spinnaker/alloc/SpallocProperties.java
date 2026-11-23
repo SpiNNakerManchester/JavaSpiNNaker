@@ -1681,6 +1681,10 @@ public class SpallocProperties {
 			return probeInterval;
 		}
 
+		/**
+		 * {@return How long to wait between powering
+		 *     off and powering on a board.}
+		 */
 		@NotNull
 		public Duration getOffWaitTime() {
 			return offWaitTime;
