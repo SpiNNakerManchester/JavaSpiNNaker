@@ -41,10 +41,10 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 /**
  * A data gatherer that can fetch DSE regions.
  *
+ * @see RecordingRegionDataGatherer
  * @deprecated This class uses an unimplemented API call that needs to be fixed
  *             but hasn't been yet. It also assumes that there are no shared
  *             regions.
- * @see RecordingRegionDataGatherer
  */
 @Deprecated
 public class DirectDataGatherer extends DataGatherer {
