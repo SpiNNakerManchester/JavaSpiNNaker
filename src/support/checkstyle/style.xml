@@ -48,6 +48,7 @@ limitations under the License.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
+		<module name="AnnotationUseStyle"/>
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
 		<module name="RegexpSinglelineJava">
