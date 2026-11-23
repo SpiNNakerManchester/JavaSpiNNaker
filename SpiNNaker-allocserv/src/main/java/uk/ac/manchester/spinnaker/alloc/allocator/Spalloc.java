@@ -925,6 +925,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				board2, row.getEnum("dir_2", Direction.class));
 	}
 
+	@Override
 	public void emergencyStop(String commandCode) {
 		if (!commandCode.equals(props.getEmergencyStopCommandCode())) {
 			throw new IllegalArgumentException("Invalid emergency stop code");
