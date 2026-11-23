@@ -115,7 +115,6 @@ final class OTCallable extends OTPrepared implements CallableStatement {
 
 	/** {@inheritDoc} */
 	@Override
-	@Deprecated
 	public BigDecimal getBigDecimal(int parameterIndex, int scale)
 			throws SQLException {
 		validateThread();

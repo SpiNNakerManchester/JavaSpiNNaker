@@ -48,6 +48,7 @@ limitations under the License.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
+		<module name="MissingDeprecated"/>
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
 		<module name="RegexpSinglelineJava">
@@ -110,7 +111,7 @@ limitations under the License.
 		<module name="PreferCodeOrSnippetJavadocInlineTag"/>
 		<!-- module name="PreferLiteralJavadocInlineTag"/ currently we use html tags -->
 		<module name="RequireEmptyLineBeforeBlockTagGroup"/>
-		<!-- module name="SingleLineJavadoc"/ not respected also docs with just return -->
+		<module name="SingleLineJavadoc"/>
 		<!-- module name="SummaryJavadoc"/ Currently not respected -->
 		<module name="SummaryJavadoc"/>
 		<!--  module name="WriteTag"/ No user defined tags required-->

@@ -272,13 +272,11 @@ public class V1CompatService {
 	 * Not a public API.
 	 *
 	 * @return Test interface.
-	 * @deprecated Only for testing.
 	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	public TestAPI getTestApi() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
