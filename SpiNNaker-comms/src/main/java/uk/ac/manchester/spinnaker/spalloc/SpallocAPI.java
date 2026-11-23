@@ -99,13 +99,13 @@ public interface SpallocAPI {
 	 *            Additional arguments required. Must include the key
 	 *            {@code owner}. Values can be boxed primitive types or strings.
 	 * @return the ID of the created job.
-	 * @deprecated Consider using {@link #createJob(CreateJob)} instead.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
 	 *             if network communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @deprecated Consider using {@link #createJob(CreateJob)} instead.
 	 */
 	@Deprecated(forRemoval = true)
 	default int createJob(List<@PositiveOrZero Integer> args,
@@ -168,8 +168,6 @@ public interface SpallocAPI {
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or {@code null} to wait forever.
 	 * @return the ID of the created job.
-	 * @deprecated Consider using {@link #createJob(CreateJob, Integer)}
-	 *             instead.
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -178,6 +176,8 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @deprecated Consider using {@link #createJob(CreateJob, Integer)}
+	 *             instead.
 	 */
 	@Deprecated(forRemoval = true) // TODO remove this
 	int createJob(List<@PositiveOrZero Integer> args,
@@ -431,13 +431,13 @@ public interface SpallocAPI {
 	 *            to be notified/not notified about all jobs.
 	 * @param enable
 	 *            True to enable notifications, false to disable them.
-	 * @see JobsChangedNotification
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
 	 *             if network communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @see JobsChangedNotification
 	 */
 	default void notifyJob(Integer jobID, boolean enable)
 			throws IOException, SpallocServerException, InterruptedException {
@@ -455,7 +455,6 @@ public interface SpallocAPI {
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or {@code null} to wait forever.
-	 * @see JobsChangedNotification
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -464,6 +463,7 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @see JobsChangedNotification
 	 */
 	void notifyJob(Integer jobID, boolean enable, @Positive Integer timeout)
 			throws IOException, SpallocProtocolTimeoutException,
@@ -478,13 +478,13 @@ public interface SpallocAPI {
 	 *            (known to spalloc).
 	 * @param enable
 	 *            True to enable notifications, false to disable them.
-	 * @see MachinesChangedNotification
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws IOException
 	 *             if network communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @see MachinesChangedNotification
 	 */
 	default void notifyMachine(String machineName, boolean enable)
 			throws IOException, SpallocServerException, InterruptedException {
@@ -503,7 +503,6 @@ public interface SpallocAPI {
 	 * @param timeout
 	 *            How long to wait for the request to complete, in milliseconds,
 	 *            or {@code null} to wait forever.
-	 * @see MachinesChangedNotification
 	 * @throws SpallocServerException
 	 *             if the server returns an exception response.
 	 * @throws SpallocProtocolTimeoutException
@@ -512,6 +511,7 @@ public interface SpallocAPI {
 	 *             if network communications fail.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @see MachinesChangedNotification
 	 */
 	void notifyMachine(String machineName, boolean enable,
 			@Positive Integer timeout)
@@ -1087,14 +1087,14 @@ public interface SpallocAPI {
 	 * Return the next notification to arrive. Waits indefinitely.
 	 *
 	 * @return The notification sent by the server.
-	 * @see JobsChangedNotification
-	 * @see MachinesChangedNotification
 	 * @throws SpallocProtocolException
 	 *             If the socket is unusable or becomes disconnected.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
 	 * @throws RuntimeException
 	 *             If there is a timeout.
+	 * @see JobsChangedNotification
+	 * @see MachinesChangedNotification
 	 */
 	default Notification waitForNotification()
 			throws SpallocProtocolException, InterruptedException {
@@ -1117,8 +1117,6 @@ public interface SpallocAPI {
 	 *            not raise a {@link SpallocProtocolTimeoutException} but
 	 *            returns {@code null} instead.
 	 * @return The notification sent by the server.
-	 * @see JobsChangedNotification
-	 * @see MachinesChangedNotification
 	 * @throws SpallocProtocolTimeoutException
 	 *             If a timeout occurs (implying {@code timeout} is not
 	 *             negative).
@@ -1126,6 +1124,8 @@ public interface SpallocAPI {
 	 *             If the socket is unusable or becomes disconnected.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting.
+	 * @see JobsChangedNotification
+	 * @see MachinesChangedNotification
 	 */
 	Notification waitForNotification(Integer timeout)
 			throws SpallocProtocolException, SpallocProtocolTimeoutException,

@@ -1216,6 +1216,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
+	/**
+	 * The OpenID access token or an error message.
+	 * <p>
+	 * If not authentication pr a non OpenID one is used
+	 * this will return an error message.
+	 *
+	 * @return Token or a message.
+	 */
 	public String getAccessToken() {
 		var authentication =
 				SecurityContextHolder.getContext().getAuthentication();
