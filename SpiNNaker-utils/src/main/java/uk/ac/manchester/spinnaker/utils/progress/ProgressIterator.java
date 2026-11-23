@@ -78,12 +78,12 @@ public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	/**
 	 * Returns the next element in the iteration, and updates the ProgressBar.
 	 *
+	 * @return The next element from the underlying iterator.
 	 * @throws IllegalStateException
 	 *             is the Iterator and therefore the ProgressBar have been
 	 *             closed.
 	 * @throws NoSuchElementException
 	 *             if the iteration has no more elements
-	 * @return The next element from the underlying iterator.
 	 */
 	@Override
 	public E next() throws NoSuchElementException {
