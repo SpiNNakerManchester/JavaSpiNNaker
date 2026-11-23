@@ -1284,24 +1284,22 @@
 <a class="jxr_linenumber" name="L1276" href="#L1276">1276</a> <em class="jxr_javadoccomment">	 * Testing method, other use not supported.</em>
 <a class="jxr_linenumber" name="L1277" href="#L1277">1277</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="L1278" href="#L1278">1278</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a> 	@Override
-<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a> 	@Deprecated
-<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestAPI() {
-<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L1289" href="#L1289">1289</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L1290" href="#L1290">1290</a> 			@Override
-<a class="jxr_linenumber" name="L1291" href="#L1291">1291</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlock() {
-<a class="jxr_linenumber" name="L1292" href="#L1292">1292</a> 				LocalAuthProviderImpl.<strong class="jxr_keyword">this</strong>.unlock();
-<a class="jxr_linenumber" name="L1293" href="#L1293">1293</a> 			}
-<a class="jxr_linenumber" name="L1294" href="#L1294">1294</a> 		};
-<a class="jxr_linenumber" name="L1295" href="#L1295">1295</a> 	}
-<a class="jxr_linenumber" name="L1296" href="#L1296">1296</a> }
+<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a> 	@Override
+<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestAPI() {
+<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a> 			@Override
+<a class="jxr_linenumber" name="L1289" href="#L1289">1289</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlock() {
+<a class="jxr_linenumber" name="L1290" href="#L1290">1290</a> 				LocalAuthProviderImpl.<strong class="jxr_keyword">this</strong>.unlock();
+<a class="jxr_linenumber" name="L1291" href="#L1291">1291</a> 			}
+<a class="jxr_linenumber" name="L1292" href="#L1292">1292</a> 		};
+<a class="jxr_linenumber" name="L1293" href="#L1293">1293</a> 	}
+<a class="jxr_linenumber" name="L1294" href="#L1294">1294</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>

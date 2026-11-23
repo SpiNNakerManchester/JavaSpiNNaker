@@ -865,26 +865,24 @@
 <a class="jxr_linenumber" name="L857" href="#L857">857</a> <em class="jxr_javadoccomment">	 * @param c</em>
 <a class="jxr_linenumber" name="L858" href="#L858">858</a> <em class="jxr_javadoccomment">	 *            How to talk to the DB.</em>
 <a class="jxr_linenumber" name="L859" href="#L859">859</a> <em class="jxr_javadoccomment">	 * @return The test interface.</em>
-<a class="jxr_linenumber" name="L860" href="#L860">860</a> <em class="jxr_javadoccomment">	 * @deprecated This interface is just for testing.</em>
-<a class="jxr_linenumber" name="L861" href="#L861">861</a> <em class="jxr_javadoccomment">	 * @hidden</em>
-<a class="jxr_linenumber" name="L862" href="#L862">862</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L863" href="#L863">863</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
-<a class="jxr_linenumber" name="L864" href="#L864">864</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
-<a class="jxr_linenumber" name="L865" href="#L865">865</a> 	@Deprecated
-<a class="jxr_linenumber" name="L866" href="#L866">866</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L867" href="#L867">867</a> 	TestAPI getTestAPI(Connection c) {
-<a class="jxr_linenumber" name="L868" href="#L868">868</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L869" href="#L869">869</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L870" href="#L870">870</a> 			@Override
-<a class="jxr_linenumber" name="L871" href="#L871">871</a> 			<strong class="jxr_keyword">public</strong> Integer loadMachineDefinition(Machine machine) {
-<a class="jxr_linenumber" name="L872" href="#L872">872</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> updates = <strong class="jxr_keyword">new</strong> Updates(c)) {
-<a class="jxr_linenumber" name="L873" href="#L873">873</a> 					<strong class="jxr_keyword">return</strong> MachineDefinitionLoader.<strong class="jxr_keyword">this</strong>
-<a class="jxr_linenumber" name="L874" href="#L874">874</a> 							.loadMachineDefinition(updates, machine);
-<a class="jxr_linenumber" name="L875" href="#L875">875</a> 				}
-<a class="jxr_linenumber" name="L876" href="#L876">876</a> 			}
-<a class="jxr_linenumber" name="L877" href="#L877">877</a> 		};
-<a class="jxr_linenumber" name="L878" href="#L878">878</a> 	}
-<a class="jxr_linenumber" name="L879" href="#L879">879</a> }
+<a class="jxr_linenumber" name="L860" href="#L860">860</a> <em class="jxr_javadoccomment">	 * @hidden</em>
+<a class="jxr_linenumber" name="L861" href="#L861">861</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L862" href="#L862">862</a> 	@RestrictedApi(explanation = <span class="jxr_string">"just for testing"</span>, link = <span class="jxr_string">"index.html"</span>,
+<a class="jxr_linenumber" name="L863" href="#L863">863</a> 			allowedOnPath = <span class="jxr_string">".*/src/test/java/.*"</span>)
+<a class="jxr_linenumber" name="L864" href="#L864">864</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L865" href="#L865">865</a> 	TestAPI getTestAPI(Connection c) {
+<a class="jxr_linenumber" name="L866" href="#L866">866</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L867" href="#L867">867</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L868" href="#L868">868</a> 			@Override
+<a class="jxr_linenumber" name="L869" href="#L869">869</a> 			<strong class="jxr_keyword">public</strong> Integer loadMachineDefinition(Machine machine) {
+<a class="jxr_linenumber" name="L870" href="#L870">870</a> 				<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> updates = <strong class="jxr_keyword">new</strong> Updates(c)) {
+<a class="jxr_linenumber" name="L871" href="#L871">871</a> 					<strong class="jxr_keyword">return</strong> MachineDefinitionLoader.<strong class="jxr_keyword">this</strong>
+<a class="jxr_linenumber" name="L872" href="#L872">872</a> 							.loadMachineDefinition(updates, machine);
+<a class="jxr_linenumber" name="L873" href="#L873">873</a> 				}
+<a class="jxr_linenumber" name="L874" href="#L874">874</a> 			}
+<a class="jxr_linenumber" name="L875" href="#L875">875</a> 		};
+<a class="jxr_linenumber" name="L876" href="#L876">876</a> 	}
+<a class="jxr_linenumber" name="L877" href="#L877">877</a> }
 </pre>
 <hr/>
 <div id="footer">© 2018–2026 <a href="https://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a></div>
