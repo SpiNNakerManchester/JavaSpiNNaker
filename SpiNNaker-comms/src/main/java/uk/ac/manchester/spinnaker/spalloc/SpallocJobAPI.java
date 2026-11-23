@@ -122,6 +122,7 @@ public interface SpallocJobAPI {
 
 	/**
 	 * {@return The current state of the job}
+	 *
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -134,6 +135,7 @@ public interface SpallocJobAPI {
 
 	/**
 	 * {@return The current power state of the job}
+	 *
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -170,6 +172,7 @@ public interface SpallocJobAPI {
 	/**
 	 * {@return The list of connections, where each connection says what the
 	 *         hostname is to talk to a particular board's root chip}
+	 *
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -232,6 +235,7 @@ public interface SpallocJobAPI {
 	/**
 	 * {@return The name of the host that is the root chip of the whole
 	 *         allocation}
+	 *
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -244,6 +248,7 @@ public interface SpallocJobAPI {
 
 	/**
 	 * {@return The dimensions of the machine in chips, e.g., for booting}
+	 *
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -258,6 +263,7 @@ public interface SpallocJobAPI {
 
 	/**
 	 * {@return The name of the machine the job is allocated on}
+	 *
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
@@ -272,6 +278,7 @@ public interface SpallocJobAPI {
 
 	/**
 	 * {@return All the boards allocated to the job}
+	 *
 	 * @throws IOException
 	 *             If communications fail.
 	 * @throws SpallocServerException
