@@ -109,12 +109,15 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
  In its simplest form, a <a href="SpallocJob.html" title="class in uk.ac.manchester.spinnaker.spalloc"><code>SpallocJob</code></a> can be used as a context manager
  like so:
 
- <pre>
- try (var j = new SpallocJob(new CreateJob(6).owner(me))) {
-     myApplication.boot(j.getHostname(), j.getDimensions());
-     myApplication.run(j.getHostname());
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>try (var j = new SpallocJob(new CreateJob(6).owner(me))) {
+    myApplication.boot(j.getHostname(), j.getDimensions());
+    myApplication.run(j.getHostname());
+}
+</code></pre>
+</div>
+
 
  In this example a six-board machine is requested and the
  <code>try</code>-with-resources context is entered once the allocation has been
@@ -125,13 +128,16 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
  For more fine-grained control, the same functionality is available via
  various methods:
 
- <pre>
- var j = new SpallocJob(new CreateJob(6).owner(me)));
- j.waitUntilReady();
- myApplication.boot(j.getHostname(), j.getDimensions());
- myApplication.run(j.getHostname());
- j.destroy();
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>var j = new SpallocJob(new CreateJob(6).owner(me)));
+j.waitUntilReady();
+myApplication.boot(j.getHostname(), j.getDimensions());
+myApplication.run(j.getHostname());
+j.destroy();
+</code></pre>
+</div>
+
 
  <b>Note:</b> <blockquote class="note"> More complex applications may wish to
  log the following properties of their job to support later debugging efforts:
@@ -404,8 +410,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -425,8 +431,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -444,8 +450,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -464,9 +470,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -487,8 +493,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -512,9 +518,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -533,9 +539,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>id</code> - The job ID</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -556,9 +562,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>id</code> - The job ID</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -581,9 +587,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>id</code> - The job ID</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -608,9 +614,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>id</code> - The job ID</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>
@@ -667,9 +673,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dl class="notes">
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If communications fail.</dd>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - If the server is not compatible with this client.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted while waiting.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
 </li>

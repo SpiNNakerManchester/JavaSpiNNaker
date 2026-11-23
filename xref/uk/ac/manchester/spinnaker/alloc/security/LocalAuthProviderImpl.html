@@ -922,14 +922,14 @@
 <a class="jxr_linenumber" name="L914" href="#L914">914</a> <em class="jxr_javadoccomment">	 *            How to access the database.</em>
 <a class="jxr_linenumber" name="L915" href="#L915">915</a> <em class="jxr_javadoccomment">	 * @return Whether the user is known. If {@code false}, the database cannot</em>
 <a class="jxr_linenumber" name="L916" href="#L916">916</a> <em class="jxr_javadoccomment">	 *         authenticate the user and some other auth method should be tried.</em>
-<a class="jxr_linenumber" name="L917" href="#L917">917</a> <em class="jxr_javadoccomment">	 * @throws UsernameNotFoundException</em>
-<a class="jxr_linenumber" name="L918" href="#L918">918</a> <em class="jxr_javadoccomment">	 *             If no account exists.</em>
+<a class="jxr_linenumber" name="L917" href="#L917">917</a> <em class="jxr_javadoccomment">	 * @throws BadCredentialsException</em>
+<a class="jxr_linenumber" name="L918" href="#L918">918</a> <em class="jxr_javadoccomment">	 *             If the password is invalid.</em>
 <a class="jxr_linenumber" name="L919" href="#L919">919</a> <em class="jxr_javadoccomment">	 * @throws DisabledException</em>
 <a class="jxr_linenumber" name="L920" href="#L920">920</a> <em class="jxr_javadoccomment">	 *             If the account is administratively disabled.</em>
 <a class="jxr_linenumber" name="L921" href="#L921">921</a> <em class="jxr_javadoccomment">	 * @throws LockedException</em>
 <a class="jxr_linenumber" name="L922" href="#L922">922</a> <em class="jxr_javadoccomment">	 *             If the account is temporarily locked.</em>
-<a class="jxr_linenumber" name="L923" href="#L923">923</a> <em class="jxr_javadoccomment">	 * @throws BadCredentialsException</em>
-<a class="jxr_linenumber" name="L924" href="#L924">924</a> <em class="jxr_javadoccomment">	 *             If the password is invalid.</em>
+<a class="jxr_linenumber" name="L923" href="#L923">923</a> <em class="jxr_javadoccomment">	 * @throws UsernameNotFoundException</em>
+<a class="jxr_linenumber" name="L924" href="#L924">924</a> <em class="jxr_javadoccomment">	 *             If no account exists.</em>
 <a class="jxr_linenumber" name="L925" href="#L925">925</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L926" href="#L926">926</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> authLocalAgainstDB(String username, String password,
 <a class="jxr_linenumber" name="L927" href="#L927">927</a> 			List&lt;GrantedAuthority&gt; authorities, AuthQueries queries) {

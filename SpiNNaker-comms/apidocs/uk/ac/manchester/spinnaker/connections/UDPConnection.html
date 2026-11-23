@@ -514,10 +514,10 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <dt>Returns:</dt>
 <dd>The data received, in a little-endian buffer</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/SocketTimeoutException.html" title="class or interface in java.net" class="external-link">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/EOFException.html" title="class or interface in java.io" class="external-link">EOFException</a></code> - If the connection is closed</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If an error occurs receiving the data</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If communications are interrupted.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/SocketTimeoutException.html" title="class or interface in java.net" class="external-link">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
 </dl>
 </section>
 </li>
@@ -539,9 +539,9 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <dt>Returns:</dt>
 <dd>The data received, in a little-endian buffer</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/SocketTimeoutException.html" title="class or interface in java.net" class="external-link">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If an error occurs receiving the data</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If communications are interrupted.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/SocketTimeoutException.html" title="class or interface in java.net" class="external-link">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
 </dl>
 </section>
 </li>
@@ -586,8 +586,8 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <dt>Returns:</dt>
 <dd>The datagram packet received</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/SocketTimeoutException.html" title="class or interface in java.net" class="external-link">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If an error occurs receiving the data</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/SocketTimeoutException.html" title="class or interface in java.net" class="external-link">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
 </dl>
 </section>
 </li>
@@ -604,8 +604,8 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <dd>the received message</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If there is an error receiving the message</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If communications are interrupted.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - If one of the fields of the SpiNNaker message is invalid</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If communications are interrupted.</dd>
 </dl>
 </section>
 </li>
@@ -625,9 +625,9 @@ implements <a href="model/Connection.html" title="interface in uk.ac.manchester.
 <dd>the received message</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If there is an error receiving the message</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - If one of the fields of the SpiNNaker message is invalid</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If communications are interrupted.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/SocketTimeoutException.html" title="class or interface in java.net" class="external-link">SocketTimeoutException</a></code> - If there is a timeout during receiving</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - If one of the fields of the SpiNNaker message is invalid</dd>
 </dl>
 </section>
 </li>

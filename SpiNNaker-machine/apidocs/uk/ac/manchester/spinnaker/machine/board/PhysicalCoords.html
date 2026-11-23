@@ -106,15 +106,15 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 
  <h2 id="serialisation-formats-heading">Serialisation Formats</h2>
  Defaults to being serialised as a JSON object:
- <pre>{"cabinet": 3, "frame": 2, "board": 1}</pre>
+ <code>{"cabinet": 3, "frame": 2, "board": 1}</code>
  and can be deserialized from that, or:
- <pre>{"c": 3, "f": 2, "b": 1}</pre>
+ <code>{"c": 3, "f": 2, "b": 1}</code>
  It can also accept being deserialised from a JSON array, for a more compact
  notation:
- <pre>[3, 2, 1]</pre>
+ <code>[3, 2, 1]</code>
  Finally, it can also be deserialised from the string form created by the
  <a href="#toString()"><code>toString()</code></a> method:
- <pre>[c:3,f:2,b:1]</pre></div>
+ <code>[c:3,f:2,b:1]</code></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -265,9 +265,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="block">Create an instance from its serial form. The serial form (where the
  numbers may vary) is:
 
- <pre>
- [c:34,f:12,b:23]
- </pre></div>
+ <code>:[c:34,f:12,b:23]</code></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>serialForm</code> - The form to deserialise.</dd>

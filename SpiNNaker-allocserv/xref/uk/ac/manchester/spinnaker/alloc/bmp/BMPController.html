@@ -533,12 +533,12 @@
 <a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">		 *</em>
 <a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">		 * @param controllers</em>
 <a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">		 *            How to actually communicate with the machine</em>
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">		 *             If the transceiver chokes</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">		 *             If network I/O fails</em>
 <a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
 <a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">		 *             If interrupted</em>
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">		 *             If network I/O fails</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">		 *             If the transceiver chokes</em>
 <a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">		 */</em>
 <a class="jxr_linenumber" name="L535" href="#L535">535</a> 		<strong class="jxr_keyword">void</strong> changeBoardPowerState(<a name="SpiNNakerControl" href="../../../../../../uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#SpiNNakerControl">SpiNNakerControl</a> controller)
 <a class="jxr_linenumber" name="L536" href="#L536">536</a> 				<strong class="jxr_keyword">throws</strong> ProcessException, InterruptedException, IOException {
@@ -940,10 +940,10 @@
 <a class="jxr_linenumber" name="L932" href="#L932">932</a> <em class="jxr_javadoccomment">		 *</em>
 <a class="jxr_linenumber" name="L933" href="#L933">933</a> <em class="jxr_javadoccomment">		 * @param controller</em>
 <a class="jxr_linenumber" name="L934" href="#L934">934</a> <em class="jxr_javadoccomment">		 *            How to actually reach the BMP.</em>
-<a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
-<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L938" href="#L938">938</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy.</em>
+<a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy.</em>
+<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L938" href="#L938">938</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
 <a class="jxr_linenumber" name="L939" href="#L939">939</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L940" href="#L940">940</a> <em class="jxr_javadoccomment">		 *             If the BMP rejects a message.</em>
 <a class="jxr_linenumber" name="L941" href="#L941">941</a> <em class="jxr_javadoccomment">		 */</em>
@@ -974,15 +974,15 @@
 <a class="jxr_linenumber" name="L966" href="#L966">966</a> <em class="jxr_javadoccomment">		 *</em>
 <a class="jxr_linenumber" name="L967" href="#L967">967</a> <em class="jxr_javadoccomment">		 * @param controller</em>
 <a class="jxr_linenumber" name="L968" href="#L968">968</a> <em class="jxr_javadoccomment">		 *            How to actually reach the BMP.</em>
-<a class="jxr_linenumber" name="L969" href="#L969">969</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L970" href="#L970">970</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
-<a class="jxr_linenumber" name="L971" href="#L971">971</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L972" href="#L972">972</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy.</em>
-<a class="jxr_linenumber" name="L973" href="#L973">973</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
-<a class="jxr_linenumber" name="L974" href="#L974">974</a> <em class="jxr_javadoccomment">		 *             If the BMP rejects a message.</em>
-<a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">		 * @throws IllegalStateException</em>
-<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">		 *             If the operation is applied to a board other than the one</em>
-<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">		 *             that it is expected to apply to.</em>
+<a class="jxr_linenumber" name="L969" href="#L969">969</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L970" href="#L970">970</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy.</em>
+<a class="jxr_linenumber" name="L971" href="#L971">971</a> <em class="jxr_javadoccomment">		 * @throws IllegalStateException</em>
+<a class="jxr_linenumber" name="L972" href="#L972">972</a> <em class="jxr_javadoccomment">		 *             If the operation is applied to a board other than the one</em>
+<a class="jxr_linenumber" name="L973" href="#L973">973</a> <em class="jxr_javadoccomment">		 *             that it is expected to apply to.</em>
+<a class="jxr_linenumber" name="L974" href="#L974">974</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
+<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
+<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">		 *             If the BMP rejects a message.</em>
 <a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">		 */</em>
 <a class="jxr_linenumber" name="L979" href="#L979">979</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> writeBlacklist(<a name="SpiNNakerControl" href="../../../../../../uk/ac/manchester/spinnaker/alloc/bmp/SpiNNakerControl.html#SpiNNakerControl">SpiNNakerControl</a> controller)
 <a class="jxr_linenumber" name="L980" href="#L980">980</a> 				<strong class="jxr_keyword">throws</strong> InterruptedException, ProcessException, IOException {
@@ -1005,10 +1005,10 @@
 <a class="jxr_linenumber" name="L997" href="#L997">997</a> <em class="jxr_javadoccomment">		 *</em>
 <a class="jxr_linenumber" name="L998" href="#L998">998</a> <em class="jxr_javadoccomment">		 * @param controller</em>
 <a class="jxr_linenumber" name="L999" href="#L999">999</a> <em class="jxr_javadoccomment">		 *            How to actually reach the BMP.</em>
-<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
-<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy</em>
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy</em>
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
 <a class="jxr_linenumber" name="L1004" href="#L1004">1004</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> <em class="jxr_javadoccomment">		 *             If the BMP rejects a message.</em>
 <a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> <em class="jxr_javadoccomment">		 */</em>
@@ -1028,10 +1028,10 @@
 <a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">		 *</em>
 <a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">		 * @param controller</em>
 <a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">		 *            How to actually reach the BMP.</em>
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
-<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
-<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy.</em>
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a> <em class="jxr_javadoccomment">		 *             If the network is unhappy.</em>
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> <em class="jxr_javadoccomment">		 *             If interrupted.</em>
 <a class="jxr_linenumber" name="L1027" href="#L1027">1027</a> <em class="jxr_javadoccomment">		 * @throws ProcessException</em>
 <a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> <em class="jxr_javadoccomment">		 *             If the BMP rejects a message.</em>
 <a class="jxr_linenumber" name="L1029" href="#L1029">1029</a> <em class="jxr_javadoccomment">		 */</em>
@@ -1267,10 +1267,10 @@
 <a class="jxr_linenumber" name="L1259" href="#L1259">1259</a> <em class="jxr_javadoccomment">		 *            The BMPs to be updated.</em>
 <a class="jxr_linenumber" name="L1260" href="#L1260">1260</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
 <a class="jxr_linenumber" name="L1261" href="#L1261">1261</a> <em class="jxr_javadoccomment">		 *             If talking to the network fails</em>
-<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a> <em class="jxr_javadoccomment">		 * @throws SpinnmanException</em>
-<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a> <em class="jxr_javadoccomment">		 *             If a BMP sends an error back</em>
-<a class="jxr_linenumber" name="L1264" href="#L1264">1264</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L1265" href="#L1265">1265</a> <em class="jxr_javadoccomment">		 *             If the wait for workers to spawn fails.</em>
+<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a> <em class="jxr_javadoccomment">		 *             If the wait for workers to spawn fails.</em>
+<a class="jxr_linenumber" name="L1264" href="#L1264">1264</a> <em class="jxr_javadoccomment">		 * @throws SpinnmanException</em>
+<a class="jxr_linenumber" name="L1265" href="#L1265">1265</a> <em class="jxr_javadoccomment">		 *             If a BMP sends an error back</em>
 <a class="jxr_linenumber" name="L1266" href="#L1266">1266</a> <em class="jxr_javadoccomment">		 */</em>
 <a class="jxr_linenumber" name="L1267" href="#L1267">1267</a> 		<strong class="jxr_keyword">void</strong> processRequests(<strong class="jxr_keyword">long</strong> millis, Collection&lt;Integer&gt; bmps)
 <a class="jxr_linenumber" name="L1268" href="#L1268">1268</a> 				<strong class="jxr_keyword">throws</strong> IOException, SpinnmanException, InterruptedException;
@@ -1283,10 +1283,10 @@
 <a class="jxr_linenumber" name="L1275" href="#L1275">1275</a> <em class="jxr_javadoccomment">		 *            scheduler. If zero (or less), only one run will be done.</em>
 <a class="jxr_linenumber" name="L1276" href="#L1276">1276</a> <em class="jxr_javadoccomment">		 * @throws IOException</em>
 <a class="jxr_linenumber" name="L1277" href="#L1277">1277</a> <em class="jxr_javadoccomment">		 *             If talking to the network fails</em>
-<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a> <em class="jxr_javadoccomment">		 * @throws SpinnmanException</em>
-<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a> <em class="jxr_javadoccomment">		 *             If a BMP sends an error back</em>
-<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a> <em class="jxr_javadoccomment">		 *             If the wait for workers to spawn fails.</em>
+<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a> <em class="jxr_javadoccomment">		 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a> <em class="jxr_javadoccomment">		 *             If the wait for workers to spawn fails.</em>
+<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a> <em class="jxr_javadoccomment">		 * @throws SpinnmanException</em>
+<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a> <em class="jxr_javadoccomment">		 *             If a BMP sends an error back</em>
 <a class="jxr_linenumber" name="L1282" href="#L1282">1282</a> <em class="jxr_javadoccomment">		 */</em>
 <a class="jxr_linenumber" name="L1283" href="#L1283">1283</a> 		<strong class="jxr_keyword">void</strong> processRequests(<strong class="jxr_keyword">long</strong> millis)
 <a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> 				<strong class="jxr_keyword">throws</strong> IOException, SpinnmanException, InterruptedException;

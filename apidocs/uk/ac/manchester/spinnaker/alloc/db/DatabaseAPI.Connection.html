@@ -377,29 +377,38 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></span>&nbsp;<span class="element-name">query</span><wbr><span class="parameters">(<a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CompileTimeConstant.html" title="class or interface in com.google.errorprone.annotations" class="external-link">@CompileTimeConstant</a>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sql)</span></div>
 <div class="block">Create a new query. Usage pattern:
- <pre>
- try (var q = conn.query(SQL_SELECT)) {
-     for (var value : q.call(mapper, argument1, argument2)) {
-         // Do something with the mapped row
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT)) {
+    for (var value : q.call(mapper, argument1, argument2)) {
+        // Do something with the mapped row
+    }
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(SQL_SELECT)) {
-     q.call(mapper, argument1, argument2).forEach(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT)) {
+    q.call(mapper, argument1, argument2).forEach(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(SQL_SELECT)) {
-     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT)) {
+    q.call1(mapper, argument1, argument2).ifPresent(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sql</code> - The SQL of the query.</dd>
@@ -424,29 +433,38 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sql,
  boolean&nbsp;lockType)</span></div>
 <div class="block">Create a new query. Usage pattern:
- <pre>
- try (var q = conn.query(SQL_SELECT, false)) {
-     for (var value : q.call(mapper, argument1, argument2)) {
-         // Do something with the mapped row
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT, false)) {
+    for (var value : q.call(mapper, argument1, argument2)) {
+        // Do something with the mapped row
+    }
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(SQL_SELECT, false)) {
-     q.call(mapper, argument1, argument2).forEach(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT, false)) {
+    q.call(mapper, argument1, argument2).forEach(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(SQL_SELECT, false)) {
-     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT, false)) {
+    q.call1(mapper, argument1, argument2).ifPresent(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sql</code> - The SQL of the query.</dd>
@@ -470,29 +488,38 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <h3>query</h3>
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></span>&nbsp;<span class="element-name">query</span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html" title="class or interface in org.springframework.core.io" class="external-link">Resource</a>&nbsp;sqlResource)</span></div>
 <div class="block">Create a new query.
- <pre>
- try (var q = conn.query(sqlSelectResource)) {
-     for (var value : q.call(mapper, argument1, argument2)) {
-         // Do something with the mapped row
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(sqlSelectResource)) {
+    for (var value : q.call(mapper, argument1, argument2)) {
+        // Do something with the mapped row
+    }
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(sqlSelectResource)) {
-     q.call(mapper, argument1, argument2).forEach(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(sqlSelectResource)) {
+    q.call(mapper, argument1, argument2).forEach(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(sqlSelectResource)) {
-     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(sqlSelectResource)) {
+    q.call1(mapper, argument1, argument2).ifPresent(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sqlResource</code> - Reference to the SQL of the query.</dd>
@@ -516,29 +543,38 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></span>&nbsp;<span class="element-name">query</span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html" title="class or interface in org.springframework.core.io" class="external-link">Resource</a>&nbsp;sqlResource,
  boolean&nbsp;lockType)</span></div>
 <div class="block">Create a new query.
- <pre>
- try (var q = conn.query(sqlSelectResource, false)) {
-     for (var value : q.call(mapper, argument1, argument2)) {
-         // Do something with the mapped row
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(sqlSelectResource, false)) {
+    for (var value : q.call(mapper, argument1, argument2)) {
+        // Do something with the mapped row
+    }
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(sqlSelectResource, false)) {
-     q.call(mapper, argument1, argument2).forEach(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(sqlSelectResource, false)) {
+    q.call(mapper, argument1, argument2).forEach(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(sqlSelectResource, false)) {
-     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(sqlSelectResource, false)) {
+    q.call1(mapper, argument1, argument2).ifPresent(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sqlResource</code> - Reference to the SQL of the query.</dd>
@@ -563,29 +599,38 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <h3>query</h3>
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></span>&nbsp;<span class="element-name">query</span><wbr><span class="parameters">(<a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql)</span></div>
 <div class="block">Create a new query. Usage pattern:
- <pre>
- try (var q = conn.query(new SQL(SQL_SELECT))) {
-     for (var value : q.call(mapper, argument1, argument2)) {
-         // Do something with the mapped row
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(new SQL(SQL_SELECT))) {
+    for (var value : q.call(mapper, argument1, argument2)) {
+        // Do something with the mapped row
+    }
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(new SQL(SQL_SELECT))) {
-     q.call(mapper, argument1, argument2).forEach(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(new SQL(SQL_SELECT))) {
+    q.call(mapper, argument1, argument2).forEach(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(new SQL(SQL_SELECT))) {
-     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(new SQL(SQL_SELECT))) {
+    q.call1(mapper, argument1, argument2).ifPresent(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sql</code> - The SQL of the query.</dd>
@@ -609,29 +654,38 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Query</a></span>&nbsp;<span class="element-name">query</span><wbr><span class="parameters">(<a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql,
  boolean&nbsp;lockType)</span></div>
 <div class="block">Create a new query. Usage pattern:
- <pre>
- try (var q = conn.query(SQL_SELECT, false)) {
-     for (var value : q.call(mapper, argument1, argument2)) {
-         // Do something with the mapped row
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT, false)) {
+    for (var value : q.call(mapper, argument1, argument2)) {
+        // Do something with the mapped row
+    }
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(SQL_SELECT, false)) {
-     q.call(mapper, argument1, argument2).forEach(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT, false)) {
+    q.call(mapper, argument1, argument2).forEach(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var q = conn.query(SQL_SELECT, false)) {
-     q.call1(mapper, argument1, argument2).ifPresent(value -&gt; {
-         // Do something with the mapped row
-     });
- }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var q = conn.query(SQL_SELECT, false)) {
+    q.call1(mapper, argument1, argument2).ifPresent(value -&amp;gt; {
+        // Do something with the mapped row
+    });
+}
+</code></pre>
+</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sql</code> - The SQL of the query.</dd>
@@ -656,27 +710,35 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(<a href="https://errorprone.info/api/latest/com/google/errorprone/annotations/CompileTimeConstant.html" title="class or interface in com.google.errorprone.annotations" class="external-link">@CompileTimeConstant</a>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sql)</span></div>
 <div class="block">Create a new update. Usage pattern:
- <pre>
- try (var u = conn.update(SQL_UPDATE)) {
-     int numRows = u.call(argument1, argument2);
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(SQL_UPDATE)) {
+    int numRows = u.call(argument1, argument2);
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var u = conn.update(SQL_INSERT)) {
-     for (var key : u.keys(argument1, argument2)) {
-         // Do something with the key
-     }
- }
- </pre>
- or even:
- <pre>
- try (var u = conn.update(SQL_INSERT)) {
-     u.key(argument1, argument2).ifPresent(key -&gt; {
-         // Do something with the key
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(SQL_INSERT)) {
+    for (var key : u.keys(argument1, argument2)) {
+        // Do something with the key
+    }
+}
+</code></pre>
+</div>
+
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(SQL_INSERT)) {
+    u.key(argument1, argument2).ifPresent(key -&amp;gt; {
+        // Do something with the key
+    });
+}
+</code></pre>
+</div>
+
  <p>
  <strong>Note:</strong> If you use a <code>RETURNING</code> clause then
  you should use a <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> with the <code>lockType</code> set to
@@ -704,27 +766,36 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <h3>update</h3>
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html" title="class or interface in org.springframework.core.io" class="external-link">Resource</a>&nbsp;sqlResource)</span></div>
 <div class="block">Create a new update.
- <pre>
- try (var u = conn.update(sqlUpdateResource)) {
-     int numRows = u.call(argument1, argument2);
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(sqlUpdateResource)) {
+    int numRows = u.call(argument1, argument2);
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var u = conn.update(sqlInsertResource)) {
-     for (var key : u.keys(argument1, argument2)) {
-         // Do something with the key
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(sqlInsertResource)) {
+    for (var key : u.keys(argument1, argument2)) {
+        // Do something with the key
+    }
+}
+</code></pre>
+</div>
+
  or even:
- <pre>
- try (var u = conn.update(sqlInsertResource)) {
-     u.key(argument1, argument2).ifPresent(key -&gt; {
-         // Do something with the key
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(sqlInsertResource)) {
+    u.key(argument1, argument2).ifPresent(key -&amp;gt; {
+        // Do something with the key
+    });
+}
+</code></pre>
+</div>
+
  <p>
  <strong>Note:</strong> If you use a <code>RETURNING</code> clause then
  you should use a <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> with the <code>lockType</code> set to
@@ -752,27 +823,36 @@ extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/ja
 <h3>update</h3>
 <div class="member-signature"><span class="return-type"><a href="DatabaseAPI.Update.html" title="interface in uk.ac.manchester.spinnaker.alloc.db">DatabaseAPI.Update</a></span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(<a href="SQL.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQL</a>&nbsp;sql)</span></div>
 <div class="block">Create a new update. Usage pattern:
- <pre>
- try (var u = conn.update(new SQL(SQL_UPDATE))) {
-     int numRows = u.call(argument1, argument2);
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(new SQL(SQL_UPDATE))) {
+    int numRows = u.call(argument1, argument2);
+}
+</code></pre>
+</div>
+
  or:
- <pre>
- try (var u = conn.update(new SQL(SQL_INSERT))) {
-     for (var key : u.keys(argument1, argument2)) {
-         // Do something with the key
-     }
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(new SQL(SQL_INSERT))) {
+    for (var key : u.keys(argument1, argument2)) {
+        // Do something with the key
+    }
+}
+</code></pre>
+</div>
+
  or even:
- <pre>
- try (var u = conn.update(new SQL(SQL_INSERT))) {
-     u.key(argument1, argument2).ifPresent(key -&gt; {
-         // Do something with the key
-     });
- }
- </pre>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code class="language-java">try (var u = conn.update(new SQL(SQL_INSERT))) {
+    u.key(argument1, argument2).ifPresent(key -&amp;gt; {
+        // Do something with the key
+    });
+}
+</code></pre>
+</div>
+
  <p>
  <strong>Note:</strong> If you use a <code>RETURNING</code> clause then
  you should use a <a href="DatabaseAPI.Query.html" title="interface in uk.ac.manchester.spinnaker.alloc.db"><code>DatabaseAPI.Query</code></a> with the <code>lockType</code> set to

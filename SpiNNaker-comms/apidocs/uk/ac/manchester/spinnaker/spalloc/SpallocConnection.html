@@ -270,11 +270,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Context adapter. Allows this code to be used like this:
 
- <pre>
- try (var c = client.withConnection()) {
-     ...
- }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>try (var c = client.withConnection()) {
+    ...
+}
+</code></pre>
+</div>
+</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the auto-closeable context.</dd>
@@ -340,10 +343,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dt>Returns:</dt>
 <dd>The unpacked response from the line received.</dd>
 <dt>Throws:</dt>
-<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
-<dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the socket gets an empty response.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If the socket is unusable or becomes disconnected.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted, eventually</dd>
+<dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the socket gets an empty response.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
 </dl>
 </section>
 </li>
@@ -361,8 +364,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dd><code>timeout</code> - The number of milliseconds to wait before timing out or
             <code>null</code> if this function should try again forever.</dd>
 <dt>Throws:</dt>
-<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If the socket is unusable or becomes disconnected.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
 </dl>
 </section>
 </li>
@@ -419,10 +422,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <dt>Returns:</dt>
 <dd>The result string returned by the server.</dd>
 <dt>Throws:</dt>
-<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the server sends an error.</dd>
-<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
-<dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the connection is unavailable or is closed.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code> - If interrupted, eventually</dd>
+<dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the connection is unavailable or is closed.</dd>
+<dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
+<dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the server sends an error.</dd>
 </dl>
 </section>
 </li>

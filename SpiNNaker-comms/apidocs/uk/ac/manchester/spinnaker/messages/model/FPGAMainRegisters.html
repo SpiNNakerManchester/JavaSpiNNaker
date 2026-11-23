@@ -264,13 +264,16 @@ the order they are declared.</div>
 <h3>FLAG</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FPGAMainRegisters.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></span>&nbsp;<span class="element-name">FLAG</span></div>
 <div class="block">Compile flags.
- <pre>
- {   5: chip scope,
-     4: peripheral support,
-     3: ring support,
-     2: north/south on front,
-   1-0: FPGA ID }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>{   5: chip scope,
+    4: peripheral support,
+    3: ring support,
+    2: north/south on front,
+  1-0: FPGA ID }
+</code></pre>
+</div>
+</div>
 </section>
 </li>
 <li>
@@ -293,12 +296,15 @@ the order they are declared.</div>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FPGAMainRegisters.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></span>&nbsp;<span class="element-name">SCRM</span></div>
 <div class="block">Scrambler on. (default: 0xF)
 
- <pre>
- { 3: ring link,
-   2: peripheral link,
-   1: board-to-board link1,
-   0: board-to-board link0 }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>{ 3: ring link,
+  2: peripheral link,
+  1: board-to-board link1,
+  0: board-to-board link0 }
+</code></pre>
+</div>
+</div>
 </section>
 </li>
 <li>
@@ -307,13 +313,16 @@ the order they are declared.</div>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FPGAMainRegisters.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></span>&nbsp;<span class="element-name">SLEN</span></div>
 <div class="block">Enable SpiNNaker chip (2-of-7) link. (Default: <code>0x00000000</code>)
 
- <pre>
- { 0: Link 0 SpiNN-&gt;FPGA enable,
-   1: Link 0 FPGA-&gt;SpiNN enable,
-   2: Link 1 SpiNN-&gt;FPGA enable,
-   3: Link 1 FPGA-&gt;SpiNN enable,
-   ... }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>{ 0: Link 0 SpiNN-&amp;gt;FPGA enable,
+  1: Link 0 FPGA-&amp;gt;SpiNN enable,
+  2: Link 1 SpiNN-&amp;gt;FPGA enable,
+  3: Link 1 FPGA-&amp;gt;SpiNN enable,
+  ... }
+</code></pre>
+</div>
+</div>
 </section>
 </li>
 <li>
@@ -322,16 +331,19 @@ the order they are declared.</div>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FPGAMainRegisters.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></span>&nbsp;<span class="element-name">LEDO</span></div>
 <div class="block">Override status LED. (default: <code>0x0F</code>)
 
- <pre>
- { 7: DIM_RING,
-   6: DIM_PERIPH,
-   5: DIM_B2B1,
-   4: DIM_B2B0,
-   3: FORCE_ERROR_RING,
-   2: FORCE_ERROR_PERIPH,
-   1: FORCE_ERROR_B2B1,
-   0: FORCE_ERROR_B2B0 }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>{ 7: DIM_RING,
+  6: DIM_PERIPH,
+  5: DIM_B2B1,
+  4: DIM_B2B0,
+  3: FORCE_ERROR_RING,
+  2: FORCE_ERROR_PERIPH,
+  1: FORCE_ERROR_B2B1,
+  0: FORCE_ERROR_B2B0 }
+</code></pre>
+</div>
+</div>
 </section>
 </li>
 <li>
@@ -340,12 +352,15 @@ the order they are declared.</div>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FPGAMainRegisters.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></span>&nbsp;<span class="element-name">RXEQ</span></div>
 <div class="block">Receive equalization. (default: <code>0x0A</code>)
 
- <pre>
- { 7-6: RING_RXEQMIX,
-   5-4: PERIPH_RXEQMIX,
-   3-2: B2B1_RXEQMIX,
-   1-0: B2B0_RXEQMIX }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>{ 7-6: RING_RXEQMIX,
+  5-4: PERIPH_RXEQMIX,
+  3-2: B2B1_RXEQMIX,
+  1-0: B2B0_RXEQMIX }
+</code></pre>
+</div>
+</div>
 </section>
 </li>
 <li>
@@ -354,12 +369,15 @@ the order they are declared.</div>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FPGAMainRegisters.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></span>&nbsp;<span class="element-name">TXDS</span></div>
 <div class="block">Transmit driver swing. (default: <code>0x0066</code>)
 
- <pre>
- { 15-12: RING_TXDIFFCTRL,
-    11-8: PERIPH_TXDIFFCTRL,
-     7-4: B2B1_TXDIFFCTRL,
-     3-0: B2B0_TXDIFFCTRL }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>{ 15-12: RING_TXDIFFCTRL,
+   11-8: PERIPH_TXDIFFCTRL,
+    7-4: B2B1_TXDIFFCTRL,
+    3-0: B2B0_TXDIFFCTRL }
+</code></pre>
+</div>
+</div>
 </section>
 </li>
 <li>
@@ -368,12 +386,15 @@ the order they are declared.</div>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="FPGAMainRegisters.html" title="enum class in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></span>&nbsp;<span class="element-name">TXPE</span></div>
 <div class="block">Transmit pre-emphasis. (default: <code>0x012</code>)
 
- <pre>
- { 11-9: RING_TXPREEMPHASIS,
-    8-6: PERIPH_TXPREEMPHASIS,
-    5-3: B2B1_TXPREEMPHASIS,
-    2-0: B2B0_TXPREEMPHASIS }
- </pre></div>
+ 
+<div class="snippet-container"><button class="copy snippet-copy" aria-label="Copy snippet" onclick="copySnippet(this)"><span data-copied="Copied!">Copy</span><img src="../../../../../../copy.svg" alt="Copy snippet"></button>
+<pre class="snippet"><code>{ 11-9: RING_TXPREEMPHASIS,
+   8-6: PERIPH_TXPREEMPHASIS,
+   5-3: B2B1_TXPREEMPHASIS,
+   2-0: B2B0_TXPREEMPHASIS }
+</code></pre>
+</div>
+</div>
 </section>
 </li>
 </ul>
