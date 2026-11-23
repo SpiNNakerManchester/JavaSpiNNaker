@@ -48,9 +48,20 @@ limitations under the License.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
+		<property name="tabWidth" value="4" />
+
 		<module name="MissingDeprecated"/>
 		<module name="SuppressWarningsHolder" />
-		<property name="tabWidth" value="4" />
+
+		<!-- Blocks Checks -->
+		<module name="AvoidNestedBlocks"/>
+		<module name="EmptyBlock"/>
+		<module name="EmptyCatchBlock"/>
+		<module name="GoogleRightCurly"/>
+		<module name="LeftCurly"/>
+		<module name="NeedBraces"/>
+		<module name="RightCurly"/>
+
 		<module name="RegexpSinglelineJava">
 			<property name="format" value="^\t* "/>
 			<property name="message" value="Indent must use tab characters"/>
