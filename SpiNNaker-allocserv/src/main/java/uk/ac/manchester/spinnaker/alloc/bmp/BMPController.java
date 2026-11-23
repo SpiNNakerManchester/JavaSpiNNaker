@@ -525,12 +525,12 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param controllers
 		 *            How to actually communicate with the machine
-		 * @throws ProcessException
-		 *             If the transceiver chokes
-		 * @throws InterruptedException
-		 *             If interrupted
 		 * @throws IOException
 		 *             If network I/O fails
+		 * @throws InterruptedException
+		 *             If interrupted
+		 * @throws ProcessException
+		 *             If the transceiver chokes
 		 */
 		void changeBoardPowerState(SpiNNakerControl controller)
 				throws ProcessException, InterruptedException, IOException {
@@ -932,10 +932,10 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param controller
 		 *            How to actually reach the BMP.
-		 * @throws InterruptedException
-		 *             If interrupted.
 		 * @throws IOException
 		 *             If the network is unhappy.
+		 * @throws InterruptedException
+		 *             If interrupted.
 		 * @throws ProcessException
 		 *             If the BMP rejects a message.
 		 */
@@ -966,15 +966,15 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param controller
 		 *            How to actually reach the BMP.
-		 * @throws InterruptedException
-		 *             If interrupted.
 		 * @throws IOException
 		 *             If the network is unhappy.
-		 * @throws ProcessException
-		 *             If the BMP rejects a message.
 		 * @throws IllegalStateException
 		 *             If the operation is applied to a board other than the one
 		 *             that it is expected to apply to.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 * @throws ProcessException
+		 *             If the BMP rejects a message.
 		 */
 		private void writeBlacklist(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
@@ -997,10 +997,10 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param controller
 		 *            How to actually reach the BMP.
-		 * @throws InterruptedException
-		 *             If interrupted.
 		 * @throws IOException
 		 *             If the network is unhappy
+		 * @throws InterruptedException
+		 *             If interrupted.
 		 * @throws ProcessException
 		 *             If the BMP rejects a message.
 		 */
@@ -1020,10 +1020,10 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param controller
 		 *            How to actually reach the BMP.
-		 * @throws InterruptedException
-		 *             If interrupted.
 		 * @throws IOException
 		 *             If the network is unhappy.
+		 * @throws InterruptedException
+		 *             If interrupted.
 		 * @throws ProcessException
 		 *             If the BMP rejects a message.
 		 */
@@ -1259,10 +1259,10 @@ public class BMPController extends DatabaseAwareBean {
 		 *            The BMPs to be updated.
 		 * @throws IOException
 		 *             If talking to the network fails
-		 * @throws SpinnmanException
-		 *             If a BMP sends an error back
 		 * @throws InterruptedException
 		 *             If the wait for workers to spawn fails.
+		 * @throws SpinnmanException
+		 *             If a BMP sends an error back
 		 */
 		void processRequests(long millis, Collection<Integer> bmps)
 				throws IOException, SpinnmanException, InterruptedException;
@@ -1275,10 +1275,10 @@ public class BMPController extends DatabaseAwareBean {
 		 *            scheduler. If zero (or less), only one run will be done.
 		 * @throws IOException
 		 *             If talking to the network fails
-		 * @throws SpinnmanException
-		 *             If a BMP sends an error back
 		 * @throws InterruptedException
 		 *             If the wait for workers to spawn fails.
+		 * @throws SpinnmanException
+		 *             If a BMP sends an error back
 		 */
 		void processRequests(long millis)
 				throws IOException, SpinnmanException, InterruptedException;
@@ -1305,13 +1305,11 @@ public class BMPController extends DatabaseAwareBean {
 	 * Testing method, Do not use outside of tests.
 	 *
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	public final TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {

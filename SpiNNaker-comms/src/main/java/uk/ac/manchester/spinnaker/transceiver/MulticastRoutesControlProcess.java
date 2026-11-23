@@ -130,12 +130,12 @@ class MulticastRoutesControlProcess extends TxrxProcess {
 	 *            The application ID associated with the routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
 	 * @throws IllegalArgumentException
 	 *             If there are more routes to apply than can fit in a router.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 * @throws RuntimeException
 	 *             If on-chip memory allocation fails.
 	 */
@@ -173,10 +173,10 @@ class MulticastRoutesControlProcess extends TxrxProcess {
 	 * @return The list of routes.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			MemoryLocation baseAddress, AppID appID)

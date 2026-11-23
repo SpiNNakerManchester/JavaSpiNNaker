@@ -90,12 +90,10 @@ public interface LocalAuthenticationProvider<TestAPI>
 	 * Testing method, other use not supported.
 	 *
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	TestAPI getTestAPI();
 }

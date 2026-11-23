@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
  *
- * <pre>
+ * {@snippet :
  *       Job ID: 6037654
  *        Owner: gorp
  *        State: ready
@@ -50,7 +50,7 @@ import uk.ac.manchester.spinnaker.machine.ValidMachineWidth;
  *   Num boards: 1
  *  Board power: on
  *   Running on: SpiNNaker1M
- * </pre>
+ * }
  *
  * (That's actually slightly edited output from {@code spalloc-job -info})
  */

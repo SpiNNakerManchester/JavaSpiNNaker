@@ -48,6 +48,7 @@ limitations under the License.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
+		<module name="MissingDeprecated"/>
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
 		<module name="RegexpSinglelineJava">
@@ -93,7 +94,7 @@ limitations under the License.
 		<!-- module name="JavadocRegexp"/ Currently no regex we want to avoid -->
 		<module name="JavadocSeeTagOrder"/>
 		<module name="JavadocTagContinuationIndentation"/>
-		<!-- module name="JavadocThrowsOrder"/ Lots of places this is not followed tey. -->
+		<module name="JavadocThrowsOrder"/>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />
@@ -105,12 +106,12 @@ limitations under the License.
 		</module>
 		<module name="MissingJavadocMethod"/>
 		<module name="MissingJavadocPackage"/>
-		<!-- module name="MissingJavadocType"/ Some missing -->
+		<module name="MissingJavadocType"/>
 		<module name="NonEmptyAtclauseDescription"/>
-		<!-- module name="PreferCodeOrSnippetJavadocInlineTag"/ currently we use html tags -->
-		<!-- module name="PreferLiteralJavadocInlineTag"/ currently we use html tags -->
+		<module name="PreferCodeOrSnippetJavadocInlineTag"/>
+		<module name="PreferLiteralJavadocInlineTag"/>
 		<!-- module name="RequireEmptyLineBeforeBlockTagGroup"/ not respected also docs with just return -->
-		<!-- module name="SingleLineJavadoc"/ not respected also docs with just return -->
+		<module name="SingleLineJavadoc"/>
 		<!-- module name="SummaryJavadoc"/ Currently not respected -->
 		<module name="SummaryJavadoc"/>
 		<!--  module name="WriteTag"/ No user defined tags required-->

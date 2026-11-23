@@ -116,12 +116,12 @@ public class BMPConnectionData {
 	 *            the SpiNNaker machine main host
 	 * @param numBoards
 	 *            the number of boards in the machine
-	 * @throws UnknownHostException
-	 *             If the IP address computations fail
 	 * @throws IllegalArgumentException
 	 *             If a host with an address that can't be related to a BMP is
 	 *             given. Specifically, the given IP address can't end in
 	 *             {@code .0} or {@code .1} or things will not work.
+	 * @throws UnknownHostException
+	 *             If the IP address computations fail
 	 */
 	public BMPConnectionData(InetAddress host, int numBoards)
 			throws UnknownHostException {

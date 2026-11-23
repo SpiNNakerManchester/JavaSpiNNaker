@@ -500,10 +500,10 @@ public class FirmwareLoader {
 	 *            The registers to set.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 * @throws UpdateFailedException
 	 *             If the flash data sector read back does not match what we
 	 *             wanted to write.
@@ -532,19 +532,19 @@ public class FirmwareLoader {
 	 *            Which slot to install the bitfile in.
 	 * @param chip
 	 *            Which chip or chips are to load the bitfile.
+	 * @throws CRCFailedException
+	 *             If the written bitfile fails its CRC check.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If the communications were interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws TooLargeException
 	 *             If the bitfile is too large for the BMP's buffer.
-	 * @throws CRCFailedException
-	 *             If the written bitfile fails its CRC check.
 	 * @throws UpdateFailedException
 	 *             If the flash data sector read back does not match what we
 	 *             wanted to write.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
 	 */
 	public void setupBitfile(String handle, int slot, FPGA chip)
 			throws IOException, ProcessException, InterruptedException {
@@ -586,14 +586,14 @@ public class FirmwareLoader {
 	 *
 	 * @param postDelay
 	 *            Whether to do the long delay after the FPGA boot/check
+	 * @throws FirmwareLoaderException
+	 *             If something goes wrong.
+	 * @throws IOException
+	 *             If the network fails or the packaged bitfiles are unreadable
 	 * @throws InterruptedException
 	 *             If interrupted while sleeping
 	 * @throws ProcessException
 	 *             If a BMP rejects a message
-	 * @throws IOException
-	 *             If the network fails or the packaged bitfiles are unreadable
-	 * @throws FirmwareLoaderException
-	 *             If something goes wrong.
 	 */
 	public void bitLoad(boolean postDelay)
 			throws InterruptedException, ProcessException, IOException {
@@ -635,7 +635,6 @@ enum DataSectorTypes {
 	/** Chunk describes some registers to set. */
 	REGISTER(4),
 	/** Chunk is not recognised. */
-	@Deprecated
 	UNKNOWN(-1);
 
 	/** The value of the chunk's type code. */

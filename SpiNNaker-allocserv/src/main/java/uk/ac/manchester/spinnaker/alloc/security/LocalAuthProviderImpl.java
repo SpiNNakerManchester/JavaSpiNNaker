@@ -914,14 +914,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            How to access the database.
 	 * @return Whether the user is known. If {@code false}, the database cannot
 	 *         authenticate the user and some other auth method should be tried.
-	 * @throws UsernameNotFoundException
-	 *             If no account exists.
+	 * @throws BadCredentialsException
+	 *             If the password is invalid.
 	 * @throws DisabledException
 	 *             If the account is administratively disabled.
 	 * @throws LockedException
 	 *             If the account is temporarily locked.
-	 * @throws BadCredentialsException
-	 *             If the password is invalid.
+	 * @throws UsernameNotFoundException
+	 *             If no account exists.
 	 */
 	private boolean authLocalAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities, AuthQueries queries) {
@@ -1276,14 +1276,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * Testing method, other use not supported.
 	 *
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@Override
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	public TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {

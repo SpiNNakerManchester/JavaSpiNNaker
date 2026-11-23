@@ -244,10 +244,10 @@ public abstract class UDPTransceiver implements Closeable {
 	 *            The optional hostname or IP address to listen on; if not
 	 *            specified, all interfaces will be used for listening
 	 * @return The connection to be used
-	 * @throws IllegalArgumentException
-	 *             If basic sanity checks fail.
 	 * @throws IOException
 	 *             If the networking fails.
+	 * @throws IllegalArgumentException
+	 *             If basic sanity checks fail.
 	 */
 	public final EIEIOConnection registerEIEIOListener(
 			EIEIOMessageHandler callback, int localPort,
@@ -298,10 +298,10 @@ public abstract class UDPTransceiver implements Closeable {
 	 * @param localPort
 	 *            The local UDP port to bind.
 	 * @return The connection to be used
-	 * @throws IllegalArgumentException
-	 *             If basic sanity checks fail.
 	 * @throws IOException
 	 *             If the networking fails.
+	 * @throws IllegalArgumentException
+	 *             If basic sanity checks fail.
 	 */
 	public final EIEIOConnection registerEIEIOListener(
 			EIEIOMessageHandler callback, int localPort) throws IOException {
@@ -315,10 +315,10 @@ public abstract class UDPTransceiver implements Closeable {
 	 *            Function to be called when a packet is received.
 	 *            Must not be {@code null}.
 	 * @return The connection to be used
-	 * @throws IllegalArgumentException
-	 *             If basic sanity checks fail.
 	 * @throws IOException
 	 *             If the networking fails.
+	 * @throws IllegalArgumentException
+	 *             If basic sanity checks fail.
 	 */
 	public final EIEIOConnection registerEIEIOListener(
 			EIEIOMessageHandler callback) throws IOException {

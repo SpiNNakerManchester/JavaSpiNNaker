@@ -195,10 +195,10 @@ public class TransceiverFactory
 	 *            The information about the BMP and the boards to manage.
 	 * @throws IOException
 	 *             If network access fails
-	 * @throws SpinnmanException
-	 *             If transceiver building fails
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws SpinnmanException
+	 *             If transceiver building fails
 	 */
 	private Transceiver makeTransceiver(BMPConnectionData data)
 			throws IOException, SpinnmanException, InterruptedException {
@@ -281,13 +281,11 @@ public class TransceiverFactory
 	 * Not a public API! Do not call outside of test code.
 	 *
 	 * @return The test interface.
-	 * @deprecated This interface is just for testing.
 	 * @hidden
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
 			allowedOnPath = ".*/src/test/java/.*")
-	@Deprecated
 	public final TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {

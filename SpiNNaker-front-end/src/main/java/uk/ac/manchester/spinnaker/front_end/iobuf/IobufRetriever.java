@@ -114,10 +114,10 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 *         messages is not determined.
 	 * @throws IOException
 	 *             If network IO fails or the mapping dictionary is absent.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 * @throws RuntimeException
 	 *             If an unexpected exception happens.
 	 */
@@ -165,10 +165,10 @@ public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	 *         messages is not determined.
 	 * @throws IOException
 	 *             If network IO fails or the mapping dictionary is absent.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 * @throws RuntimeException
 	 *             If an unexpected exception happens.
 	 */

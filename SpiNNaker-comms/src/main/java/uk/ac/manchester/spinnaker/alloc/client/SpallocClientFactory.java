@@ -267,10 +267,10 @@ public class SpallocClientFactory {
 	 *            higher level)
 	 * @return The input stream so any non-error response content can be
 	 *         obtained.
-	 * @throws IOException
-	 *             If things go wrong with comms.
 	 * @throws FileNotFoundException
 	 *             on a {@link HttpURLConnection#HTTP_NOT_FOUND}
+	 * @throws IOException
+	 *             If things go wrong with comms.
 	 * @throws SpallocException
 	 *             on other server errors
 	 */
@@ -296,10 +296,10 @@ public class SpallocClientFactory {
 	 * @param errorMessage
 	 *            The message to use on error (describes what did not work at a
 	 *            higher level)
-	 * @throws IOException
-	 *             If things go wrong with comms.
 	 * @throws FileNotFoundException
 	 *             on a {@link HttpURLConnection#HTTP_NOT_FOUND}
+	 * @throws IOException
+	 *             If things go wrong with comms.
 	 * @throws SpallocException
 	 *             on other server errors
 	 */

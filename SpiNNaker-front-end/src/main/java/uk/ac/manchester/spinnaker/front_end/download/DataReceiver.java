@@ -107,12 +107,12 @@ public class DataReceiver extends BoardLocalSupport implements AutoCloseable {
 	 *            Number of threads to use.
 	 * @throws IOException
 	 *             if communications fail
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             if SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             if database access fails
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	public void getDataForPlacementsParallel(List<Placement> placements,
 			int parallelFactor) throws IOException, StorageException,
@@ -143,12 +143,12 @@ public class DataReceiver extends BoardLocalSupport implements AutoCloseable {
 	 *            List of placements.
 	 * @throws IOException
 	 *             if communications fail
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             if SpiNNaker rejects a message
 	 * @throws StorageException
 	 *             if database access fails
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	public void getDataForPlacements(List<Placement> placements)
 			throws IOException, StorageException, ProcessException,
