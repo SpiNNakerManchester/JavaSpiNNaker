@@ -50,6 +50,7 @@ public class IOBuffer implements HasCoreLocation {
 
 	/**
 	 * Constructs the contents of the IOBUF based on a buffer.
+	 *
 	 * @param core
 	 *            The coordinates of a core
 	 * @param contents

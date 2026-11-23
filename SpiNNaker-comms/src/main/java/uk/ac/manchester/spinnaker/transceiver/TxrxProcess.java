@@ -950,6 +950,7 @@ public class TxrxProcess {
 		/**
 		 * Constructs a timeout exception recording the request
 		 *     and how long it was tried.
+		 *
 		 * @param req
 		 *            The request that timed out.
 		 * @param timeout
