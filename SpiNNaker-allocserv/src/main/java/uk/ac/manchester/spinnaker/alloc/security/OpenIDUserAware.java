@@ -67,6 +67,7 @@ public interface OpenIDUserAware {
 
 	/**
 	 * {@return The OpenID subject identifier}
+	 *
 	 * @throws IllegalStateException
 	 *             If the object was made without either a user or a token.
 	 */
@@ -90,6 +91,7 @@ public interface OpenIDUserAware {
 
 	/**
 	 * {@return The real name of the OpenID user}
+	 *
 	 * @throws IllegalStateException
 	 *             If the object was made without either a user or a token.
 	 */
