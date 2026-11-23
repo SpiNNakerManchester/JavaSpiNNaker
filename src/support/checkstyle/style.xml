@@ -105,7 +105,7 @@ limitations under the License.
 		</module>
 		<module name="MissingJavadocMethod"/>
 		<module name="MissingJavadocPackage"/>
-		<!-- module name="MissingJavadocType"/ Some missing -->
+		<module name="MissingJavadocType"/>
 		<module name="NonEmptyAtclauseDescription"/>
 		<!-- module name="PreferCodeOrSnippetJavadocInlineTag"/ currently we use html tags -->
 		<!-- module name="PreferLiteralJavadocInlineTag"/ currently we use html tags -->

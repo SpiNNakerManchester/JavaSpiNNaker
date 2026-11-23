@@ -94,6 +94,9 @@ public class DockerCreateRequest {
 		return networkingConfig;
 	}
 
+	/**
+	 * Networking Configuration based on an End point with this network name.
+	 */
 	public static final class NetworkingConfig {
 		private final EndpointsConfig endpointsConfig;
 
@@ -116,6 +119,9 @@ public class DockerCreateRequest {
 		}
 	}
 
+	/**
+	 * Description of the endpoint based on the network name.
+	 */
 	public static final class EndpointsConfig {
 		private final String networkID;
 
