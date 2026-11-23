@@ -109,6 +109,7 @@ public class Downloader implements AutoCloseable {
 
 	/**
 	 * Create an instance.
+	 *
 	 * @param iptag
 	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
