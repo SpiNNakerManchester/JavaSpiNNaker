@@ -81,10 +81,10 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *            multicast router control API.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
@@ -133,10 +133,10 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *            multicast router control API.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
@@ -163,10 +163,10 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *            multicast router control API.
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
@@ -199,10 +199,10 @@ public class NoDropPacketContext implements AutoCloseable {
 	 *
 	 * @throws IOException
 	 *             If communications fail.
-	 * @throws ProcessException
-	 *             If SCAMP or an extra monitor rejects a message.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SCAMP or an extra monitor rejects a message.
 	 */
 	@Override
 	public void close()

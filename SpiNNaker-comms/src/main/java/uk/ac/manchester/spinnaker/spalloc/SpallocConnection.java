@@ -119,11 +119,11 @@ public abstract class SpallocConnection implements Closeable {
 	/**
 	 * Context adapter. Allows this code to be used like this:
 	 *
-	 * <pre>
+	 * {@snippet :
 	 * try (var c = client.withConnection()) {
 	 *     ...
 	 * }
-	 * </pre>
+	 * }
 	 *
 	 * @return the auto-closeable context.
 	 * @throws IOException
@@ -300,14 +300,14 @@ public abstract class SpallocConnection implements Closeable {
 	 *            The number of milliseconds to wait before timing out or
 	 *            {@code null} if this function should try again forever.
 	 * @return The unpacked response from the line received.
-	 * @throws SpallocProtocolTimeoutException
-	 *             If a timeout occurs.
-	 * @throws SpallocProtocolException
-	 *             If the socket gets an empty response.
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
 	 * @throws InterruptedException
 	 *             If interrupted, eventually
+	 * @throws SpallocProtocolException
+	 *             If the socket gets an empty response.
+	 * @throws SpallocProtocolTimeoutException
+	 *             If a timeout occurs.
 	 */
 	protected Response receiveResponse(Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException,
@@ -330,10 +330,10 @@ public abstract class SpallocConnection implements Closeable {
 	 * @param timeout
 	 *            The number of milliseconds to wait before timing out or
 	 *            {@code null} if this function should try again forever.
-	 * @throws SpallocProtocolTimeoutException
-	 *             If a timeout occurs.
 	 * @throws IOException
 	 *             If the socket is unusable or becomes disconnected.
+	 * @throws SpallocProtocolTimeoutException
+	 *             If a timeout occurs.
 	 */
 	protected void sendCommand(Command<?> command, Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException {
@@ -398,14 +398,14 @@ public abstract class SpallocConnection implements Closeable {
 	 *            The number of milliseconds to wait before timing out or
 	 *            {@code null} if this function should wait forever.
 	 * @return The result string returned by the server.
-	 * @throws SpallocServerException
-	 *             If the server sends an error.
-	 * @throws SpallocProtocolTimeoutException
-	 *             If a timeout occurs.
-	 * @throws SpallocProtocolException
-	 *             If the connection is unavailable or is closed.
 	 * @throws InterruptedException
 	 *             If interrupted, eventually
+	 * @throws SpallocProtocolException
+	 *             If the connection is unavailable or is closed.
+	 * @throws SpallocProtocolTimeoutException
+	 *             If a timeout occurs.
+	 * @throws SpallocServerException
+	 *             If the server sends an error.
 	 */
 	protected String call(Command<?> command, Integer timeout)
 			throws SpallocServerException, SpallocProtocolTimeoutException,

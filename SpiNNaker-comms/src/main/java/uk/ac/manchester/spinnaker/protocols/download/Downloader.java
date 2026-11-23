@@ -113,10 +113,10 @@ public class Downloader implements AutoCloseable {
 	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -130,10 +130,10 @@ public class Downloader implements AutoCloseable {
 	 *
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
 	 */
 	public void reuse()
 			throws IOException, ProcessException, InterruptedException {
@@ -158,10 +158,10 @@ public class Downloader implements AutoCloseable {
 	 *         error occurred.
 	 * @throws IOException
 	 *             If anything unexpected goes wrong.
-	 * @throws ProcessException
-	 *             If anything unexpected goes wrong.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If anything unexpected goes wrong.
 	 */
 	public ByteBuffer doDownload(
 			HasCoreLocation monitorCore, MemoryLocation address,
@@ -230,11 +230,11 @@ public class Downloader implements AutoCloseable {
 	 * @return True if we have finished.
 	 * @throws IOException
 	 *             If packet reception or retransmission requesting fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws TimeoutException
 	 *             If we have a full timeout, or if we are flailing around,
 	 *             making no progress.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	private boolean processOnePacket(int timeout, int transactionId,
 			HasCoreLocation monitorCore)
@@ -261,10 +261,10 @@ public class Downloader implements AutoCloseable {
 	 *             If the packet is an end-of-stream packet yet there are
 	 *             packets outstanding, and the retransmission causes an
 	 *             error.
-	 * @throws TimeoutException
-	 *             If we are flailing around, making no progress.
 	 * @throws InterruptedException
 	 *             If we are interrupted.
+	 * @throws TimeoutException
+	 *             If we are flailing around, making no progress.
 	 */
 	private boolean processData(ByteBuffer data, int transactionId,
 			HasCoreLocation monitorCore)
@@ -328,10 +328,10 @@ public class Downloader implements AutoCloseable {
 	 * @throws IOException
 	 *             If there are packets outstanding, and the retransmission
 	 *             causes an error.
-	 * @throws TimeoutException
-	 *             If we have a full timeout.
 	 * @throws InterruptedException
 	 *             If we are interrupted.
+	 * @throws TimeoutException
+	 *             If we have a full timeout.
 	 */
 	private boolean processTimeout(int transactionId,
 			HasCoreLocation monitorCore)
@@ -355,10 +355,10 @@ public class Downloader implements AutoCloseable {
 	 * @return Whether there were really any packets to retransmit.
 	 * @throws IOException
 	 *             If there are failures.
-	 * @throws TimeoutException
-	 *             If we are flailing around, making no progress.
 	 * @throws InterruptedException
 	 *             If interrupted.
+	 * @throws TimeoutException
+	 *             If we are flailing around, making no progress.
 	 */
 	private boolean retransmitMissingSequences(int transactionId,
 			HasCoreLocation monitorCore)

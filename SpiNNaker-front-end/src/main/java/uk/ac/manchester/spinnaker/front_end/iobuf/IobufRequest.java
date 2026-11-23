@@ -39,13 +39,13 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 /**
  * The request to read some IOBUFs off a SpiNNaker system.
  * Parses a JSON request in this format:
- * <pre>
+ * {@snippet :
  *   {
  *      "/some/path/abc.aplx": [ [0,0,1], [0,0,2], [0,0,3] ],
  *      "/some/path/def.aplx": [ [0,1,1], [0,1,2], [0,1,3] ],
  *      "/some/path/ghi.aplx": [ [1,0,1], [1,0,2], [0,0,4] ]
  *   }
- * </pre>
+ * }
  */
 @JsonFormat(shape = OBJECT)
 @JsonAutoDetect(fieldVisibility = NONE)

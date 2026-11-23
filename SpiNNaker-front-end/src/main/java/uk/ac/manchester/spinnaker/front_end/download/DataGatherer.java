@@ -129,12 +129,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *         is just an assessment of data transfer quality.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	public int gather(List<Gather> gatherers) throws IOException,
 			ProcessException, StorageException, InterruptedException {
@@ -192,12 +192,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *         speed up packet gatherer) has to be downloaded.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	private Map<Gather, List<WorkItems>> discoverActualWork(
 			List<Gather> gatherers) throws IOException, ProcessException,
@@ -243,12 +243,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *            The tasks to run in the pool.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	private void parallel(Stream<SimpleCallable> tasks) throws IOException,
 			ProcessException, StorageException, InterruptedException {
@@ -271,14 +271,14 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *            The connection for talking to the board.
 	 * @throws IOException
 	 *             If IO fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If anything unexpected goes wrong.
 	 * @throws StorageException
 	 *             If DB access goes wrong.
 	 * @throws TimeoutException
 	 *             If a download times out unrecoverably.
-	 * @throws ProcessException
-	 *             If anything unexpected goes wrong.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	@SuppressWarnings("MustBeClosed")
 	private void fastDownload(List<WorkItems> work,
@@ -409,12 +409,12 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *         May be unmodifiable.
 	 * @throws IOException
 	 *             If communication fails.
+	 * @throws InterruptedException
+	 *             If communications are interrupted.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 * @throws StorageException
 	 *             If the database doesn't like something.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
 	 */
 	@UsedInJavadocOnly(BufferManagerStorage.class)
 	@ForOverride

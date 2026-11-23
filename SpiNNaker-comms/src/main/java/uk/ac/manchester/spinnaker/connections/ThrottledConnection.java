@@ -74,10 +74,10 @@ public class ThrottledConnection implements Closeable {
 	 *            The tag to reprogram to talk to this connection.
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")
@@ -100,12 +100,12 @@ public class ThrottledConnection implements Closeable {
 	 * Get a message from the connection.
 	 *
 	 * @return The content of the message.
-	 * @throws SocketTimeoutException
-	 *             If no message is received by the timeout.
 	 * @throws IOException
 	 *             If IO fails.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws SocketTimeoutException
+	 *             If no message is received by the timeout.
 	 */
 	public ByteBuffer receive()
 			throws SocketTimeoutException, IOException, InterruptedException {

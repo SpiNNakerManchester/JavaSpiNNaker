@@ -55,6 +55,10 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
+/**
+ * The protocol for talking to a particular extra monitor core
+ * on a particular board.
+ */
 public class FastDataIn implements AutoCloseable {
 
 	private static final Logger log = getLogger(FastDataIn.class);
@@ -112,10 +116,10 @@ public class FastDataIn implements AutoCloseable {
 	 * @param iptag The IPTag to use for communications.
 	 * @throws IOException
 	 *             If IO fails.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming of the tag.
 	 * @throws InterruptedException
 	 *             If communications are interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects the reprogramming of the tag.
 	 */
 	@MustBeClosed
 	@SuppressWarnings("MustBeClosed")

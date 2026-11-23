@@ -131,10 +131,10 @@ class GetMachineProcess extends TxrxProcess {
 	 * @return The machine description.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
 	 * @throws InterruptedException
 	 *             If the communications were interrupted.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
 	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
 			throws IOException, ProcessException, InterruptedException {
