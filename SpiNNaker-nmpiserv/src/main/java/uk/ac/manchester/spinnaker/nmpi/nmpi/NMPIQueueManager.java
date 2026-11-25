@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
 public interface NMPIQueueManager {
 	/**
 	 * Get jobs that are marked as running or in progress in some form.
+	 *
 	 * @return A list of jobs.
 	 */
 	List<? extends Job> getJobs();

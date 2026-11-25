@@ -64,6 +64,7 @@ public class BootConnection extends UDPConnection<BootMessage> {
 	/**
 	 * Create a boot connection where the mechanism for sending and receiving
 	 * messages is being overridden by a subclass.
+	 *
 	 * @param remoteHost
 	 *            The remote host to send packets to. If {@code null}, the
 	 *            socket will be available for listening only, and will throw

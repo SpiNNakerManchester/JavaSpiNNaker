@@ -112,6 +112,7 @@ public class SerialVector {
 
 	/**
 	 * {@return The board status block location}
+	 *
 	 * @see ReadADC
 	 */
 	public MemoryLocation getBoardStatusLocation() {

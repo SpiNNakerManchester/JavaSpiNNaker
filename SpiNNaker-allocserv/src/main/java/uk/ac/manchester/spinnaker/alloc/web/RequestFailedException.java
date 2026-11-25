@@ -135,6 +135,7 @@ public class RequestFailedException extends RuntimeException {
 
 		/**
 		 * Construct a resource believed to no longer to exist.
+		 *
 		 * @param message
 		 *            What message to use to say "its gone away".
 		 */

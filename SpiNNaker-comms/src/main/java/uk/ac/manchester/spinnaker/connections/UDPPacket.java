@@ -41,6 +41,7 @@ public class UDPPacket {
 
 	/**
 	 * Get the buffer with the content of the packet.
+	 *
 	 * @return The buffer
 	 */
 	public ByteBuffer getByteBuffer() {
@@ -49,6 +50,7 @@ public class UDPPacket {
 
 	/**
 	 * Get the address.
+	 *
 	 * @return The address
 	 */
 	public InetSocketAddress getAddress() {
