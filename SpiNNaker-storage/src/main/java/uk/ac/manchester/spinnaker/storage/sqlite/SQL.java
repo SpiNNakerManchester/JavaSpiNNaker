@@ -25,7 +25,6 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 abstract class SQL {
     private SQL() {
     }
-}
 
     // -----------------------------------------------------------------
     // Recording regions -----------------------------------------------
