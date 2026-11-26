@@ -22,7 +22,7 @@ limitations under the License.
 
 	<module name="SuppressionSingleFilter">
 		<property name="checks" value="FileTabCharacter"/>
-		<property name="files" files=".*\.java$"/>
+		<property name="files" value=".*\.java$"/>
 	</module>
 
 	<!-- Headers Checks (ALL) -->
