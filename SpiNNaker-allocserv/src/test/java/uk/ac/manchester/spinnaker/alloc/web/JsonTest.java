@@ -56,315 +56,315 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 class JsonTest {
-	private final ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-	JsonTest() {
-		// Set up the mapper in the same way that ServiceConfig does
-		mapper = JsonMapper.builder().findAndAddModules()
-				.disable(WRITE_DATES_AS_TIMESTAMPS)
-				.propertyNamingStrategy(KEBAB_CASE).build();
-	}
+    JsonTest() {
+        // Set up the mapper in the same way that ServiceConfig does
+        mapper = JsonMapper.builder().findAndAddModules()
+                .disable(WRITE_DATES_AS_TIMESTAMPS)
+                .propertyNamingStrategy(KEBAB_CASE).build();
+    }
 
-	private String serialize(Object obj) throws IOException {
-		return mapper.writeValueAsString(obj);
-	}
+    private String serialize(Object obj) throws IOException {
+        return mapper.writeValueAsString(obj);
+    }
 
-	private <T> T deserialize(String string, Class<T> cls) throws IOException {
-		return mapper.readValue(string, cls);
-	}
+    private <T> T deserialize(String string, Class<T> cls) throws IOException {
+        return mapper.readValue(string, cls);
+    }
 
-	private static UriInfo stubBuilder(String base) throws URISyntaxException {
-		var uri = new URI(base);
+    private static UriInfo stubBuilder(String base) throws URISyntaxException {
+        var uri = new URI(base);
 
-		return new StubUriInfo() {
-			@Override
-			public URI getRequestUri() {
-				return uri;
-			}
+        return new StubUriInfo() {
+            @Override
+            public URI getRequestUri() {
+                return uri;
+            }
 
-			@Override
-			public UriBuilder getRequestUriBuilder() {
-				return UriBuilder.fromUri(uri);
-			}
+            @Override
+            public UriBuilder getRequestUriBuilder() {
+                return UriBuilder.fromUri(uri);
+            }
 
-			@Override
-			public URI getAbsolutePath() {
-				return uri;
-			}
+            @Override
+            public URI getAbsolutePath() {
+                return uri;
+            }
 
-			@Override
-			public UriBuilder getAbsolutePathBuilder() {
-				return UriBuilder.fromUri(uri);
-			}
+            @Override
+            public UriBuilder getAbsolutePathBuilder() {
+                return UriBuilder.fromUri(uri);
+            }
 
-			@Override
-			public URI getBaseUri() {
-				return uri;
-			}
+            @Override
+            public URI getBaseUri() {
+                return uri;
+            }
 
-			@Override
-			public UriBuilder getBaseUriBuilder() {
-				return UriBuilder.fromUri(uri);
-			}
-		};
-	}
+            @Override
+            public UriBuilder getBaseUriBuilder() {
+                return UriBuilder.fromUri(uri);
+            }
+        };
+    }
 
-	private static class M extends StubMachine {
-		@Override
-		public int getId() {
-			return 0;
-		}
+    private static class M extends StubMachine {
+        @Override
+        public int getId() {
+            return 0;
+        }
 
-		@Override
-		public String getName() {
-			return "gorp";
-		}
+        @Override
+        public String getName() {
+            return "gorp";
+        }
 
-		@Override
-		public Set<String> getTags() {
-			return Set.of();
-		}
+        @Override
+        public Set<String> getTags() {
+            return Set.of();
+        }
 
-		@Override
-		public int getWidth() {
-			return 1;
-		}
+        @Override
+        public int getWidth() {
+            return 1;
+        }
 
-		@Override
-		public int getHeight() {
-			return 1;
-		}
+        @Override
+        public int getHeight() {
+            return 1;
+        }
 
-		@Override
-		public boolean isInService() {
-			return false;
-		}
+        @Override
+        public boolean isInService() {
+            return false;
+        }
 
-		@Override
-		public List<BoardCoords> getDeadBoards() {
-			return List.of();
-		}
+        @Override
+        public List<BoardCoords> getDeadBoards() {
+            return List.of();
+        }
 
-		@Override
-		public List<DownLink> getDownLinks() {
-			return List.of();
-		}
+        @Override
+        public List<DownLink> getDownLinks() {
+            return List.of();
+        }
 
-		@Override
-		public String getRootBoardBMPAddress() {
-			return "1.2.3.4";
-		}
+        @Override
+        public String getRootBoardBMPAddress() {
+            return "1.2.3.4";
+        }
 
-		@Override
-		public List<Integer> getBoardNumbers() {
-			return List.of();
-		}
+        @Override
+        public List<Integer> getBoardNumbers() {
+            return List.of();
+        }
 
-		@Override
-		public List<Integer> getAvailableBoards() {
-			return List.of();
-		}
+        @Override
+        public List<Integer> getAvailableBoards() {
+            return List.of();
+        }
 
-		@Override
-		public List<Integer> getBoardNumbers(BMPCoords bmp) {
-			return List.of();
-		}
+        @Override
+        public List<Integer> getBoardNumbers(BMPCoords bmp) {
+            return List.of();
+        }
 
-		@Override
-		public boolean isHorizonallyWrapped() {
-			return false;
-		}
+        @Override
+        public boolean isHorizonallyWrapped() {
+            return false;
+        }
 
-		@Override
-		public boolean isVerticallyWrapped() {
-			return false;
-		}
-	}
+        @Override
+        public boolean isVerticallyWrapped() {
+            return false;
+        }
+    }
 
-	private static class SM extends StubSubMachine {
-		@Override
-		public Machine getMachine() {
-			return new M();
-		}
+    private static class SM extends StubSubMachine {
+        @Override
+        public Machine getMachine() {
+            return new M();
+        }
 
-		@Override
-		public int getRootX() {
-			return 0;
-		}
+        @Override
+        public int getRootX() {
+            return 0;
+        }
 
-		@Override
-		public int getRootY() {
-			return 0;
-		}
+        @Override
+        public int getRootY() {
+            return 0;
+        }
 
-		@Override
-		public int getRootZ() {
-			return 0;
-		}
+        @Override
+        public int getRootZ() {
+            return 0;
+        }
 
-		@Override
-		public int getWidth() {
-			return 1;
-		}
+        @Override
+        public int getWidth() {
+            return 1;
+        }
 
-		@Override
-		public int getHeight() {
-			return 1;
-		}
+        @Override
+        public int getHeight() {
+            return 1;
+        }
 
-		@Override
-		public int getDepth() {
-			return 1;
-		}
+        @Override
+        public int getDepth() {
+            return 1;
+        }
 
-		@Override
-		public List<ConnectionInfo> getConnections() {
-			return List.of(new ConnectionInfo(ZERO_ZERO, "2.3.4.5"));
-		}
+        @Override
+        public List<ConnectionInfo> getConnections() {
+            return List.of(new ConnectionInfo(ZERO_ZERO, "2.3.4.5"));
+        }
 
-		@Override
-		public List<BoardCoordinates> getBoards() {
-			return List.of(new BoardCoordinates(0, 0, 0));
-		}
-	}
+        @Override
+        public List<BoardCoordinates> getBoards() {
+            return List.of(new BoardCoordinates(0, 0, 0));
+        }
+    }
 
-	@Nested
-	class Serialization {
-		@Test
-		void testServiceDescription() throws IOException, JSONException {
-			var d = new ServiceDescription();
-			d.setVersion(new Version("1.2.3"));
-			JSONAssert.assertEquals(
-					"{ \"version\": { \"major-version\": 1,"
-							+ "\"minor-version\": 2, \"revision\": 3 } }",
-					serialize(d), false);
-		}
+    @Nested
+    class Serialization {
+        @Test
+        void testServiceDescription() throws IOException, JSONException {
+            var d = new ServiceDescription();
+            d.setVersion(new Version("1.2.3"));
+            JSONAssert.assertEquals(
+                    "{ \"version\": { \"major-version\": 1,"
+                            + "\"minor-version\": 2, \"revision\": 3 } }",
+                    serialize(d), false);
+        }
 
-		@Test
-		void testStateResponse() throws IOException, JSONException {
-			var r = new JobStateResponse();
-			r.setState(JobState.READY);
-			r.setStartTime(Instant.ofEpochSecond(1633954394));
-			r.setKeepaliveHost("127.0.0.1");
-			r.setOwner("gorp");
-			JSONAssert.assertEquals(
-					"{ \"state\": \"READY\", "
-							+ "\"start-time\": \"2021-10-11T12:13:14Z\", "
-							+ "\"owner\": \"gorp\", "
-							+ "\"keepalive-host\": \"127.0.0.1\" }",
-					serialize(r), false);
-		}
+        @Test
+        void testStateResponse() throws IOException, JSONException {
+            var r = new JobStateResponse();
+            r.setState(JobState.READY);
+            r.setStartTime(Instant.ofEpochSecond(1633954394));
+            r.setKeepaliveHost("127.0.0.1");
+            r.setOwner("gorp");
+            JSONAssert.assertEquals(
+                    "{ \"state\": \"READY\", "
+                            + "\"start-time\": \"2021-10-11T12:13:14Z\", "
+                            + "\"owner\": \"gorp\", "
+                            + "\"keepalive-host\": \"127.0.0.1\" }",
+                    serialize(r), false);
+        }
 
-		@Test
-		void testSubMachineResponse() throws IOException, JSONException {
-			var r = new SubMachineResponse(new SM(), null);
-			JSONAssert.assertEquals(
-					"{ \"depth\": 1, \"width\": 1, \"height\": 1,"
-					+ "\"machine-name\": \"gorp\","
-					+ "\"boards\": [[0, 0, 0]],"
-					+ "\"connections\": [[[0, 0], \"2.3.4.5\"]] }",
-					serialize(r), true);
-		}
+        @Test
+        void testSubMachineResponse() throws IOException, JSONException {
+            var r = new SubMachineResponse(new SM(), null);
+            JSONAssert.assertEquals(
+                    "{ \"depth\": 1, \"width\": 1, \"height\": 1,"
+                    + "\"machine-name\": \"gorp\","
+                    + "\"boards\": [[0, 0, 0]],"
+                    + "\"connections\": [[[0, 0], \"2.3.4.5\"]] }",
+                    serialize(r), true);
+        }
 
-		@Test
-		void testWhereIsResponse()
-				throws IOException, JSONException, URISyntaxException {
-			var loc = new BoardLocation() {
-				@Override
-				public ChipLocation getBoardChip() {
-					return new ChipLocation(3, 4);
-				}
+        @Test
+        void testWhereIsResponse()
+                throws IOException, JSONException, URISyntaxException {
+            var loc = new BoardLocation() {
+                @Override
+                public ChipLocation getBoardChip() {
+                    return new ChipLocation(3, 4);
+                }
 
-				@Override
-				public ChipLocation getChipRelativeTo(ChipLocation rootChip) {
-					return new ChipLocation(11, 12);
-				}
+                @Override
+                public ChipLocation getChipRelativeTo(ChipLocation rootChip) {
+                    return new ChipLocation(11, 12);
+                }
 
-				@Override
-				public String getMachine() {
-					return "gorp";
-				}
+                @Override
+                public String getMachine() {
+                    return "gorp";
+                }
 
-				@Override
-				public BoardCoordinates getLogical() {
-					return new BoardCoordinates(5, 6, 0);
-				}
+                @Override
+                public BoardCoordinates getLogical() {
+                    return new BoardCoordinates(5, 6, 0);
+                }
 
-				@Override
-				public BoardPhysicalCoordinates getPhysical() {
-					return new BoardPhysicalCoordinates(7, 8, 9);
-				}
+                @Override
+                public BoardPhysicalCoordinates getPhysical() {
+                    return new BoardPhysicalCoordinates(7, 8, 9);
+                }
 
-				@Override
-				public ChipLocation getChip() {
-					return new ChipLocation(1, 2);
-				}
+                @Override
+                public ChipLocation getChip() {
+                    return new ChipLocation(1, 2);
+                }
 
-				@Override
-				public Job getJob() {
-					return new StubJob() {
-						@Override
-						public int getId() {
-							return 12345;
-						}
+                @Override
+                public Job getJob() {
+                    return new StubJob() {
+                        @Override
+                        public int getId() {
+                            return 12345;
+                        }
 
-						@Override
-						public Optional<ChipLocation> getRootChip() {
-							return Optional.of(new ChipLocation(0, 0));
-						}
-					};
-				}
-			};
-			var r = new WhereIsResponse(loc, stubBuilder("http://localhost/"));
-			JSONAssert.assertEquals(
-					"{ \"machine\": \"gorp\", \"chip\": [1, 2], "
-							+ "\"job-id\": 12345, \"board-chip\": [3, 4],"
-							+ "\"job-chip\": [11, 12],"
-							+ "\"logical-board-coordinates\": [5, 6, 0],"
-							+ "\"physical-board-coordinates\": [7, 8, 9] }",
-					serialize(r), false);
-		}
-	}
+                        @Override
+                        public Optional<ChipLocation> getRootChip() {
+                            return Optional.of(new ChipLocation(0, 0));
+                        }
+                    };
+                }
+            };
+            var r = new WhereIsResponse(loc, stubBuilder("http://localhost/"));
+            JSONAssert.assertEquals(
+                    "{ \"machine\": \"gorp\", \"chip\": [1, 2], "
+                            + "\"job-id\": 12345, \"board-chip\": [3, 4],"
+                            + "\"job-chip\": [11, 12],"
+                            + "\"logical-board-coordinates\": [5, 6, 0],"
+                            + "\"physical-board-coordinates\": [7, 8, 9] }",
+                    serialize(r), false);
+        }
+    }
 
-	@Nested
-	class Deserialization {
-		@Test
-		void testCreateJobRequestSimple() throws IOException {
-			var obj = "{\"owner\":\"bob\", \"keepalive-interval\":\"PT30S\"}";
-			var cjr = deserialize(obj, CreateJobRequest.class);
-			assertNotNull(cjr);
-			assertEquals("bob", cjr.owner);
-			assertNotNull(cjr.keepaliveInterval);
-			assertEquals(30, cjr.keepaliveInterval.getSeconds());
-			assertNull(cjr.dimensions);
-		}
+    @Nested
+    class Deserialization {
+        @Test
+        void testCreateJobRequestSimple() throws IOException {
+            var obj = "{\"owner\":\"bob\", \"keepalive-interval\":\"PT30S\"}";
+            var cjr = deserialize(obj, CreateJobRequest.class);
+            assertNotNull(cjr);
+            assertEquals("bob", cjr.owner);
+            assertNotNull(cjr.keepaliveInterval);
+            assertEquals(30, cjr.keepaliveInterval.getSeconds());
+            assertNull(cjr.dimensions);
+        }
 
-		@Test
-		void testCreateJobRequestComplex() throws IOException {
-			var obj = "{\"owner\": \"bob\", \"keepalive-interval\": \"PT30S\", "
-					+ "\"dimensions\": {\"width\": 1, \"height\": 2}, "
-					+ "\"tags\": [\"a\", \"b\"], "
-					+ "\"max-dead-boards\": 77, "
-					+ "\"machine-name\": \"gorp\"}";
-			var cjr = deserialize(obj, CreateJobRequest.class);
-			assertNotNull(cjr);
-			assertEquals("bob", cjr.owner);
-			assertNotNull(cjr.keepaliveInterval);
-			assertEquals(30, cjr.keepaliveInterval.getSeconds());
-			assertNotNull(cjr.dimensions);
-			assertEquals(1, cjr.dimensions.width);
-			assertNotNull(cjr.tags);
-			assertEquals(2, cjr.tags.size());
-			assertEquals("a", cjr.tags.get(0));
-			assertEquals("gorp", cjr.machineName);
-			assertEquals(77, cjr.maxDeadBoards);
-		}
+        @Test
+        void testCreateJobRequestComplex() throws IOException {
+            var obj = "{\"owner\": \"bob\", \"keepalive-interval\": \"PT30S\", "
+                    + "\"dimensions\": {\"width\": 1, \"height\": 2}, "
+                    + "\"tags\": [\"a\", \"b\"], "
+                    + "\"max-dead-boards\": 77, "
+                    + "\"machine-name\": \"gorp\"}";
+            var cjr = deserialize(obj, CreateJobRequest.class);
+            assertNotNull(cjr);
+            assertEquals("bob", cjr.owner);
+            assertNotNull(cjr.keepaliveInterval);
+            assertEquals(30, cjr.keepaliveInterval.getSeconds());
+            assertNotNull(cjr.dimensions);
+            assertEquals(1, cjr.dimensions.width);
+            assertNotNull(cjr.tags);
+            assertEquals(2, cjr.tags.size());
+            assertEquals("a", cjr.tags.get(0));
+            assertEquals("gorp", cjr.machineName);
+            assertEquals(77, cjr.maxDeadBoards);
+        }
 
-		@Test
-		void testPowerRequest() throws IOException {
-			var obj = "{\"power\": \"ON\"}";
-			var mp = deserialize(obj, MachinePower.class);
-			assertEquals(ON, mp.getPower());
-		}
-	}
+        @Test
+        void testPowerRequest() throws IOException {
+            var obj = "{\"power\": \"ON\"}";
+            var mp = deserialize(obj, MachinePower.class);
+            assertEquals(ON, mp.getPower());
+        }
+    }
 }

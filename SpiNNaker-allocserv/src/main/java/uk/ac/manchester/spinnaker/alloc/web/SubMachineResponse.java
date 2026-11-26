@@ -36,46 +36,46 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
  * Describes an allocation of part of a machine to a job.
  */
 public class SubMachineResponse {
-	/** Rectangle width. */
-	public final int width;
+    /** Rectangle width. */
+    public final int width;
 
-	/** Rectangle height. */
-	public final int height;
+    /** Rectangle height. */
+    public final int height;
 
-	/** Depth of rectangle. 1 or 3. */
-	public final int depth;
+    /** Depth of rectangle. 1 or 3. */
+    public final int depth;
 
-	/** On what machine. */
-	public final String machineName;
+    /** On what machine. */
+    public final String machineName;
 
-	/** How to talk to boards. */
-	public final List<ConnectionInfo> connections;
+    /** How to talk to boards. */
+    public final List<ConnectionInfo> connections;
 
-	/** Where the boards are. */
-	public final List<BoardCoordinates> boards;
+    /** Where the boards are. */
+    public final List<BoardCoordinates> boards;
 
-	/** Where to get machine power information. */
-	@JsonInclude(NON_NULL)
-	public final URI power;
+    /** Where to get machine power information. */
+    @JsonInclude(NON_NULL)
+    public final URI power;
 
-	/** Where to get the full machine description. */
-	@JsonInclude(NON_NULL)
-	public final URI machineRef;
+    /** Where to get the full machine description. */
+    @JsonInclude(NON_NULL)
+    public final URI machineRef;
 
-	SubMachineResponse(SubMachine m, UriInfo ui) {
-		width = m.getWidth();
-		height = m.getHeight();
-		depth = m.getDepth();
-		machineName = m.getMachine().getName();
-		connections = copy(m.getConnections());
-		boards = copy(m.getBoards());
-		if (nonNull(ui)) {
-			power = ui.getAbsolutePathBuilder().path(JOB_MACHINE_POWER).build();
-			machineRef = ui.getBaseUriBuilder().path(MACH + "/{name}")
-					.build(m.getMachine().getName());
-		} else {
-			power = null;
-			machineRef = null;
-		}
-	}
+    SubMachineResponse(SubMachine m, UriInfo ui) {
+        width = m.getWidth();
+        height = m.getHeight();
+        depth = m.getDepth();
+        machineName = m.getMachine().getName();
+        connections = copy(m.getConnections());
+        boards = copy(m.getBoards());
+        if (nonNull(ui)) {
+            power = ui.getAbsolutePathBuilder().path(JOB_MACHINE_POWER).build();
+            machineRef = ui.getBaseUriBuilder().path(MACH + "/{name}")
+                    .build(m.getMachine().getName());
+        } else {
+            power = null;
+            machineRef = null;
+        }
+    }
 }

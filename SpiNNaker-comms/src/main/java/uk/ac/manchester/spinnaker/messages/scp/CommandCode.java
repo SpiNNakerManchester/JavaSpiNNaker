@@ -19,10 +19,10 @@ package uk.ac.manchester.spinnaker.messages.scp;
  * All command codes usable in SCP-like messages.
  */
 public interface CommandCode {
-	/**
-	 * Get the value of this command.
-	 *
-	 * @return The encoded value.
-	 */
-	short getValue();
+    /**
+     * Get the value of this command.
+     *
+     * @return The encoded value.
+     */
+    short getValue();
 }

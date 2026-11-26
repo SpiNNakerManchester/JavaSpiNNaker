@@ -31,205 +31,205 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 /** A description of where a board is and what it is doing. */
 @JsonDeserialize(builder = WhereIs.Builder.class)
 public final class WhereIs {
-	@JsonProperty("job-id")
-	private final Integer jobId;
+    @JsonProperty("job-id")
+    private final Integer jobId;
 
-	@JsonProperty("job-ref")
-	private final URI jobRef;
+    @JsonProperty("job-ref")
+    private final URI jobRef;
 
-	@JsonProperty("job-chip")
-	private final ChipLocation jobChip;
+    @JsonProperty("job-chip")
+    private final ChipLocation jobChip;
 
-	@JsonProperty("chip")
-	private final ChipLocation chip;
+    @JsonProperty("chip")
+    private final ChipLocation chip;
 
-	@JsonIgnore
-	private transient Machine machineHandle;
+    @JsonIgnore
+    private transient Machine machineHandle;
 
-	@JsonProperty("machine")
-	private final String machineName;
+    @JsonProperty("machine")
+    private final String machineName;
 
-	@JsonProperty("machine-ref")
-	private URI machineRef;
+    @JsonProperty("machine-ref")
+    private URI machineRef;
 
-	@JsonProperty("board-chip")
-	private final ChipLocation boardChip;
+    @JsonProperty("board-chip")
+    private final ChipLocation boardChip;
 
-	@JsonProperty("logical-board-coordinates")
-	private final TriadCoords logicalCoords;
+    @JsonProperty("logical-board-coordinates")
+    private final TriadCoords logicalCoords;
 
-	@JsonProperty("physical-board-coordinates")
-	private final PhysicalCoords physicalCoords;
+    @JsonProperty("physical-board-coordinates")
+    private final PhysicalCoords physicalCoords;
 
-	private WhereIs(Integer jobId, URI jobRef, ChipLocation jobChip,
-			ChipLocation chip, String machineName, URI machineRef,
-			ChipLocation boardChip, TriadCoords logicalCoords,
-			PhysicalCoords physicalCoords) {
-		this.jobId = jobId;
-		this.jobRef = jobRef;
-		this.jobChip = jobChip;
-		this.chip = chip;
-		this.machineName = machineName;
-		this.machineRef = machineRef;
-		this.boardChip = boardChip;
-		this.logicalCoords = logicalCoords;
-		this.physicalCoords = physicalCoords;
-	}
+    private WhereIs(Integer jobId, URI jobRef, ChipLocation jobChip,
+            ChipLocation chip, String machineName, URI machineRef,
+            ChipLocation boardChip, TriadCoords logicalCoords,
+            PhysicalCoords physicalCoords) {
+        this.jobId = jobId;
+        this.jobRef = jobRef;
+        this.jobChip = jobChip;
+        this.chip = chip;
+        this.machineName = machineName;
+        this.machineRef = machineRef;
+        this.boardChip = boardChip;
+        this.logicalCoords = logicalCoords;
+        this.physicalCoords = physicalCoords;
+    }
 
-	/**
-	 * The ID of the job allocated to the board with the chip.
-	 *
-	 * {@code null} if none.
-	 *
-	 * @return The ID of the job allocated to the board with the chip.
-	 */
-	public Integer getJobId() {
-		return jobId;
-	}
-
-	/**
-	 * The location of more information about the job allocated to the
-	 *         board with the chip.
-	 *
+    /**
+     * The ID of the job allocated to the board with the chip.
+     *
      * {@code null} if none.
-	 *
-   	 * @return The location of more information about the job allocated to the
-	 *         board with the chip.
-	 */
-	public URI getJobRef() {
-		return jobRef;
-	}
+     *
+     * @return The ID of the job allocated to the board with the chip.
+     */
+    public Integer getJobId() {
+        return jobId;
+    }
 
-	/**
-	 * {@return The global location of the chip at the root of the job
-	 *         allocation, if one exists}
-	 */
-	public ChipLocation getJobChip() {
-		return jobChip;
-	}
+    /**
+     * The location of more information about the job allocated to the
+     *         board with the chip.
+     *
+     * {@code null} if none.
+     *
+     * @return The location of more information about the job allocated to the
+     *         board with the chip.
+     */
+    public URI getJobRef() {
+        return jobRef;
+    }
 
-	/**
-	 * {@return The global location of the chip}
-	 */
-	public ChipLocation getChip() {
-		return chip;
-	}
+    /**
+     * {@return The global location of the chip at the root of the job
+     *         allocation, if one exists}
+     */
+    public ChipLocation getJobChip() {
+        return jobChip;
+    }
 
-	/**
-	 * {@return Information about the machine containing the chip}
-	 */
-	public Machine getMachineHandle() {
-		return machineHandle;
-	}
+    /**
+     * {@return The global location of the chip}
+     */
+    public ChipLocation getChip() {
+        return chip;
+    }
 
-	void setMachineHandle(Machine machineHandle) {
-		this.machineHandle = machineHandle;
-	}
+    /**
+     * {@return Information about the machine containing the chip}
+     */
+    public Machine getMachineHandle() {
+        return machineHandle;
+    }
 
-	/**
-	 * {@return The name of the machine containing the chip}
-	 */
-	public String getMachineName() {
-		return machineName;
-	}
+    void setMachineHandle(Machine machineHandle) {
+        this.machineHandle = machineHandle;
+    }
 
-	/**
-	 * {@return The location of more information
-	 *     about the machine containing the chip}
-	 */
-	URI getMachineRef() {
-		return machineRef;
-	}
+    /**
+     * {@return The name of the machine containing the chip}
+     */
+    public String getMachineName() {
+        return machineName;
+    }
 
-	void clearMachineRef() {
-		machineRef = null;
-	}
+    /**
+     * {@return The location of more information
+     *     about the machine containing the chip}
+     */
+    URI getMachineRef() {
+        return machineRef;
+    }
 
-	/**
-	 * {@return The global location of the chip at the root of the board
-	 *         containing the chip being described}
-	 */
-	public ChipLocation getBoardChip() {
-		return boardChip;
-	}
+    void clearMachineRef() {
+        machineRef = null;
+    }
 
-	/**
-	 * {@return The logical coordinates for the board containing the chip}
-	 */
-	public TriadCoords getLogicalCoords() {
-		return logicalCoords;
-	}
+    /**
+     * {@return The global location of the chip at the root of the board
+     *         containing the chip being described}
+     */
+    public ChipLocation getBoardChip() {
+        return boardChip;
+    }
 
-	/**
-	 * {@return The physical coordinates for the board containing the chip}
-	 */
-	public PhysicalCoords getPhysicalCoords() {
-		return physicalCoords;
-	}
+    /**
+     * {@return The logical coordinates for the board containing the chip}
+     */
+    public TriadCoords getLogicalCoords() {
+        return logicalCoords;
+    }
 
-	@JsonPOJOBuilder(withPrefix = "set")
-	static class Builder {
-		private Integer jobId;
+    /**
+     * {@return The physical coordinates for the board containing the chip}
+     */
+    public PhysicalCoords getPhysicalCoords() {
+        return physicalCoords;
+    }
 
-		private URI jobRef;
+    @JsonPOJOBuilder(withPrefix = "set")
+    static class Builder {
+        private Integer jobId;
 
-		private ChipLocation jobChip;
+        private URI jobRef;
 
-		private ChipLocation chip;
+        private ChipLocation jobChip;
 
-		private String machineName;
+        private ChipLocation chip;
 
-		private URI machineRef;
+        private String machineName;
 
-		private ChipLocation boardChip;
+        private URI machineRef;
 
-		private TriadCoords logicalCoords;
+        private ChipLocation boardChip;
 
-		private PhysicalCoords physicalCoords;
+        private TriadCoords logicalCoords;
 
-		void setJobId(Integer jobId) {
-			this.jobId = jobId;
-		}
+        private PhysicalCoords physicalCoords;
 
-		void setJobRef(URI jobRef) {
-			this.jobRef = jobRef;
-		}
+        void setJobId(Integer jobId) {
+            this.jobId = jobId;
+        }
 
-		void setJobChip(ChipLocation jobChip) {
-			this.jobChip = jobChip;
-		}
+        void setJobRef(URI jobRef) {
+            this.jobRef = jobRef;
+        }
 
-		void setChip(ChipLocation chip) {
-			this.chip = chip;
-		}
+        void setJobChip(ChipLocation jobChip) {
+            this.jobChip = jobChip;
+        }
 
-		@JsonProperty("machine")
-		@JsonAlias("machine-name")
-		void setMachineName(String machineName) {
-			this.machineName = machineName;
-		}
+        void setChip(ChipLocation chip) {
+            this.chip = chip;
+        }
 
-		void setMachineRef(URI machineRef) {
-			this.machineRef = machineRef;
-		}
+        @JsonProperty("machine")
+        @JsonAlias("machine-name")
+        void setMachineName(String machineName) {
+            this.machineName = machineName;
+        }
 
-		void setBoardChip(ChipLocation boardChip) {
-			this.boardChip = boardChip;
-		}
+        void setMachineRef(URI machineRef) {
+            this.machineRef = machineRef;
+        }
 
-		@JsonProperty("logical-board-coordinates")
-		void setLogicalCoords(TriadCoords logicalCoords) {
-			this.logicalCoords = logicalCoords;
-		}
+        void setBoardChip(ChipLocation boardChip) {
+            this.boardChip = boardChip;
+        }
 
-		@JsonProperty("physical-board-coordinates")
-		void setPhysicalCoords(PhysicalCoords physicalCoords) {
-			this.physicalCoords = physicalCoords;
-		}
+        @JsonProperty("logical-board-coordinates")
+        void setLogicalCoords(TriadCoords logicalCoords) {
+            this.logicalCoords = logicalCoords;
+        }
 
-		WhereIs build() {
-			return new WhereIs(jobId, jobRef, jobChip, chip, machineName,
-					machineRef, boardChip, logicalCoords, physicalCoords);
-		}
-	}
+        @JsonProperty("physical-board-coordinates")
+        void setPhysicalCoords(PhysicalCoords physicalCoords) {
+            this.physicalCoords = physicalCoords;
+        }
+
+        WhereIs build() {
+            return new WhereIs(jobId, jobRef, jobChip, chip, machineName,
+                    machineRef, boardChip, logicalCoords, physicalCoords);
+        }
+    }
 }

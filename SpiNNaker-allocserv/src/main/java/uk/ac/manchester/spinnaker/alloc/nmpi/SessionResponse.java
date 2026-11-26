@@ -25,62 +25,62 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionResponse {
-	/** The ID of the session. */
-	private Integer id;
+    /** The ID of the session. */
+    private Integer id;
 
-	/** A count of how much resource has been used by the job. */
-	private ResourceUsage resourceUsage;
+    /** A count of how much resource has been used by the job. */
+    private ResourceUsage resourceUsage;
 
-	/**
-	 * Get the ID of the session.
-	 *
-	 * @return the id
-	 */
-	public Integer getId() {
-		return id;
-	}
+    /**
+     * Get the ID of the session.
+     *
+     * @return the id
+     */
+    public Integer getId() {
+        return id;
+    }
 
-	/**
-	 * Sets the id.
-	 *
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(final Integer id) {
-		this.id = id;
-	}
+    /**
+     * Sets the id.
+     *
+     * @param id
+     *            the id to set
+     */
+    public void setId(final Integer id) {
+        this.id = id;
+    }
 
-	/**
-	 * Get the count of how much resource has been used by the job.
-	 *
-	 * @return the resourceUsage
-	 */
-	public ResourceUsage getResourceUsage() {
-		return resourceUsage;
-	}
+    /**
+     * Get the count of how much resource has been used by the job.
+     *
+     * @return the resourceUsage
+     */
+    public ResourceUsage getResourceUsage() {
+        return resourceUsage;
+    }
 
-	/**
-	 * Sets the resourceUsage.
-	 *
-	 * @param resourceUsage
-	 *            the resourceUsage to set
-	 */
-	public void setResourceUsage(final ResourceUsage resourceUsage) {
-		this.resourceUsage = resourceUsage;
-	}
+    /**
+     * Sets the resourceUsage.
+     *
+     * @param resourceUsage
+     *            the resourceUsage to set
+     */
+    public void setResourceUsage(final ResourceUsage resourceUsage) {
+        this.resourceUsage = resourceUsage;
+    }
 
-	/**
-	 * Used for JSON serialisation; ignores other properties we don't care
-	 * about.
-	 *
-	 * @param name
-	 *            The parameter to set.
-	 * @param value
-	 *            The value to set it to.
-	 * @hidden
-	 */
-	@JsonAnySetter
-	public void set(final String name, final Object value) {
-		// Ignore any other values
-	}
+    /**
+     * Used for JSON serialisation; ignores other properties we don't care
+     * about.
+     *
+     * @param name
+     *            The parameter to set.
+     * @param value
+     *            The value to set it to.
+     * @hidden
+     */
+    @JsonAnySetter
+    public void set(final String name, final Object value) {
+        // Ignore any other values
+    }
 }

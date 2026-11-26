@@ -52,64 +52,64 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  * @see ReverseIPTagSet
  */
 public class IPTagSet extends SCPRequest<EmptyResponse> {
-	private static final Logger log = getLogger(IPTagSet.class);
+    private static final Logger log = getLogger(IPTagSet.class);
 
-	private static final int INADDRSZ = 4;
+    private static final int INADDRSZ = 4;
 
-	private static final byte[] INADDR_ANY = new byte[INADDRSZ];
+    private static final byte[] INADDR_ANY = new byte[INADDRSZ];
 
-	/**
-	 * Constructs a request to set a (forward) IP Tag.
-	 *
-	 * @param chip
-	 *            The chip to set the tag on.
-	 * @param host
-	 *            The host address, as an array of 4 bytes. May be {@code null}
-	 *            to use the ANY address.
-	 * @param port
-	 *            The port, between 0 and 65535
-	 * @param tag
-	 *            The tag, between 0 and 7
-	 * @param strip
-	 *            if the SDP header should be stripped from the packet.
-	 * @param useSender
-	 *            if the sender's IP address and port should be used.
-	 */
-	public IPTagSet(@Valid @NotNull HasChipLocation chip,
-			@Size(min = INADDRSZ, max = INADDRSZ) byte[] host,
-			@UDPPort int port, @TagID int tag, boolean strip,
-			boolean useSender) {
-		super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip, useSender),
-				argument2(port), argument3(host));
-		if (useSender && host != null && !Arrays.equals(host, INADDR_ANY)) {
-			log.warn("IPTag has real host address but useSender was true");
-		}
-	}
+    /**
+     * Constructs a request to set a (forward) IP Tag.
+     *
+     * @param chip
+     *            The chip to set the tag on.
+     * @param host
+     *            The host address, as an array of 4 bytes. May be {@code null}
+     *            to use the ANY address.
+     * @param port
+     *            The port, between 0 and 65535
+     * @param tag
+     *            The tag, between 0 and 7
+     * @param strip
+     *            if the SDP header should be stripped from the packet.
+     * @param useSender
+     *            if the sender's IP address and port should be used.
+     */
+    public IPTagSet(@Valid @NotNull HasChipLocation chip,
+            @Size(min = INADDRSZ, max = INADDRSZ) byte[] host,
+            @UDPPort int port, @TagID int tag, boolean strip,
+            boolean useSender) {
+        super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip, useSender),
+                argument2(port), argument3(host));
+        if (useSender && host != null && !Arrays.equals(host, INADDR_ANY)) {
+            log.warn("IPTag has real host address but useSender was true");
+        }
+    }
 
-	// arg1 = flags[11:8] : timeout : command : dest_port : tag
-	private static int argument1(int tag, boolean strip, boolean useSender) {
-		return (strip ? 1 << STRIP_FIELD_BIT : 0)
-				| (useSender ? 1 << USE_SENDER_BIT : 0)
-				| (SET.value << COMMAND_FIELD) | (tag & THREE_BITS_MASK);
-	}
+    // arg1 = flags[11:8] : timeout : command : dest_port : tag
+    private static int argument1(int tag, boolean strip, boolean useSender) {
+        return (strip ? 1 << STRIP_FIELD_BIT : 0)
+                | (useSender ? 1 << USE_SENDER_BIT : 0)
+                | (SET.value << COMMAND_FIELD) | (tag & THREE_BITS_MASK);
+    }
 
-	// arg2 = dest_addr : port
-	private static int argument2(int port) {
-		return port & PORT_MASK;
-	}
+    // arg2 = dest_addr : port
+    private static int argument2(int port) {
+        return port & PORT_MASK;
+    }
 
-	private static int argument3(byte[] host) {
-		if (host == null) {
-			return 0;
-		}
-		return range(0, host.length)
-				.map(i -> toUnsignedInt(host[host.length - 1 - i]))
-				.reduce(0, (i, j) -> (i << BYTE_SHIFT) | j);
-	}
+    private static int argument3(byte[] host) {
+        if (host == null) {
+            return 0;
+        }
+        return range(0, host.length)
+                .map(i -> toUnsignedInt(host[host.length - 1 - i]))
+                .reduce(0, (i, j) -> (i << BYTE_SHIFT) | j);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Set IP Tag", CMD_IPTAG, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Set IP Tag", CMD_IPTAG, buffer);
+    }
 }

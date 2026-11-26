@@ -34,45 +34,45 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  */
 class GetCPUInfoProcess extends TxrxProcess {
 
-	/**
-	 * Constructs a CPU information structure.
-	 *
-	 * @param connectionSelector
-	 *            How to select how to communicate.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	GetCPUInfoProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
-			RetryTracker retryTracker) {
-		super(connectionSelector, retryTracker);
-	}
+    /**
+     * Constructs a CPU information structure.
+     *
+     * @param connectionSelector
+     *            How to select how to communicate.
+     * @param retryTracker
+     *            Object used to track how many retries were used in an
+     *            operation. May be {@code null} if no suck tracking is
+     *            required.
+     */
+    GetCPUInfoProcess(
+            ConnectionSelector<? extends SCPConnection> connectionSelector,
+            RetryTracker retryTracker) {
+        super(connectionSelector, retryTracker);
+    }
 
-	/**
-	 * Get CPU information.
-	 *
-	 * @param coreSubsets
-	 *            What processors to get the information from
-	 * @return The CPU information, in undetermined order.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	MappableIterable<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
-			throws IOException, ProcessException, InterruptedException {
-		var cpuInfo = new ArrayList<CPUInfo>();
-		for (var core : requireNonNull(coreSubsets,
-				"must have actual core subset to iterate over")) {
-			sendGet(new ReadMemory(core.getScampCore(), getVcpuAddress(core),
-					CPU_INFO_BYTES),
-					bytes -> cpuInfo.add(new CPUInfo(core, bytes)));
-		}
-		finishBatch();
-		return cpuInfo::iterator;
-	}
+    /**
+     * Get CPU information.
+     *
+     * @param coreSubsets
+     *            What processors to get the information from
+     * @return The CPU information, in undetermined order.
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     */
+    MappableIterable<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
+            throws IOException, ProcessException, InterruptedException {
+        var cpuInfo = new ArrayList<CPUInfo>();
+        for (var core : requireNonNull(coreSubsets,
+                "must have actual core subset to iterate over")) {
+            sendGet(new ReadMemory(core.getScampCore(), getVcpuAddress(core),
+                    CPU_INFO_BYTES),
+                    bytes -> cpuInfo.add(new CPUInfo(core, bytes)));
+        }
+        finishBatch();
+        return cpuInfo::iterator;
+    }
 }

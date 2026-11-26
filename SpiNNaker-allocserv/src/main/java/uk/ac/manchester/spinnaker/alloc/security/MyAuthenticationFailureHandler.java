@@ -41,48 +41,48 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 @Component
 @Role(ROLE_SUPPORT)
 class MyAuthenticationFailureHandler implements AuthenticationFailureHandler {
-	private static final Logger log =
-			getLogger(MyAuthenticationFailureHandler.class);
+    private static final Logger log =
+            getLogger(MyAuthenticationFailureHandler.class);
 
-	private static final String BLAND_AUTH_MSG = "computer says no";
+    private static final String BLAND_AUTH_MSG = "computer says no";
 
-	@Autowired
-	private AuthProperties properties;
+    @Autowired
+    private AuthProperties properties;
 
-	@Autowired
-	private JsonMapper mapper;
+    @Autowired
+    private JsonMapper mapper;
 
-	@Override
-	public void onAuthenticationFailure(HttpServletRequest request,
-			HttpServletResponse response, AuthenticationException e)
-			throws IOException, ServletException {
-		log.info("auth failure", e);
-		response.setStatus(UNAUTHORIZED.value());
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request,
+            HttpServletResponse response, AuthenticationException e)
+            throws IOException, ServletException {
+        log.info("auth failure", e);
+        response.setStatus(UNAUTHORIZED.value());
 
-		var message = BLAND_AUTH_MSG;
-		if (properties.isDebugFailures()) {
-			message += ": " + e.getLocalizedMessage();
-		}
-		mapper.writeValue(response.getOutputStream(),
-				new AuthFailureObject(message));
-	}
+        var message = BLAND_AUTH_MSG;
+        if (properties.isDebugFailures()) {
+            message += ": " + e.getLocalizedMessage();
+        }
+        mapper.writeValue(response.getOutputStream(),
+                new AuthFailureObject(message));
+    }
 
-	static class AuthFailureObject {
-		private String message;
+    static class AuthFailureObject {
+        private String message;
 
-		private Instant timestamp;
+        private Instant timestamp;
 
-		AuthFailureObject(String message) {
-			this.message = message;
-			this.timestamp = now();
-		}
+        AuthFailureObject(String message) {
+            this.message = message;
+            this.timestamp = now();
+        }
 
-		public String getMessage() {
-			return message;
-		}
+        public String getMessage() {
+            return message;
+        }
 
-		public Instant getTimestamp() {
-			return timestamp;
-		}
-	}
+        public Instant getTimestamp() {
+            return timestamp;
+        }
+    }
 }

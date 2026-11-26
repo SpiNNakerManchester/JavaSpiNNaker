@@ -19,107 +19,107 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestOneShotEvent {
-	private static void sleep(int ms) {
-		try {
-			Thread.sleep(ms);
-		} catch (InterruptedException e) {
-			System.err.println("unexpected wake from sleep");
-		}
-	}
+    private static void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            System.err.println("unexpected wake from sleep");
+        }
+    }
 
-	public TestOneShotEvent() {
-	}
+    public TestOneShotEvent() {
+    }
 
-	private Runnable hanger = new Runnable() {
-		@Override
-		public void run() {
-			try {
-				var event = new OneShotEvent();
-				event.await();
-				event.fire();
-			} catch (InterruptedException ex) {
-				// Do nothing should be required;
-			}
-		}
-	};
+    private Runnable hanger = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                var event = new OneShotEvent();
+                event.await();
+                event.fire();
+            } catch (InterruptedException ex) {
+                // Do nothing should be required;
+            }
+        }
+    };
 
-	private Runnable inOrder = new Runnable() {
-		@Override
-		public void run() {
-			try {
-				var event = new OneShotEvent();
-				event.fire();
-				event.await();
-			} catch (InterruptedException ex) {
-				// Do nothing should be required;
-			}
-		}
-	};
+    private Runnable inOrder = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                var event = new OneShotEvent();
+                event.fire();
+                event.await();
+            } catch (InterruptedException ex) {
+                // Do nothing should be required;
+            }
+        }
+    };
 
-	private Runnable firer = new Runnable() {
-		@Override
-		public void run() {
-			var event = new OneShotEvent();
-			event.fire();
-		}
-	};
+    private Runnable firer = new Runnable() {
+        @Override
+        public void run() {
+            var event = new OneShotEvent();
+            event.fire();
+        }
+    };
 
-	private Runnable multiple = new Runnable() {
-		@Override
-		public void run() {
-			try {
-				var event = new OneShotEvent();
-				event.fire();
-				event.fire();
-				event.await();
-				event.await();
-				event.fire();
-				event.await();
-			} catch (InterruptedException ex) {
-				// Do nothing should be required;
-			}
-		}
-	};
+    private Runnable multiple = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                var event = new OneShotEvent();
+                event.fire();
+                event.fire();
+                event.await();
+                event.await();
+                event.fire();
+                event.await();
+            } catch (InterruptedException ex) {
+                // Do nothing should be required;
+            }
+        }
+    };
 
-	private OneShotEvent event1 = new OneShotEvent();
+    private OneShotEvent event1 = new OneShotEvent();
 
-	private Runnable waiter = new Runnable() {
-		@Override
-		public void run() {
-			try {
-				event1.await();
-			} catch (InterruptedException ex) {
-				// Do nothing should be required;
-			}
-		}
-	};
+    private Runnable waiter = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                event1.await();
+            } catch (InterruptedException ex) {
+                // Do nothing should be required;
+            }
+        }
+    };
 
-	@Test
-	public void testMultiple() {
-		var thanger = new Thread(hanger);
-		thanger.start();
-		var tinOrder = new Thread(inOrder);
-		tinOrder.start();
-		var tfirer = new Thread(firer);
-		tfirer.start();
-		var tmultiple = new Thread(multiple);
-		tmultiple.start();
-		var twaiter = new Thread(waiter);
-		twaiter.start();
+    @Test
+    public void testMultiple() {
+        var thanger = new Thread(hanger);
+        thanger.start();
+        var tinOrder = new Thread(inOrder);
+        tinOrder.start();
+        var tfirer = new Thread(firer);
+        tfirer.start();
+        var tmultiple = new Thread(multiple);
+        tmultiple.start();
+        var twaiter = new Thread(waiter);
+        twaiter.start();
 
-		sleep(500);
+        sleep(500);
 
-		assertTrue(thanger.isAlive());
-		thanger.interrupt();
-		assertTrue(!tinOrder.isAlive());
-		assertTrue(!tfirer.isAlive());
-		assertTrue(!tmultiple.isAlive());
-		assertTrue(twaiter.isAlive());
-		event1.fire();
+        assertTrue(thanger.isAlive());
+        thanger.interrupt();
+        assertTrue(!tinOrder.isAlive());
+        assertTrue(!tfirer.isAlive());
+        assertTrue(!tmultiple.isAlive());
+        assertTrue(twaiter.isAlive());
+        event1.fire();
 
-		sleep(50);
+        sleep(50);
 
-		assertTrue(!twaiter.isAlive());
-	}
+        assertTrue(!twaiter.isAlive());
+    }
 
 }

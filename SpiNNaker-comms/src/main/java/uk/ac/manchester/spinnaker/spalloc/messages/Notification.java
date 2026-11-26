@@ -20,5 +20,5 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  * requests unlike ordinary {@linkplain Response responses}.
  */
 public interface Notification extends Response {
-	// empty
+    // empty
 }

@@ -42,27 +42,27 @@ import jakarta.validation.constraints.Positive;
 @Constraint(validatedBy = {})
 @ReportAsSingleViolation
 public @interface ValidTriadHeight {
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() default "triad height (${validatedValue}) "
-			+ "must be at least 1 and no more than 21";
+    /**
+     * Message on constraint violated.
+     *
+     * @return Message
+     */
+    String message() default "triad height (${validatedValue}) "
+            + "must be at least 1 and no more than 21";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 * @hidden
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Group of constraints. Required by validation spec.
+     *
+     * @return Constraint groups, if any
+     * @hidden
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 * @hidden
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload info. Required by validation spec.
+     *
+     * @return Payloads, if any.
+     * @hidden
+     */
+    Class<? extends Payload>[] payload() default {};
 }

@@ -29,89 +29,89 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 public final class RegionLocation
-		implements HasCoreLocation, Comparable<RegionLocation> {
-	/** The Chip / Core's X value. */
-	@ValidX
-	public final int x;
+        implements HasCoreLocation, Comparable<RegionLocation> {
+    /** The Chip / Core's X value. */
+    @ValidX
+    public final int x;
 
-	/** The Chip / Core's Y value. */
-	@ValidY
-	public final int y;
+    /** The Chip / Core's Y value. */
+    @ValidY
+    public final int y;
 
-	/** The Core's P value. */
-	@ValidP
-	public final int p;
+    /** The Core's P value. */
+    @ValidP
+    public final int p;
 
-	/** The recording region ID. */
-	public final int region;
+    /** The recording region ID. */
+    public final int region;
 
-	/** Precalculated hashcode. */
-	private final int hashcode;
+    /** Precalculated hashcode. */
+    private final int hashcode;
 
-	/**
-	 * Creates the region based on a core and a region.
-	 *
-	 * @param core
-	 *            The core to use
-	 * @param region
-	 *            The ID of the region to use.
-	 */
-	public RegionLocation(HasCoreLocation core, int region) {
-		x = core.getX();
-		y = core.getY();
-		p = core.getP();
-		this.region = region;
-		hashcode = ((((x << COORD_SHIFT) ^ y) << CORE_SHIFT)
-				^ p) << REGION_SHIFT ^ region;
-	}
+    /**
+     * Creates the region based on a core and a region.
+     *
+     * @param core
+     *            The core to use
+     * @param region
+     *            The ID of the region to use.
+     */
+    public RegionLocation(HasCoreLocation core, int region) {
+        x = core.getX();
+        y = core.getY();
+        p = core.getP();
+        this.region = region;
+        hashcode = ((((x << COORD_SHIFT) ^ y) << CORE_SHIFT)
+                ^ p) << REGION_SHIFT ^ region;
+    }
 
-	@Override
-	public int getP() {
-		return p;
-	}
+    @Override
+    public int getP() {
+        return p;
+    }
 
-	@Override
-	public int getX() {
-		return x;
-	}
+    @Override
+    public int getX() {
+        return x;
+    }
 
-	@Override
-	public int getY() {
-		return y;
-	}
+    @Override
+    public int getY() {
+        return y;
+    }
 
-	/** Comparator for region locations. */
-	public static final Comparator<RegionLocation> COMPARATOR =
-			comparing(RegionLocation::getX) //
-					.thenComparing(RegionLocation::getY)
-					.thenComparing(RegionLocation::getP)
-					.thenComparing(rl -> rl.region);
+    /** Comparator for region locations. */
+    public static final Comparator<RegionLocation> COMPARATOR =
+            comparing(RegionLocation::getX) //
+                    .thenComparing(RegionLocation::getY)
+                    .thenComparing(RegionLocation::getP)
+                    .thenComparing(rl -> rl.region);
 
-	@Override
-	public int compareTo(RegionLocation o) {
-		return COMPARATOR.compare(this, o);
-	}
+    @Override
+    public int compareTo(RegionLocation o) {
+        return COMPARATOR.compare(this, o);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof RegionLocation)) {
-			return false;
-		}
-		var that = (RegionLocation) obj;
-		return (x == that.x) && (y == that.y) && (p == that.p)
-				&& (region == that.region);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof RegionLocation)) {
+            return false;
+        }
+        var that = (RegionLocation) obj;
+        return (x == that.x) && (y == that.y) && (p == that.p)
+                && (region == that.region);
+    }
 
-	@Override
-	public String toString() {
-		return "X:" + x + " Y:" + y + " P:" + p + "R: " + region;
-	}
+    @Override
+    public String toString() {
+        return "X:" + x + " Y:" + y + " P:" + p + "R: " + region;
+    }
 
-	@Override
-	public int hashCode() {
-		return hashcode;
-	}
+    @Override
+    public int hashCode() {
+        return hashcode;
+    }
 }

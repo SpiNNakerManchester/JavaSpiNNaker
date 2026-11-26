@@ -17,28 +17,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="Create Local Group" name="title"/>
+      <jsp:param value="Create Local Group" name="title"/>
 </jsp:include>
 <body>
 
 <h1>Create Group</h1>
 
 <form:form method="POST" modelAttribute="group">
-	<form:label path="name">Group Name: </form:label>
-	<form:input path="name" type="text" />
-	<br>
-	<form:label path="quota">Group Quota: </form:label>
-	<form:input path="quota" type="text" id="quotainput" />
-	&nbsp;
-	<form:label path="quotad">Is quota enabled? </form:label>
-	<form:checkbox path="quotad" onchange="quotachange(this.value);" />
-	<script type="text/javascript">
-		function quotachange(value) {
-			document.getElementById("quotainput").disabled = !value;
-		}
-	</script>
-	<p>
-	<input type="submit" value="Create" />
+      <form:label path="name">Group Name: </form:label>
+      <form:input path="name" type="text" />
+      <br>
+      <form:label path="quota">Group Quota: </form:label>
+      <form:input path="quota" type="text" id="quotainput" />
+      &nbsp;
+      <form:label path="quotad">Is quota enabled? </form:label>
+      <form:checkbox path="quotad" onchange="quotachange(this.value);" />
+      <script type="text/javascript">
+            function quotachange(value) {
+                  document.getElementById("quotainput").disabled = !value;
+            }
+      </script>
+      <p>
+      <input type="submit" value="Create" />
 </form:form>
 
 <jsp:include page="footer.jsp" />

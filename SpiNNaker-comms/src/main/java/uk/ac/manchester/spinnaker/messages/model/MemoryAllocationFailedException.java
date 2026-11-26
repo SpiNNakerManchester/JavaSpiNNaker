@@ -19,15 +19,15 @@ package uk.ac.manchester.spinnaker.messages.model;
  * Indicate that a memory allocation operation has failed.
  */
 public class MemoryAllocationFailedException extends Exception {
-	private static final long serialVersionUID = 4463116302552127934L;
+    private static final long serialVersionUID = 4463116302552127934L;
 
-	/**
-	 * Construct an memory allocation failed exception.
-	 *
-	 * @param message
-	 *            The message text of the exception.
-	 */
-	public MemoryAllocationFailedException(String message) {
-		super(message);
-	}
+    /**
+     * Construct an memory allocation failed exception.
+     *
+     * @param message
+     *            The message text of the exception.
+     */
+    public MemoryAllocationFailedException(String message) {
+        super(message);
+    }
 }

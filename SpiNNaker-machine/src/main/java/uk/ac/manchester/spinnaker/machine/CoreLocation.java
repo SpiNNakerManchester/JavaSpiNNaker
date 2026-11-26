@@ -31,101 +31,101 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 public final class CoreLocation
-		implements HasCoreLocation, Comparable<CoreLocation>, Serializable {
-	private static final long serialVersionUID = 2930811082362121057L;
+        implements HasCoreLocation, Comparable<CoreLocation>, Serializable {
+    private static final long serialVersionUID = 2930811082362121057L;
 
-	/** The X coordinate. */
-	@ValidX
-	private final int x;
+    /** The X coordinate. */
+    @ValidX
+    private final int x;
 
-	/** The Y coordinate. */
-	@ValidY
-	private final int y;
+    /** The Y coordinate. */
+    @ValidY
+    private final int y;
 
-	/** The P coordinate. */
-	@ValidP
-	private final int p;
+    /** The P coordinate. */
+    @ValidP
+    private final int p;
 
-	/**
-	 * Create the location of a core on a SpiNNaker machine.
-	 *
-	 * @param x
-	 *            The X coordinate, in range 0..255
-	 * @param y
-	 *            The Y coordinate, in range 0..255
-	 * @param p
-	 *            The P coordinate, in range 0..17
-	 */
-	public CoreLocation(int x, int y, int p) {
-		validateCoreLocation(x, y, p);
-		this.x = x;
-		this.y = y;
-		this.p = p;
-	}
+    /**
+     * Create the location of a core on a SpiNNaker machine.
+     *
+     * @param x
+     *            The X coordinate, in range 0..255
+     * @param y
+     *            The Y coordinate, in range 0..255
+     * @param p
+     *            The P coordinate, in range 0..17
+     */
+    public CoreLocation(int x, int y, int p) {
+        validateCoreLocation(x, y, p);
+        this.x = x;
+        this.y = y;
+        this.p = p;
+    }
 
-	/**
-	 * Create the location of a core on a SpiNNaker machine.
-	 *
-	 * @param chip
-	 *            The X and Y coordinate, in range 0..255
-	 * @param p
-	 *            The P coordinate, in range 0..17
-	 */
-	public CoreLocation(HasChipLocation chip, int p) {
-		this(chip.getX(), chip.getY(), p);
-	}
+    /**
+     * Create the location of a core on a SpiNNaker machine.
+     *
+     * @param chip
+     *            The X and Y coordinate, in range 0..255
+     * @param p
+     *            The P coordinate, in range 0..17
+     */
+    public CoreLocation(HasChipLocation chip, int p) {
+        this(chip.getX(), chip.getY(), p);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj instanceof CoreLocation) {
-			var that = (CoreLocation) obj;
-			return (x == that.x) && (y == that.y) && (p == that.p);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof CoreLocation) {
+            var that = (CoreLocation) obj;
+            return (x == that.x) && (y == that.y) && (p == that.p);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return (((x << COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p;
-	}
+    @Override
+    public int hashCode() {
+        return (((x << COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p;
+    }
 
-	@Override
-	public int getX() {
-		return x;
-	}
+    @Override
+    public int getX() {
+        return x;
+    }
 
-	@Override
-	public int getY() {
-		return y;
-	}
+    @Override
+    public int getY() {
+        return y;
+    }
 
-	@Override
-	public int getP() {
-		return p;
-	}
+    @Override
+    public int getP() {
+        return p;
+    }
 
-	@Override
-	public String toString() {
-		return "X:" + getX() + " Y:" + getY() + " P:" + getP();
-	}
+    @Override
+    public String toString() {
+        return "X:" + getX() + " Y:" + getY() + " P:" + getP();
+    }
 
-	@Override
-	public CoreLocation asCoreLocation() {
-		return this;
-	}
+    @Override
+    public CoreLocation asCoreLocation() {
+        return this;
+    }
 
-	@Override
-	public int compareTo(CoreLocation other) {
-		int cmp = compare(this.x, other.x);
-		if (cmp == 0) {
-			cmp = compare(this.y, other.y);
-			if (cmp == 0) {
-				cmp = compare(this.p, other.p);
-			}
-		}
-		return cmp;
-	}
+    @Override
+    public int compareTo(CoreLocation other) {
+        int cmp = compare(this.x, other.x);
+        if (cmp == 0) {
+            cmp = compare(this.y, other.y);
+            if (cmp == 0) {
+                cmp = compare(this.p, other.p);
+            }
+        }
+        return cmp;
+    }
 }

@@ -31,108 +31,108 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * The contents of IOBUF for a core.
  */
 public class IOBuffer implements HasCoreLocation {
-	private final HasCoreLocation core;
+    private final HasCoreLocation core;
 
-	private final byte[] iobuf;
+    private final byte[] iobuf;
 
-	/**
-	 * Constructs the contents of the IOBUF based on an array of bytes.
-	 *
-	 * @param core
-	 *            The coordinates of a core
-	 * @param contents
-	 *            The contents of the buffer for the chip
-	 */
-	public IOBuffer(HasCoreLocation core, byte[] contents) {
-		this.core = core;
-		iobuf = contents.clone();
-	}
+    /**
+     * Constructs the contents of the IOBUF based on an array of bytes.
+     *
+     * @param core
+     *            The coordinates of a core
+     * @param contents
+     *            The contents of the buffer for the chip
+     */
+    public IOBuffer(HasCoreLocation core, byte[] contents) {
+        this.core = core;
+        iobuf = contents.clone();
+    }
 
-	/**
-	 * Constructs the contents of the IOBUF based on a buffer.
-	 *
-	 * @param core
-	 *            The coordinates of a core
-	 * @param contents
-	 *            The contents of the buffer for the chip
-	 */
-	public IOBuffer(HasCoreLocation core, ByteBuffer contents) {
-		this.core = core;
-		iobuf = new byte[contents.remaining()];
-		contents.asReadOnlyBuffer().order(LITTLE_ENDIAN).get(iobuf);
-	}
+    /**
+     * Constructs the contents of the IOBUF based on a buffer.
+     *
+     * @param core
+     *            The coordinates of a core
+     * @param contents
+     *            The contents of the buffer for the chip
+     */
+    public IOBuffer(HasCoreLocation core, ByteBuffer contents) {
+        this.core = core;
+        iobuf = new byte[contents.remaining()];
+        contents.asReadOnlyBuffer().order(LITTLE_ENDIAN).get(iobuf);
+    }
 
-	/**
-	 * Constructs the contents of the IOBUF based on various buffers.
-	 *
-	 * @param core
-	 *            The coordinates of a core
-	 * @param contents
-	 *            The contents of the buffer for the chip
-	 */
-	public IOBuffer(HasCoreLocation core, Iterable<ByteBuffer> contents) {
-		this.core = core;
-		var baos = new ByteArrayOutputStream();
-		for (var b : contents) {
-			if (b.hasArray()) {
-				baos.write(b.array(), b.arrayOffset() + b.position(),
-						b.remaining());
-			} else {
-				// Must copy
-				var temp = new byte[b.remaining()];
-				b.get(temp);
-				baos.write(temp, 0, temp.length);
-			}
-		}
-		iobuf = baos.toByteArray();
-	}
+    /**
+     * Constructs the contents of the IOBUF based on various buffers.
+     *
+     * @param core
+     *            The coordinates of a core
+     * @param contents
+     *            The contents of the buffer for the chip
+     */
+    public IOBuffer(HasCoreLocation core, Iterable<ByteBuffer> contents) {
+        this.core = core;
+        var baos = new ByteArrayOutputStream();
+        for (var b : contents) {
+            if (b.hasArray()) {
+                baos.write(b.array(), b.arrayOffset() + b.position(),
+                        b.remaining());
+            } else {
+                // Must copy
+                var temp = new byte[b.remaining()];
+                b.get(temp);
+                baos.write(temp, 0, temp.length);
+            }
+        }
+        iobuf = baos.toByteArray();
+    }
 
-	@Override
-	public int getX() {
-		return core.getX();
-	}
+    @Override
+    public int getX() {
+        return core.getX();
+    }
 
-	@Override
-	public int getY() {
-		return core.getY();
-	}
+    @Override
+    public int getY() {
+        return core.getY();
+    }
 
-	@Override
-	public int getP() {
-		return core.getP();
-	}
+    @Override
+    public int getP() {
+        return core.getP();
+    }
 
-	/**
-	 * {@return The raw contents of the buffer as an input stream}
-	 */
-	public InputStream getContentsStream() {
-		return new ByteArrayInputStream(iobuf);
-	}
+    /**
+     * {@return The raw contents of the buffer as an input stream}
+     */
+    public InputStream getContentsStream() {
+        return new ByteArrayInputStream(iobuf);
+    }
 
-	/**
-	 * {@return The raw contents of the buffer as a read-only little-endian byte
-	 *         buffer}
-	 */
-	public ByteBuffer getContentsBuffer() {
-		return wrap(iobuf).asReadOnlyBuffer().order(LITTLE_ENDIAN);
-	}
+    /**
+     * {@return The raw contents of the buffer as a read-only little-endian byte
+     *         buffer}
+     */
+    public ByteBuffer getContentsBuffer() {
+        return wrap(iobuf).asReadOnlyBuffer().order(LITTLE_ENDIAN);
+    }
 
-	/**
-	 * {@return The contents of the buffer as a string,
-	 *     interpreting it as ASCII}
-	 */
-	public String getContentsString() {
-		return getContentsString(US_ASCII);
-	}
+    /**
+     * {@return The contents of the buffer as a string,
+     *     interpreting it as ASCII}
+     */
+    public String getContentsString() {
+        return getContentsString(US_ASCII);
+    }
 
-	/**
-	 * Get the contents of the buffer as a string.
-	 *
-	 * @param charset
-	 *            How to decode bytes into characters.
-	 * @return The contents of the buffer as a string in the specified encoding.
-	 */
-	public String getContentsString(Charset charset) {
-		return new String(iobuf, charset);
-	}
+    /**
+     * Get the contents of the buffer as a string.
+     *
+     * @param charset
+     *            How to decode bytes into characters.
+     * @return The contents of the buffer as a string in the specified encoding.
+     */
+    public String getContentsString(Charset charset) {
+        return new String(iobuf, charset);
+    }
 }

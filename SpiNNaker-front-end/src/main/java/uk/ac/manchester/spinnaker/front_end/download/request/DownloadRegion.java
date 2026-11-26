@@ -27,58 +27,58 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 @JsonFormat(shape = Shape.OBJECT)
 public class DownloadRegion {
 
-	private final int index;
+    private final int index;
 
-	private final MemoryLocation address;
+    private final MemoryLocation address;
 
-	private final int size;
+    private final int size;
 
-	/**
-	 * Constructs a new download region using the location 0.
-	 */
-	public DownloadRegion() {
-		this.index = 0;
-		this.address = new MemoryLocation(0);
-		this.size = 0;
-	}
+    /**
+     * Constructs a new download region using the location 0.
+     */
+    public DownloadRegion() {
+        this.index = 0;
+        this.address = new MemoryLocation(0);
+        this.size = 0;
+    }
 
-	/**
-	 * Constructs a new download region.
-	 *
-	 * @param index
-	 *           The index of the region.
-	 * @param address
-	 *            The address of the region.
-	 * @param size
-	 *            The size of the region.
-	 */
-	public DownloadRegion(
-			@JsonProperty(value = "index", required = true) int index,
-			@JsonProperty(value = "address", required = true) long address,
-			@JsonProperty(value = "size", required = true) int size) {
-		this.index = index;
-		this.address = new MemoryLocation(address);
-		this.size = size;
-	}
+    /**
+     * Constructs a new download region.
+     *
+     * @param index
+     *           The index of the region.
+     * @param address
+     *            The address of the region.
+     * @param size
+     *            The size of the region.
+     */
+    public DownloadRegion(
+            @JsonProperty(value = "index", required = true) int index,
+            @JsonProperty(value = "address", required = true) long address,
+            @JsonProperty(value = "size", required = true) int size) {
+        this.index = index;
+        this.address = new MemoryLocation(address);
+        this.size = size;
+    }
 
-	/**
-	 * {@return The index of the region}
-	 */
-	public int getIndex() {
-		return index;
-	}
+    /**
+     * {@return The index of the region}
+     */
+    public int getIndex() {
+        return index;
+    }
 
-	/**
-	 * {@return The address of the region}
-	 */
-	public MemoryLocation getAddress() {
-		return address;
-	}
+    /**
+     * {@return The address of the region}
+     */
+    public MemoryLocation getAddress() {
+        return address;
+    }
 
-	/**
-	 * {@return The size of the region}
-	 */
-	public int getSize() {
-		return size;
-	}
+    /**
+     * {@return The size of the region}
+     */
+    public int getSize() {
+        return size;
+    }
 }

@@ -31,19 +31,19 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class RouterClear extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to clear the router on this chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip to clear the router of
-	 */
-	public RouterClear(HasChipLocation chip) {
-		super(chip.getScampCore(), CMD_RTR, INIT.value);
-	}
+    /**
+     * Constructs a request to clear the router on this chip.
+     *
+     * @param chip
+     *            The coordinates of the chip to clear the router of
+     */
+    public RouterClear(HasChipLocation chip) {
+        super(chip.getScampCore(), CMD_RTR, INIT.value);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Router Clear", CMD_RTR, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Router Clear", CMD_RTR, buffer);
+    }
 }

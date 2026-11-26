@@ -35,45 +35,45 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * {@code can_status}.
  */
 public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
-	private static final int MAX_BOARDS_PER_FRAME = 24;
+    private static final int MAX_BOARDS_PER_FRAME = 24;
 
-	private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
+    private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
 
-	/** Create a request. */
-	public ReadCANStatus() {
-		// The CAN status is shared between all BMPs; it's how they communicate
-		super(FRAME_ROOT, CMD_BMP_INFO, CAN_STATUS.value);
-	}
+    /** Create a request. */
+    public ReadCANStatus() {
+        // The CAN status is shared between all BMPs; it's how they communicate
+        super(FRAME_ROOT, CMD_BMP_INFO, CAN_STATUS.value);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for the CAN status. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<MappableIterable<BMPBoard>> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read CAN Status", CMD_BMP_INFO, buffer);
-		}
+    /** An SCP response to a request for the CAN status. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<MappableIterable<BMPBoard>> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read CAN Status", CMD_BMP_INFO, buffer);
+        }
 
-		/**
-		 * {@return Ordered sequence of board numbers available to be managed by
-		 *         the BMP}
-		 */
-		@Override
-		protected MappableIterable<BMPBoard> parse(ByteBuffer buffer) {
-			/*
-			 * The status data. The byte at {@code x} is zero if the BMP with
-			 * that index is disabled.
-			 */
-			var statusData = new byte[buffer.remaining()];
-			buffer.get(statusData);
-			var boards = range(0, MAX_BOARDS_PER_FRAME)
-					.filter(i -> statusData[i] != 0).mapToObj(BMPBoard::new)
-					.collect(toUnmodifiableList());
-			return boards::iterator;
-		}
-	}
+        /**
+         * {@return Ordered sequence of board numbers available to be managed by
+         *         the BMP}
+         */
+        @Override
+        protected MappableIterable<BMPBoard> parse(ByteBuffer buffer) {
+            /*
+             * The status data. The byte at {@code x} is zero if the BMP with
+             * that index is disabled.
+             */
+            var statusData = new byte[buffer.remaining()];
+            buffer.get(statusData);
+            var boards = range(0, MAX_BOARDS_PER_FRAME)
+                    .filter(i -> statusData[i] != 0).mapToObj(BMPBoard::new)
+                    .collect(toUnmodifiableList());
+            return boards::iterator;
+        }
+    }
 }

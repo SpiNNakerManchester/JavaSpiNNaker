@@ -17,26 +17,26 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /** SCP Command codes for running core control. */
 enum RunningCommand implements CommandCode {
-	/** Ask the core to stop. */
-	STOP_ID(6),
-	/** Set the running time and mode. */
-	NEW_RUNTIME_ID(7),
-	/** Update the provenance and exit. */
-	UPDATE_PROVENCE_REGION_AND_EXIT(8),
-	/** Clear the IOBUF of the core. */
-	CLEAR_IOBUF(9);
+    /** Ask the core to stop. */
+    STOP_ID(6),
+    /** Set the running time and mode. */
+    NEW_RUNTIME_ID(7),
+    /** Update the provenance and exit. */
+    UPDATE_PROVENCE_REGION_AND_EXIT(8),
+    /** Clear the IOBUF of the core. */
+    CLEAR_IOBUF(9);
 
-	/**
-	 * The encoded form of the command.
-	 */
-	private final short value;
+    /**
+     * The encoded form of the command.
+     */
+    private final short value;
 
-	RunningCommand(int cmd) {
-		this.value = (short) cmd;
-	}
+    RunningCommand(int cmd) {
+        this.value = (short) cmd;
+    }
 
-	@Override
-	public short getValue() {
-		return value;
-	}
+    @Override
+    public short getValue() {
+        return value;
+    }
 }

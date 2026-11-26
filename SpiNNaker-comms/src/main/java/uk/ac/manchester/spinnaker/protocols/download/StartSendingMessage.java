@@ -30,35 +30,35 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * A message used to request fast data transfer from SpiNNaker to Host.
  */
 public final class StartSendingMessage extends GatherProtocolMessage {
-	private static final int NUM_WORDS = 4;
+    private static final int NUM_WORDS = 4;
 
-	/**
-	 * Create a message used to request fast data transfer from SpiNNaker to
-	 * Host.
-	 *
-	 * @param destination
-	 *            Where to send the message
-	 * @param address
-	 *            Where to start reading from
-	 * @param length
-	 *            How many bytes to read
-	 * @param transactionId
-	 *            the transaction ID needed
-	 * @return The created message.
-	 */
-	static StartSendingMessage create(HasCoreLocation destination,
-			MemoryLocation address, int length, int transactionId) {
-		var payload = allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
-		payload.putInt(START_SENDING_DATA.value);
-		payload.putInt(transactionId);
-		payload.putInt(address.address);
-		payload.putInt(length);
-		payload.flip();
-		return new StartSendingMessage(destination, payload);
-	}
+    /**
+     * Create a message used to request fast data transfer from SpiNNaker to
+     * Host.
+     *
+     * @param destination
+     *            Where to send the message
+     * @param address
+     *            Where to start reading from
+     * @param length
+     *            How many bytes to read
+     * @param transactionId
+     *            the transaction ID needed
+     * @return The created message.
+     */
+    static StartSendingMessage create(HasCoreLocation destination,
+            MemoryLocation address, int length, int transactionId) {
+        var payload = allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+        payload.putInt(START_SENDING_DATA.value);
+        payload.putInt(transactionId);
+        payload.putInt(address.address);
+        payload.putInt(length);
+        payload.flip();
+        return new StartSendingMessage(destination, payload);
+    }
 
-	private StartSendingMessage(HasCoreLocation destination,
-			ByteBuffer payload) {
-		super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
-	}
+    private StartSendingMessage(HasCoreLocation destination,
+            ByteBuffer payload) {
+        super(destination, EXTRA_MONITOR_CORE_DATA_SPEED_UP, payload);
+    }
 }

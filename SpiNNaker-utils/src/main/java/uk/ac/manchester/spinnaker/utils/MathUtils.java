@@ -22,43 +22,43 @@ import static java.lang.Integer.toHexString;
  * Miscellaneous mathematical functions.
  */
 public abstract class MathUtils {
-	private MathUtils() {
-	}
+    private MathUtils() {
+    }
 
-	/**
-	 * Divide one integer by another with rounding up. For example,
-	 * {@code ceildiv(5,3) == 2}
-	 *
-	 * @param numerator
-	 *            The value to be divided. Must be non-negative.
-	 * @param denominator
-	 *            The value to divide by. Must be positive.
-	 * @return The value got by dividing the two, and rounding any floating
-	 *         remainder <i>up</i>.
-	 */
-	public static final int ceildiv(int numerator, int denominator) {
-		/*
-		 * Measured as faster than:
-		 *
-		 * return (int) Math.ceil((float) numerator / (float) denominator);
-		 *
-		 * and also as faster than:
-		 *
-		 * return (numerator / denominator)
-		 * 		+ (numerator % denominator != 0 ? 1 : 0);
-		 */
+    /**
+     * Divide one integer by another with rounding up. For example,
+     * {@code ceildiv(5,3) == 2}
+     *
+     * @param numerator
+     *            The value to be divided. Must be non-negative.
+     * @param denominator
+     *            The value to divide by. Must be positive.
+     * @return The value got by dividing the two, and rounding any floating
+     *         remainder <i>up</i>.
+     */
+    public static final int ceildiv(int numerator, int denominator) {
+        /*
+         * Measured as faster than:
+         *
+         * return (int) Math.ceil((float) numerator / (float) denominator);
+         *
+         * and also as faster than:
+         *
+         * return (numerator / denominator)
+         *         + (numerator % denominator != 0 ? 1 : 0);
+         */
 
-		return (denominator - 1 + numerator) / denominator;
-	}
+        return (denominator - 1 + numerator) / denominator;
+    }
 
-	/**
-	 * Converts a byte to its hexadecimal representation.
-	 *
-	 * @param value
-	 *            The byte to convert.
-	 * @return The (unsigned) hexadecimal representation of the byte.
-	 */
-	public static String hexbyte(byte value) {
-		return toHexString(toUnsignedInt(value));
-	}
+    /**
+     * Converts a byte to its hexadecimal representation.
+     *
+     * @param value
+     *            The byte to convert.
+     * @return The (unsigned) hexadecimal representation of the byte.
+     */
+    public static String hexbyte(byte value) {
+        return toHexString(toUnsignedInt(value));
+    }
 }

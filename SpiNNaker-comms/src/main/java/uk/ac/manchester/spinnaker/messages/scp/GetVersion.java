@@ -32,35 +32,35 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  */
 public class GetVersion extends SCPRequest<GetVersion.Response> {
 
-	/**
-	 * A request to read the software version.
-	 *
-	 * @param core
-	 *            The location of the core to read from.
-	 */
-	public GetVersion(HasCoreLocation core) {
-		super(core, CMD_VER);
-	}
+    /**
+     * A request to read the software version.
+     *
+     * @param core
+     *            The location of the core to read from.
+     */
+    public GetVersion(HasCoreLocation core) {
+        super(core, CMD_VER);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for the version of software running. */
-	public static final class Response
-			extends PayloadedResponse<VersionInfo, RuntimeException> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Version", CMD_VER, buffer);
-		}
+    /** An SCP response to a request for the version of software running. */
+    public static final class Response
+            extends PayloadedResponse<VersionInfo, RuntimeException> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+            super("Version", CMD_VER, buffer);
+        }
 
-		/**
-		 * {@return The version information received}
-		 */
-		@Override
-		protected VersionInfo parse(ByteBuffer buffer) {
-			return new VersionInfo(buffer, false);
-		}
-	}
+        /**
+         * {@return The version information received}
+         */
+        @Override
+        protected VersionInfo parse(ByteBuffer buffer) {
+            return new VersionInfo(buffer, false);
+        }
+    }
 }

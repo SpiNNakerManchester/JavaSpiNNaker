@@ -19,21 +19,21 @@ package uk.ac.manchester.spinnaker.messages.scp;
  * Various constants used in the flood fill sub-protocol.
  */
 abstract class FloodFillConstants {
-	private FloodFillConstants() {
-	}
+    private FloodFillConstants() {
+    }
 
-	/** Send on all links. */
-	static final int FORWARD_LINKS = 0x3F;
+    /** Send on all links. */
+    static final int FORWARD_LINKS = 0x3F;
 
-	/** Inter-send delay 24&mu;s. */
-	static final int DELAY = 0x18;
+    /** Inter-send delay 24&mu;s. */
+    static final int DELAY = 0x18;
 
-	/** Number of times to resend a data message. */
-	static final int DATA_RESEND = 2;
+    /** Number of times to resend a data message. */
+    static final int DATA_RESEND = 2;
 
-	/** Initial level. (What is level?) */
-	static final int INIT_LEVEL = 3;
+    /** Initial level. (What is level?) */
+    static final int INIT_LEVEL = 3;
 
-	/** Whether to issue an ID for the fill. */
-	static final int ADD_ID = 1;
+    /** Whether to issue an ID for the fill. */
+    static final int ADD_ID = 1;
 }

@@ -20,43 +20,43 @@ import com.google.errorprone.annotations.Immutable;
 /** Represents the size of a machine in chips. */
 @Immutable
 public final class MachineDimensions {
-	/** The width of the machine in chips. */
-	@ValidMachineWidth
-	public final int width;
+    /** The width of the machine in chips. */
+    @ValidMachineWidth
+    public final int width;
 
-	/** The height of the machine in chips. */
-	@ValidMachineHeight
-	public final int height;
+    /** The height of the machine in chips. */
+    @ValidMachineHeight
+    public final int height;
 
-	/**
-	 * Create a new instance.
-	 *
-	 * @param width
-	 *            The width of the machine, in chips.
-	 * @param height
-	 *            The height of the machine, in chips.
-	 */
-	public MachineDimensions(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
+    /**
+     * Create a new instance.
+     *
+     * @param width
+     *            The width of the machine, in chips.
+     * @param height
+     *            The height of the machine, in chips.
+     */
+    public MachineDimensions(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof MachineDimensions) {
-			var dim = (MachineDimensions) o;
-			return (width == dim.width) && (height == dim.height);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof MachineDimensions) {
+            var dim = (MachineDimensions) o;
+            return (width == dim.width) && (height == dim.height);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return width << 16 | height;
-	}
+    @Override
+    public int hashCode() {
+        return width << 16 | height;
+    }
 
-	@Override
-	public String toString() {
-		return "Width:" + width + " Height:" + height;
-	}
+    @Override
+    public String toString() {
+        return "Width:" + width + " Height:" + height;
+    }
 }

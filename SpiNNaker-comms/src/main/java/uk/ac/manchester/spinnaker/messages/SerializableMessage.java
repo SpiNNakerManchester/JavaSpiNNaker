@@ -26,21 +26,21 @@ import java.nio.ByteBuffer;
  * argument.
  */
 public interface SerializableMessage {
-	/**
-	 * Writes this message into the given buffer as a contiguous range of bytes.
-	 * This is so that a message can be sent. Implementors may assume that the
-	 * buffer has been configured to be
-	 * {@linkplain java.nio.ByteOrder#LITTLE_ENDIAN little-endian} and that its
-	 * <i>position</i> is at the point where they should begin writing. Once it
-	 * has finished, the <i>position</i> should be immediately after the last
-	 * byte written by this method.
-	 * <p>
-	 * Calling this method <em>should not</em> update the internal state of the
-	 * message. It <em>should</em> be possible to add the message to multiple
-	 * buffers without special precautions by the caller.
-	 *
-	 * @param buffer
-	 *            The buffer to write into.
-	 */
-	void addToBuffer(ByteBuffer buffer);
+    /**
+     * Writes this message into the given buffer as a contiguous range of bytes.
+     * This is so that a message can be sent. Implementors may assume that the
+     * buffer has been configured to be
+     * {@linkplain java.nio.ByteOrder#LITTLE_ENDIAN little-endian} and that its
+     * <i>position</i> is at the point where they should begin writing. Once it
+     * has finished, the <i>position</i> should be immediately after the last
+     * byte written by this method.
+     * <p>
+     * Calling this method <em>should not</em> update the internal state of the
+     * message. It <em>should</em> be possible to add the message to multiple
+     * buffers without special precautions by the caller.
+     *
+     * @param buffer
+     *            The buffer to write into.
+     */
+    void addToBuffer(ByteBuffer buffer);
 }

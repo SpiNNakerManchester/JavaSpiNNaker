@@ -23,119 +23,119 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
  * using sPyNNaker.
  */
 public class JobSpecification {
-	/** The machine to execute the job on. */
-	private SpinnakerMachine machine;
+    /** The machine to execute the job on. */
+    private SpinnakerMachine machine;
 
-	/** The parameters of the job. */
-	private JobParameters parameters;
+    /** The parameters of the job. */
+    private JobParameters parameters;
 
-	/** The ID of the job. */
-	private int id;
+    /** The ID of the job. */
+    private int id;
 
-	/** The URL of the job to send results and status to. */
-	private String url;
+    /** The URL of the job to send results and status to. */
+    private String url;
 
-	/**
-	 * Constructor for serialisation.
-	 */
-	public JobSpecification() {
-		// Does Nothing
-	}
+    /**
+     * Constructor for serialisation.
+     */
+    public JobSpecification() {
+        // Does Nothing
+    }
 
-	/**
-	 * Create the specification for running a job.
-	 *
-	 * @param machine
-	 *            The machine to run the job on.
-	 * @param parameters
-	 *            The parameters to the job.
-	 * @param id
-	 *            The ID of the job.
-	 * @param url
-	 *            The URL of the job to send results and status to.
-	 */
-	public JobSpecification(final SpinnakerMachine machine,
-			final JobParameters parameters, final int id,
-			final String url) {
-		this.machine = machine;
-		this.parameters = parameters;
-		this.id = id;
-		this.url = url;
-	}
+    /**
+     * Create the specification for running a job.
+     *
+     * @param machine
+     *            The machine to run the job on.
+     * @param parameters
+     *            The parameters to the job.
+     * @param id
+     *            The ID of the job.
+     * @param url
+     *            The URL of the job to send results and status to.
+     */
+    public JobSpecification(final SpinnakerMachine machine,
+            final JobParameters parameters, final int id,
+            final String url) {
+        this.machine = machine;
+        this.parameters = parameters;
+        this.id = id;
+        this.url = url;
+    }
 
-	/**
-	 * Get the machine to run the job on.
-	 *
-	 * @return the machine
-	 */
-	public SpinnakerMachine getMachine() {
-		return machine;
-	}
+    /**
+     * Get the machine to run the job on.
+     *
+     * @return the machine
+     */
+    public SpinnakerMachine getMachine() {
+        return machine;
+    }
 
-	/**
-	 * Sets the machine.
-	 *
-	 * @param machine
-	 *            the machine to set
-	 */
-	public void setMachine(final SpinnakerMachine machine) {
-		this.machine = machine;
-	}
+    /**
+     * Sets the machine.
+     *
+     * @param machine
+     *            the machine to set
+     */
+    public void setMachine(final SpinnakerMachine machine) {
+        this.machine = machine;
+    }
 
-	/**
-	 * Get the parameters of the job.
-	 *
-	 * @return the parameters
-	 */
-	public JobParameters getParameters() {
-		return parameters;
-	}
+    /**
+     * Get the parameters of the job.
+     *
+     * @return the parameters
+     */
+    public JobParameters getParameters() {
+        return parameters;
+    }
 
-	/**
-	 * Sets the parameters.
-	 *
-	 * @param parameters
-	 *            the parameters to set
-	 */
-	public void setParameters(final JobParameters parameters) {
-		this.parameters = parameters;
-	}
+    /**
+     * Sets the parameters.
+     *
+     * @param parameters
+     *            the parameters to set
+     */
+    public void setParameters(final JobParameters parameters) {
+        this.parameters = parameters;
+    }
 
-	/**
-	 * Get the ID of the job.
-	 *
-	 * @return the id
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * Get the ID of the job.
+     *
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Sets the ID.
-	 *
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(final int id) {
-		this.id = id;
-	}
+    /**
+     * Sets the ID.
+     *
+     * @param id
+     *            the id to set
+     */
+    public void setId(final int id) {
+        this.id = id;
+    }
 
-	/**
-	 * Get the URL of the job to send results and status to.
-	 *
-	 * @return the URL
-	 */
-	public String getUrl() {
-		return url;
-	}
+    /**
+     * Get the URL of the job to send results and status to.
+     *
+     * @return the URL
+     */
+    public String getUrl() {
+        return url;
+    }
 
-	/**
-	 * Sets the URL.
-	 *
-	 * @param url
-	 *            the URL to set
-	 */
-	public void setUrl(final String url) {
-		this.url = url;
-	}
+    /**
+     * Sets the URL.
+     *
+     * @param url
+     *            the URL to set
+     */
+    public void setUrl(final String url) {
+        this.url = url;
+    }
 }

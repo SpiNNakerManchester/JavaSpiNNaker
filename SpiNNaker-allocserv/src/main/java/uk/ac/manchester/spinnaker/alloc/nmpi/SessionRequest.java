@@ -28,102 +28,102 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionRequest {
-	/** The ID of the collaboratory to create the session in. */
-	private String collab;
+      /** The ID of the collaboratory to create the session in. */
+      private String collab;
 
-	/** The ID of the user who is requesting the creation. */
-	private String userId;
+      /** The ID of the user who is requesting the creation. */
+      private String userId;
 
-	/** The hardware platform to create the session in. */
-	private String hardwarePlatform;
+      /** The hardware platform to create the session in. */
+      private String hardwarePlatform;
 
-	/** The specified configuration of the hardware to use. */
-	private Map<String, String> hardwareConfig = new HashMap<>();
+      /** The specified configuration of the hardware to use. */
+      private Map<String, String> hardwareConfig = new HashMap<>();
 
-	/**
-	 * Get the ID of the collaboratory to create the session in.
-	 *
-	 * @return the collab.
-	 */
-	public String getCollab() {
-		return collab;
-	}
+      /**
+       * Get the ID of the collaboratory to create the session in.
+       *
+       * @return the collab.
+       */
+      public String getCollab() {
+            return collab;
+      }
 
-	/**
-	 * Sets the collab.
-	 *
-	 * @param collab
-	 *            the collab to set
-	 */
-	public void setCollab(final String collab) {
-		this.collab = collab;
-	}
+      /**
+       * Sets the collab.
+       *
+       * @param collab
+       *            the collab to set
+       */
+      public void setCollab(final String collab) {
+            this.collab = collab;
+      }
 
-	/**
-	 * Get the ID of the user who is requesting the creation.
-	 *
-	 * @return the userId
-	 */
-	public String getUserId() {
-		return userId;
-	}
+      /**
+       * Get the ID of the user who is requesting the creation.
+       *
+       * @return the userId
+       */
+      public String getUserId() {
+            return userId;
+      }
 
-	/**
-	 * Sets the userId.
-	 *
-	 * @param userId
-	 *            the userId to set
-	 */
-	public void setUserId(final String userId) {
-		this.userId = userId;
-	}
+      /**
+       * Sets the userId.
+       *
+       * @param userId
+       *            the userId to set
+       */
+      public void setUserId(final String userId) {
+            this.userId = userId;
+      }
 
-	/**
-	 * {@return the hardware platform to create the session in}
-	 */
-	public String getHardwarePlatform() {
-		return hardwarePlatform;
-	}
+      /**
+       * {@return the hardware platform to create the session in}
+       */
+      public String getHardwarePlatform() {
+            return hardwarePlatform;
+      }
 
-	/**
-	 * Sets the Hardware Platform to set.
-	 *
-	 * @param hardwarePlatform
-	 *            the Hardware Platform to set
-	 */
-	public void setHardwarePlatform(String hardwarePlatform) {
-		this.hardwarePlatform = hardwarePlatform;
-	}
+      /**
+       * Sets the Hardware Platform to set.
+       *
+       * @param hardwarePlatform
+       *            the Hardware Platform to set
+       */
+      public void setHardwarePlatform(String hardwarePlatform) {
+            this.hardwarePlatform = hardwarePlatform;
+      }
 
-	/**
-	 * {@return the specified configuration of the hardware to use}
-	 */
-	public Map<String, String> getHardwareConfig() {
-		return hardwareConfig;
-	}
+      /**
+       * {@return the specified configuration of the hardware to use}
+       */
+      public Map<String, String> getHardwareConfig() {
+            return hardwareConfig;
+      }
 
-	/**
-	 * Sets  the Hardware Configuration to set.
-	 *
-	 * @param hardwareConfig
-	 *            the Hardware Configuration to set
-	 */
-	public void setHardwareConfig(Map<String, String> hardwareConfig) {
-		this.hardwareConfig = hardwareConfig;
-	}
+      /**
+       * Sets  the Hardware Configuration to set.
+       *
+       * @param hardwareConfig
+       *            the Hardware Configuration to set
+       */
+      public void setHardwareConfig(Map<String, String> hardwareConfig) {
+            this.hardwareConfig = hardwareConfig;
+      }
 
-	/**
-	 * Used for JSON serialisation; ignores other properties we don't care
-	 * about.
-	 *
-	 * @param name
-	 *            The parameter to set.
-	 * @param value
-	 *            The value to set it to.
-	 * @hidden
-	 */
-	@JsonAnySetter
-	public void set(final String name, final Object value) {
-		// Ignore any other values
-	}
+      /**
+       * Used for JSON serialisation; ignores other properties we don't care
+       * about.
+       *
+       * @param name
+       *            The parameter to set.
+       * @param value
+       *            The value to set it to.
+       * @hidden
+       */
+      @JsonAnySetter
+      public void set(final String name, final Object value) {
+            // Ignore any other values
+      }
 }

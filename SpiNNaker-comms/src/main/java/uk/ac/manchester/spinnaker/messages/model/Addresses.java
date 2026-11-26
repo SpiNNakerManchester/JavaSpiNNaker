@@ -19,23 +19,23 @@ import java.net.InetAddress;
 
 /** The IP addresses associated with a SpiNNaker board. */
 public final class Addresses {
-	// TODO convert to record in 17
-	/** The IPv4 address of the BMP. */
-	public final InetAddress bmpIPAddress;
+    // TODO convert to record in 17
+    /** The IPv4 address of the BMP. */
+    public final InetAddress bmpIPAddress;
 
-	/** The IPv4 address of the managed SpiNNaker board. */
-	public final InetAddress spinIPAddress;
+    /** The IPv4 address of the managed SpiNNaker board. */
+    public final InetAddress spinIPAddress;
 
-	/**
-	 * Constructs a holder of The IP addresses.
-	 *
-	 * @param bmpIPAddress
-	 *            The IPv4 address of the BMP.
-	 * @param spinIPAddress
-	 *            The IPv4 address of the managed SpiNNaker board.
-	 */
-	public Addresses(InetAddress bmpIPAddress, InetAddress spinIPAddress) {
-		this.bmpIPAddress = bmpIPAddress;
-		this.spinIPAddress = spinIPAddress;
-	}
+    /**
+     * Constructs a holder of The IP addresses.
+     *
+     * @param bmpIPAddress
+     *            The IPv4 address of the BMP.
+     * @param spinIPAddress
+     *            The IPv4 address of the managed SpiNNaker board.
+     */
+    public Addresses(InetAddress bmpIPAddress, InetAddress spinIPAddress) {
+        this.bmpIPAddress = bmpIPAddress;
+        this.spinIPAddress = spinIPAddress;
+    }
 }

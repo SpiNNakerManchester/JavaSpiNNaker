@@ -32,26 +32,26 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class SetRouterTimeout extends ReinjectorRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to set the timeeout.
-	 *
-	 * @param core
-	 *            The coordinates of the monitor core.
-	 * @param timeoutMantissa
-	 *            The mantissa of the timeout value, between 0 and 15.
-	 * @param timeoutExponent
-	 *            The exponent of the timeout value, between 0 and 15.
-	 */
-	public SetRouterTimeout(HasCoreLocation core, int timeoutMantissa,
-			int timeoutExponent) {
-		super(core, SET_ROUTER_TIMEOUT,
-				encodeTimeout(timeoutMantissa, timeoutExponent));
-	}
+    /**
+     * Constructs a request to set the timeeout.
+     *
+     * @param core
+     *            The coordinates of the monitor core.
+     * @param timeoutMantissa
+     *            The mantissa of the timeout value, between 0 and 15.
+     * @param timeoutExponent
+     *            The exponent of the timeout value, between 0 and 15.
+     */
+    public SetRouterTimeout(HasCoreLocation core, int timeoutMantissa,
+            int timeoutExponent) {
+        super(core, SET_ROUTER_TIMEOUT,
+                encodeTimeout(timeoutMantissa, timeoutExponent));
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Set router timeout", SET_ROUTER_TIMEOUT,
-				buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Set router timeout", SET_ROUTER_TIMEOUT,
+                buffer);
+    }
 }

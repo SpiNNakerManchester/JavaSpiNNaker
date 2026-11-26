@@ -37,43 +37,43 @@ import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI;
 @ActiveProfiles("unittest")
 class LocalAuthTest extends TestSupport {
 
-	private TestAPI authEngine;
+      private TestAPI authEngine;
 
-	@BeforeEach
-	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired LocalAuthenticationProvider<TestAPI> authEngine)
-			throws IOException {
-		assumeTrue(db != null, "spring-configured DB engine absent");
-		killDB();
-		setupDB1();
-		this.authEngine = authEngine.getTestAPI();
-	}
+      @BeforeEach
+      @SuppressWarnings("deprecation")
+      void checkSetup(@Autowired LocalAuthenticationProvider<TestAPI> authEngine)
+                  throws IOException {
+            assumeTrue(db != null, "spring-configured DB engine absent");
+            killDB();
+            setupDB1();
+            this.authEngine = authEngine.getTestAPI();
+      }
 
-	// The actual tests
+      // The actual tests
 
-	@Test
-	public void unlockUser() throws Exception {
-		try (var c = db.getConnection()) {
-			c.transaction(() -> {
-				// 90k seconds is more than one day
-				try (var setLocked =
-						c.update("UPDATE user_info SET locked = :locked, "
-								+ "last_fail_timestamp = :time - 90000 "
-								+ "WHERE user_id = :user_id")) {
-					setLocked.call(true, now(), USER);
-				}
-			});
-		}
+      @Test
+      public void unlockUser() throws Exception {
+            try (var c = db.getConnection()) {
+                  c.transaction(() -> {
+                        // 90k seconds is more than one day
+                        try (var setLocked =
+                                    c.update("UPDATE user_info SET locked = :locked, "
+                                                + "last_fail_timestamp = :time - 90000 "
+                                                + "WHERE user_id = :user_id")) {
+                              setLocked.call(true, now(), USER);
+                        }
+                  });
+            }
 
-		authEngine.unlock();
+            authEngine.unlock();
 
-		try (var c = db.getConnection()) {
-			assertEquals(false, c.transaction(() -> {
-				try (var q = c.query("SELECT locked FROM user_info "
-						+ "WHERE user_id = :user_id")) {
-					return q.call1(Row.bool("locked"), USER).orElseThrow();
-				}
-			}));
-		}
-	}
+            try (var c = db.getConnection()) {
+                  assertEquals(false, c.transaction(() -> {
+                        try (var q = c.query("SELECT locked FROM user_info "
+                                    + "WHERE user_id = :user_id")) {
+                              return q.call1(Row.bool("locked"), USER).orElseThrow();
+                        }
+                  }));
+            }
+      }
 }

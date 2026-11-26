@@ -20,53 +20,53 @@ package uk.ac.manchester.spinnaker.messages.model;
  * owners.
  */
 public final class AppID {
-	/**
-	 * Maximum app ID.
-	 */
-	private static final int MAX_APP_ID = 255;
+    /**
+     * Maximum app ID.
+     */
+    private static final int MAX_APP_ID = 255;
 
-	/**
-	 * The default application ID, used when code doesn't have a better idea.
-	 */
-	public static final AppID DEFAULT = new AppID(0);
+    /**
+     * The default application ID, used when code doesn't have a better idea.
+     */
+    public static final AppID DEFAULT = new AppID(0);
 
-	/**
-	 * The application ID.
-	 */
-	public final int appID;
+    /**
+     * The application ID.
+     */
+    public final int appID;
 
-	/**
-	 * Create an application ID.
-	 *
-	 * @param appID
-	 *            The proposed ID of the application. Must be between 0 and 255.
-	 * @throws IllegalArgumentException
-	 *             If an illegal ID is given.
-	 */
-	public AppID(int appID) {
-		if (appID < 0 || appID > MAX_APP_ID) {
-			throw new IllegalArgumentException(
-					"appID must be between 0 and " + MAX_APP_ID);
-		}
-		this.appID = appID;
-	}
+    /**
+     * Create an application ID.
+     *
+     * @param appID
+     *            The proposed ID of the application. Must be between 0 and 255.
+     * @throws IllegalArgumentException
+     *             If an illegal ID is given.
+     */
+    public AppID(int appID) {
+        if (appID < 0 || appID > MAX_APP_ID) {
+            throw new IllegalArgumentException(
+                    "appID must be between 0 and " + MAX_APP_ID);
+        }
+        this.appID = appID;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof AppID) {
-			var other = (AppID) o;
-			return appID == other.appID;
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof AppID) {
+            var other = (AppID) o;
+            return appID == other.appID;
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return (appID << 5) ^ 1236984681;
-	}
+    @Override
+    public int hashCode() {
+        return (appID << 5) ^ 1236984681;
+    }
 
-	@Override
-	public String toString() {
-		return "App#" + appID;
-	}
+    @Override
+    public String toString() {
+        return "App#" + appID;
+    }
 }

@@ -20,10 +20,10 @@ import static uk.ac.manchester.spinnaker.alloc.client.ClientUtils.readOnlyCopy;
 import java.util.List;
 
 class Machines {
-	/** The machine info. */
-	List<BriefMachineDescription> machines;
+    /** The machine info. */
+    List<BriefMachineDescription> machines;
 
-	public void setMachines(List<BriefMachineDescription> machines) {
-		this.machines = readOnlyCopy(machines);
-	}
+    public void setMachines(List<BriefMachineDescription> machines) {
+        this.machines = readOnlyCopy(machines);
+    }
 }

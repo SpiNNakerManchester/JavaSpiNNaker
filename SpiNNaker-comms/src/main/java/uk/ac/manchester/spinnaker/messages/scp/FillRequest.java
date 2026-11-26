@@ -32,28 +32,28 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public final class FillRequest extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to fill a region.
-	 *
-	 * @param chip
-	 *            The chip to read from
-	 * @param baseAddress
-	 *            The positive base address to start the fill from. <em>Must be
-	 *            word-aligned.</em>
-	 * @param data
-	 *            The <em>word</em> of data to fill in the space with.
-	 * @param size
-	 *            The number of <em>bytes</em> to fill in. <em>Must be a
-	 *            multiple of 4.</em>
-	 */
-	public FillRequest(HasChipLocation chip, MemoryLocation baseAddress,
-			int data, int size) {
-		super(chip.getScampCore(), CMD_FILL, baseAddress.address, data, size);
-	}
+    /**
+     * Constructs a request to fill a region.
+     *
+     * @param chip
+     *            The chip to read from
+     * @param baseAddress
+     *            The positive base address to start the fill from. <em>Must be
+     *            word-aligned.</em>
+     * @param data
+     *            The <em>word</em> of data to fill in the space with.
+     * @param size
+     *            The number of <em>bytes</em> to fill in. <em>Must be a
+     *            multiple of 4.</em>
+     */
+    public FillRequest(HasChipLocation chip, MemoryLocation baseAddress,
+            int data, int size) {
+        super(chip.getScampCore(), CMD_FILL, baseAddress.address, data, size);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Fill", CMD_FILL, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Fill", CMD_FILL, buffer);
+    }
 }

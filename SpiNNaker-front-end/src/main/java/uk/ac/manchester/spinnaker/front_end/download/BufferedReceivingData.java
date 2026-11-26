@@ -45,130 +45,130 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *      Python Version</a>
  */
 class BufferedReceivingData {
-	private static final Logger log = getLogger(BufferedReceivingData.class);
+    private static final Logger log = getLogger(BufferedReceivingData.class);
 
-	/** The physical storage of the data. */
-	private final BufferManagerStorage storage;
+    /** The physical storage of the data. */
+    private final BufferManagerStorage storage;
 
-	/** Map of booleans indicating if a region on a core has been flushed. */
-	private final Map<RegionLocation, Boolean> isFlushed;
+    /** Map of booleans indicating if a region on a core has been flushed. */
+    private final Map<RegionLocation, Boolean> isFlushed;
 
-	/** Map of recording regions by core. */
-	private final Map<CoreLocation, List<RecordingRegion>> recordingRegions;
+    /** Map of recording regions by core. */
+    private final Map<CoreLocation, List<RecordingRegion>> recordingRegions;
 
-	/**
-	 * Stores the information received through the buffering output technique
-	 * from the SpiNNaker system.
-	 *
-	 * @param storage
-	 *            How to talk to the database.
-	 */
-	BufferedReceivingData(BufferManagerStorage storage) {
-		this.storage = storage;
-		isFlushed = newMapWithDefault(false);
-		recordingRegions = synchronizedMap(new HashMap<>());
-	}
+    /**
+     * Stores the information received through the buffering output technique
+     * from the SpiNNaker system.
+     *
+     * @param storage
+     *            How to talk to the database.
+     */
+    BufferedReceivingData(BufferManagerStorage storage) {
+        this.storage = storage;
+        isFlushed = newMapWithDefault(false);
+        recordingRegions = synchronizedMap(new HashMap<>());
+    }
 
-	/**
-	 * Check if the data region has been flushed.
-	 *
-	 * @param location
-	 *            The X, Y, P and Region
-	 * @return True if the region has been flushed. False otherwise.
-	 */
-	public boolean isDataFromRegionFlushed(RegionLocation location) {
-		return isFlushed.containsKey(location);
-	}
+    /**
+     * Check if the data region has been flushed.
+     *
+     * @param location
+     *            The X, Y, P and Region
+     * @return True if the region has been flushed. False otherwise.
+     */
+    public boolean isDataFromRegionFlushed(RegionLocation location) {
+        return isFlushed.containsKey(location);
+    }
 
-	/**
-	 * Determine if the recording regions have been stored.
-	 *
-	 * @param location
-	 *            The X, Y and P
-	 * @return True if the region information has been stored.
-	 */
-	public boolean isRecordingRegionsStored(CoreLocation location) {
-		return recordingRegions.containsKey(location);
-	}
+    /**
+     * Determine if the recording regions have been stored.
+     *
+     * @param location
+     *            The X, Y and P
+     * @return True if the region information has been stored.
+     */
+    public boolean isRecordingRegionsStored(CoreLocation location) {
+        return recordingRegions.containsKey(location);
+    }
 
-	/**
-	 * Store the recording region information.
-	 *
-	 * @param location
-	 *            The X, Y and P
-	 * @param regions
-	 *            The recording region information
-	 */
-	void storeRecordingRegions(CoreLocation location,
-			List<RecordingRegion> regions) {
-		recordingRegions.put(location, regions);
-	}
+    /**
+     * Store the recording region information.
+     *
+     * @param location
+     *            The X, Y and P
+     * @param regions
+     *            The recording region information
+     */
+    void storeRecordingRegions(CoreLocation location,
+            List<RecordingRegion> regions) {
+        recordingRegions.put(location, regions);
+    }
 
-	/**
-	 * Get the end state of the buffering.
-	 *
-	 * @param location
-	 *            The X, Y, P and Region
-	 * @return The end state
-	 * @throws IllegalArgumentException
-	 *             If the location doesn't have recording regions.
-	 */
-	public RecordingRegion getRecordingRegion(RegionLocation location) {
-		var coreLocation = location.asCoreLocation();
-		var value = recordingRegions.get(coreLocation);
-		if (value == null) {
-			throw new IllegalArgumentException(
-					"no regions known for " + coreLocation);
-		}
-		if (value.size() < location.region || location.region < 0) {
-			throw new IllegalArgumentException(
-					"no region known for " + location);
-		}
-		return value.get(location.region);
-	}
+    /**
+     * Get the end state of the buffering.
+     *
+     * @param location
+     *            The X, Y, P and Region
+     * @return The end state
+     * @throws IllegalArgumentException
+     *             If the location doesn't have recording regions.
+     */
+    public RecordingRegion getRecordingRegion(RegionLocation location) {
+        var coreLocation = location.asCoreLocation();
+        var value = recordingRegions.get(coreLocation);
+        if (value == null) {
+            throw new IllegalArgumentException(
+                    "no regions known for " + coreLocation);
+        }
+        if (value.size() < location.region || location.region < 0) {
+            throw new IllegalArgumentException(
+                    "no region known for " + location);
+        }
+        return value.get(location.region);
+    }
 
-	/**
-	 * Store some information in the correspondent buffer class for a specific
-	 * chip, core and region.
-	 *
-	 * @param location
-	 *            The X, Y, P and Region
-	 * @param data
-	 *            data to be stored
-	 * @param isRecording
-	 *            If this is a recording region
-	 * @throws StorageException
-	 *             If there is a problem storing the data.
-	 */
-	public void storeDataInRegionBuffer(RegionLocation location,
-			ByteBuffer data, boolean isRecording) throws StorageException {
-		if (log.isInfoEnabled()) {
-			log.info("retrieved {} bytes from region {} of {}",
-					data.remaining(), location.region,
-					location.asCoreLocation());
-		}
-		storage.addRecordingContents(
-				new Region(location, location.region, NULL, 0, isRecording),
-				data);
-	}
+    /**
+     * Store some information in the correspondent buffer class for a specific
+     * chip, core and region.
+     *
+     * @param location
+     *            The X, Y, P and Region
+     * @param data
+     *            data to be stored
+     * @param isRecording
+     *            If this is a recording region
+     * @throws StorageException
+     *             If there is a problem storing the data.
+     */
+    public void storeDataInRegionBuffer(RegionLocation location,
+            ByteBuffer data, boolean isRecording) throws StorageException {
+        if (log.isInfoEnabled()) {
+            log.info("retrieved {} bytes from region {} of {}",
+                    data.remaining(), location.region,
+                    location.asCoreLocation());
+        }
+        storage.addRecordingContents(
+                new Region(location, location.region, NULL, 0, isRecording),
+                data);
+    }
 
-	/**
-	 * Store flushed data from a region of a core on a chip, and mark it as
-	 * being flushed.
-	 *
-	 * @param location
-	 *            The X, Y, P and Region
-	 * @param data
-	 *            data to be stored
-	 * @param isRecording
-	 * 			  if this is a recording region
-	 * @throws StorageException
-	 *             If there is a problem storing the data.
-	 */
-	public void flushingDataFromRegion(
-		RegionLocation location, ByteBuffer data, boolean isRecording)
-			throws StorageException {
-		storeDataInRegionBuffer(location, data, isRecording);
-		isFlushed.put(location, true);
-	}
+    /**
+     * Store flushed data from a region of a core on a chip, and mark it as
+     * being flushed.
+     *
+     * @param location
+     *            The X, Y, P and Region
+     * @param data
+     *            data to be stored
+     * @param isRecording
+     *               if this is a recording region
+     * @throws StorageException
+     *             If there is a problem storing the data.
+     */
+    public void flushingDataFromRegion(
+        RegionLocation location, ByteBuffer data, boolean isRecording)
+            throws StorageException {
+        storeDataInRegionBuffer(location, data, isRecording);
+        isFlushed.put(location, true);
+    }
 }

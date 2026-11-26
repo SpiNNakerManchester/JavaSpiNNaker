@@ -46,173 +46,173 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
  */
 @Component
 public class BlacklistStore extends DatabaseAwareBean {
-	/**
-	 * Read a blacklist from the database.
-	 *
-	 * @param boardId
-	 *            The ID of the board.
-	 * @return The blacklist, if one is defined.
-	 * @throws DataAccessException
-	 *             If database access fails.
-	 */
-	public Optional<Blacklist> readBlacklist(int boardId) {
-		return executeRead(conn -> readBlacklist(conn, boardId));
-	}
+      /**
+       * Read a blacklist from the database.
+       *
+       * @param boardId
+       *            The ID of the board.
+       * @return The blacklist, if one is defined.
+       * @throws DataAccessException
+       *             If database access fails.
+       */
+      public Optional<Blacklist> readBlacklist(int boardId) {
+            return executeRead(conn -> readBlacklist(conn, boardId));
+      }
 
-	private class DeadLink {
-		private ChipLocation location;
+      private class DeadLink {
+            private ChipLocation location;
 
-		private Direction direction;
+            private Direction direction;
 
-		DeadLink(Row row) {
-			location = new ChipLocation(row.getInt("x"), row.getInt("y"));
-			direction = row.getEnum("direction", Direction.class);
-		}
-	}
+            DeadLink(Row row) {
+                  location = new ChipLocation(row.getInt("x"), row.getInt("y"));
+                  direction = row.getEnum("direction", Direction.class);
+            }
+      }
 
-	/**
-	 * Read a blacklist from the database.
-	 *
-	 * @param conn
-	 *            The database connection.
-	 * @param boardId
-	 *            The ID of the board.
-	 * @return The blacklist, if one is defined.
-	 * @throws DataAccessException
-	 *             If database access fails.
-	 */
-	private Optional<Blacklist> readBlacklist(Connection conn, int boardId) {
-		try (var blChips = conn.query(GET_BLACKLISTED_CHIPS);
-				var blCores = conn.query(GET_BLACKLISTED_CORES);
-				var blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
-			var blacklistedChips =
-					stream(blChips.call(chip("x", "y"), boardId)).toSet();
-			var blacklistedCores =
-					stream(blCores.call(core("x", "y", "p"), boardId))
-					.toCollectingMap(
-							HashSet::new, c -> c.asChipLocation(),
-							c -> c.getP());
-			var blacklistedLinks =
-					stream(blLinks.call(DeadLink::new, boardId))
-					.toCollectingMap(
-							() -> noneOf(Direction.class), d -> d.location,
-							d -> d.direction);
+      /**
+       * Read a blacklist from the database.
+       *
+       * @param conn
+       *            The database connection.
+       * @param boardId
+       *            The ID of the board.
+       * @return The blacklist, if one is defined.
+       * @throws DataAccessException
+       *             If database access fails.
+       */
+      private Optional<Blacklist> readBlacklist(Connection conn, int boardId) {
+            try (var blChips = conn.query(GET_BLACKLISTED_CHIPS);
+                        var blCores = conn.query(GET_BLACKLISTED_CORES);
+                        var blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
+                  var blacklistedChips =
+                              stream(blChips.call(chip("x", "y"), boardId)).toSet();
+                  var blacklistedCores =
+                              stream(blCores.call(core("x", "y", "p"), boardId))
+                              .toCollectingMap(
+                                          HashSet::new, c -> c.asChipLocation(),
+                                          c -> c.getP());
+                  var blacklistedLinks =
+                              stream(blLinks.call(DeadLink::new, boardId))
+                              .toCollectingMap(
+                                          () -> noneOf(Direction.class), d -> d.location,
+                                          d -> d.direction);
 
-			if (blacklistedChips.isEmpty() && blacklistedCores.isEmpty()
-					&& blacklistedLinks.isEmpty()) {
-				return Optional.empty();
-			}
-			return Optional.of(new Blacklist(blacklistedChips, blacklistedCores,
-					blacklistedLinks));
-		}
-	}
+                  if (blacklistedChips.isEmpty() && blacklistedCores.isEmpty()
+                              && blacklistedLinks.isEmpty()) {
+                        return Optional.empty();
+                  }
+                  return Optional.of(new Blacklist(blacklistedChips, blacklistedCores,
+                              blacklistedLinks));
+            }
+      }
 
-	/**
-	 * Save a blacklist in the database.
-	 *
-	 * @param boardId
-	 *            What board is this a blacklist for?
-	 * @param blacklist
-	 *            The blacklist to save.
-	 */
-	public void writeBlacklist(int boardId, Blacklist blacklist) {
-		requireNonNull(blacklist);
-		execute(conn -> {
-			writeBlacklist(conn, boardId, blacklist);
-			return this; // dummy
-		});
-	}
+      /**
+       * Save a blacklist in the database.
+       *
+       * @param boardId
+       *            What board is this a blacklist for?
+       * @param blacklist
+       *            The blacklist to save.
+       */
+      public void writeBlacklist(int boardId, Blacklist blacklist) {
+            requireNonNull(blacklist);
+            execute(conn -> {
+                  writeBlacklist(conn, boardId, blacklist);
+                  return this; // dummy
+            });
+      }
 
-	/**
-	 * Save a blacklist in the database.
-	 *
-	 * @param conn
-	 *            Which database?
-	 * @param boardId
-	 *            What board is this a blacklist for?
-	 * @param blacklist
-	 *            The blacklist to save.
-	 */
-	private void writeBlacklist(Connection conn, int boardId,
-			Blacklist blacklist) {
-		try (var clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS);
-				var clearCores = conn.update(CLEAR_BLACKLISTED_CORES);
-				var clearLinks = conn.update(CLEAR_BLACKLISTED_LINKS);
-				var addChip = conn.update(ADD_BLACKLISTED_CHIP);
-				var addCore = conn.update(ADD_BLACKLISTED_CORE);
-				var addLink = conn.update(ADD_BLACKLISTED_LINK)) {
-			// TODO Keep the old blacklist data where it is the same as before
-			// Remove the old information
-			clearChips.call(boardId);
-			clearCores.call(boardId);
-			clearLinks.call(boardId);
-			// Write the new information
-			blacklist.getChips().forEach(chip -> {
-				addChip.call(boardId, chip.getX(), chip.getY());
-			});
-			blacklist.getCores().forEach((chip, cores) -> cores.forEach(c -> {
-				addCore.call(boardId, chip.getX(), chip.getY(), c);
-			}));
-			blacklist.getLinks().forEach((chip, links) -> links.forEach(l -> {
-				addLink.call(boardId, chip.getX(), chip.getY(), l);
-			}));
-		}
-	}
+      /**
+       * Save a blacklist in the database.
+       *
+       * @param conn
+       *            Which database?
+       * @param boardId
+       *            What board is this a blacklist for?
+       * @param blacklist
+       *            The blacklist to save.
+       */
+      private void writeBlacklist(Connection conn, int boardId,
+                  Blacklist blacklist) {
+            try (var clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS);
+                        var clearCores = conn.update(CLEAR_BLACKLISTED_CORES);
+                        var clearLinks = conn.update(CLEAR_BLACKLISTED_LINKS);
+                        var addChip = conn.update(ADD_BLACKLISTED_CHIP);
+                        var addCore = conn.update(ADD_BLACKLISTED_CORE);
+                        var addLink = conn.update(ADD_BLACKLISTED_LINK)) {
+                  // TODO Keep the old blacklist data where it is the same as before
+                  // Remove the old information
+                  clearChips.call(boardId);
+                  clearCores.call(boardId);
+                  clearLinks.call(boardId);
+                  // Write the new information
+                  blacklist.getChips().forEach(chip -> {
+                        addChip.call(boardId, chip.getX(), chip.getY());
+                  });
+                  blacklist.getCores().forEach((chip, cores) -> cores.forEach(c -> {
+                        addCore.call(boardId, chip.getX(), chip.getY(), c);
+                  }));
+                  blacklist.getLinks().forEach((chip, links) -> links.forEach(l -> {
+                        addLink.call(boardId, chip.getX(), chip.getY(), l);
+                  }));
+            }
+      }
 
-	/**
-	 * API only exposed for testing purposes.
-	 */
-	@ForTestingOnly
-	interface TestAPI {
-		/**
-		 * Read a blacklist from the database.
-		 *
-		 * @param conn
-		 *            The database connection.
-		 * @param boardId
-		 *            The ID of the board.
-		 * @return The blacklist, if one is defined.
-		 * @throws DataAccessException
-		 *             If database access fails.
-		 */
-		Optional<Blacklist> readBlacklist(Connection conn, int boardId);
+      /**
+       * API only exposed for testing purposes.
+       */
+      @ForTestingOnly
+      interface TestAPI {
+            /**
+             * Read a blacklist from the database.
+             *
+             * @param conn
+             *            The database connection.
+             * @param boardId
+             *            The ID of the board.
+             * @return The blacklist, if one is defined.
+             * @throws DataAccessException
+             *             If database access fails.
+             */
+            Optional<Blacklist> readBlacklist(Connection conn, int boardId);
 
-		/**
-		 * Save a blacklist in the database.
-		 *
-		 * @param conn
-		 *            Which database?
-		 * @param boardId
-		 *            What board is this a blacklist for?
-		 * @param blacklist
-		 *            The blacklist to save.
-		 */
-		void writeBlacklist(Connection conn, int boardId, Blacklist blacklist);
-	}
+            /**
+             * Save a blacklist in the database.
+             *
+             * @param conn
+             *            Which database?
+             * @param boardId
+             *            What board is this a blacklist for?
+             * @param blacklist
+             *            The blacklist to save.
+             */
+            void writeBlacklist(Connection conn, int boardId, Blacklist blacklist);
+      }
 
-	/**
-	 * Testing method, Do not use outside of tests.
-	 *
-	 * @return The internal API only used for testing.
-	 * @hidden
-	 */
-	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = ".*/src/test/java/.*")
-	@ForTestingOnly
-	TestAPI getTestAPI() {
-		ForTestingOnly.Utils.checkForTestClassOnStack();
-		return new TestAPI() {
-			@Override
-			public Optional<Blacklist> readBlacklist(Connection conn,
-					int boardId) {
-				return BlacklistStore.this.readBlacklist(conn, boardId);
-			}
+      /**
+       * Testing method, Do not use outside of tests.
+       *
+       * @return The internal API only used for testing.
+       * @hidden
+       */
+      @RestrictedApi(explanation = "just for testing", link = "index.html",
+                  allowedOnPath = ".*/src/test/java/.*")
+      @ForTestingOnly
+      TestAPI getTestAPI() {
+            ForTestingOnly.Utils.checkForTestClassOnStack();
+            return new TestAPI() {
+                  @Override
+                  public Optional<Blacklist> readBlacklist(Connection conn,
+                              int boardId) {
+                        return BlacklistStore.this.readBlacklist(conn, boardId);
+                  }
 
-			@Override
-			public void writeBlacklist(Connection conn, int boardId,
-					Blacklist blacklist) {
-				BlacklistStore.this.writeBlacklist(conn, boardId, blacklist);
-			}
-		};
-	}
+                  @Override
+                  public void writeBlacklist(Connection conn, int boardId,
+                              Blacklist blacklist) {
+                        BlacklistStore.this.writeBlacklist(conn, boardId, blacklist);
+                  }
+            };
+      }
 }

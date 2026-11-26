@@ -21,53 +21,53 @@ import static java.util.Objects.isNull;
  * A Neuromorphic Platform Interface log core.
  */
 public class NMPILog {
-	/** The content of the log. */
-	private StringBuilder buffer;
+    /** The content of the log. */
+    private StringBuilder buffer;
 
-	/**
-	 * Construct the Neuromorphic Platform Interface log core.
-	 *
-	 * @param buffer
-	 *            The buffer holding the log contents.
-	 */
-	public NMPILog(StringBuilder buffer) {
-		this.buffer = buffer;
-	}
+    /**
+     * Construct the Neuromorphic Platform Interface log core.
+     *
+     * @param buffer
+     *            The buffer holding the log contents.
+     */
+    public NMPILog(StringBuilder buffer) {
+        this.buffer = buffer;
+    }
 
-	/**
-	 * Gets the current log contents.
-	 *
-	 * @return The log contents, or {@code null} if the log is not yet
-	 *         initialised.
-	 */
-	public String getContent() {
-		if (isNull(buffer)) {
-			return null;
-		}
-		return buffer.toString();
-	}
+    /**
+     * Gets the current log contents.
+     *
+     * @return The log contents, or {@code null} if the log is not yet
+     *         initialised.
+     */
+    public String getContent() {
+        if (isNull(buffer)) {
+            return null;
+        }
+        return buffer.toString();
+    }
 
-	/**
-	 * Set the content.
-	 *
-	 * @param content
-	 *            The content to set
-	 */
-	public void setContent(final String content) {
-		this.buffer = new StringBuilder(content);
-	}
+    /**
+     * Set the content.
+     *
+     * @param content
+     *            The content to set
+     */
+    public void setContent(final String content) {
+        this.buffer = new StringBuilder(content);
+    }
 
-	/**
-	 * Append the string to the log.
-	 *
-	 * @param content
-	 *            The string to append.
-	 */
-	public void appendContent(final String content) {
-		if (isNull(this.buffer)) {
-			this.buffer = new StringBuilder(content);
-		} else {
-			this.buffer.append(content);
-		}
-	}
+    /**
+     * Append the string to the log.
+     *
+     * @param content
+     *            The string to append.
+     */
+    public void appendContent(final String content) {
+        if (isNull(this.buffer)) {
+            this.buffer = new StringBuilder(content);
+        } else {
+            this.buffer.append(content);
+        }
+    }
 }

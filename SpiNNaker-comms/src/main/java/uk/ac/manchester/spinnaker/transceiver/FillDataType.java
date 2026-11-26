@@ -21,44 +21,44 @@ import java.nio.ByteBuffer;
  * The fill unit for a fill of values in memory.
  */
 public enum FillDataType {
-	/** Fill by words (4 bytes). */
-	WORD(4),
-	/** Fill by half words (2 bytes). */
-	HALF_WORD(2),
-	/** Fill by single bytes. */
-	BYTE(1);
+    /** Fill by words (4 bytes). */
+    WORD(4),
+    /** Fill by half words (2 bytes). */
+    HALF_WORD(2),
+    /** Fill by single bytes. */
+    BYTE(1);
 
-	/** The encoding of the fill unit size. */
-	public final int size;
+    /** The encoding of the fill unit size. */
+    public final int size;
 
-	FillDataType(int value) {
-		this.size = value;
-	}
+    FillDataType(int value) {
+        this.size = value;
+    }
 
-	/**
-	 * Write a value to the buffer in an appropriate way for this fill unit.
-	 *
-	 * @param value
-	 *            The value to write.
-	 * @param buffer
-	 *            The buffer to write to.
-	 */
-	public void writeTo(int value, ByteBuffer buffer) {
-		switch (this) {
-		case WORD:
-			buffer.putInt(value);
-			break;
-		case HALF_WORD:
-			buffer.putShort((short) value);
-			break;
-		case BYTE:
-			buffer.put((byte) value);
-			break;
-		default:
-			// unreachable
-			// CHECKSTYLE:OFF
-			throw new IllegalStateException();
-			// CHECKSTYLE:ON
-		}
-	}
+    /**
+     * Write a value to the buffer in an appropriate way for this fill unit.
+     *
+     * @param value
+     *            The value to write.
+     * @param buffer
+     *            The buffer to write to.
+     */
+    public void writeTo(int value, ByteBuffer buffer) {
+        switch (this) {
+        case WORD:
+            buffer.putInt(value);
+            break;
+        case HALF_WORD:
+            buffer.putShort((short) value);
+            break;
+        case BYTE:
+            buffer.put((byte) value);
+            break;
+        default:
+            // unreachable
+            // CHECKSTYLE:OFF
+            throw new IllegalStateException();
+            // CHECKSTYLE:ON
+        }
+    }
 }

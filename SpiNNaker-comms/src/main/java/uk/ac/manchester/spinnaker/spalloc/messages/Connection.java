@@ -37,89 +37,89 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * Describes a connection by its chip and hostname.
  */
 @JsonPropertyOrder({
-	"chip", "hostname"
+    "chip", "hostname"
 })
 @JsonFormat(shape = ARRAY)
 @JsonDeserialize(builder = Connection.Builder.class)
 @Immutable
 public final class Connection {
-	@Valid
-	private final ChipLocation chip;
+    @Valid
+    private final ChipLocation chip;
 
-	@IPAddress
-	private final String hostname;
+    @IPAddress
+    private final String hostname;
 
-	/**
-	 * Create.
-	 *
-	 * @param chip
-	 *            the chip
-	 * @param hostname
-	 *            the host
-	 */
-	public Connection(HasChipLocation chip, String hostname) {
-		this.chip = isNull(chip) ? null : chip.asChipLocation();
-		this.hostname = hostname;
-	}
+    /**
+     * Create.
+     *
+     * @param chip
+     *            the chip
+     * @param hostname
+     *            the host
+     */
+    public Connection(HasChipLocation chip, String hostname) {
+        this.chip = isNull(chip) ? null : chip.asChipLocation();
+        this.hostname = hostname;
+    }
 
-	/**
-	 * {@return The chip for the connection}
-	 */
-	public ChipLocation getChip() {
-		return chip;
-	}
+    /**
+     * {@return The chip for the connection}
+     */
+    public ChipLocation getChip() {
+        return chip;
+    }
 
-	/**
-	 * {@return Where to connect to to talk to the chip}
-	 */
-	public String getHostname() {
-		return hostname;
-	}
+    /**
+     * {@return Where to connect to to talk to the chip}
+     */
+    public String getHostname() {
+        return hostname;
+    }
 
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof Connection) {
-			var c = (Connection) other;
-			return Objects.equals(chip, c.chip)
-					&& Objects.equals(hostname, c.hostname);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Connection) {
+            var c = (Connection) other;
+            return Objects.equals(chip, c.chip)
+                    && Objects.equals(hostname, c.hostname);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(hostname, chip);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(hostname, chip);
+    }
 
-	@Override
-	public String toString() {
-		return "Connection(" + chip + "@" + hostname + ")";
-	}
+    @Override
+    public String toString() {
+        return "Connection(" + chip + "@" + hostname + ")";
+    }
 
-	@JsonPropertyOrder({
-		"chip", "hostname"
-	})
-	@JsonFormat(shape = ARRAY)
-	@JsonPOJOBuilder
-	static class Builder {
-		private ChipLocation chip;
+    @JsonPropertyOrder({
+        "chip", "hostname"
+    })
+    @JsonFormat(shape = ARRAY)
+    @JsonPOJOBuilder
+    static class Builder {
+        private ChipLocation chip;
 
-		private String hostname;
+        private String hostname;
 
-		@CanIgnoreReturnValue
-		public Builder withChip(ChipLocation chip) {
-			this.chip = chip;
-			return this;
-		}
+        @CanIgnoreReturnValue
+        public Builder withChip(ChipLocation chip) {
+            this.chip = chip;
+            return this;
+        }
 
-		@CanIgnoreReturnValue
-		public Builder withHostname(String hostname) {
-			this.hostname = hostname;
-			return this;
-		}
+        @CanIgnoreReturnValue
+        public Builder withHostname(String hostname) {
+            this.hostname = hostname;
+            return this;
+        }
 
-		public Connection build() {
-			return new Connection(chip, hostname);
-		}
-	}
+        public Connection build() {
+            return new Connection(chip, hostname);
+        }
+    }
 }

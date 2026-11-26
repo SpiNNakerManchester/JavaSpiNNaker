@@ -26,44 +26,44 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
  * A database interface for talking to the buffer manager database.
  */
 public class BufferManagerDatabaseEngine
-		extends DatabaseEngine<BufferManagerStorage> {
-	private static String sqlDDL = loadResource("buffer_manager.sql");
+        extends DatabaseEngine<BufferManagerStorage> {
+    private static String sqlDDL = loadResource("buffer_manager.sql");
 
-	/**
-	 * Create an engine interface for an in-memory database.
-	 */
-	public BufferManagerDatabaseEngine() {
-	}
+    /**
+     * Create an engine interface for an in-memory database.
+     */
+    public BufferManagerDatabaseEngine() {
+    }
 
-	/**
-	 * Create an engine interface for a particular database.
-	 *
-	 * @param dbFile
-	 *            The file containing the database.
-	 */
-	public BufferManagerDatabaseEngine(File dbFile) {
-		super(dbFile);
-	}
+    /**
+     * Create an engine interface for a particular database.
+     *
+     * @param dbFile
+     *            The file containing the database.
+     */
+    public BufferManagerDatabaseEngine(File dbFile) {
+        super(dbFile);
+    }
 
-	/**
-	 * Create an engine interface for a particular database.
-	 *
-	 * @param dbUri
-	 *            The <em>absolute</em> URI to the file containing the database.
-	 *            May contain query parameters
-	 *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
-	 */
-	public BufferManagerDatabaseEngine(URI dbUri) {
-		super(dbUri);
-	}
+    /**
+     * Create an engine interface for a particular database.
+     *
+     * @param dbUri
+     *            The <em>absolute</em> URI to the file containing the database.
+     *            May contain query parameters
+     *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
+     */
+    public BufferManagerDatabaseEngine(URI dbUri) {
+        super(dbUri);
+    }
 
-	@Override
-	public String getDDL() {
-		return sqlDDL;
-	}
+    @Override
+    public String getDDL() {
+        return sqlDDL;
+    }
 
-	@Override
-	public BufferManagerStorage getStorageInterface() {
-		return new SQLiteBufferStorage(this);
-	}
+    @Override
+    public BufferManagerStorage getStorageInterface() {
+        return new SQLiteBufferStorage(this);
+    }
 }

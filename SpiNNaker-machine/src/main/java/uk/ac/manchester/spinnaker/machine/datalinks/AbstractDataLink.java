@@ -31,72 +31,72 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  */
 @Immutable
 public abstract class AbstractDataLink implements HasChipLocation {
-	/** IP address of the data link on the board. */
-	public final InetAddress boardAddress;
+    /** IP address of the data link on the board. */
+    public final InetAddress boardAddress;
 
-	/** Coordinates of the location/chip being linked to. */
-	@Valid
-	public final ChipLocation location;
+    /** Coordinates of the location/chip being linked to. */
+    @Valid
+    public final ChipLocation location;
 
-	/** Direction/ID for this link. */
-	public final Direction direction;
+    /** Direction/ID for this link. */
+    public final Direction direction;
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param location
-	 *            The location/chip being linked to
-	 * @param linkId
-	 *            The ID/direction coming out of the chip
-	 * @param boardAddress
-	 *            IP address of the data link on the board.
-	 */
-	AbstractDataLink(HasChipLocation location, Direction linkId,
-			InetAddress boardAddress) {
-		if (location == null) {
-			throw new IllegalArgumentException("location was null");
-		}
-		if (linkId == null) {
-			throw new IllegalArgumentException("linkId was null");
-		}
-		this.location = location.asChipLocation();
-		this.direction = linkId;
-		this.boardAddress = boardAddress;
-	}
+    /**
+     * Create an instance.
+     *
+     * @param location
+     *            The location/chip being linked to
+     * @param linkId
+     *            The ID/direction coming out of the chip
+     * @param boardAddress
+     *            IP address of the data link on the board.
+     */
+    AbstractDataLink(HasChipLocation location, Direction linkId,
+            InetAddress boardAddress) {
+        if (location == null) {
+            throw new IllegalArgumentException("location was null");
+        }
+        if (linkId == null) {
+            throw new IllegalArgumentException("linkId was null");
+        }
+        this.location = location.asChipLocation();
+        this.direction = linkId;
+        this.boardAddress = boardAddress;
+    }
 
-	@Override
-	public int getX() {
-		return location.getX();
-	}
+    @Override
+    public int getX() {
+        return location.getX();
+    }
 
-	@Override
-	public int getY() {
-		return location.getY();
-	}
+    @Override
+    public int getY() {
+        return location.getY();
+    }
 
-	@Override
-	public ChipLocation asChipLocation() {
-		return location;
-	}
+    @Override
+    public ChipLocation asChipLocation() {
+        return location;
+    }
 
-	@Override
-	public abstract int hashCode();
+    @Override
+    public abstract int hashCode();
 
-	/** {@inheritDoc} */
-	@Override
-	public abstract boolean equals(Object obj);
+    /** {@inheritDoc} */
+    @Override
+    public abstract boolean equals(Object obj);
 
-	/**
-	 * Determines if the objects can be considered the same.
-	 *
-	 * @param other
-	 *            Another data link
-	 * @return True if and only if the IDs match, the {@link #boardAddress}
-	 *         match and the links are on the same chip
-	 */
-	boolean sameAs(AbstractDataLink other) {
-		return Objects.equals(direction, other.direction)
-				&& Objects.equals(boardAddress, other.boardAddress)
-				&& location.onSameChipAs(other.location);
-	}
+    /**
+     * Determines if the objects can be considered the same.
+     *
+     * @param other
+     *            Another data link
+     * @return True if and only if the IDs match, the {@link #boardAddress}
+     *         match and the links are on the same chip
+     */
+    boolean sameAs(AbstractDataLink other) {
+        return Objects.equals(direction, other.direction)
+                && Objects.equals(boardAddress, other.boardAddress)
+                && location.onSameChipAs(other.location);
+    }
 }

@@ -82,759 +82,759 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * The main command line interface.
  */
 @Command(subcommands = CommandLine.HelpCommand.class, //
-		mixinStandardHelpOptions = true, //
-		modelTransformer = CommandLineInterface.BuildPropsLoader.class)
+        mixinStandardHelpOptions = true, //
+        modelTransformer = CommandLineInterface.BuildPropsLoader.class)
 public final class CommandLineInterface {
 
-	private static final Logger log = getLogger(CommandLineInterface.class);
+    private static final Logger log = getLogger(CommandLineInterface.class);
 
-	private CommandLineInterface() {
-	}
+    private CommandLineInterface() {
+    }
 
-	private static final ObjectMapper MAPPER = createMapper();
+    private static final ObjectMapper MAPPER = createMapper();
 
-	private static final String PROPS = "command-line.properties";
+    private static final String PROPS = "command-line.properties";
 
-	static class BuildPropsLoader implements IModelTransformer {
-		private Properties loadProps() throws IOException {
-			var prop = new Properties();
-			try (var clp = getClass().getResourceAsStream(PROPS)) {
-				prop.load(clp);
-			}
-			return prop;
-		}
+    static class BuildPropsLoader implements IModelTransformer {
+        private Properties loadProps() throws IOException {
+            var prop = new Properties();
+            try (var clp = getClass().getResourceAsStream(PROPS)) {
+                prop.load(clp);
+            }
+            return prop;
+        }
 
-		@Override
-		public CommandSpec transform(CommandSpec commandSpec) {
-			try {
-				var prop = loadProps();
-				var jar = prop.getProperty("jar");
-				var ver = prop.getProperty("version");
+        @Override
+        public CommandSpec transform(CommandSpec commandSpec) {
+            try {
+                var prop = loadProps();
+                var jar = prop.getProperty("jar");
+                var ver = prop.getProperty("version");
 
-				commandSpec.name("java -jar " + jar);
-				commandSpec.version(jar + " version " + ver);
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(USAGE);
-			}
-			return commandSpec;
-		}
-	}
+                commandSpec.name("java -jar " + jar);
+                commandSpec.version(jar + " version " + ver);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(USAGE);
+            }
+            return commandSpec;
+        }
+    }
 
-	@Command(name = "listen_for_unbooted", description = LISTEN_DESC)
-	private void listen() throws IOException {
-		LocateConnectedMachineIPAddress.main();
-	}
+    @Command(name = "listen_for_unbooted", description = LISTEN_DESC)
+    private void listen() throws IOException {
+        LocateConnectedMachineIPAddress.main();
+    }
 
-	protected static int run(String... args) {
-		var cmd = new CommandLine(new CommandLineInterface());
-		if (args.length == 0) {
-			cmd.usage(cmd.getErr());
-			return USAGE;
-		} else {
-			return cmd.execute(args);
-		}
-	}
+    protected static int run(String... args) {
+        var cmd = new CommandLine(new CommandLineInterface());
+        if (args.length == 0) {
+            cmd.usage(cmd.getErr());
+            return USAGE;
+        } else {
+            return cmd.execute(args);
+        }
+    }
 
-	/**
-	 * The main command line interface. Dispatches to other classes based on the
-	 * first argument, which is a command word.
-	 *
-	 * @param args
-	 *            The command line arguments.
-	 */
-	public static void main(String... args) {
-		System.exit(run(args));
-	}
+    /**
+     * The main command line interface. Dispatches to other classes based on the
+     * first argument, which is a command word.
+     *
+     * @param args
+     *            The command line arguments.
+     */
+    public static void main(String... args) {
+        System.exit(run(args));
+    }
 
-	static CommandSpec getSpec() {
-		return new CommandLine(new CommandLineInterface()).getCommandSpec();
-	}
+    static CommandSpec getSpec() {
+        return new CommandLine(new CommandLineInterface()).getCommandSpec();
+    }
 
-	@Command(name = "dse_sys", description = DSE_SYS_DESC)
-	private void dseSystemCores(
-			@Mixin MachineParam machine,
-			@Mixin DsFileParam dsFile,
-			@Mixin LogfileParam logfile)
-			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
-				logfile.get(), false);
-	}
+    @Command(name = "dse_sys", description = DSE_SYS_DESC)
+    private void dseSystemCores(
+            @Mixin MachineParam machine,
+            @Mixin DsFileParam dsFile,
+            @Mixin LogfileParam logfile)
+            throws Exception {
+        runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
+                logfile.get(), false);
+    }
 
-	@Command(name = "dse_app", description = DSE_APP_DESC)
-	private void dseApplicationCores(
-			@Mixin MachineParam machine,
-			@Mixin DsFileParam dsFile,
-			@Mixin LogfileParam logfile)
-			throws Exception {
-		runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
-				logfile.get(), true);
-	}
+    @Command(name = "dse_app", description = DSE_APP_DESC)
+    private void dseApplicationCores(
+            @Mixin MachineParam machine,
+            @Mixin DsFileParam dsFile,
+            @Mixin LogfileParam logfile)
+            throws Exception {
+        runDSEUploadingViaClassicTransfer(machine.get(), dsFile.get(),
+                logfile.get(), true);
+    }
 
-	@FunctionalInterface
-	interface HostDSEFactory {
-		HostExecuteDataSpecification create(
-				Machine m, DSEDatabaseEngine db)
-				throws IOException, SpinnmanException, StorageException,
-				ExecutionException, InterruptedException, URISyntaxException;
-	}
+    @FunctionalInterface
+    interface HostDSEFactory {
+        HostExecuteDataSpecification create(
+                Machine m, DSEDatabaseEngine db)
+                throws IOException, SpinnmanException, StorageException,
+                ExecutionException, InterruptedException, URISyntaxException;
+    }
 
-	/**
-	 * Makes {@link HostExecuteDataSpecification} instances. Allows for
-	 * injection of debugging tooling.
-	 */
-	static HostDSEFactory hostFactory = HostExecuteDataSpecification::new;
+    /**
+     * Makes {@link HostExecuteDataSpecification} instances. Allows for
+     * injection of debugging tooling.
+     */
+    static HostDSEFactory hostFactory = HostExecuteDataSpecification::new;
 
-	@FunctionalInterface
-	interface FastDSEFactory {
-		FastExecuteDataSpecification create(
-				Machine machine, List<Gather> gatherers, File reportDir,
-				DSEDatabaseEngine db)
-				throws IOException, SpinnmanException, StorageException,
-				ExecutionException, InterruptedException, URISyntaxException;
-	}
+    @FunctionalInterface
+    interface FastDSEFactory {
+        FastExecuteDataSpecification create(
+                Machine machine, List<Gather> gatherers, File reportDir,
+                DSEDatabaseEngine db)
+                throws IOException, SpinnmanException, StorageException,
+                ExecutionException, InterruptedException, URISyntaxException;
+    }
 
-	/**
-	 * Makes {@link FastExecuteDataSpecification} instances. Allows for
-	 * injection of debugging tooling.
-	 */
-	static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
+    /**
+     * Makes {@link FastExecuteDataSpecification} instances. Allows for
+     * injection of debugging tooling.
+     */
+    static FastDSEFactory fastFactory = FastExecuteDataSpecification::new;
 
-	/**
-	 * Run the data specifications in parallel.
-	 *
-	 * @param machine
-	 *            Description of overall machine
-	 * @param dsFile
-	 *            Path to the dataspec database
-	 * @param logfile
-	 *            The path where the log should write.
-	 * @param filterSystemCores
-	 *            If {@code true}, only run the DSE for application vertices. If
-	 *            {@code false}, only run the DSE for system vertices. If
-	 *            {@code null}, run the DSE for all vertices.
-	 * @throws ExecutionException
-	 *             If there was a problem in the parallel queue.
-	 * @throws IOException
-	 *             If the communications fail.
-	 * @throws InterruptedException
-	 *             If the wait for everything to complete is interrupted.
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If the database is in an illegal state.
-	 * @throws URISyntaxException
-	 *             If the proxy URI is provided but not valid.
-	 */
-	public void runDSEUploadingViaClassicTransfer(Machine machine,
-			File dsFile, File logfile, Boolean filterSystemCores)
-			throws IOException, SpinnmanException, StorageException,
-			ExecutionException, InterruptedException, URISyntaxException {
-		setLogfile(logfile);
-		var db = getDataSpecDB(dsFile);
+    /**
+     * Run the data specifications in parallel.
+     *
+     * @param machine
+     *            Description of overall machine
+     * @param dsFile
+     *            Path to the dataspec database
+     * @param logfile
+     *            The path where the log should write.
+     * @param filterSystemCores
+     *            If {@code true}, only run the DSE for application vertices. If
+     *            {@code false}, only run the DSE for system vertices. If
+     *            {@code null}, run the DSE for all vertices.
+     * @throws ExecutionException
+     *             If there was a problem in the parallel queue.
+     * @throws IOException
+     *             If the communications fail.
+     * @throws InterruptedException
+     *             If the wait for everything to complete is interrupted.
+     * @throws SpinnmanException
+     *             If a BMP is uncontactable or SpiNNaker rejects a message.
+     * @throws StorageException
+     *             If the database is in an illegal state.
+     * @throws URISyntaxException
+     *             If the proxy URI is provided but not valid.
+     */
+    public void runDSEUploadingViaClassicTransfer(Machine machine,
+            File dsFile, File logfile, Boolean filterSystemCores)
+            throws IOException, SpinnmanException, StorageException,
+            ExecutionException, InterruptedException, URISyntaxException {
+        setLogfile(logfile);
+        var db = getDataSpecDB(dsFile);
 
-		try (var dseExec = hostFactory.create(machine, db)) {
-			if (filterSystemCores) {
-				dseExec.loadCores(false);
-			} else {
-				dseExec.loadCores(true);
-			}
-		} catch (Exception ex) {
-			log.error("DSE load failed", ex);
-			throw ex;
-		}
-	}
+        try (var dseExec = hostFactory.create(machine, db)) {
+            if (filterSystemCores) {
+                dseExec.loadCores(false);
+            } else {
+                dseExec.loadCores(true);
+            }
+        } catch (Exception ex) {
+            log.error("DSE load failed", ex);
+            throw ex;
+        }
+    }
 
-	/**
-	 * Run the data specifications in parallel.
-	 *
-	 * @param gatherers
-	 *            List of descriptions of gatherers.
-	 * @param machine
-	 *            Description of overall machine.
-	 * @param dsFile
-	 *            Path to the dataspec database
-	 * @param logfile
-	 *            The path where the log should write.
-	 * @param reportFolder
-	 *            Directory containing reports. If {@link Optional#empty()}, no
-	 *            report will be written.
-	 * @throws ExecutionException
-	 *             If there was a problem in the parallel queue.
-	 * @throws IOException
-	 *             If the communications fail.
-	 * @throws InterruptedException
-	 *             If the wait for everything to complete is interrupted.
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If the database is in an illegal state.
-	 * @throws URISyntaxException
-	 *             If a proxy URI is provided but invalid.
-	 */
-	@Command(name = "dse_app_mon", description = DSE_MON_DESC)
-	public void runDSEForAppCoresUploadingViaMonitorStreaming(
-			@Mixin GatherersParam gatherers,
-			@Mixin MachineParam machine,
-			@Mixin DsFileParam dsFile,
-			@Mixin LogfileParam logfile,
-			@Parameters(description = REPORT, arity = "0..1", index = "3")
-			Optional<File> reportFolder)
-			throws IOException, SpinnmanException, StorageException,
-			ExecutionException, InterruptedException, URISyntaxException {
-		setLogfile(logfile.get());
-		var db = getDataSpecDB(dsFile.get());
+    /**
+     * Run the data specifications in parallel.
+     *
+     * @param gatherers
+     *            List of descriptions of gatherers.
+     * @param machine
+     *            Description of overall machine.
+     * @param dsFile
+     *            Path to the dataspec database
+     * @param logfile
+     *            The path where the log should write.
+     * @param reportFolder
+     *            Directory containing reports. If {@link Optional#empty()}, no
+     *            report will be written.
+     * @throws ExecutionException
+     *             If there was a problem in the parallel queue.
+     * @throws IOException
+     *             If the communications fail.
+     * @throws InterruptedException
+     *             If the wait for everything to complete is interrupted.
+     * @throws SpinnmanException
+     *             If a BMP is uncontactable or SpiNNaker rejects a message.
+     * @throws StorageException
+     *             If the database is in an illegal state.
+     * @throws URISyntaxException
+     *             If a proxy URI is provided but invalid.
+     */
+    @Command(name = "dse_app_mon", description = DSE_MON_DESC)
+    public void runDSEForAppCoresUploadingViaMonitorStreaming(
+            @Mixin GatherersParam gatherers,
+            @Mixin MachineParam machine,
+            @Mixin DsFileParam dsFile,
+            @Mixin LogfileParam logfile,
+            @Parameters(description = REPORT, arity = "0..1", index = "3")
+            Optional<File> reportFolder)
+            throws IOException, SpinnmanException, StorageException,
+            ExecutionException, InterruptedException, URISyntaxException {
+        setLogfile(logfile.get());
+        var db = getDataSpecDB(dsFile.get());
 
-		try (var dseExec = fastFactory.create(machine.get(),
-						gatherers.get(), reportFolder.orElse(null), db)) {
-			dseExec.loadCores(gatherers.get());
-		}
-	}
+        try (var dseExec = fastFactory.create(machine.get(),
+                        gatherers.get(), reportFolder.orElse(null), db)) {
+            dseExec.loadCores(gatherers.get());
+        }
+    }
 
-	/**
-	 * Retrieve IOBUFs in parallel.
-	 *
-	 * @param machine
-	 *            Description of overall machine.
-	 * @param iobuf
-	 *            Mapping from APLX executable names (full paths) to what cores
-	 *            are running those executables, and which we will download
-	 *            IOBUFs for.
-	 * @param dbFile
-	 *            The database that receives the output).
-	 * @param logfile
-	 *            The path where the log should write.
-	 * @param iobufDir
-	 * 			  The path to the directory where the iobuff would be written
-	 * @throws IOException
-	 *             If the communications fail.
-	 * @throws InterruptedException
-	 *             If interrupted (not expected).
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If there is an error reading the database
-	 * @throws URISyntaxException
-	 *             If the proxy URI is invalid
-	 */
-	// see https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/1218
-	@Command(name = "iobuf", description = IOBUF_DESC)
-	public void retrieveIOBUFs(
-			@Mixin MachineParam machine,
-			@Mixin IobufMapParam iobuf,
-			@Mixin DbFileParam dbFile,
-			@Mixin LogfileParam logfile,
-			@Mixin IobufDirParam iobufDir)
-			throws IOException, SpinnmanException, InterruptedException,
-			StorageException, URISyntaxException {
-		setLogfile(logfile.get());
-		var db = getBufferManagerDB(dbFile.get());
+    /**
+     * Retrieve IOBUFs in parallel.
+     *
+     * @param machine
+     *            Description of overall machine.
+     * @param iobuf
+     *            Mapping from APLX executable names (full paths) to what cores
+     *            are running those executables, and which we will download
+     *            IOBUFs for.
+     * @param dbFile
+     *            The database that receives the output).
+     * @param logfile
+     *            The path where the log should write.
+     * @param iobufDir
+     *               The path to the directory where the iobuff would be written
+     * @throws IOException
+     *             If the communications fail.
+     * @throws InterruptedException
+     *             If interrupted (not expected).
+     * @throws SpinnmanException
+     *             If a BMP is uncontactable or SpiNNaker rejects a message.
+     * @throws StorageException
+     *             If there is an error reading the database
+     * @throws URISyntaxException
+     *             If the proxy URI is invalid
+     */
+    // see https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/1218
+    @Command(name = "iobuf", description = IOBUF_DESC)
+    public void retrieveIOBUFs(
+            @Mixin MachineParam machine,
+            @Mixin IobufMapParam iobuf,
+            @Mixin DbFileParam dbFile,
+            @Mixin LogfileParam logfile,
+            @Mixin IobufDirParam iobufDir)
+            throws IOException, SpinnmanException, InterruptedException,
+            StorageException, URISyntaxException {
+        setLogfile(logfile.get());
+        var db = getBufferManagerDB(dbFile.get());
 
-		try (var r = new IobufRetriever(db, machine.get(),
-						PARALLEL_SIZE)) {
-			var result = r.retrieveIobufContents(iobuf.get(), iobufDir.get());
-			MAPPER.writeValue(System.out, result);
-		}
-	}
+        try (var r = new IobufRetriever(db, machine.get(),
+                        PARALLEL_SIZE)) {
+            var result = r.retrieveIobufContents(iobuf.get(), iobufDir.get());
+            MAPPER.writeValue(System.out, result);
+        }
+    }
 
-	/**
-	 * Download data without using data gatherer cores.
-	 *
-	 * @param placements
-	 *            List of descriptions of binary placements.
-	 * @param machine
-	 *            Description of overall machine.
-	 * @param dbFile
-	 *            The database that receives the output).
-	 * @param logfile
-	 *            The path where the log should write.
-	 * @throws IOException
-	 *             If the communications fail
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message
-	 * @throws StorageException
-	 *             If the database is in an illegal state
-	 * @throws URISyntaxException
-	 *             If the proxy URI is invalid
-	 */
-	@Command(name = "download", description = DOWNLOAD_DESC)
-	public void downloadRecordingChannelsViaClassicTransfer(
-			@Mixin PlacementsParam placements,
-			@Mixin MachineParam machine,
-			@Mixin DbFileParam dbFile,
-			@Mixin LogfileParam logfile)
-			throws IOException, SpinnmanException, StorageException,
-			InterruptedException, URISyntaxException {
-		setLogfile(logfile.get());
-		var db = getBufferManagerDB(dbFile.get());
+    /**
+     * Download data without using data gatherer cores.
+     *
+     * @param placements
+     *            List of descriptions of binary placements.
+     * @param machine
+     *            Description of overall machine.
+     * @param dbFile
+     *            The database that receives the output).
+     * @param logfile
+     *            The path where the log should write.
+     * @throws IOException
+     *             If the communications fail
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws SpinnmanException
+     *             If a BMP is uncontactable or SpiNNaker rejects a message
+     * @throws StorageException
+     *             If the database is in an illegal state
+     * @throws URISyntaxException
+     *             If the proxy URI is invalid
+     */
+    @Command(name = "download", description = DOWNLOAD_DESC)
+    public void downloadRecordingChannelsViaClassicTransfer(
+            @Mixin PlacementsParam placements,
+            @Mixin MachineParam machine,
+            @Mixin DbFileParam dbFile,
+            @Mixin LogfileParam logfile)
+            throws IOException, SpinnmanException, StorageException,
+            InterruptedException, URISyntaxException {
+        setLogfile(logfile.get());
+        var db = getBufferManagerDB(dbFile.get());
 
-		try (var r = new DataReceiver(machine.get(), db)) {
-			r.getDataForPlacementsParallel(placements.get(), PARALLEL_SIZE);
-		}
-	}
+        try (var r = new DataReceiver(machine.get(), db)) {
+            r.getDataForPlacementsParallel(placements.get(), PARALLEL_SIZE);
+        }
+    }
 
-	/**
-	 * Download data using data gatherer cores.
-	 *
-	 * @param gatherers
-	 *            List of descriptions of gatherers.
-	 * @param machine
-	 *            Description of overall machine.
-	 * @param dbFile
-	 *            The database that receives the output).
-	 * @param logfile
-	 *            The path where the log should write.
-	 * @throws IOException
-	 *             If the communications fail
-	 * @throws InterruptedException
-	 *             If things are interrupted while waiting for all the downloads
-	 *             to be done
-	 * @throws SpinnmanException
-	 *             If a BMP is uncontactable or SpiNNaker rejects a message
-	 * @throws StorageException
-	 *             If the database is in an illegal state
-	 * @throws URISyntaxException
-	 *             If the URI of the proxy is invalid
-	 */
-	@Command(name = "gather", description = GATHER_DESC)
-	public void downloadRecordingChannelsViaMonitorStreaming(
-			@Mixin GatherersParam gatherers,
-			@Mixin MachineParam machine,
-			@Mixin DbFileParam dbFile,
-			@Mixin LogfileParam logfile)
-			throws IOException, SpinnmanException, StorageException,
-			InterruptedException, URISyntaxException {
-		setLogfile(logfile.get());
-		var db = getBufferManagerDB(dbFile.get());
+    /**
+     * Download data using data gatherer cores.
+     *
+     * @param gatherers
+     *            List of descriptions of gatherers.
+     * @param machine
+     *            Description of overall machine.
+     * @param dbFile
+     *            The database that receives the output).
+     * @param logfile
+     *            The path where the log should write.
+     * @throws IOException
+     *             If the communications fail
+     * @throws InterruptedException
+     *             If things are interrupted while waiting for all the downloads
+     *             to be done
+     * @throws SpinnmanException
+     *             If a BMP is uncontactable or SpiNNaker rejects a message
+     * @throws StorageException
+     *             If the database is in an illegal state
+     * @throws URISyntaxException
+     *             If the URI of the proxy is invalid
+     */
+    @Command(name = "gather", description = GATHER_DESC)
+    public void downloadRecordingChannelsViaMonitorStreaming(
+            @Mixin GatherersParam gatherers,
+            @Mixin MachineParam machine,
+            @Mixin DbFileParam dbFile,
+            @Mixin LogfileParam logfile)
+            throws IOException, SpinnmanException, StorageException,
+            InterruptedException, URISyntaxException {
+        setLogfile(logfile.get());
+        var db = getBufferManagerDB(dbFile.get());
 
-		try (var r = new RecordingRegionDataGatherer(machine.get(),	db)) {
-			int misses = r.gather(gatherers.get());
-			getLogger(CommandLineInterface.class).info("total misses: {}",
-					misses);
-		}
-	}
+        try (var r = new RecordingRegionDataGatherer(machine.get(),    db)) {
+            int misses = r.gather(gatherers.get());
+            getLogger(CommandLineInterface.class).info("total misses: {}",
+                    misses);
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <machineFile>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class MachineParam implements Supplier<Machine> {
-		/** The machine. */
-		@Parameters(paramLabel = "<machineFile>", description = MACHINE, //
-				converter = Converter.class)
-		private Machine machine;
+    /**
+     * Argument handler for the {@code <machineFile>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class MachineParam implements Supplier<Machine> {
+        /** The machine. */
+        @Parameters(paramLabel = "<machineFile>", description = MACHINE, //
+                converter = Converter.class)
+        private Machine machine;
 
-		/**
-		 * Picocli Constructor for {@code <machineFile>} parameter.
-		 *
-		 * @hidden
-		 */
-		public MachineParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <machineFile>} parameter.
+         *
+         * @hidden
+         */
+        public MachineParam() {
+        }
 
-		/**
-		 * {@return The machine parsed from the named file}
-		 */
-		@Override
-		public Machine get() {
-			return machine;
-		}
+        /**
+         * {@return The machine parsed from the named file}
+         */
+        @Override
+        public Machine get() {
+            return machine;
+        }
 
-		static class Converter implements ITypeConverter<Machine> {
-			@Override
-			public Machine convert(String filename) throws IOException {
-				try (var reader = new FileReader(filename, UTF_8)) {
-					return new Machine(
-							MAPPER.readValue(reader, MachineBean.class));
-				}
-			}
-		}
-	}
+        static class Converter implements ITypeConverter<Machine> {
+            @Override
+            public Machine convert(String filename) throws IOException {
+                try (var reader = new FileReader(filename, UTF_8)) {
+                    return new Machine(
+                            MAPPER.readValue(reader, MachineBean.class));
+                }
+            }
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <iobufMapFile>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class IobufMapParam implements Supplier<IobufRequest> {
-		/** The request. */
-		@Parameters(paramLabel = "<iobufMapFile>", description = MAP, //
-				converter = Converter.class)
-		private IobufRequest request;
+    /**
+     * Argument handler for the {@code <iobufMapFile>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class IobufMapParam implements Supplier<IobufRequest> {
+        /** The request. */
+        @Parameters(paramLabel = "<iobufMapFile>", description = MAP, //
+                converter = Converter.class)
+        private IobufRequest request;
 
-		/**
-		 * Picocli Constructor for {@code <iobufMapFile>} parameter.
-		 *
-		 * @hidden
-		 */
-		public IobufMapParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <iobufMapFile>} parameter.
+         *
+         * @hidden
+         */
+        public IobufMapParam() {
+        }
 
-		/**
-		 * {@return The request parsed from the named file}
-		 */
-		@Override
-		public IobufRequest get() {
-			return request;
-		}
+        /**
+         * {@return The request parsed from the named file}
+         */
+        @Override
+        public IobufRequest get() {
+            return request;
+        }
 
-		static class Converter implements ITypeConverter<IobufRequest> {
-			@Override
-			public IobufRequest convert(String filename) throws IOException {
-				try (var reader = new FileReader(filename, UTF_8)) {
-					return MAPPER.readValue(reader, IobufRequest.class);
-				}
-			}
-		}
-	}
+        static class Converter implements ITypeConverter<IobufRequest> {
+            @Override
+            public IobufRequest convert(String filename) throws IOException {
+                try (var reader = new FileReader(filename, UTF_8)) {
+                    return MAPPER.readValue(reader, IobufRequest.class);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <gatherFile>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class GatherersParam implements Supplier<List<Gather>> {
-		/** The gatherers. */
-		@Parameters(paramLabel = "<gatherFile>", description = GATHER, //
-				converter = Converter.class)
-		private Supplier<List<Gather>> gatherers;
+    /**
+     * Argument handler for the {@code <gatherFile>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class GatherersParam implements Supplier<List<Gather>> {
+        /** The gatherers. */
+        @Parameters(paramLabel = "<gatherFile>", description = GATHER, //
+                converter = Converter.class)
+        private Supplier<List<Gather>> gatherers;
 
-		/**
-		 * Picocli Constructor for {@code <gatherFile>} parameter.
-		 *
-		 * @hidden
-		 */
-		public GatherersParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <gatherFile>} parameter.
+         *
+         * @hidden
+         */
+        public GatherersParam() {
+        }
 
-		/**
-		 * {@return The gatherers parsed from the named file}
-		 */
-		@Override
-		public List<Gather> get() {
-			return gatherers.get();
-		}
+        /**
+         * {@return The gatherers parsed from the named file}
+         */
+        @Override
+        public List<Gather> get() {
+            return gatherers.get();
+        }
 
-		static class Converter
-				implements ITypeConverter<Supplier<List<Gather>>> {
-			@Override
-			public Supplier<List<Gather>> convert(String filename)
-					throws IOException {
-				try (var reader = new FileReader(filename, UTF_8)) {
-					var g = MAPPER.readValue(reader, Gather.LIST);
-					return () -> g;
-				}
-			}
-		}
-	}
+        static class Converter
+                implements ITypeConverter<Supplier<List<Gather>>> {
+            @Override
+            public Supplier<List<Gather>> convert(String filename)
+                    throws IOException {
+                try (var reader = new FileReader(filename, UTF_8)) {
+                    var g = MAPPER.readValue(reader, Gather.LIST);
+                    return () -> g;
+                }
+            }
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <placementFile>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class PlacementsParam implements Supplier<List<Placement>> {
-		/** The placements. */
-		@Parameters(paramLabel = "<placementFile>", description = PLACEMENT, //
-				converter = Converter.class)
-		private Supplier<List<Placement>> placements;
+    /**
+     * Argument handler for the {@code <placementFile>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class PlacementsParam implements Supplier<List<Placement>> {
+        /** The placements. */
+        @Parameters(paramLabel = "<placementFile>", description = PLACEMENT, //
+                converter = Converter.class)
+        private Supplier<List<Placement>> placements;
 
-		/**
-		 * Picocli Constructor for {@code <placementFile>} parameter.
-		 *
-		 * @hidden
-		 */
-		public PlacementsParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <placementFile>} parameter.
+         *
+         * @hidden
+         */
+        public PlacementsParam() {
+        }
 
-		/**
-		 * {@return The placements parsed from the named file}
-		 */
-		@Override
-		public List<Placement> get() {
-			return placements.get();
-		}
+        /**
+         * {@return The placements parsed from the named file}
+         */
+        @Override
+        public List<Placement> get() {
+            return placements.get();
+        }
 
-		static class Converter
-				implements ITypeConverter<Supplier<List<Placement>>> {
-			@Override
-			public Supplier<List<Placement>> convert(String filename)
-					throws IOException {
-				try (var reader = new FileReader(filename, UTF_8)) {
-					var p = MAPPER.readValue(reader, Placement.LIST);
-					return () -> p;
-				}
-			}
-		}
-	}
+        static class Converter
+                implements ITypeConverter<Supplier<List<Placement>>> {
+            @Override
+            public Supplier<List<Placement>> convert(String filename)
+                    throws IOException {
+                try (var reader = new FileReader(filename, UTF_8)) {
+                    var p = MAPPER.readValue(reader, Placement.LIST);
+                    return () -> p;
+                }
+            }
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <logfile>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class LogfileParam implements Supplier<File> {
-		@Parameters(description = LOGFILE, converter = Converter.class,
-			arity = "1")
-		private ValueHolder<File> logfile = new ValueHolder<>();
+    /**
+     * Argument handler for the {@code <logfile>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class LogfileParam implements Supplier<File> {
+        @Parameters(description = LOGFILE, converter = Converter.class,
+            arity = "1")
+        private ValueHolder<File> logfile = new ValueHolder<>();
 
-		/**
-		 * Picocli Constructor for {@code <logfile>} parameter.
-		 *
-		 * @hidden
-		 */
-		public LogfileParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <logfile>} parameter.
+         *
+         * @hidden
+         */
+        public LogfileParam() {
+        }
 
-		/**
-		 * {@return The folder for the run}
-		 */
-		@Override
-		public File get() {
-			return logfile.getValue();
-		}
+        /**
+         * {@return The folder for the run}
+         */
+        @Override
+        public File get() {
+            return logfile.getValue();
+        }
 
-		static class Converter implements ITypeConverter<ValueHolder<File>> {
-			@Override
-			public ValueHolder<File> convert(String filename)
-					throws IOException {
-				var f = new File(filename);
-				if (f.isDirectory()) {
-					throw new TypeConversionException(
-						"<logfile> " + filename + " must not be a directory");
-				}
-				return new ValueHolder<>(f);
-			}
-		}
-	}
+        static class Converter implements ITypeConverter<ValueHolder<File>> {
+            @Override
+            public ValueHolder<File> convert(String filename)
+                    throws IOException {
+                var f = new File(filename);
+                if (f.isDirectory()) {
+                    throw new TypeConversionException(
+                        "<logfile> " + filename + " must not be a directory");
+                }
+                return new ValueHolder<>(f);
+            }
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <iobufDir>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class IobufDirParam implements Supplier<File> {
-		@Parameters(description = IOBUFDIR, converter = Converter.class,
-			arity = "1")
-		private ValueHolder<File> iobufDir = new ValueHolder<>();
+    /**
+     * Argument handler for the {@code <iobufDir>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class IobufDirParam implements Supplier<File> {
+        @Parameters(description = IOBUFDIR, converter = Converter.class,
+            arity = "1")
+        private ValueHolder<File> iobufDir = new ValueHolder<>();
 
-		/**
-		 * Picocli Constructor for {@code <iobufDir>} parameter.
-		 *
-		 * @hidden
-		 */
-		public IobufDirParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <iobufDir>} parameter.
+         *
+         * @hidden
+         */
+        public IobufDirParam() {
+        }
 
-		/**
-		 * {@return The folder for the run}
-		 */
-		@Override
-		public File get() {
-			return iobufDir.getValue();
-		}
+        /**
+         * {@return The folder for the run}
+         */
+        @Override
+        public File get() {
+            return iobufDir.getValue();
+        }
 
-		static class Converter implements ITypeConverter<ValueHolder<File>> {
-			@Override
-			public ValueHolder<File> convert(String filename)
-				throws IOException {
-				var f = new File(filename);
-				if (!f.isDirectory()) {
-					throw new TypeConversionException(
-						"<iobufDir> must be a directory");
-				}
-				return new ValueHolder<>(f);
-			}
-		}
-	}
+        static class Converter implements ITypeConverter<ValueHolder<File>> {
+            @Override
+            public ValueHolder<File> convert(String filename)
+                throws IOException {
+                var f = new File(filename);
+                if (!f.isDirectory()) {
+                    throw new TypeConversionException(
+                        "<iobufDir> must be a directory");
+                }
+                return new ValueHolder<>(f);
+            }
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <dbFile>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class DbFileParam implements Supplier<File> {
-		@Parameters(description = DBFILE, converter = Converter.class,
-				arity = "1")
-		private ValueHolder<File> dbFile = new ValueHolder<>();
+    /**
+     * Argument handler for the {@code <dbFile>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class DbFileParam implements Supplier<File> {
+        @Parameters(description = DBFILE, converter = Converter.class,
+                arity = "1")
+        private ValueHolder<File> dbFile = new ValueHolder<>();
 
-		/**
-		 * Picocli Constructor for {@code <dbFile>} parameter.
-		 *
-		 * @hidden
-		 */
-		public DbFileParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <dbFile>} parameter.
+         *
+         * @hidden
+         */
+        public DbFileParam() {
+        }
 
-		/**
-		 * {@return The file of the buffer database}
-		 */
-		@Override
-		public File get() {
-			return dbFile.getValue();
-		}
+        /**
+         * {@return The file of the buffer database}
+         */
+        @Override
+        public File get() {
+            return dbFile.getValue();
+        }
 
-		static class Converter implements ITypeConverter<ValueHolder<File>> {
-			@Override
-			public ValueHolder<File> convert(String filename)
-					throws IOException {
-				var f = new File(filename);
-				if (!f.isFile()) {
-					throw new TypeConversionException(
-							"<dbFile> must be a file");
-				}
-				return new ValueHolder<>(f);
-			}
-		}
-	}
+        static class Converter implements ITypeConverter<ValueHolder<File>> {
+            @Override
+            public ValueHolder<File> convert(String filename)
+                    throws IOException {
+                var f = new File(filename);
+                if (!f.isFile()) {
+                    throw new TypeConversionException(
+                            "<dbFile> must be a file");
+                }
+                return new ValueHolder<>(f);
+            }
+        }
+    }
 
-	/**
-	 * Argument handler for the {@code <dsFile>} parameter.
-	 * <p>
-	 * Do not make instances of this class yourself; leave that to picocli.
-	 *
-	 * @see ArgGroup
-	 * @see Parameters
-	 */
-	public static class DsFileParam implements Supplier<File> {
-		@Parameters(description = DSFILE, converter = Converter.class,
-				arity = "1")
-		private ValueHolder<File> dsFile = new ValueHolder<>();
+    /**
+     * Argument handler for the {@code <dsFile>} parameter.
+     * <p>
+     * Do not make instances of this class yourself; leave that to picocli.
+     *
+     * @see ArgGroup
+     * @see Parameters
+     */
+    public static class DsFileParam implements Supplier<File> {
+        @Parameters(description = DSFILE, converter = Converter.class,
+                arity = "1")
+        private ValueHolder<File> dsFile = new ValueHolder<>();
 
-		/**
-		 * Picocli Constructor for {@code <dsFile>} parameter.
-		 *
-		 * @hidden
-		 */
-		public DsFileParam() {
-		}
+        /**
+         * Picocli Constructor for {@code <dsFile>} parameter.
+         *
+         * @hidden
+         */
+        public DsFileParam() {
+        }
 
-		/**
-		 * {@return The file of the dataspec database}
-		 */
-		@Override
-		public File get() {
-			return dsFile.getValue();
-		}
+        /**
+         * {@return The file of the dataspec database}
+         */
+        @Override
+        public File get() {
+            return dsFile.getValue();
+        }
 
-		static class Converter implements ITypeConverter<ValueHolder<File>> {
-			@Override
-			public ValueHolder<File> convert(String filename)
-					throws IOException {
-				var f = new File(filename);
-				if (!f.isFile()) {
-					throw new TypeConversionException(
-							"<dbFile> must be a file");
-				}
-				return new ValueHolder<>(f);
-			}
-		}
-	}
+        static class Converter implements ITypeConverter<ValueHolder<File>> {
+            @Override
+            public ValueHolder<File> convert(String filename)
+                    throws IOException {
+                var f = new File(filename);
+                if (!f.isFile()) {
+                    throw new TypeConversionException(
+                            "<dbFile> must be a file");
+                }
+                return new ValueHolder<>(f);
+            }
+        }
+    }
 
-	private static DSEDatabaseEngine getDataSpecDB(File dsFile) {
-		return new DSEDatabaseEngine(dsFile);
-	}
+    private static DSEDatabaseEngine getDataSpecDB(File dsFile) {
+        return new DSEDatabaseEngine(dsFile);
+    }
 
-	private static BufferManagerStorage getBufferManagerDB(File dbFile) {
-		return new BufferManagerDatabaseEngine(dbFile).getStorageInterface();
-	}
+    private static BufferManagerStorage getBufferManagerDB(File dbFile) {
+        return new BufferManagerDatabaseEngine(dbFile).getStorageInterface();
+    }
 }
 
 /**
  * The descriptions of various commands.
  */
 interface CommandDescriptions {
-	/** Description of {@code download} command. */
-	String DOWNLOAD_DESC = "Retrieve recording regions using "
-			+ "classic SpiNNaker control protocol transfers.";
+    /** Description of {@code download} command. */
+    String DOWNLOAD_DESC = "Retrieve recording regions using "
+            + "classic SpiNNaker control protocol transfers.";
 
-	/** Description of {@code gather} command. */
-	String GATHER_DESC = "Retrieve recording regions using the "
-			+ "fast data streaming protocol. "
-			+ "Requires system cores to be fully configured.";
+    /** Description of {@code gather} command. */
+    String GATHER_DESC = "Retrieve recording regions using the "
+            + "fast data streaming protocol. "
+            + "Requires system cores to be fully configured.";
 
-	/** Description of {@code dse} command. */
-	String DSE_DESC = "Evaluate data specifications for all cores and upload "
-			+ "the results to SpiNNaker using the classic protocol.";
+    /** Description of {@code dse} command. */
+    String DSE_DESC = "Evaluate data specifications for all cores and upload "
+            + "the results to SpiNNaker using the classic protocol.";
 
-	/** Description of {@code dse_app} command. */
-	String DSE_APP_DESC = "Evaluate data specifications for application cores "
-			+ "and upload the results to SpiNNaker using the classic protocol.";
+    /** Description of {@code dse_app} command. */
+    String DSE_APP_DESC = "Evaluate data specifications for application cores "
+            + "and upload the results to SpiNNaker using the classic protocol.";
 
-	/** Description of {@code dse_app_mon} command. */
-	String DSE_MON_DESC = "Evaluate data specifications for application cores "
-			+ "and upload the results to SpiNNaker using the fast data "
-			+ "streaming protocol. "
-			+ "Requires system cores to be fully configured, so "
-			+ "can't be used to set up system cores.";
+    /** Description of {@code dse_app_mon} command. */
+    String DSE_MON_DESC = "Evaluate data specifications for application cores "
+            + "and upload the results to SpiNNaker using the fast data "
+            + "streaming protocol. "
+            + "Requires system cores to be fully configured, so "
+            + "can't be used to set up system cores.";
 
-	/** Description of {@code dse_sys} command. */
-	String DSE_SYS_DESC = "Evaluate data specifications for system cores and "
-			+ "upload the results to SpiNNaker (always uses the classic "
-			+ "protocol).";
+    /** Description of {@code dse_sys} command. */
+    String DSE_SYS_DESC = "Evaluate data specifications for system cores and "
+            + "upload the results to SpiNNaker (always uses the classic "
+            + "protocol).";
 
-	/** Description of {@code iobuf} command. */
-	String IOBUF_DESC = "Download the contents "
-			+ "of the IOBUF buffers and process them.";
+    /** Description of {@code iobuf} command. */
+    String IOBUF_DESC = "Download the contents "
+            + "of the IOBUF buffers and process them.";
 
-	/** Description of {@code listen_for_unbooted} command. */
-	String LISTEN_DESC = "Listen for unbooted SpiNNaker boards on the local "
-			+ "network. Depends on receiving broadcast UDP messages.";
+    /** Description of {@code listen_for_unbooted} command. */
+    String LISTEN_DESC = "Listen for unbooted SpiNNaker boards on the local "
+            + "network. Depends on receiving broadcast UDP messages.";
 }
 
 /**
  * The descriptions of various parameters to commands, many of which are shared.
  */
 interface ParamDescriptions {
-	/** Description of {@code gatherFile} parameter. */
-	String GATHER = "The name of the gatherer description JSON file.";
+    /** Description of {@code gatherFile} parameter. */
+    String GATHER = "The name of the gatherer description JSON file.";
 
-	/** Description of {@code machineFile} parameter. */
-	String MACHINE = "The name of the machine description JSON file.";
+    /** Description of {@code machineFile} parameter. */
+    String MACHINE = "The name of the machine description JSON file.";
 
-	/** Description of {@code iobufMapFile} parameter. */
-	String MAP = "The name of the IOBUF map description file.";
+    /** Description of {@code iobufMapFile} parameter. */
+    String MAP = "The name of the IOBUF map description file.";
 
-	/** Description of {@code placementFile} parameter. */
-	String PLACEMENT = "The name of the placement description JSON file.";
+    /** Description of {@code placementFile} parameter. */
+    String PLACEMENT = "The name of the placement description JSON file.";
 
-	/** Description of {@code reportFolder} parameter. */
-	String REPORT = "The name of the run's reporting folder. "
-			+ "If not provided, no report will be written.";
+    /** Description of {@code reportFolder} parameter. */
+    String REPORT = "The name of the run's reporting folder. "
+            + "If not provided, no report will be written.";
 
-	/** Description of {@code dbFile} parameter. */
-	String DBFILE = "The path of the buffer database.";
+    /** Description of {@code dbFile} parameter. */
+    String DBFILE = "The path of the buffer database.";
 
-	/** Description of {@code dsFile} parameter. */
-	String DSFILE = "The path of the dataspec database.";
+    /** Description of {@code dsFile} parameter. */
+    String DSFILE = "The path of the dataspec database.";
 
-	/** Description of {@code logfile} parameter. */
-	String LOGFILE = "The name of the logfile path.";
+    /** Description of {@code logfile} parameter. */
+    String LOGFILE = "The name of the logfile path.";
 
-	/** Description of {@code iobufDir} parameter. */
-	String IOBUFDIR = "The name of the iobuf folder.";
+    /** Description of {@code iobufDir} parameter. */
+    String IOBUFDIR = "The name of the iobuf folder.";
 }

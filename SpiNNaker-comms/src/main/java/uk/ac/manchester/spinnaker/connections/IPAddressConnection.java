@@ -25,74 +25,74 @@ import java.net.InetAddress;
  * boards prior to boot. Note that pre-boot messages contain no useful payload.
  */
 public class IPAddressConnection extends UDPConnection<InetAddress> {
-	/** Matches SPINN_PORT in spinnaker_bootROM. */
-	private static final int BOOTROM_SPINN_PORT = 54321;
+    /** Matches SPINN_PORT in spinnaker_bootROM. */
+    private static final int BOOTROM_SPINN_PORT = 54321;
 
-	/**
-	 * Create a connection listening on the default SpiNNaker pre-boot broadcast
-	 * port.
-	 *
-	 * @throws IOException
-	 *             If setting up the network fails.
-	 */
-	public IPAddressConnection() throws IOException {
-		this(null, UDP_BOOT_CONNECTION_DEFAULT_PORT);
-	}
+    /**
+     * Create a connection listening on the default SpiNNaker pre-boot broadcast
+     * port.
+     *
+     * @throws IOException
+     *             If setting up the network fails.
+     */
+    public IPAddressConnection() throws IOException {
+        this(null, UDP_BOOT_CONNECTION_DEFAULT_PORT);
+    }
 
-	/**
-	 * Create a connection listening on the default SpiNNaker pre-boot broadcast
-	 * port.
-	 *
-	 * @param localHost
-	 *            Local hostname to bind to.
-	 * @throws IOException
-	 *             If setting up the network fails.
-	 */
-	public IPAddressConnection(InetAddress localHost) throws IOException {
-		this(localHost, UDP_BOOT_CONNECTION_DEFAULT_PORT);
-	}
+    /**
+     * Create a connection listening on the default SpiNNaker pre-boot broadcast
+     * port.
+     *
+     * @param localHost
+     *            Local hostname to bind to.
+     * @throws IOException
+     *             If setting up the network fails.
+     */
+    public IPAddressConnection(InetAddress localHost) throws IOException {
+        this(localHost, UDP_BOOT_CONNECTION_DEFAULT_PORT);
+    }
 
-	/**
-	 * Create a connection.
-	 *
-	 * @param localHost
-	 *            Local hostname to bind to.
-	 * @param localPort
-	 *            Local port to bind to.
-	 * @throws IOException
-	 *             If setting up the network fails.
-	 */
-	public IPAddressConnection(InetAddress localHost, int localPort)
-			throws IOException {
-		super(localHost, localPort, null, null, null);
-	}
+    /**
+     * Create a connection.
+     *
+     * @param localHost
+     *            Local hostname to bind to.
+     * @param localPort
+     *            Local port to bind to.
+     * @throws IOException
+     *             If setting up the network fails.
+     */
+    public IPAddressConnection(InetAddress localHost, int localPort)
+            throws IOException {
+        super(localHost, localPort, null, null, null);
+    }
 
-	/**
-	 * {@return The IP address, or {@code null} if none was forthcoming}
-	 */
-	@Override
-	public final InetAddress receiveMessage() {
-		return receiveMessage(Integer.MAX_VALUE);
-	}
+    /**
+     * {@return The IP address, or {@code null} if none was forthcoming}
+     */
+    @Override
+    public final InetAddress receiveMessage() {
+        return receiveMessage(Integer.MAX_VALUE);
+    }
 
-	/**
-	 * Receive a message.
-	 *
-	 * @param timeout
-	 *            How long to wait for an IP address; {@code null} for forever.
-	 * @return The IP address, or {@code null} if none was forthcoming.
-	 */
-	@Override
-	public InetAddress receiveMessage(int timeout) {
-		try {
-			var packet = receiveWithAddress(timeout);
-			var addr = packet.getAddress();
-			if (addr.getPort() == BOOTROM_SPINN_PORT) {
-				return addr.getAddress();
-			}
-		} catch (IOException e) {
-			// Do nothing
-		}
-		return null;
-	}
+    /**
+     * Receive a message.
+     *
+     * @param timeout
+     *            How long to wait for an IP address; {@code null} for forever.
+     * @return The IP address, or {@code null} if none was forthcoming.
+     */
+    @Override
+    public InetAddress receiveMessage(int timeout) {
+        try {
+            var packet = receiveWithAddress(timeout);
+            var addr = packet.getAddress();
+            if (addr.getPort() == BOOTROM_SPINN_PORT) {
+                return addr.getAddress();
+            }
+        } catch (IOException e) {
+            // Do nothing
+        }
+        return null;
+    }
 }

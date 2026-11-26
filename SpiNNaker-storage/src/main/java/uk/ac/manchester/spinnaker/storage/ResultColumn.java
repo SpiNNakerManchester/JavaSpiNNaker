@@ -31,10 +31,10 @@ import java.lang.annotation.Target;
 @Documented
 @Repeatable(ResultColumns.class)
 public @interface ResultColumn {
-	/**
-	 * Describes a column that is expected in the result.
-	 *
-	 * @return The column names.
-	 */
-	String value();
+    /**
+     * Describes a column that is expected in the result.
+     *
+     * @return The column names.
+     */
+    String value();
 }

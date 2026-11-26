@@ -25,120 +25,120 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.JobParametersTypeName;
  */
 @JobParametersTypeName("PyNNJobParameters")
 public class PyNNJobParameters implements JobParameters {
-	/** The directory in which the job should be run. */
-	private String workingDirectory;
+    /** The directory in which the job should be run. */
+    private String workingDirectory;
 
-	/** The system (bash) script to be executed to setup the environment. */
-	private String setupScript;
+    /** The system (bash) script to be executed to setup the environment. */
+    private String setupScript;
 
-	/** The user (python) script to eventually execute. */
-	private String userScript;
+    /** The user (python) script to eventually execute. */
+    private String userScript;
 
-	/** The configuration of the hardware. */
-	private Map<String, Object> hardwareConfiguration;
+    /** The configuration of the hardware. */
+    private Map<String, Object> hardwareConfiguration;
 
-	/**
-	 * Create an empty parameters for serialisation.
-	 */
-	public PyNNJobParameters() {
-		// Does Nothing
-	}
+    /**
+     * Create an empty parameters for serialisation.
+     */
+    public PyNNJobParameters() {
+        // Does Nothing
+    }
 
-	/**
-	 * Create a description of the job parameters for a PyNN job.
-	 *
-	 * @param workingDirectory
-	 *            The working directory to use.
-	 * @param setupScript
-	 *            The setup script to run before execution
-	 * @param userScript
-	 *            The user script to run.
-	 * @param hardwareConfiguration
-	 *            The hardware configuration desired.
-	 */
-	public PyNNJobParameters(final String workingDirectory,
-			final String setupScript, final String userScript,
-			final Map<String, Object> hardwareConfiguration) {
-		this.workingDirectory = workingDirectory;
-		this.userScript = userScript;
-		this.setupScript = setupScript;
-		this.hardwareConfiguration = hardwareConfiguration;
-	}
+    /**
+     * Create a description of the job parameters for a PyNN job.
+     *
+     * @param workingDirectory
+     *            The working directory to use.
+     * @param setupScript
+     *            The setup script to run before execution
+     * @param userScript
+     *            The user script to run.
+     * @param hardwareConfiguration
+     *            The hardware configuration desired.
+     */
+    public PyNNJobParameters(final String workingDirectory,
+            final String setupScript, final String userScript,
+            final Map<String, Object> hardwareConfiguration) {
+        this.workingDirectory = workingDirectory;
+        this.userScript = userScript;
+        this.setupScript = setupScript;
+        this.hardwareConfiguration = hardwareConfiguration;
+    }
 
-	/**
-	 * Get the workingDirectory.
-	 *
-	 * @return the workingDirectory
-	 */
-	public String getWorkingDirectory() {
-		return workingDirectory;
-	}
+    /**
+     * Get the workingDirectory.
+     *
+     * @return the workingDirectory
+     */
+    public String getWorkingDirectory() {
+        return workingDirectory;
+    }
 
-	/**
-	 * Sets the workingDirectory.
-	 *
-	 * @param workingDirectory
-	 *            the workingDirectory to set
-	 */
-	public void setWorkingDirectory(final String workingDirectory) {
-		this.workingDirectory = workingDirectory;
-	}
+    /**
+     * Sets the workingDirectory.
+     *
+     * @param workingDirectory
+     *            the workingDirectory to set
+     */
+    public void setWorkingDirectory(final String workingDirectory) {
+        this.workingDirectory = workingDirectory;
+    }
 
-	/**
-	 * Get the setup script.
-	 *
-	 * @return the script
-	 */
-	public String getSetupScript() {
-		return setupScript;
-	}
+    /**
+     * Get the setup script.
+     *
+     * @return the script
+     */
+    public String getSetupScript() {
+        return setupScript;
+    }
 
-	/**
-	 * Set the setup script.
-	 *
-	 * @param setupScript
-	 *            the script
-	 */
-	public void setSetupScript(final String setupScript) {
-		this.setupScript = setupScript;
-	}
+    /**
+     * Set the setup script.
+     *
+     * @param setupScript
+     *            the script
+     */
+    public void setSetupScript(final String setupScript) {
+        this.setupScript = setupScript;
+    }
 
-	/**
-	 * Get the user script.
-	 *
-	 * @return the script
-	 */
-	public String getUserScript() {
-		return userScript;
-	}
+    /**
+     * Get the user script.
+     *
+     * @return the script
+     */
+    public String getUserScript() {
+        return userScript;
+    }
 
-	/**
-	 * Sets the user script.
-	 *
-	 * @param userScript
-	 *            the script to set
-	 */
-	public void setUserScript(final String userScript) {
-		this.userScript = userScript;
-	}
+    /**
+     * Sets the user script.
+     *
+     * @param userScript
+     *            the script to set
+     */
+    public void setUserScript(final String userScript) {
+        this.userScript = userScript;
+    }
 
-	/**
-	 * Get the hardwareConfiguration.
-	 *
-	 * @return the hardwareConfiguration
-	 */
-	public Map<String, Object> getHardwareConfiguration() {
-		return hardwareConfiguration;
-	}
+    /**
+     * Get the hardwareConfiguration.
+     *
+     * @return the hardwareConfiguration
+     */
+    public Map<String, Object> getHardwareConfiguration() {
+        return hardwareConfiguration;
+    }
 
-	/**
-	 * Sets the hardwareConfiguration.
-	 *
-	 * @param hardwareConfiguration
-	 *            the hardwareConfiguration to set
-	 */
-	public void setHardwareConfiguration(
-			final Map<String, Object> hardwareConfiguration) {
-		this.hardwareConfiguration = hardwareConfiguration;
-	}
+    /**
+     * Sets the hardwareConfiguration.
+     *
+     * @param hardwareConfiguration
+     *            the hardwareConfiguration to set
+     */
+    public void setHardwareConfiguration(
+            final Map<String, Object> hardwareConfiguration) {
+        this.hardwareConfiguration = hardwareConfiguration;
+    }
 }

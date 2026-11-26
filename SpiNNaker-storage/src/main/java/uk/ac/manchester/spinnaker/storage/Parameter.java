@@ -31,11 +31,11 @@ import java.lang.annotation.Target;
 @Documented
 @Repeatable(Parameters.class)
 public @interface Parameter {
-	/**
-	 * Describes a parameter supported by the statement once it is
-	 * prepared.
-	 *
-	 * @return A parameter name.
-	 */
-	String value();
+    /**
+     * Describes a parameter supported by the statement once it is
+     * prepared.
+     *
+     * @return A parameter name.
+     */
+    String value();
 }

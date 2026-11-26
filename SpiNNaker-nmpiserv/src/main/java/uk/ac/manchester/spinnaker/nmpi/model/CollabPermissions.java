@@ -21,49 +21,49 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * POJO describing the permissions to a collaboratory object.
  */
 public class CollabPermissions {
-	/** True if delete permission. */
-	private boolean delete;
+    /** True if delete permission. */
+    private boolean delete;
 
-	/** True if update permission. */
-	private boolean update;
+    /** True if update permission. */
+    private boolean update;
 
-	/**
-	 * Determine if delete permission is given.
-	 *
-	 * @return Whether permitted to delete
-	 */
-	@JsonProperty("DELETE")
-	public boolean isDelete() {
-		return delete;
-	}
+    /**
+     * Determine if delete permission is given.
+     *
+     * @return Whether permitted to delete
+     */
+    @JsonProperty("DELETE")
+    public boolean isDelete() {
+        return delete;
+    }
 
-	/**
-	 * Set delete permission.
-	 *
-	 * @param delete
-	 *            Whether to give permission
-	 */
-	public void setDelete(final boolean delete) {
-		this.delete = delete;
-	}
+    /**
+     * Set delete permission.
+     *
+     * @param delete
+     *            Whether to give permission
+     */
+    public void setDelete(final boolean delete) {
+        this.delete = delete;
+    }
 
-	/**
-	 * Determine if update permission is given.
-	 *
-	 * @return Whether permitted to update
-	 */
-	@JsonProperty("UPDATE")
-	public boolean isUpdate() {
-		return update;
-	}
+    /**
+     * Determine if update permission is given.
+     *
+     * @return Whether permitted to update
+     */
+    @JsonProperty("UPDATE")
+    public boolean isUpdate() {
+        return update;
+    }
 
-	/**
-	 * Set update permission.
-	 *
-	 * @param update
-	 *            Whether permission is given
-	 */
-	public void setUpdate(final boolean update) {
-		this.update = update;
-	}
+    /**
+     * Set update permission.
+     *
+     * @param update
+     *            Whether permission is given
+     */
+    public void setUpdate(final boolean update) {
+        this.update = update;
+    }
 }

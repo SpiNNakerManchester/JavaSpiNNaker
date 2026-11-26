@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  * Represents link directions of a board.
  * <p>
  * <img src="doc-files/Directions.png" width="300"
- *		alt="SpiNNaker board neighbourhood">
+ *        alt="SpiNNaker board neighbourhood">
  * <p>
  * Note how this is tilted over with respect to classical compass directions; to
  * <em>actually</em> go "true vertically north", you have to go first {@link #N}
@@ -36,56 +36,56 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  * @see uk.ac.manchester.spinnaker.alloc.admin.DirInfo DirInfo
  */
 public enum Direction {
-	// Order must match that in database
-	/** Northward, from {@code x} to {@code a}. */
-	N(FPGA_N_NE, 0, "fpga_n", 3),
-	/** Eastward, from {@code x} to {@code b}. */
-	E(FPGA_N_NE, 1, "fpga_e", 4),
-	/** Southeast, from {@code x} to {@code c}. */
-	SE(FPGA_E_S, 0, "fpga_se", 5),
-	/** Southward, from {@code x} to {@code d}. */
-	S(FPGA_E_S, 1, "fpga_s", 0),
-	/** Westward, from {@code x} to {@code e}. */
-	W(FPGA_SW_W, 0, "fpga_w", 1),
-	/** Northwest, from {@code x} to {@code f}. */
-	NW(FPGA_SW_W, 1, "fpga_nw", 2);
+    // Order must match that in database
+    /** Northward, from {@code x} to {@code a}. */
+    N(FPGA_N_NE, 0, "fpga_n", 3),
+    /** Eastward, from {@code x} to {@code b}. */
+    E(FPGA_N_NE, 1, "fpga_e", 4),
+    /** Southeast, from {@code x} to {@code c}. */
+    SE(FPGA_E_S, 0, "fpga_se", 5),
+    /** Southward, from {@code x} to {@code d}. */
+    S(FPGA_E_S, 1, "fpga_s", 0),
+    /** Westward, from {@code x} to {@code e}. */
+    W(FPGA_SW_W, 0, "fpga_w", 1),
+    /** Northwest, from {@code x} to {@code f}. */
+    NW(FPGA_SW_W, 1, "fpga_nw", 2);
 
-	/**
-	 * The FPGA that manages the link in this direction. Note that the names of
-	 * FPGA identifiers don't exactly match up with the direction names in this
-	 * class. This <em>mostly</em> doesn't matter; the only real confusion is
-	 * right here in the definitions of these directions.
-	 */
-	public final FPGA fpga;
+    /**
+     * The FPGA that manages the link in this direction. Note that the names of
+     * FPGA identifiers don't exactly match up with the direction names in this
+     * class. This <em>mostly</em> doesn't matter; the only real confusion is
+     * right here in the definitions of these directions.
+     */
+    public final FPGA fpga;
 
-	/**
-	 * The register bank that manages the link in this direction.
-	 */
-	public final int bank;
+    /**
+     * The register bank that manages the link in this direction.
+     */
+    public final int bank;
 
-	/**
-	 * The name of the column in the {@code pending_changes} table that holds
-	 * information pertaining to this link.
-	 */
-	public final String columnName;
+    /**
+     * The name of the column in the {@code pending_changes} table that holds
+     * information pertaining to this link.
+     */
+    public final String columnName;
 
-	/** The number of the opposite of the link. */
-	private final int oppo;
+    /** The number of the opposite of the link. */
+    private final int oppo;
 
-	Direction(FPGA fpga, int bankSelect, String columnName, int opposite) {
-		this.fpga = fpga;
-		this.bank = bankSelect;
-		this.columnName = columnName;
-		this.oppo = opposite;
-	}
+    Direction(FPGA fpga, int bankSelect, String columnName, int opposite) {
+        this.fpga = fpga;
+        this.bank = bankSelect;
+        this.columnName = columnName;
+        this.oppo = opposite;
+    }
 
-	/**
-	 * Gets the direction of the link in the opposite direction. Only really
-	 * valid for SpiNN-5 boards.
-	 *
-	 * @return The opposite direction.
-	 */
-	public Direction opposite() {
-		return values()[oppo];
-	}
+    /**
+     * Gets the direction of the link in the opposite direction. Only really
+     * valid for SpiNN-5 boards.
+     *
+     * @return The opposite direction.
+     */
+    public Direction opposite() {
+        return values()[oppo];
+    }
 }

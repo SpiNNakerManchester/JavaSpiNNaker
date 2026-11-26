@@ -42,90 +42,90 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver.ConnectionDescriptor;
  * A class for making things easier to do on a per-board basis.
  */
 public abstract class BoardLocalSupport {
-	private static final String BOARD_ROOT = "boardRoot";
+    private static final String BOARD_ROOT = "boardRoot";
 
-	/** A storage object that is aware of proxies. */
-	protected final ProxyAwareStorage storage;
+    /** A storage object that is aware of proxies. */
+    protected final ProxyAwareStorage storage;
 
-	/** The description of the SpiNNaker machine. */
-	protected final Machine machine;
+    /** The description of the SpiNNaker machine. */
+    protected final Machine machine;
 
-	/**
-	 * Constructs an object for making things easier to do
-	 *     on a per-board basis.
-	 *
-	 * @param storage
-	 *            Database containing information about how to speak to the
-	 *            proxy.
-	 * @param machine
-	 *            Which machine is this on? Used for address mapping and
-	 *            provided as a general service to subclasses.
-	 */
-	protected BoardLocalSupport(ProxyAwareStorage storage, Machine machine) {
-		this.storage = storage;
-		this.machine = machine;
-	}
+    /**
+     * Constructs an object for making things easier to do
+     *     on a per-board basis.
+     *
+     * @param storage
+     *            Database containing information about how to speak to the
+     *            proxy.
+     * @param machine
+     *            Which machine is this on? Used for address mapping and
+     *            provided as a general service to subclasses.
+     */
+    protected BoardLocalSupport(ProxyAwareStorage storage, Machine machine) {
+        this.storage = storage;
+        this.machine = machine;
+    }
 
-	private String root(HasChipLocation chipLoc) {
-		var root = machine.getChipAt(chipLoc).nearestEthernet;
-		return "(board:" + root.getX() + "," + root.getY() + ")";
-	}
+    private String root(HasChipLocation chipLoc) {
+        var root = machine.getChipAt(chipLoc).nearestEthernet;
+        return "(board:" + root.getX() + "," + root.getY() + ")";
+    }
 
-	@MustBeClosed
-	@SuppressWarnings("MustBeClosed")
-	protected TransceiverInterface getTransceiver()
-			throws IOException, StorageException, SpinnmanException,
-			InterruptedException {
-		final TransceiverInterface txrx;
-		var job = getJob();
-		if (job == null) {
-			// No job; must be a direct connection
-			txrx = Transceiver.makeWithDescriptors(
-					machine.version, generateScampConnections());
-		} else {
-			txrx = job.getTransceiver();
-		}
-		var scpSelector = txrx.getScampConnectionSelector();
-		if (scpSelector instanceof MachineAware) {
-			((MachineAware) scpSelector).setMachine(machine);
-		}
-		return txrx;
-	}
+    @MustBeClosed
+    @SuppressWarnings("MustBeClosed")
+    protected TransceiverInterface getTransceiver()
+            throws IOException, StorageException, SpinnmanException,
+            InterruptedException {
+        final TransceiverInterface txrx;
+        var job = getJob();
+        if (job == null) {
+            // No job; must be a direct connection
+            txrx = Transceiver.makeWithDescriptors(
+                    machine.version, generateScampConnections());
+        } else {
+            txrx = job.getTransceiver();
+        }
+        var scpSelector = txrx.getScampConnectionSelector();
+        if (scpSelector instanceof MachineAware) {
+            ((MachineAware) scpSelector).setMachine(machine);
+        }
+        return txrx;
+    }
 
-	private List<ConnectionDescriptor> generateScampConnections() {
-		return machine.ethernetConnectedChips().stream()
-				.map(chip -> new ConnectionDescriptor(chip.ipAddress,
-						SCP_SCAMP_PORT, chip.asChipLocation()))
-				.collect(toList());
-	}
+    private List<ConnectionDescriptor> generateScampConnections() {
+        return machine.ethernetConnectedChips().stream()
+                .map(chip -> new ConnectionDescriptor(chip.ipAddress,
+                        SCP_SCAMP_PORT, chip.asChipLocation()))
+                .collect(toList());
+    }
 
-	protected SpallocClient.Job getJob() throws IOException, StorageException {
-		if (storage == null) {
-			return null;
-		}
-		return getJobFromProxyInfo(storage.getProxyInformation());
-	}
+    protected SpallocClient.Job getJob() throws IOException, StorageException {
+        if (storage == null) {
+            return null;
+        }
+        return getJobFromProxyInfo(storage.getProxyInformation());
+    }
 
-	/**
-	 * A context that can be pushed to state in logging what board is the root.
-	 */
-	protected final class BoardLocal implements AutoCloseable {
-		private MDCCloseable context;
+    /**
+     * A context that can be pushed to state in logging what board is the root.
+     */
+    protected final class BoardLocal implements AutoCloseable {
+        private MDCCloseable context;
 
-		/**
-		 * Constructs a context that can be pushed to state in logging
-		 *     what board is the root.
-		 *
-		 * @param chipLocation
-		 *            The location of a chip on its board.
-		 */
-		public BoardLocal(HasChipLocation chipLocation) {
-			context = MDC.putCloseable(BOARD_ROOT, root(chipLocation));
-		}
+        /**
+         * Constructs a context that can be pushed to state in logging
+         *     what board is the root.
+         *
+         * @param chipLocation
+         *            The location of a chip on its board.
+         */
+        public BoardLocal(HasChipLocation chipLocation) {
+            context = MDC.putCloseable(BOARD_ROOT, root(chipLocation));
+        }
 
-		@Override
-		public void close() {
-			context.close();
-		}
-	}
+        @Override
+        public void close() {
+            context.close();
+        }
+    }
 }

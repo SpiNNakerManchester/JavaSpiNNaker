@@ -31,20 +31,20 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ResetReinjectionCounters extends ReinjectorRequest<EmptyResponse> {
 
-	/**
-	 * Construct a request to reset the statistics counters.
-	 *
-	 * @param core
-	 *            The coordinates of the monitor core.
-	 */
-	public ResetReinjectionCounters(HasCoreLocation core) {
-		super(core, RESET_COUNTERS);
-	}
+    /**
+     * Construct a request to reset the statistics counters.
+     *
+     * @param core
+     *            The coordinates of the monitor core.
+     */
+    public ResetReinjectionCounters(HasCoreLocation core) {
+        super(core, RESET_COUNTERS);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Reset dropped packet reinjection counters",
-				RESET_COUNTERS, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Reset dropped packet reinjection counters",
+                RESET_COUNTERS, buffer);
+    }
 }

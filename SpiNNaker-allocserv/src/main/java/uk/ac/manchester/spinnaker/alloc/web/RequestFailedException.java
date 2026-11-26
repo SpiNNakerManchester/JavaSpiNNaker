@@ -41,182 +41,182 @@ import org.springframework.stereotype.Component;
  * a {@link WebApplicationException} except with a different handling strategy.
  */
 public class RequestFailedException extends RuntimeException {
-	private static final long serialVersionUID = -7522760691720854101L;
+      private static final long serialVersionUID = -7522760691720854101L;
 
-	/** The status code. */
-	private final Status code;
+      /** The status code. */
+      private final Status code;
 
-	/** The response message contents. */
-	private final String message;
+      /** The response message contents. */
+      private final String message;
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param code
-	 *            The status code.
-	 * @param message
-	 *            The response message contents.
-	 * @param cause
-	 *            The cause of the exception.
-	 */
-	public RequestFailedException(Status code, String message,
-			Throwable cause) {
-		super(message, cause);
-		this.code = code;
-		this.message = message;
-	}
+      /**
+       * Create an instance.
+       *
+       * @param code
+       *            The status code.
+       * @param message
+       *            The response message contents.
+       * @param cause
+       *            The cause of the exception.
+       */
+      public RequestFailedException(Status code, String message,
+                  Throwable cause) {
+            super(message, cause);
+            this.code = code;
+            this.message = message;
+      }
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param code
-	 *            The status code.
-	 * @param message
-	 *            The response message contents.
-	 */
-	public RequestFailedException(Status code, String message) {
-		this(code, message, null);
-	}
+      /**
+       * Create an instance.
+       *
+       * @param code
+       *            The status code.
+       * @param message
+       *            The response message contents.
+       */
+      public RequestFailedException(Status code, String message) {
+            this(code, message, null);
+      }
 
-	/**
-	 * Create an instance that indicates an internal server error.
-	 *
-	 * @param cause
-	 *            The cause of the server error. <em>This will be used as part
-	 *            of the description of the failure.</em>
-	 */
-	public RequestFailedException(Throwable cause) {
-		this(INTERNAL_SERVER_ERROR, "unexpected server problem", cause);
-	}
+      /**
+       * Create an instance that indicates an internal server error.
+       *
+       * @param cause
+       *            The cause of the server error. <em>This will be used as part
+       *            of the description of the failure.</em>
+       */
+      public RequestFailedException(Throwable cause) {
+            this(INTERNAL_SERVER_ERROR, "unexpected server problem", cause);
+      }
 
-	/**
-	 * Convert this exception to a response.
-	 *
-	 * @return The response that this exception implies.
-	 */
-	Response toResponse() {
-		var cause = getCause();
-		if (cause instanceof WebApplicationException) {
-			return ((WebApplicationException) cause).getResponse();
-		} else if (cause != null) {
-			// Be careful about what bits are extracted from message
-			var cls = cause.getClass().getName().replaceFirst("^.*[.]", "")
-					.replaceAll("Exception", "");
-			var msg =
-					cause.getMessage() != null ? ": " + cause.getMessage() : "";
-			return status(code).type(TEXT_PLAIN)
-					.entity(message + ": " + cls + msg).build();
-		} else {
-			return status(code).type(TEXT_PLAIN).entity(message).build();
-		}
-	}
+      /**
+       * Convert this exception to a response.
+       *
+       * @return The response that this exception implies.
+       */
+      Response toResponse() {
+            var cause = getCause();
+            if (cause instanceof WebApplicationException) {
+                  return ((WebApplicationException) cause).getResponse();
+            } else if (cause != null) {
+                  // Be careful about what bits are extracted from message
+                  var cls = cause.getClass().getName().replaceFirst("^.*[.]", "")
+                              .replaceAll("Exception", "");
+                  var msg =
+                              cause.getMessage() != null ? ": " + cause.getMessage() : "";
+                  return status(code).type(TEXT_PLAIN)
+                              .entity(message + ": " + cls + msg).build();
+            } else {
+                  return status(code).type(TEXT_PLAIN).entity(message).build();
+            }
+      }
 
-	private void log(Logger log) {
-		var cause = getCause();
+      private void log(Logger log) {
+            var cause = getCause();
 
-		if (code.getFamily().equals(SERVER_ERROR)) {
-			if (nonNull(cause)) {
-				log.error(message, cause);
-			} else {
-				log.error(message);
-			}
-		} else {
-			if (nonNull(cause)) {
-				log.debug(message, cause);
-			} else {
-				log.debug(message);
-			}
-		}
-	}
+            if (code.getFamily().equals(SERVER_ERROR)) {
+                  if (nonNull(cause)) {
+                        log.error(message, cause);
+                  } else {
+                        log.error(message);
+                  }
+            } else {
+                  if (nonNull(cause)) {
+                        log.debug(message, cause);
+                  } else {
+                        log.debug(message);
+                  }
+            }
+      }
 
-	/** A resource is no longer believed to exist. */
-	public static class ItsGone extends RequestFailedException {
-		private static final long serialVersionUID = 3774531853141947270L;
+      /** A resource is no longer believed to exist. */
+      public static class ItsGone extends RequestFailedException {
+            private static final long serialVersionUID = 3774531853141947270L;
 
-		/**
-		 * Construct a resource believed to no longer to exist.
-		 *
-		 * @param message
-		 *            What message to use to say "its gone away".
-		 */
-		public ItsGone(String message) {
-			super(GONE, message);
-		}
-	}
+            /**
+             * Construct a resource believed to no longer to exist.
+             *
+             * @param message
+             *            What message to use to say "its gone away".
+             */
+            public ItsGone(String message) {
+                  super(GONE, message);
+            }
+      }
 
-	/** A resource cannot be located. */
-	public static class NotFound extends RequestFailedException {
-		private static final long serialVersionUID = 5991697173204757030L;
+      /** A resource cannot be located. */
+      public static class NotFound extends RequestFailedException {
+            private static final long serialVersionUID = 5991697173204757030L;
 
-		/**
-		 * Constructs a resource which cannot be located.
-		 *
-		 * @param message
-		 *            What message to use to say "not found".
-		 */
-		public NotFound(String message) {
-			super(NOT_FOUND, message);
-		}
+            /**
+             * Constructs a resource which cannot be located.
+             *
+             * @param message
+             *            What message to use to say "not found".
+             */
+            public NotFound(String message) {
+                  super(NOT_FOUND, message);
+            }
 
-		/**
-		 * Constructs a resource which cannot be located,
-		 *     including the error thrown while looking for it.
-		 *
-		 * @param message
-		 *            What message to use to say "not found".
-		 * @param cause
-		 *            Why we are sending the message.
-		 */
-		public NotFound(String message, Throwable cause) {
-			super(NOT_FOUND, message, cause);
-		}
-	}
+            /**
+             * Constructs a resource which cannot be located,
+             *     including the error thrown while looking for it.
+             *
+             * @param message
+             *            What message to use to say "not found".
+             * @param cause
+             *            Why we are sending the message.
+             */
+            public NotFound(String message, Throwable cause) {
+                  super(NOT_FOUND, message, cause);
+            }
+      }
 
-	/** The client provided bad arguments in a request. */
-	public static class BadArgs extends RequestFailedException {
-		private static final long serialVersionUID = 7916573155067333350L;
+      /** The client provided bad arguments in a request. */
+      public static class BadArgs extends RequestFailedException {
+            private static final long serialVersionUID = 7916573155067333350L;
 
-		/**
-		 * Constructs info that the client provided bad arguments in a request.
-		 *
-		 * @param message
-		 *            What message to use to say "bad arguments".
-		 */
-		public BadArgs(String message) {
-			super(BAD_REQUEST, message, null);
-		}
-	}
+            /**
+             * Constructs info that the client provided bad arguments in a request.
+             *
+             * @param message
+             *            What message to use to say "bad arguments".
+             */
+            public BadArgs(String message) {
+                  super(BAD_REQUEST, message, null);
+            }
+      }
 
-	/** The response is empty. */
-	public static class EmptyResponse extends RequestFailedException {
-		private static final long serialVersionUID = -2944836034264700912L;
+      /** The response is empty. */
+      public static class EmptyResponse extends RequestFailedException {
+            private static final long serialVersionUID = -2944836034264700912L;
 
-		/** Create an instance. */
-		public EmptyResponse() {
-			super(NO_CONTENT, "");
-		}
+            /** Create an instance. */
+            public EmptyResponse() {
+                  super(NO_CONTENT, "");
+            }
 
-		@Override
-		Response toResponse() {
-			return noContent().build();
-		}
-	}
+            @Override
+            Response toResponse() {
+                  return noContent().build();
+            }
+      }
 
-	/**
-	 * Handler for {@link RequestFailedException}.
-	 *
-	 * @hidden
-	 */
-	@Component
-	@Provider
-	public static class RequestFailedExceptionMapper
-			implements ExceptionMapper<RequestFailedException> {
-		private static final Logger log = getLogger(SpallocServiceImpl.class);
+      /**
+       * Handler for {@link RequestFailedException}.
+       *
+       * @hidden
+       */
+      @Component
+      @Provider
+      public static class RequestFailedExceptionMapper
+                  implements ExceptionMapper<RequestFailedException> {
+            private static final Logger log = getLogger(SpallocServiceImpl.class);
 
-		@Override
-		public Response toResponse(RequestFailedException exception) {
-			exception.log(log);
-			return exception.toResponse();
-		}
-	}
+            @Override
+            public Response toResponse(RequestFailedException exception) {
+                  exception.log(log);
+                  return exception.toResponse();
+            }
+      }
 }

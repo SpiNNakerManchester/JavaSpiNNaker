@@ -40,84 +40,84 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class IssueReportRequest {
-	/** What the problem is believed to be. */
-	@NotBlank(message = "an issue description must be given")
-	public String issue;
+      /** What the problem is believed to be. */
+      @NotBlank(message = "an issue description must be given")
+      public String issue;
 
-	/** Describes the boards that have the issue. */
-	public List<@Valid ReportedBoard> boards;
+      /** Describes the boards that have the issue. */
+      public List<@Valid ReportedBoard> boards;
 
-	/** Describes a board that has an issue. */
-	public static class ReportedBoard {
+      /** Describes a board that has an issue. */
+      public static class ReportedBoard {
 
-		/** The machine containing the board. */
-		@NotBlank
-		public String machine;
+            /** The machine containing the board. */
+            @NotBlank
+            public String machine;
 
-		/** The location of the chip within the reporting allocation. */
-		@Valid
-		public ChipLocation chip;
+            /** The location of the chip within the reporting allocation. */
+            @Valid
+            public ChipLocation chip;
 
-		/** The X triad coordinate of the board. */
-		@ValidTriadX
-		public Integer x;
+            /** The X triad coordinate of the board. */
+            @ValidTriadX
+            public Integer x;
 
-		/** The Y triad coordinate of the board. */
-		@ValidTriadY
-		public Integer y;
+            /** The Y triad coordinate of the board. */
+            @ValidTriadY
+            public Integer y;
 
-		/** The Z triad coordinate of the board. */
-		@ValidTriadZ
-		public Integer z;
+            /** The Z triad coordinate of the board. */
+            @ValidTriadZ
+            public Integer z;
 
-		/** The physical cabinet number of the board. */
-		@ValidCabinetNumber
-		public Integer cabinet;
+            /** The physical cabinet number of the board. */
+            @ValidCabinetNumber
+            public Integer cabinet;
 
-		/** The physical frame number of the board. */
-		@ValidFrameNumber
-		public Integer frame;
+            /** The physical frame number of the board. */
+            @ValidFrameNumber
+            public Integer frame;
 
-		/** The physical board number of the board. */
-		@ValidBoardNumber
-		public Integer board;
+            /** The physical board number of the board. */
+            @ValidBoardNumber
+            public Integer board;
 
-		/** The IP address of the board. */
-		@IPAddress(nullOK = true, message = "address must be an IP address")
-		public String address;
+            /** The IP address of the board. */
+            @IPAddress(nullOK = true, message = "address must be an IP address")
+            public String address;
 
-		@JsonIgnore
-		private boolean isChipValid() {
-			return nonNull(chip);
-		}
+            @JsonIgnore
+            private boolean isChipValid() {
+                  return nonNull(chip);
+            }
 
-		@JsonIgnore
-		private boolean isTriadValid() {
-			return nonNull(x) && nonNull(y) && nonNull(z);
-		}
+            @JsonIgnore
+            private boolean isTriadValid() {
+                  return nonNull(x) && nonNull(y) && nonNull(z);
+            }
 
-		@JsonIgnore
-		private boolean isPhysicalValid() {
-			return nonNull(cabinet) && nonNull(frame) && nonNull(board);
-		}
+            @JsonIgnore
+            private boolean isPhysicalValid() {
+                  return nonNull(cabinet) && nonNull(frame) && nonNull(board);
+            }
 
-		@JsonIgnore
-		private boolean isIPValid() {
-			return nonNull(address);
-		}
+            @JsonIgnore
+            private boolean isIPValid() {
+                  return nonNull(address);
+            }
 
-		/**
-		 * Does this represent a valid way of identifying a board.
-		 *
-		 * @return Yes if at least one way of giving coordinates is valid.
-		 */
-		@Keep
-		@JsonIgnore
-		@AssertTrue(message = "at least one way of identifying a board "
-				+ "must be given")
-		private boolean isBoardValid() {
-			return isChipValid() || isTriadValid() || isPhysicalValid()
-					|| isIPValid();
-		}
-	}
+            /**
+             * Does this represent a valid way of identifying a board.
+             *
+             * @return Yes if at least one way of giving coordinates is valid.
+             */
+            @Keep
+            @JsonIgnore
+            @AssertTrue(message = "at least one way of identifying a board "
+                        + "must be given")
+            private boolean isBoardValid() {
+                  return isChipValid() || isTriadValid() || isPhysicalValid()
+                              || isIPValid();
+            }
+      }
 }

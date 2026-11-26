@@ -29,123 +29,123 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
  * A Job where only the parts required for completion are set.
  */
 public class JobDoneCompat {
-	private int id;
+    private int id;
 
-	private String status;
+    private String status;
 
-	@JsonSerialize(using = DateTimeSerialiser.class)
-	private DateTime timestampCompletion;
+    @JsonSerialize(using = DateTimeSerialiser.class)
+    private DateTime timestampCompletion;
 
-	private List<DataItem> outputData;
+    private List<DataItem> outputData;
 
-	private ObjectNode provenance;
+    private ObjectNode provenance;
 
-	/**
-	 * Create a job with only a status.
-	 *
-	 * @param id
-	 *            The job id.
-	 * @param status
-	 *            The status to set.
-	 */
-	public JobDoneCompat(int id, String status) {
-		this.id = id;
-		this.status = status;
-	}
+    /**
+     * Create a job with only a status.
+     *
+     * @param id
+     *            The job id.
+     * @param status
+     *            The status to set.
+     */
+    public JobDoneCompat(int id, String status) {
+        this.id = id;
+        this.status = status;
+    }
 
-	/**
-	 * Get the status.
-	 *
-	 * @return The status
-	 */
-	public String getStatus() {
-		return status;
-	}
+    /**
+     * Get the status.
+     *
+     * @return The status
+     */
+    public String getStatus() {
+        return status;
+    }
 
-	/**
-	 * Set the status.
-	 *
-	 * @param status
-	 *            The status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    /**
+     * Set the status.
+     *
+     * @param status
+     *            The status to set
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	/**
-	 * Get the timestampCompletion.
-	 *
-	 * @return the timestampCompletion
-	 */
-	public DateTime getTimestampCompletion() {
-		return timestampCompletion;
-	}
+    /**
+     * Get the timestampCompletion.
+     *
+     * @return the timestampCompletion
+     */
+    public DateTime getTimestampCompletion() {
+        return timestampCompletion;
+    }
 
-	/**
-	 * Sets the timestampCompletion.
-	 *
-	 * @param timestampCompletion
-	 *            the timestampCompletion to set
-	 */
-	public void setTimestampCompletion(
-			final DateTime timestampCompletion) {
-		this.timestampCompletion = timestampCompletion;
-	}
+    /**
+     * Sets the timestampCompletion.
+     *
+     * @param timestampCompletion
+     *            the timestampCompletion to set
+     */
+    public void setTimestampCompletion(
+            final DateTime timestampCompletion) {
+        this.timestampCompletion = timestampCompletion;
+    }
 
-	/**
-	 * Get the outputData.
-	 *
-	 * @return the outputData
-	 */
-	public List<DataItem> getOutputData() {
-		return outputData;
-	}
+    /**
+     * Get the outputData.
+     *
+     * @return the outputData
+     */
+    public List<DataItem> getOutputData() {
+        return outputData;
+    }
 
-	/**
-	 * Sets the outputData.
-	 *
-	 * @param outputData
-	 *            the outputData to set
-	 */
-	public void setOutputData(final List<DataItem> outputData) {
-		this.outputData = outputData;
-	}
+    /**
+     * Sets the outputData.
+     *
+     * @param outputData
+     *            the outputData to set
+     */
+    public void setOutputData(final List<DataItem> outputData) {
+        this.outputData = outputData;
+    }
 
-	/**
-	 * Get the provenance.
-	 *
-	 * @return the provenance
-	 */
-	public ObjectNode getProvenance() {
-		return provenance;
-	}
+    /**
+     * Get the provenance.
+     *
+     * @return the provenance
+     */
+    public ObjectNode getProvenance() {
+        return provenance;
+    }
 
-	/**
-	 * Sets the provenance.
-	 *
-	 * @param provenance
-	 *            the provenance to set
-	 */
-	public void setProvenance(final ObjectNode provenance) {
-		this.provenance = provenance;
-	}
+    /**
+     * Sets the provenance.
+     *
+     * @param provenance
+     *            the provenance to set
+     */
+    public void setProvenance(final ObjectNode provenance) {
+        this.provenance = provenance;
+    }
 
-	/**
-	 * Get the id.
-	 *
-	 * @return The id
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * Get the id.
+     *
+     * @return The id
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Set the id.
-	 *
-	 * @param id
-	 *            The id
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+    /**
+     * Set the id.
+     *
+     * @param id
+     *            The id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 }

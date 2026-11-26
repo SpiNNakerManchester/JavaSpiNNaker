@@ -35,17 +35,17 @@ import org.springframework.core.annotation.AliasFor;
  * instance being made every time a bean is required.
  */
 @Target({
-	TYPE, METHOD
+      TYPE, METHOD
 })
 @Retention(RUNTIME)
 @Documented
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public @interface Prototype {
-	/**
-	 * Alias for {@link Scope#proxyMode}.
-	 *
-	 * @return the proxy mode
-	 */
-	@AliasFor(annotation = Scope.class)
-	ScopedProxyMode proxyMode() default DEFAULT;
+      /**
+       * Alias for {@link Scope#proxyMode}.
+       *
+       * @return the proxy mode
+       */
+      @AliasFor(annotation = Scope.class)
+      ScopedProxyMode proxyMode() default DEFAULT;
 }

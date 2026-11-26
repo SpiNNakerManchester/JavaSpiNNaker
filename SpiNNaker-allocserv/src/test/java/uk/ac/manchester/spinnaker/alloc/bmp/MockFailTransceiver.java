@@ -28,23 +28,23 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * BMP transceiver mock just for test purposes.  This one always fails.
  */
 public class MockFailTransceiver extends UnimplementedBMPTransceiver {
-	private static final Logger log = getLogger(MockTransceiver.class);
+      private static final Logger log = getLogger(MockTransceiver.class);
 
-	/**
-	 * Install this mock transceiver as the thing to be manufactured by the
-	 * given transceiver factory.
-	 *
-	 * @param txrxFactory
-	 *            The transceiver factory to install into.
-	 */
-	@SuppressWarnings("deprecation")
-	public static void installIntoFactory(TransceiverFactory txrxFactory) {
-		txrxFactory.getTestAPI().setFactory(MockFailTransceiver::new);
-	}
+      /**
+       * Install this mock transceiver as the thing to be manufactured by the
+       * given transceiver factory.
+       *
+       * @param txrxFactory
+       *            The transceiver factory to install into.
+       */
+      @SuppressWarnings("deprecation")
+      public static void installIntoFactory(TransceiverFactory txrxFactory) {
+            txrxFactory.getTestAPI().setFactory(MockFailTransceiver::new);
+      }
 
-	private MockFailTransceiver(String machineName, BMPConnectionData data,
-			ValueHolder<Blacklist> setBlacklist) {
-		log.info("constructed dummy fail transceiver for {} ({} : {})",
-				machineName, data.ipAddress, data.boards);
-	}
+      private MockFailTransceiver(String machineName, BMPConnectionData data,
+                  ValueHolder<Blacklist> setBlacklist) {
+            log.info("constructed dummy fail transceiver for {} ({} : {})",
+                        machineName, data.ipAddress, data.boards);
+      }
 }

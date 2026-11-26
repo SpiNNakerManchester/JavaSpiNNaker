@@ -37,101 +37,101 @@ import uk.ac.manchester.spinnaker.machine.board.ValidFrameNumber;
  * except it has a different serialization form for backward-compatibility.
  */
 @JsonPropertyOrder({
-	"cabinet", "frame", "board"
+    "cabinet", "frame", "board"
 })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 @Immutable
 public class BoardPhysicalCoordinates {
-	@ValidCabinetNumber
-	private final int cabinet;
+    @ValidCabinetNumber
+    private final int cabinet;
 
-	@ValidFrameNumber
-	private final int frame;
+    @ValidFrameNumber
+    private final int frame;
 
-	@ValidBoardNumber
-	private final Integer board;
+    @ValidBoardNumber
+    private final Integer board;
 
-	/**
-	 * Create with given coordinates.
-	 *
-	 * @param cabinet
-	 *            the cabinet ID
-	 * @param frame
-	 *            the frame ID within the cabinet
-	 * @param board
-	 *            the board ID within the frame
-	 */
-	public BoardPhysicalCoordinates(
-			@JsonProperty(value = "cabinet", defaultValue = "0") int cabinet,
-			@JsonProperty(value = "frame", defaultValue = "0") int frame,
-			@JsonProperty(value = "board", defaultValue = "0") Integer board) {
-		this.cabinet = cabinet;
-		this.frame = frame;
-		this.board = board;
-	}
+    /**
+     * Create with given coordinates.
+     *
+     * @param cabinet
+     *            the cabinet ID
+     * @param frame
+     *            the frame ID within the cabinet
+     * @param board
+     *            the board ID within the frame
+     */
+    public BoardPhysicalCoordinates(
+            @JsonProperty(value = "cabinet", defaultValue = "0") int cabinet,
+            @JsonProperty(value = "frame", defaultValue = "0") int frame,
+            @JsonProperty(value = "board", defaultValue = "0") Integer board) {
+        this.cabinet = cabinet;
+        this.frame = frame;
+        this.board = board;
+    }
 
-	/**
-	 * Create with given coordinates.
-	 *
-	 * @param coords
-	 *            the coordinates in standard form.
-	 */
-	public BoardPhysicalCoordinates(PhysicalCoords coords) {
-		this.cabinet = coords.c;
-		this.frame = coords.f;
-		this.board = coords.b;
-	}
+    /**
+     * Create with given coordinates.
+     *
+     * @param coords
+     *            the coordinates in standard form.
+     */
+    public BoardPhysicalCoordinates(PhysicalCoords coords) {
+        this.cabinet = coords.c;
+        this.frame = coords.f;
+        this.board = coords.b;
+    }
 
-	/**
-	 * {@return the cabinet ID}
-	 */
-	public int getCabinet() {
-		return cabinet;
-	}
+    /**
+     * {@return the cabinet ID}
+     */
+    public int getCabinet() {
+        return cabinet;
+    }
 
-	/**
-	 * {@return the frame ID within the cabinet}
-	 */
-	public int getFrame() {
-		return frame;
-	}
+    /**
+     * {@return the frame ID within the cabinet}
+     */
+    public int getFrame() {
+        return frame;
+    }
 
-	/**
-	 * {@return the board ID within the frame}
-	 */
-	public Integer getBoard() {
-		return board;
-	}
+    /**
+     * {@return the board ID within the frame}
+     */
+    public Integer getBoard() {
+        return board;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof BoardPhysicalCoordinates) {
-			var other = (BoardPhysicalCoordinates) o;
-			return cabinet == other.cabinet && frame == other.frame
-					&& Objects.equals(board, other.board);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof BoardPhysicalCoordinates) {
+            var other = (BoardPhysicalCoordinates) o;
+            return cabinet == other.cabinet && frame == other.frame
+                    && Objects.equals(board, other.board);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return 9 * (cabinet * 1234567 + frame * 56789
-				+ (isNull(board) ? 0 : board));
-	}
+    @Override
+    public int hashCode() {
+        return 9 * (cabinet * 1234567 + frame * 56789
+                + (isNull(board) ? 0 : board));
+    }
 
-	@Override
-	public String toString() {
-		return "Board{" + cabinet + "," + frame + "," + board + "}";
-	}
+    @Override
+    public String toString() {
+        return "Board{" + cabinet + "," + frame + "," + board + "}";
+    }
 
-	/**
-	 * Convert to the standard coordinate scheme. Assumes that the {@code board}
-	 * field is defined.
-	 *
-	 * @return the coordinates
-	 */
-	public PhysicalCoords toStandardCoords() {
-		return new PhysicalCoords(cabinet, frame, board);
-	}
+    /**
+     * Convert to the standard coordinate scheme. Assumes that the {@code board}
+     * field is defined.
+     *
+     * @return the coordinates
+     */
+    public PhysicalCoords toStandardCoords() {
+        return new PhysicalCoords(cabinet, frame, board);
+    }
 }

@@ -19,16 +19,16 @@ package uk.ac.manchester.spinnaker.messages.scp;
  * Constants used elsewhere in this package only.
  */
 abstract class Constants {
-	private Constants() {
-	}
+    private Constants() {
+    }
 
-	/**
-	 * Indicates that all cores should receive a signal.
-	 */
-	static final int ALL_CORE_SIGNAL_MASK = 0xFFFF;
+    /**
+     * Indicates that all cores should receive a signal.
+     */
+    static final int ALL_CORE_SIGNAL_MASK = 0xFFFF;
 
-	/**
-	 * Mask for selecting application IDs for signals.
-	 */
-	static final int APP_MASK = 0xFF;
+    /**
+     * Mask for selecting application IDs for signals.
+     */
+    static final int APP_MASK = 0xFF;
 }

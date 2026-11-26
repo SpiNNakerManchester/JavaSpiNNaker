@@ -26,39 +26,39 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 
 class TestSCPMessageAssembly {
-	private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
+    private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
 
-	@Test
-	void testCreateNewSCPHeader() {
-		var header = new SCPRequestHeader(CMD_VER);
-		assertEquals(CMD_VER, header.command);
-		assertEquals(0, header.getSequence());
-	}
+    @Test
+    void testCreateNewSCPHeader() {
+        var header = new SCPRequestHeader(CMD_VER);
+        assertEquals(CMD_VER, header.command);
+        assertEquals(0, header.getSequence());
+    }
 
-	@Test
-	void testCreateNewVerSCPPacket() {
-		var scp = new GetVersion(ZERO_CORE);
-		assertEquals(0, scp.argument1);
-		assertEquals(0, scp.argument2);
-		assertEquals(0, scp.argument3);
-		assertNull(scp.data);
-	}
+    @Test
+    void testCreateNewVerSCPPacket() {
+        var scp = new GetVersion(ZERO_CORE);
+        assertEquals(0, scp.argument1);
+        assertEquals(0, scp.argument2);
+        assertEquals(0, scp.argument3);
+        assertNull(scp.data);
+    }
 
-	@Test
-	void testCreateNewLinkSCPPacket() {
-		var scp = new ReadLink(ZERO_CORE, EAST, NULL, 252);
-		assertEquals(0, scp.argument1);
-		assertEquals(252, scp.argument2);
-		assertEquals(0, scp.argument3);
-		assertNull(scp.data);
-	}
+    @Test
+    void testCreateNewLinkSCPPacket() {
+        var scp = new ReadLink(ZERO_CORE, EAST, NULL, 252);
+        assertEquals(0, scp.argument1);
+        assertEquals(252, scp.argument2);
+        assertEquals(0, scp.argument3);
+        assertNull(scp.data);
+    }
 
-	@Test
-	void testCreateNewMemorySCPPacket() {
-		var scp = new ReadMemory(ZERO_CORE, NULL, 252);
-		assertEquals(0, scp.argument1);
-		assertEquals(252, scp.argument2);
-		assertEquals(2, scp.argument3);
-		assertNull(scp.data);
-	}
+    @Test
+    void testCreateNewMemorySCPPacket() {
+        var scp = new ReadMemory(ZERO_CORE, NULL, 252);
+        assertEquals(0, scp.argument1);
+        assertEquals(252, scp.argument2);
+        assertEquals(2, scp.argument3);
+        assertNull(scp.data);
+    }
 }

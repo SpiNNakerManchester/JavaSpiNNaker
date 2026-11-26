@@ -23,14 +23,14 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      >Spalloc Server documentation</a>
  */
 public class PowerOffJobBoardsCommand extends Command<Integer> {
-	/**
-	 * Create a request to turn off a job's allocated boards.
-	 *
-	 * @param jobId
-	 *            The job to request about.
-	 */
-	public PowerOffJobBoardsCommand(int jobId) {
-		super("power_off_job_boards");
-		addArg(jobId);
-	}
+    /**
+     * Create a request to turn off a job's allocated boards.
+     *
+     * @param jobId
+     *            The job to request about.
+     */
+    public PowerOffJobBoardsCommand(int jobId) {
+        super("power_off_job_boards");
+        addArg(jobId);
+    }
 }

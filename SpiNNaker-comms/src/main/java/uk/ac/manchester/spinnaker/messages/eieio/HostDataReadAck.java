@@ -27,23 +27,23 @@ import java.nio.ByteBuffer;
  * @see HostDataRead
  */
 public class HostDataReadAck extends EIEIOCommandMessage {
-	/** The message sequence number that is being acknowledged. */
-	public final byte sequenceNumber;
+    /** The message sequence number that is being acknowledged. */
+    public final byte sequenceNumber;
 
-	/**
-	 * Create.
-	 *
-	 * @param sequenceNumber
-	 *            The message sequence number that is being acknowledged.
-	 */
-	public HostDataReadAck(byte sequenceNumber) {
-		super(HOST_DATA_READ_ACK);
-		this.sequenceNumber = sequenceNumber;
-	}
+    /**
+     * Create.
+     *
+     * @param sequenceNumber
+     *            The message sequence number that is being acknowledged.
+     */
+    public HostDataReadAck(byte sequenceNumber) {
+        super(HOST_DATA_READ_ACK);
+        this.sequenceNumber = sequenceNumber;
+    }
 
-	@Override
-	public void addToBuffer(ByteBuffer buffer) {
-		super.addToBuffer(buffer);
-		buffer.put(sequenceNumber);
-	}
+    @Override
+    public void addToBuffer(ByteBuffer buffer) {
+        super.addToBuffer(buffer);
+        buffer.put(sequenceNumber);
+    }
 }

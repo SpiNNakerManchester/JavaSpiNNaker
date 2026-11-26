@@ -28,25 +28,25 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
  */
 @Immutable
 public class MachinePower {
-	@NotNull(message = "power must be specified")
-	private final PowerState power;
+      @NotNull(message = "power must be specified")
+      private final PowerState power;
 
-	/**
-	 * Make an instance.
-	 *
-	 * @param power
-	 *            the machine power state
-	 */
-	public MachinePower(
-			@JsonProperty(value = "power", defaultValue = "OFF")
-			PowerState power) {
-		this.power = power;
-	}
+      /**
+       * Make an instance.
+       *
+       * @param power
+       *            the machine power state
+       */
+      public MachinePower(
+                  @JsonProperty(value = "power", defaultValue = "OFF")
+                  PowerState power) {
+            this.power = power;
+      }
 
-	/**
-	 * {@return the machine power state}
-	 */
-	public PowerState getPower() {
-		return power;
-	}
+      /**
+       * {@return the machine power state}
+       */
+      public PowerState getPower() {
+            return power;
+      }
 }

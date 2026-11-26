@@ -22,42 +22,42 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 class RootInfo {
-	/** Service version. */
-	Version version;
+    /** Service version. */
+    Version version;
 
-	/** Where to look up jobs. */
-	URI jobsURI;
+    /** Where to look up jobs. */
+    URI jobsURI;
 
-	/** Where to look up machines. */
-	URI machinesURI;
+    /** Where to look up machines. */
+    URI machinesURI;
 
-	/** CSRF header name. */
-	String csrfHeader;
+    /** CSRF header name. */
+    String csrfHeader;
 
-	/** CSRF token value. */
-	String csrfToken;
+    /** CSRF token value. */
+    String csrfToken;
 
-	public void setVersion(Version version) {
-		this.version = version;
-	}
+    public void setVersion(Version version) {
+        this.version = version;
+    }
 
-	@JsonAlias("jobs-ref")
-	public void setJobsURI(URI jobsURI) {
-		this.jobsURI = jobsURI;
-	}
+    @JsonAlias("jobs-ref")
+    public void setJobsURI(URI jobsURI) {
+        this.jobsURI = jobsURI;
+    }
 
-	@JsonAlias("machines-ref")
-	public void setMachinesURI(URI machinesURI) {
-		this.machinesURI = machinesURI;
-	}
+    @JsonAlias("machines-ref")
+    public void setMachinesURI(URI machinesURI) {
+        this.machinesURI = machinesURI;
+    }
 
-	@JsonAlias("csrf-header")
-	public void setCsrfHeader(String csrfHeader) {
-		this.csrfHeader = csrfHeader;
-	}
+    @JsonAlias("csrf-header")
+    public void setCsrfHeader(String csrfHeader) {
+        this.csrfHeader = csrfHeader;
+    }
 
-	@JsonAlias("csrf-token")
-	public void setCsrfToken(String csrfToken) {
-		this.csrfToken = csrfToken;
-	}
+    @JsonAlias("csrf-token")
+    public void setCsrfToken(String csrfToken) {
+        this.csrfToken = csrfToken;
+    }
 }

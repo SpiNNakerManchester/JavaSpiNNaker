@@ -26,18 +26,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class ExceptionResponse {
-	private String exception;
+    private String exception;
 
-	ExceptionResponse(String message) {
-		exception = message;
-	}
+    ExceptionResponse(String message) {
+        exception = message;
+    }
 
-	@JsonProperty("exception")
-	public String getException() {
-		return exception;
-	}
+    @JsonProperty("exception")
+    public String getException() {
+        return exception;
+    }
 
-	void setException(String exception) {
-		this.exception = isNull(exception) ? "" : exception.toString();
-	}
+    void setException(String exception) {
+        this.exception = isNull(exception) ? "" : exception.toString();
+    }
 }

@@ -21,61 +21,61 @@ import static java.util.Objects.requireNonNull;
  * A thread that is a daemon by default.
  */
 public class Daemon extends Thread {
-	/**
-	 * Allocate a new daemon thread. This thread is not running.
-	 *
-	 * @param target
-	 *            the object whose {@link Runnable#run() run} method is invoked
-	 *            when this thread is started. Never {@code null}.
-	 */
-	public Daemon(Runnable target) {
-		super(requireNonNull(target));
-		setDaemon(true);
-	}
+    /**
+     * Allocate a new daemon thread. This thread is not running.
+     *
+     * @param target
+     *            the object whose {@link Runnable#run() run} method is invoked
+     *            when this thread is started. Never {@code null}.
+     */
+    public Daemon(Runnable target) {
+        super(requireNonNull(target));
+        setDaemon(true);
+    }
 
-	/**
-	 * Allocate a new daemon thread. This thread is not running.
-	 *
-	 * @param target
-	 *            the object whose {@link Runnable#run() run} method is invoked
-	 *            when this thread is started. Never {@code null}.
-	 * @param name
-	 *            the name of the new thread
-	 */
-	public Daemon(Runnable target, String name) {
-		super(requireNonNull(target), name);
-		setDaemon(true);
-	}
+    /**
+     * Allocate a new daemon thread. This thread is not running.
+     *
+     * @param target
+     *            the object whose {@link Runnable#run() run} method is invoked
+     *            when this thread is started. Never {@code null}.
+     * @param name
+     *            the name of the new thread
+     */
+    public Daemon(Runnable target, String name) {
+        super(requireNonNull(target), name);
+        setDaemon(true);
+    }
 
-	/**
-	 * Allocate a new daemon thread. This thread is not running.
-	 *
-	 * @param group
-	 *            the object whose {@link Runnable#run() run} method is invoked
-	 *            when this thread is started.
-	 * @param target
-	 *            the object whose {@code run} method is invoked when this
-	 *            thread is started. Never {@code null}.
-	 */
-	public Daemon(ThreadGroup group, Runnable target) {
-		super(group, requireNonNull(target));
-		setDaemon(true);
-	}
+    /**
+     * Allocate a new daemon thread. This thread is not running.
+     *
+     * @param group
+     *            the object whose {@link Runnable#run() run} method is invoked
+     *            when this thread is started.
+     * @param target
+     *            the object whose {@code run} method is invoked when this
+     *            thread is started. Never {@code null}.
+     */
+    public Daemon(ThreadGroup group, Runnable target) {
+        super(group, requireNonNull(target));
+        setDaemon(true);
+    }
 
-	/**
-	 * Allocate a new daemon thread. This thread is not running.
-	 *
-	 * @param group
-	 *            the thread group. If {@code null}, the group is set to the
-	 *            current thread's thread group.
-	 * @param target
-	 *            the object whose {@link Runnable#run() run} method is invoked
-	 *            when this thread is started. Never {@code null}.
-	 * @param name
-	 *            the name of the new thread
-	 */
-	public Daemon(ThreadGroup group, Runnable target, String name) {
-		super(group, requireNonNull(target), name);
-		setDaemon(true);
-	}
+    /**
+     * Allocate a new daemon thread. This thread is not running.
+     *
+     * @param group
+     *            the thread group. If {@code null}, the group is set to the
+     *            current thread's thread group.
+     * @param target
+     *            the object whose {@link Runnable#run() run} method is invoked
+     *            when this thread is started. Never {@code null}.
+     * @param name
+     *            the name of the new thread
+     */
+    public Daemon(ThreadGroup group, Runnable target, String name) {
+        super(group, requireNonNull(target), name);
+        setDaemon(true);
+    }
 }

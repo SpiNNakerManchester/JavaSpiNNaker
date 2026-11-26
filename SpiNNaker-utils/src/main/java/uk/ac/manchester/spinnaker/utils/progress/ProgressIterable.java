@@ -43,83 +43,83 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *            Type of elements to be iterated over.
  */
 public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
-	private final Collection<E> things;
+    private final Collection<E> things;
 
-	private final String description;
+    private final String description;
 
-	private final ArrayList<ProgressIterator<E>> progressIterables;
+    private final ArrayList<ProgressIterator<E>> progressIterables;
 
-	private final PrintStream output;
+    private final PrintStream output;
 
-	/**
-	 * Creates an iterable wrapper but not yet a ProgressBar.
-	 *
-	 * @param things
-	 *            A collection to supply a size and and iterable. The type of
-	 *            elements returned by this iterable is also the type of
-	 *            elements returned by the ProgressIterable.
-	 * @param description
-	 *            A text description to add at the start and when reporting
-	 *            duration.
-	 * @param output
-	 *            The Stream to write output too. For example,
-	 *            {@link System#out}.
-	 */
-	public ProgressIterable(Collection<E> things, String description,
-			PrintStream output) {
-		this.things = things;
-		this.description = description;
-		this.output = output;
-		progressIterables = new ArrayList<>();
-	}
+    /**
+     * Creates an iterable wrapper but not yet a ProgressBar.
+     *
+     * @param things
+     *            A collection to supply a size and and iterable. The type of
+     *            elements returned by this iterable is also the type of
+     *            elements returned by the ProgressIterable.
+     * @param description
+     *            A text description to add at the start and when reporting
+     *            duration.
+     * @param output
+     *            The Stream to write output too. For example,
+     *            {@link System#out}.
+     */
+    public ProgressIterable(Collection<E> things, String description,
+            PrintStream output) {
+        this.things = things;
+        this.description = description;
+        this.output = output;
+        progressIterables = new ArrayList<>();
+    }
 
-	/**
-	 * Creates an iterable wrapper but not yet a ProgressBar. The progress bar
-	 * will write to {@link System#out}.
-	 *
-	 * @param things
-	 *            A collection to supply a size and and iterable. The type of
-	 *            elements returned by this iterable is also the type of
-	 *            elements returned by the ProgressIterable.
-	 * @param description
-	 *            A text description to add at the start and when reporting
-	 *            duration.
-	 */
-	public ProgressIterable(Collection<E> things, String description) {
-		this(things, description, out);
-	}
+    /**
+     * Creates an iterable wrapper but not yet a ProgressBar. The progress bar
+     * will write to {@link System#out}.
+     *
+     * @param things
+     *            A collection to supply a size and and iterable. The type of
+     *            elements returned by this iterable is also the type of
+     *            elements returned by the ProgressIterable.
+     * @param description
+     *            A text description to add at the start and when reporting
+     *            duration.
+     */
+    public ProgressIterable(Collection<E> things, String description) {
+        this(things, description, out);
+    }
 
-	/**
-	 * Starts a ProgressBar and returns an iterator over the elements of the
-	 * iterable contained within this iterable.
-	 *
-	 * @return an iterator over the elements of the inner iterable.
-	 */
-	@Override
-	public Iterator<E> iterator() {
-		var iterator = new ProgressIterator<>(things, description, output);
-		progressIterables.add(iterator);
-		return iterator;
-	}
+    /**
+     * Starts a ProgressBar and returns an iterator over the elements of the
+     * iterable contained within this iterable.
+     *
+     * @return an iterator over the elements of the inner iterable.
+     */
+    @Override
+    public Iterator<E> iterator() {
+        var iterator = new ProgressIterator<>(things, description, output);
+        progressIterables.add(iterator);
+        return iterator;
+    }
 
-	/**
-	 * Closes all created Iterators and their ProgressBar(s).
-	 * <p>
-	 * This method allows the Iterable to be used in a
-	 * {@code try}-with-resources statement, which guarantees the ProgressBar
-	 * is closed.
-	 * <p>
-	 * Note: As {@code hasNext() == false} automatically calls close there is
-	 * no need to call this method unless you break out of the iterator early.
-	 * <p>
-	 * If the bar is already closed, invoking this method has no effect.
-	 */
-	@Override
-	public void close() {
-		var iter = progressIterables.iterator();
-		while (iter.hasNext()) {
-			iter.next().close();
-			iter.remove();
-		}
-	}
+    /**
+     * Closes all created Iterators and their ProgressBar(s).
+     * <p>
+     * This method allows the Iterable to be used in a
+     * {@code try}-with-resources statement, which guarantees the ProgressBar
+     * is closed.
+     * <p>
+     * Note: As {@code hasNext() == false} automatically calls close there is
+     * no need to call this method unless you break out of the iterator early.
+     * <p>
+     * If the bar is already closed, invoking this method has no effect.
+     */
+    @Override
+    public void close() {
+        var iter = progressIterables.iterator();
+        while (iter.hasNext()) {
+            iter.next().close();
+            iter.remove();
+        }
+    }
 }

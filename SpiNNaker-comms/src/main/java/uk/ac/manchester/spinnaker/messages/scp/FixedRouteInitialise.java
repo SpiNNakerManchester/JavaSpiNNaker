@@ -34,43 +34,43 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code scamp-cmd.c}.
  */
 public final class FixedRouteInitialise extends SCPRequest<EmptyResponse> {
-	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (FIXED.value << BYTE0);
-	}
+    private static int argument1(AppID appID) {
+        return (appID.appID << BYTE1) | (FIXED.value << BYTE0);
+    }
 
-	/**
-	 * Construct a request to set a fixed route int entry.
-	 *
-	 * @param chip
-	 *            The chip to set the route on.
-	 * @param entry
-	 *            The fixed route entry (converted for writing)
-	 * @param appID
-	 *            The ID of the application
-	 */
-	public FixedRouteInitialise(HasChipLocation chip, int entry, AppID appID) {
-		super(chip.getScampCore(), CMD_RTR, argument1(appID), entry);
-		// The entry must not have the top bit set; normally true
-	}
+    /**
+     * Construct a request to set a fixed route int entry.
+     *
+     * @param chip
+     *            The chip to set the route on.
+     * @param entry
+     *            The fixed route entry (converted for writing)
+     * @param appID
+     *            The ID of the application
+     */
+    public FixedRouteInitialise(HasChipLocation chip, int entry, AppID appID) {
+        super(chip.getScampCore(), CMD_RTR, argument1(appID), entry);
+        // The entry must not have the top bit set; normally true
+    }
 
-	/**
-	 * Construct a request to set this fixed route entry.
-	 *
-	 * @param chip
-	 *            The chip to set the route on.
-	 * @param entry
-	 *            The fixed route entry
-	 * @param appID
-	 *            The ID of the application
-	 */
-	public FixedRouteInitialise(HasChipLocation chip, RoutingEntry entry,
-			AppID appID) {
-		this(chip.getScampCore(), entry.encode(), appID);
-	}
+    /**
+     * Construct a request to set this fixed route entry.
+     *
+     * @param chip
+     *            The chip to set the route on.
+     * @param entry
+     *            The fixed route entry
+     * @param appID
+     *            The ID of the application
+     */
+    public FixedRouteInitialise(HasChipLocation chip, RoutingEntry entry,
+            AppID appID) {
+        this(chip.getScampCore(), entry.encode(), appID);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Fixed Route Initialise", CMD_RTR, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Fixed Route Initialise", CMD_RTR, buffer);
+    }
 }

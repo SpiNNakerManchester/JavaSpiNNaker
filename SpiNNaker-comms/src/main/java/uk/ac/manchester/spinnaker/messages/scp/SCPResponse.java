@@ -25,57 +25,57 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** Represents an abstract SCP response. */
 public abstract class SCPResponse {
-	/** The SDP header from the response. */
-	public final SDPHeader sdpHeader;
+    /** The SDP header from the response. */
+    public final SDPHeader sdpHeader;
 
-	/** The result of the SCP response. */
-	public final SCPResult result;
+    /** The result of the SCP response. */
+    public final SCPResult result;
 
-	/** The sequence number of the SCP response, between 0 and 65535. */
-	public final int sequence;
+    /** The sequence number of the SCP response, between 0 and 65535. */
+    public final int sequence;
 
-	/**
-	 * Reads a packet from a bytestring of data. Subclasses must also
-	 * deserialize any payload <i>after</i> calling this constructor.
-	 *
-	 * @param buffer
-	 *            the buffer to deserialise from
-	 */
-	protected SCPResponse(ByteBuffer buffer) {
-		assert buffer.position() == 0 : "buffer.position=" + buffer.position();
-		assert buffer.order() == LITTLE_ENDIAN : "buffer.order="
-				+ buffer.order();
-		buffer.getShort(); // SKIP TWO PADDING BYTES
-		sdpHeader = new SDPHeader(buffer, false);
-		result = SCPResult.get(buffer.getShort());
-		sequence = Short.toUnsignedInt(buffer.getShort());
-	}
+    /**
+     * Reads a packet from a bytestring of data. Subclasses must also
+     * deserialize any payload <i>after</i> calling this constructor.
+     *
+     * @param buffer
+     *            the buffer to deserialise from
+     */
+    protected SCPResponse(ByteBuffer buffer) {
+        assert buffer.position() == 0 : "buffer.position=" + buffer.position();
+        assert buffer.order() == LITTLE_ENDIAN : "buffer.order="
+                + buffer.order();
+        buffer.getShort(); // SKIP TWO PADDING BYTES
+        sdpHeader = new SDPHeader(buffer, false);
+        result = SCPResult.get(buffer.getShort());
+        sequence = Short.toUnsignedInt(buffer.getShort());
+    }
 
-	/**
-	 * Throw an exception if the response is not an {@linkplain SCPResult#RC_OK
-	 * OK}.
-	 *
-	 * @param operation
-	 *            The overall operation that was being done.
-	 * @param command
-	 *            The particular command that this is a response to.
-	 * @throws UnexpectedResponseCodeException
-	 *             If the response was a failure.
-	 * @throws UnroutableMessageException
-	 *             If the response was specifically that the message couldn't
-	 *             be routed.
-	 */
-	protected final void throwIfNotOK(String operation, Enum<?> command)
-			throws UnexpectedResponseCodeException {
-		switch (result) {
-		case RC_OK:
-			return;
-		case RC_ROUTE:
-			throw new UnroutableMessageException(operation, command,
-					sdpHeader);
-		default:
-			throw new UnexpectedResponseCodeException(operation, command,
-					result);
-		}
-	}
+    /**
+     * Throw an exception if the response is not an {@linkplain SCPResult#RC_OK
+     * OK}.
+     *
+     * @param operation
+     *            The overall operation that was being done.
+     * @param command
+     *            The particular command that this is a response to.
+     * @throws UnexpectedResponseCodeException
+     *             If the response was a failure.
+     * @throws UnroutableMessageException
+     *             If the response was specifically that the message couldn't
+     *             be routed.
+     */
+    protected final void throwIfNotOK(String operation, Enum<?> command)
+            throws UnexpectedResponseCodeException {
+        switch (result) {
+        case RC_OK:
+            return;
+        case RC_ROUTE:
+            throw new UnroutableMessageException(operation, command,
+                    sdpHeader);
+        default:
+            throw new UnexpectedResponseCodeException(operation, command,
+                    result);
+        }
+    }
 }

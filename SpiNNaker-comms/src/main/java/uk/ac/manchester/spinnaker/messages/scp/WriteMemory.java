@@ -32,52 +32,52 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class WriteMemory extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a write requested based on a core.
-	 *
-	 * @param core
-	 *            the core to write via
-	 * @param baseAddress
-	 *            The positive base address to start the write at
-	 * @param data
-	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
-	 *            buffer must be the point where the data starts. The position
-	 *            and limit of the buffer will not be updated by this
-	 *            constructor.
-	 */
-	public WriteMemory(HasCoreLocation core, MemoryLocation baseAddress,
-			ByteBuffer data) {
-		super(core, CMD_WRITE, baseAddress.address, data.remaining(),
-				efficientTransferUnit(baseAddress, data.remaining()).value,
-				data);
-	}
+    /**
+     * Constructs a write requested based on a core.
+     *
+     * @param core
+     *            the core to write via
+     * @param baseAddress
+     *            The positive base address to start the write at
+     * @param data
+     *            Between 1 and 256 bytes to write; the <i>position</i> of the
+     *            buffer must be the point where the data starts. The position
+     *            and limit of the buffer will not be updated by this
+     *            constructor.
+     */
+    public WriteMemory(HasCoreLocation core, MemoryLocation baseAddress,
+            ByteBuffer data) {
+        super(core, CMD_WRITE, baseAddress.address, data.remaining(),
+                efficientTransferUnit(baseAddress, data.remaining()).value,
+                data);
+    }
 
-	/**
-	 * Constructs a write requested based on a Chip.
-	 *
-	 * Will use the Scamp core of that Chip.
-	 *
-	 * @param chip
-	 *            the chip to write via
-	 * @param baseAddress
-	 *            The positive base address to start the read from
-	 * @param data
-	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
-	 *            buffer must be the point where the data starts. The position
-	 *            and limit of the buffer will not be updated by this
-	 *            constructor.
-	 */
-	public WriteMemory(HasChipLocation chip, MemoryLocation baseAddress,
-			ByteBuffer data) {
-		super(chip.getScampCore(), CMD_WRITE, baseAddress.address,
-				data.remaining(),
-				efficientTransferUnit(baseAddress, data.remaining()).value,
-				data);
-	}
+    /**
+     * Constructs a write requested based on a Chip.
+     *
+     * Will use the Scamp core of that Chip.
+     *
+     * @param chip
+     *            the chip to write via
+     * @param baseAddress
+     *            The positive base address to start the read from
+     * @param data
+     *            Between 1 and 256 bytes to write; the <i>position</i> of the
+     *            buffer must be the point where the data starts. The position
+     *            and limit of the buffer will not be updated by this
+     *            constructor.
+     */
+    public WriteMemory(HasChipLocation chip, MemoryLocation baseAddress,
+            ByteBuffer data) {
+        super(chip.getScampCore(), CMD_WRITE, baseAddress.address,
+                data.remaining(),
+                efficientTransferUnit(baseAddress, data.remaining()).value,
+                data);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Write", CMD_WRITE, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Write", CMD_WRITE, buffer);
+    }
 }

@@ -39,7 +39,7 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * @see Connection
  */
 @JsonPropertyOrder({
-	"chip", "hostname"
+    "chip", "hostname"
 })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
@@ -50,56 +50,56 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
 @Immutable
 @UsedInJavadocOnly(Connection.class)
 public final class ConnectionInfo {
-	@Valid
-	private final ChipLocation chip;
+    @Valid
+    private final ChipLocation chip;
 
-	@IPAddress
-	private final String hostname;
+    @IPAddress
+    private final String hostname;
 
-	/**
-	 * Create.
-	 *
-	 * @param chip
-	 *            the chip
-	 * @param hostname
-	 *            the host
-	 */
-	public ConnectionInfo(HasChipLocation chip, String hostname) {
-		this.chip = chip.asChipLocation();
-		this.hostname = hostname;
-	}
+    /**
+     * Create.
+     *
+     * @param chip
+     *            the chip
+     * @param hostname
+     *            the host
+     */
+    public ConnectionInfo(HasChipLocation chip, String hostname) {
+        this.chip = chip.asChipLocation();
+        this.hostname = hostname;
+    }
 
-	/**
-	 * {@return The chip for the connection}
-	 */
-	public ChipLocation getChip() {
-		return chip;
-	}
+    /**
+     * {@return The chip for the connection}
+     */
+    public ChipLocation getChip() {
+        return chip;
+    }
 
-	/**
-	 * {@return Where to connect to to talk to the chip}
-	 */
-	public String getHostname() {
-		return hostname;
-	}
+    /**
+     * {@return Where to connect to to talk to the chip}
+     */
+    public String getHostname() {
+        return hostname;
+    }
 
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof ConnectionInfo) {
-			var c = (ConnectionInfo) other;
-			return Objects.equals(chip, c.chip)
-					&& Objects.equals(hostname, c.hostname);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof ConnectionInfo) {
+            var c = (ConnectionInfo) other;
+            return Objects.equals(chip, c.chip)
+                    && Objects.equals(hostname, c.hostname);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(hostname, chip);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(hostname, chip);
+    }
 
-	@Override
-	public String toString() {
-		return "Connection(" + chip + "@" + hostname + ")";
-	}
+    @Override
+    public String toString() {
+        return "Connection(" + chip + "@" + hostname + ")";
+    }
 }

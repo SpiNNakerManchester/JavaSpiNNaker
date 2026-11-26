@@ -20,14 +20,14 @@ package uk.ac.manchester.spinnaker.storage;
  * from the DB.
  */
 public interface ProxyAwareStorage extends DatabaseAPI {
-	/**
-	 * Get the proxy information from the database.
-	 *
-	 * @return The proxy information, or {@code null} if none defined. When
-	 *         there is no proxy, only direct connections to SpiNNaker are
-	 *         possible.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	ProxyInformation getProxyInformation() throws StorageException;
+    /**
+     * Get the proxy information from the database.
+     *
+     * @return The proxy information, or {@code null} if none defined. When
+     *         there is no proxy, only direct connections to SpiNNaker are
+     *         possible.
+     * @throws StorageException
+     *             If anything goes wrong.
+     */
+    ProxyInformation getProxyInformation() throws StorageException;
 }

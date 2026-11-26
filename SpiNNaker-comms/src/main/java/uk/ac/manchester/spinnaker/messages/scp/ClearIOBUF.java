@@ -30,19 +30,19 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ClearIOBUF extends FECRequest<EmptyResponse> {
 
-	/**
-	 * Construct a request to clear the IOBUF on a core.
-	 *
-	 * @param core
-	 *            The core to clear the IOBUF of.
-	 */
-	public ClearIOBUF(HasCoreLocation core) {
-		super(core, true, CLEAR_IOBUF);
-	}
+    /**
+     * Construct a request to clear the IOBUF on a core.
+     *
+     * @param core
+     *            The core to clear the IOBUF of.
+     */
+    public ClearIOBUF(HasCoreLocation core) {
+        super(core, true, CLEAR_IOBUF);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("clear IOBUF", CLEAR_IOBUF, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("clear IOBUF", CLEAR_IOBUF, buffer);
+    }
 }

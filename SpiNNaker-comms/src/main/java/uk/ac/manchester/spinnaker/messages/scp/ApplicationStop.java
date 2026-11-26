@@ -37,50 +37,50 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * all SCAMP instances.
  */
 public final class ApplicationStop extends SCPRequest<EmptyResponse> {
-	private static final int SHIFT = 28;
+    private static final int SHIFT = 28;
 
-	private static final int NN_CMD_SIG0 = 0;
+    private static final int NN_CMD_SIG0 = 0;
 
-	private static final int FORWARD = 0x3f;
+    private static final int FORWARD = 0x3f;
 
-	private static final int RETRY = 0;
+    private static final int RETRY = 0;
 
-	private static final int SIG0_APP = 5;
+    private static final int SIG0_APP = 5;
 
-	private static final int ADD_ID = 1;
+    private static final int ADD_ID = 1;
 
-	private static final int ALL_LINKS = 0x3f;
+    private static final int ALL_LINKS = 0x3f;
 
-	private static int key() {
-		return (NN_CMD_SIG0 << BYTE3) | (FORWARD << BYTE2) | (RETRY << BYTE1);
-	}
+    private static int key() {
+        return (NN_CMD_SIG0 << BYTE3) | (FORWARD << BYTE2) | (RETRY << BYTE1);
+    }
 
-	private static int data(AppID appID) {
-		// Call the SIG0 NN operation, subcode STOP (stop application)
-		// No masking of the app ID
-		return (SIG0_APP << SHIFT) | (STOP.value << BYTE2) | (APP_MASK << BYTE1)
-				| (appID.appID << BYTE0);
-	}
+    private static int data(AppID appID) {
+        // Call the SIG0 NN operation, subcode STOP (stop application)
+        // No masking of the app ID
+        return (SIG0_APP << SHIFT) | (STOP.value << BYTE2) | (APP_MASK << BYTE1)
+                | (appID.appID << BYTE0);
+    }
 
-	private static int nnConfig() {
-		// Add a suitable ID in SCAMP, send message on all links
-		// Number of repeats is zero, inter-repeat delay is zero
-		return (ADD_ID << TOP_BIT) | (ALL_LINKS << BYTE1);
-	}
+    private static int nnConfig() {
+        // Add a suitable ID in SCAMP, send message on all links
+        // Number of repeats is zero, inter-repeat delay is zero
+        return (ADD_ID << TOP_BIT) | (ALL_LINKS << BYTE1);
+    }
 
-	/**
-	 * Constructs a request to stop an application.
-	 *
-	 * @param appID
-	 *            The ID of the application
-	 */
-	public ApplicationStop(AppID appID) {
-		super(BOOT_MONITOR_CORE, CMD_NNP, key(), data(appID), nnConfig());
-	}
+    /**
+     * Constructs a request to stop an application.
+     *
+     * @param appID
+     *            The ID of the application
+     */
+    public ApplicationStop(AppID appID) {
+        super(BOOT_MONITOR_CORE, CMD_NNP, key(), data(appID), nnConfig());
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Send Stop", CMD_NNP, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Send Stop", CMD_NNP, buffer);
+    }
 }

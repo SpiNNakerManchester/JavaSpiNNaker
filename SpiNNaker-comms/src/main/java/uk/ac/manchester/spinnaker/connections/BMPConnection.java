@@ -39,81 +39,81 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  * cabinet.
  */
 public class BMPConnection extends UDPConnection<SDPMessage>
-		implements SCPSenderReceiver {
-	/** The coordinates of the BMP. */
-	private final BMPCoords coords;
+        implements SCPSenderReceiver {
+    /** The coordinates of the BMP. */
+    private final BMPCoords coords;
 
-	/**
-	 * The IDs of the specific set of boards managed by the BMPs we can talk to.
-	 * Immutable.
-	 */
-	public final Collection<BMPBoard> boards;
+    /**
+     * The IDs of the specific set of boards managed by the BMPs we can talk to.
+     * Immutable.
+     */
+    public final Collection<BMPBoard> boards;
 
-	/**
-	 * Constructs a connection for talking to one or more BMPs.
-	 *
-	 * @param connectionData
-	 *            Description of which BMP(s) to talk to.
-	 * @throws IOException
-	 *             If socket creation fails.
-	 */
-	public BMPConnection(BMPConnectionData connectionData) throws IOException {
-		super(null, null, connectionData.ipAddress,
-				(connectionData.portNumber == null ? SCP_SCAMP_PORT
-						: connectionData.portNumber), IPTOS_RELIABILITY);
-		coords = connectionData.bmp;
-		boards = connectionData.boards;
-	}
+    /**
+     * Constructs a connection for talking to one or more BMPs.
+     *
+     * @param connectionData
+     *            Description of which BMP(s) to talk to.
+     * @throws IOException
+     *             If socket creation fails.
+     */
+    public BMPConnection(BMPConnectionData connectionData) throws IOException {
+        super(null, null, connectionData.ipAddress,
+                (connectionData.portNumber == null ? SCP_SCAMP_PORT
+                        : connectionData.portNumber), IPTOS_RELIABILITY);
+        coords = connectionData.bmp;
+        boards = connectionData.boards;
+    }
 
-	@Override
-	public final void send(SCPRequest<?> scpRequest) throws IOException {
-		send((BMPRequest<?>) scpRequest);
-	}
+    @Override
+    public final void send(SCPRequest<?> scpRequest) throws IOException {
+        send((BMPRequest<?>) scpRequest);
+    }
 
-	@Override
-	public final void send(ByteBuffer data, int seq) {
-		throw new UnsupportedOperationException("should not be called");
-	}
+    @Override
+    public final void send(ByteBuffer data, int seq) {
+        throw new UnsupportedOperationException("should not be called");
+    }
 
-	/**
-	 * Send a request on this connection.
-	 *
-	 * @param scpRequest
-	 *            The request to send.
-	 * @throws IOException
-	 *             If the request can't be sent.
-	 */
-	public void send(BMPRequest<?> scpRequest) throws IOException {
-		send(getSCPData(scpRequest));
-	}
+    /**
+     * Send a request on this connection.
+     *
+     * @param scpRequest
+     *            The request to send.
+     * @throws IOException
+     *             If the request can't be sent.
+     */
+    public void send(BMPRequest<?> scpRequest) throws IOException {
+        send(getSCPData(scpRequest));
+    }
 
-	/**
-	 * Defined to satisfy the {@link SCPSenderReceiver} interface. Always
-	 * {@linkplain ChipLocation#ZERO_ZERO 0,0} for a BMP.
-	 *
-	 * @return {@inheritDoc}
-	 */
-	@Override
-	public ChipLocation getChip() {
-		return ZERO_ZERO;
-	}
+    /**
+     * Defined to satisfy the {@link SCPSenderReceiver} interface. Always
+     * {@linkplain ChipLocation#ZERO_ZERO 0,0} for a BMP.
+     *
+     * @return {@inheritDoc}
+     */
+    @Override
+    public ChipLocation getChip() {
+        return ZERO_ZERO;
+    }
 
-	@Override
-	public SCPResultMessage receiveSCPResponse(int timeout)
-			throws IOException, InterruptedException {
-		return new SCPResultMessage(receive(timeout));
-	}
+    @Override
+    public SCPResultMessage receiveSCPResponse(int timeout)
+            throws IOException, InterruptedException {
+        return new SCPResultMessage(receive(timeout));
+    }
 
-	@Override
-	public SDPMessage receiveMessage(int timeout)
-			throws IOException, InterruptedException {
-		return new SDPMessage(receive(timeout), true);
-	}
+    @Override
+    public SDPMessage receiveMessage(int timeout)
+            throws IOException, InterruptedException {
+        return new SDPMessage(receive(timeout), true);
+    }
 
-	/**
-	 * {@return The coordinates of the BMP that this connection talks to}
-	 */
-	public BMPCoords getCoords() {
-		return coords;
-	}
+    /**
+     * {@return The coordinates of the BMP that this connection talks to}
+     */
+    public BMPCoords getCoords() {
+        return coords;
+    }
 }

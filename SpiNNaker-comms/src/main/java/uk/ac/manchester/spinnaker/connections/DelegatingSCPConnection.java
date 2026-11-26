@@ -29,88 +29,88 @@ import java.nio.ByteBuffer;
  */
 @SuppressWarnings("ForOverride")
 public class DelegatingSCPConnection extends SCPConnection {
-	private final SDPConnection delegate;
+    private final SDPConnection delegate;
 
-	/**
-	 * Create a connection that delegates actual communications to another
-	 * connection.
-	 *
-	 * @param connection
-	 *            The connection to delegate to.
-	 * @throws IOException
-	 *             If anything goes wrong. (Unexpected)
-	 */
-	public DelegatingSCPConnection(SDPConnection connection)
-			throws IOException {
-		super(connection.getChip(), connection.getLocalIPAddress(),
-				connection.getLocalPort(), connection.getRemoteIPAddress(),
-				connection.getRemotePort());
-		this.delegate = connection;
-	}
+    /**
+     * Create a connection that delegates actual communications to another
+     * connection.
+     *
+     * @param connection
+     *            The connection to delegate to.
+     * @throws IOException
+     *             If anything goes wrong. (Unexpected)
+     */
+    public DelegatingSCPConnection(SDPConnection connection)
+            throws IOException {
+        super(connection.getChip(), connection.getLocalIPAddress(),
+                connection.getLocalPort(), connection.getRemoteIPAddress(),
+                connection.getRemotePort());
+        this.delegate = connection;
+    }
 
-	@Override
-	protected InetSocketAddress getLocalAddress() throws IOException {
-		return delegate.getLocalAddress();
-	}
+    @Override
+    protected InetSocketAddress getLocalAddress() throws IOException {
+        return delegate.getLocalAddress();
+    }
 
-	@Override
-	protected InetSocketAddress getRemoteAddress() {
-		return delegate.getRemoteAddress();
-	}
+    @Override
+    protected InetSocketAddress getRemoteAddress() {
+        return delegate.getRemoteAddress();
+    }
 
-	@Override
-	DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort,
-			TrafficClass trafficClass) throws IOException {
-		// We never initialise a socket of our own.
-		return null;
-	}
+    @Override
+    DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
+            InetAddress remoteHost, Integer remotePort,
+            TrafficClass trafficClass) throws IOException {
+        // We never initialise a socket of our own.
+        return null;
+    }
 
-	@Override
-	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException, IOException, InterruptedException {
-		return delegate.doReceive(timeout);
-	}
+    @Override
+    protected ByteBuffer doReceive(int timeout)
+            throws SocketTimeoutException, IOException, InterruptedException {
+        return delegate.doReceive(timeout);
+    }
 
-	@Override
-	protected UDPPacket doReceiveWithAddress(int timeout)
-			throws SocketTimeoutException, IOException {
-		return delegate.doReceiveWithAddress(timeout);
-	}
+    @Override
+    protected UDPPacket doReceiveWithAddress(int timeout)
+            throws SocketTimeoutException, IOException {
+        return delegate.doReceiveWithAddress(timeout);
+    }
 
-	@Override
-	protected void doSend(ByteBuffer data) throws IOException {
-		delegate.doSend(data);
-	}
+    @Override
+    protected void doSend(ByteBuffer data) throws IOException {
+        delegate.doSend(data);
+    }
 
-	@Override
-	protected void doSendTo(ByteBuffer data, InetAddress address, int port)
-			throws IOException {
-		delegate.doSendTo(data, address, port);
-	}
+    @Override
+    protected void doSendTo(ByteBuffer data, InetAddress address, int port)
+            throws IOException {
+        delegate.doSendTo(data, address, port);
+    }
 
-	@Override
-	public boolean isConnected() {
-		return delegate.isConnected();
-	}
+    @Override
+    public boolean isConnected() {
+        return delegate.isConnected();
+    }
 
-	@Override
-	public boolean isClosed() {
-		return delegate.isClosed();
-	}
+    @Override
+    public boolean isClosed() {
+        return delegate.isClosed();
+    }
 
-	/**
-	 * When we're delegating, closing is a no-op; the underlying channel has to
-	 * be closed directly.
-	 */
-	@Override
-	@SuppressWarnings("MissingSuperCall")
-	public void close() throws IOException {
-		// Do nothing
-	}
+    /**
+     * When we're delegating, closing is a no-op; the underlying channel has to
+     * be closed directly.
+     */
+    @Override
+    @SuppressWarnings("MissingSuperCall")
+    public void close() throws IOException {
+        // Do nothing
+    }
 
-	@Override
-	public String toString() {
-		return "Delegate(" + delegate + ")";
-	}
+    @Override
+    public String toString() {
+        return "Delegate(" + delegate + ")";
+    }
 }

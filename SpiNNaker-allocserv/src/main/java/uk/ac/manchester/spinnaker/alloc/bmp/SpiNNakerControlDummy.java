@@ -32,64 +32,64 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
  */
 public class SpiNNakerControlDummy implements SpiNNakerControl {
 
-	private static final String DUMMY_SERIAL = "00000000";
+      private static final String DUMMY_SERIAL = "00000000";
 
-	private final Map<BMPBoard, Blacklist> blacklists = new HashMap<>();
+      private final Map<BMPBoard, Blacklist> blacklists = new HashMap<>();
 
-	@Override
-	public void powerOnAndCheck(List<BMPBoard> boards) throws ProcessException,
-			InterruptedException, IOException {
-		// Do Nothing
-	}
+      @Override
+      public void powerOnAndCheck(List<BMPBoard> boards) throws ProcessException,
+                  InterruptedException, IOException {
+            // Do Nothing
+      }
 
-	@Override
-	public void setLinkOff(Link link) throws ProcessException, IOException,
-			InterruptedException {
-		// Do Nothing
-	}
+      @Override
+      public void setLinkOff(Link link) throws ProcessException, IOException,
+                  InterruptedException {
+            // Do Nothing
+      }
 
-	@Override
-	public void powerOff(Collection<BMPBoard> boards) throws ProcessException,
-			InterruptedException, IOException {
-		// Do Nothing
+      @Override
+      public void powerOff(Collection<BMPBoard> boards) throws ProcessException,
+                  InterruptedException, IOException {
+            // Do Nothing
 
-	}
+      }
 
-	@Override
-	public String readSerial(BMPBoard board) throws ProcessException,
-			InterruptedException, IOException {
-		return DUMMY_SERIAL;
-	}
+      @Override
+      public String readSerial(BMPBoard board) throws ProcessException,
+                  InterruptedException, IOException {
+            return DUMMY_SERIAL;
+      }
 
-	@Override
-	public ADCInfo readTemp(BMPBoard board) throws ProcessException,
-			IOException, InterruptedException {
-		return new ADCInfo(ByteBuffer.wrap(new byte[ADCInfo.SIZE]));
-	}
+      @Override
+      public ADCInfo readTemp(BMPBoard board) throws ProcessException,
+                  IOException, InterruptedException {
+            return new ADCInfo(ByteBuffer.wrap(new byte[ADCInfo.SIZE]));
+      }
 
-	@Override
-	public Blacklist readBlacklist(BMPBoard board) throws ProcessException,
-			InterruptedException, IOException {
-		if (blacklists.containsKey(board)) {
-			return blacklists.get(board);
-		}
-		return new Blacklist(ByteBuffer.wrap(new byte[Integer.BYTES]));
-	}
+      @Override
+      public Blacklist readBlacklist(BMPBoard board) throws ProcessException,
+                  InterruptedException, IOException {
+            if (blacklists.containsKey(board)) {
+                  return blacklists.get(board);
+            }
+            return new Blacklist(ByteBuffer.wrap(new byte[Integer.BYTES]));
+      }
 
-	@Override
-	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
-			throws ProcessException, InterruptedException, IOException {
-		blacklists.put(board, blacklist);
-	}
+      @Override
+      public void writeBlacklist(BMPBoard board, Blacklist blacklist)
+                  throws ProcessException, InterruptedException, IOException {
+            blacklists.put(board, blacklist);
+      }
 
-	@Override
-	public void ping(List<BMPBoard> boards) {
-		// Do Nothing
-	}
+      @Override
+      public void ping(List<BMPBoard> boards) {
+            // Do Nothing
+      }
 
-	@Override
-	public void close() {
-		// Do Nothing
-	}
+      @Override
+      public void close() {
+            // Do Nothing
+      }
 
 }

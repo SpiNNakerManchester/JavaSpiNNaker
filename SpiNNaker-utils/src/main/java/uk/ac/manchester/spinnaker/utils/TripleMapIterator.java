@@ -29,72 +29,72 @@ import java.util.NoSuchElementException;
  *            class of objects to be supplied by the this iterator.
  */
 final class TripleMapIterator<V> implements Iterator<V> {
-	private final Iterator<? extends Map<?, ? extends Map<?, V>>> outer;
+    private final Iterator<? extends Map<?, ? extends Map<?, V>>> outer;
 
-	private Iterator<V> inner;
+    private Iterator<V> inner;
 
-	/**
-	 * Creates an Iterator given a Map of Maps of Maps.
-	 *
-	 * @param outerMap
-	 *            A triple map with any type(s) as the keys.
-	 */
-	TripleMapIterator(Map<?, ? extends Map<?, ? extends Map<?, V>>> outerMap) {
-		this(outerMap.values().iterator());
-	}
+    /**
+     * Creates an Iterator given a Map of Maps of Maps.
+     *
+     * @param outerMap
+     *            A triple map with any type(s) as the keys.
+     */
+    TripleMapIterator(Map<?, ? extends Map<?, ? extends Map<?, V>>> outerMap) {
+        this(outerMap.values().iterator());
+    }
 
-	/**
-	 * Creates an Iterator given an Iterable/Collection of Maps of Maps.
-	 *
-	 * @param outerIterable
-	 *            A triple map with any type(s) as the keys.
-	 */
-	TripleMapIterator(
-			Iterable<? extends Map<?, ? extends Map<?, V>>> outerIterable) {
-		this(outerIterable.iterator());
-	}
+    /**
+     * Creates an Iterator given an Iterable/Collection of Maps of Maps.
+     *
+     * @param outerIterable
+     *            A triple map with any type(s) as the keys.
+     */
+    TripleMapIterator(
+            Iterable<? extends Map<?, ? extends Map<?, V>>> outerIterable) {
+        this(outerIterable.iterator());
+    }
 
-	/**
-	 * Creates an Iterator given an Iterator of Maps of Maps.
-	 *
-	 * @param outer
-	 *            A Iterator of double maps with any type(s) as the keys.
-	 */
-	TripleMapIterator(Iterator<? extends Map<?, ? extends Map<?, V>>> outer) {
-		this.outer = outer;
-		if (outer.hasNext()) {
-			inner = new DoubleMapIterator<>(outer.next());
-			checkInner();
-		} else {
-			inner = null;
-		}
-	}
+    /**
+     * Creates an Iterator given an Iterator of Maps of Maps.
+     *
+     * @param outer
+     *            A Iterator of double maps with any type(s) as the keys.
+     */
+    TripleMapIterator(Iterator<? extends Map<?, ? extends Map<?, V>>> outer) {
+        this.outer = outer;
+        if (outer.hasNext()) {
+            inner = new DoubleMapIterator<>(outer.next());
+            checkInner();
+        } else {
+            inner = null;
+        }
+    }
 
-	@Override
-	public boolean hasNext() {
-		return inner != null;
-	}
+    @Override
+    public boolean hasNext() {
+        return inner != null;
+    }
 
-	@Override
-	public V next() {
-		if (inner == null) {
-			throw new NoSuchElementException("no more elements available");
-		}
-		var result = inner.next();
-		checkInner();
-		return result;
-	}
+    @Override
+    public V next() {
+        if (inner == null) {
+            throw new NoSuchElementException("no more elements available");
+        }
+        var result = inner.next();
+        checkInner();
+        return result;
+    }
 
-	private void checkInner() {
-		while (inner != null) {
-			if (inner.hasNext()) {
-				return;
-			}
-			if (outer.hasNext()) {
-				inner = new DoubleMapIterator<>(outer.next());
-			} else {
-				inner = null;
-			}
-		}
-	}
+    private void checkInner() {
+        while (inner != null) {
+            if (inner.hasNext()) {
+                return;
+            }
+            if (outer.hasNext()) {
+                inner = new DoubleMapIterator<>(outer.next());
+            } else {
+                inner = null;
+            }
+        }
+    }
 }

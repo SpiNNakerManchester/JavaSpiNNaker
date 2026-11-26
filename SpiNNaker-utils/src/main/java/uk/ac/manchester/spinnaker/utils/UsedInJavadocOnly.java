@@ -33,11 +33,11 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target({ TYPE, METHOD, CONSTRUCTOR, FIELD, PACKAGE })
 public @interface UsedInJavadocOnly {
-	/**
-	 * Class or classes just used by the annotated thing in Javadoc generation.
-	 * Put in with this so Checkstyle doesn't think the class is unused.
-	 *
-	 * @return classes
-	 */
-	Class<?>[] value();
+    /**
+     * Class or classes just used by the annotated thing in Javadoc generation.
+     * Put in with this so Checkstyle doesn't think the class is unused.
+     *
+     * @return classes
+     */
+    Class<?>[] value();
 }

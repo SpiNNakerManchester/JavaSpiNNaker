@@ -25,45 +25,45 @@ import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
 
 /** Launch an application. */
 class ApplicationRunProcess extends TxrxProcess {
-	/**
-	 * Create.
-	 *
-	 * @param connectionSelector
-	 *            How to choose where to send messages.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	ApplicationRunProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
-			RetryTracker retryTracker) {
-		super(connectionSelector, retryTracker);
-	}
+    /**
+     * Create.
+     *
+     * @param connectionSelector
+     *            How to choose where to send messages.
+     * @param retryTracker
+     *            Object used to track how many retries were used in an
+     *            operation. May be {@code null} if no suck tracking is
+     *            required.
+     */
+    ApplicationRunProcess(
+            ConnectionSelector<? extends SCPConnection> connectionSelector,
+            RetryTracker retryTracker) {
+        super(connectionSelector, retryTracker);
+    }
 
-	/**
-	 * Launch an application (already loaded).
-	 *
-	 * @param appID
-	 *            The application ID to launch.
-	 * @param coreSubsets
-	 *            Which cores to launch.
-	 * @param wait
-	 *            Whether to wait for the application launch to fully complete
-	 *            before returning.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
-			throws ProcessException, IOException, InterruptedException {
-		for (var chip : coreSubsets.getChips()) {
-			sendRequest(new ApplicationRun(appID, chip,
-					coreSubsets.pByChip(chip), wait));
-		}
-		finishBatch();
-	}
+    /**
+     * Launch an application (already loaded).
+     *
+     * @param appID
+     *            The application ID to launch.
+     * @param coreSubsets
+     *            Which cores to launch.
+     * @param wait
+     *            Whether to wait for the application launch to fully complete
+     *            before returning.
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     */
+    void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
+            throws ProcessException, IOException, InterruptedException {
+        for (var chip : coreSubsets.getChips()) {
+            sendRequest(new ApplicationRun(appID, chip,
+                    coreSubsets.pByChip(chip), wait));
+        }
+        finishBatch();
+    }
 }

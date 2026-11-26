@@ -25,49 +25,49 @@ import java.io.ObjectOutputStream;
  * Utility wrappers for I/O.
  */
 public abstract class IOUtils {
-	private IOUtils() {
-	}
+    private IOUtils() {
+    }
 
-	/**
-	 * Convert a serializable object into its serialized form.
-	 *
-	 * @param obj
-	 *            The object to serialize.
-	 * @return The serialized form.
-	 * @throws IOException
-	 *             If the object isn't serializable.
-	 */
-	public static byte[] serialize(Object obj) throws IOException {
-		var baos = new ByteArrayOutputStream();
-		try (var oos = new ObjectOutputStream(baos)) {
-			oos.writeObject(obj);
-		}
-		return baos.toByteArray();
-	}
+    /**
+     * Convert a serializable object into its serialized form.
+     *
+     * @param obj
+     *            The object to serialize.
+     * @return The serialized form.
+     * @throws IOException
+     *             If the object isn't serializable.
+     */
+    public static byte[] serialize(Object obj) throws IOException {
+        var baos = new ByteArrayOutputStream();
+        try (var oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(obj);
+        }
+        return baos.toByteArray();
+    }
 
-	/**
-	 * Convert a serialized object into its normal form. <strong>Only call on
-	 * data that is trusted!</strong>
-	 *
-	 * @param <T>
-	 *            The type of the response.
-	 * @param bytes
-	 *            The serialized data.
-	 * @param cls
-	 *            The class that the object is expected to conform to.
-	 * @return The deserialized object.
-	 * @throws ClassCastException
-	 *             If the data is not an object of the expected class.
-	 * @throws ClassNotFoundException
-	 *             If the data doesn't represent a known class.
-	 * @throws IOException
-	 *             If the object isn't deserializable.
-	 */
-	public static <T> T deserialize(byte[] bytes, Class<T> cls)
-			throws ClassNotFoundException, IOException {
-		var bais = new ByteArrayInputStream(bytes);
-		try (var ois = new ObjectInputStream(bais)) {
-			return cls.cast(ois.readObject());
-		}
-	}
+    /**
+     * Convert a serialized object into its normal form. <strong>Only call on
+     * data that is trusted!</strong>
+     *
+     * @param <T>
+     *            The type of the response.
+     * @param bytes
+     *            The serialized data.
+     * @param cls
+     *            The class that the object is expected to conform to.
+     * @return The deserialized object.
+     * @throws ClassCastException
+     *             If the data is not an object of the expected class.
+     * @throws ClassNotFoundException
+     *             If the data doesn't represent a known class.
+     * @throws IOException
+     *             If the object isn't deserializable.
+     */
+    public static <T> T deserialize(byte[] bytes, Class<T> cls)
+            throws ClassNotFoundException, IOException {
+        var bais = new ByteArrayInputStream(bytes);
+        try (var ois = new ObjectInputStream(bais)) {
+            return cls.cast(ois.readObject());
+        }
+    }
 }

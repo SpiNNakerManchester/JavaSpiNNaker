@@ -15,19 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
  -->
 <Configuration status="info" strict="true" name="test-config"
-	xmlns="http://logging.apache.org/log4j/2.0/config"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<ThresholdFilter level="info" />
+    xmlns="http://logging.apache.org/log4j/2.0/config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ThresholdFilter level="info" />
 
-	<Appenders>
-		<Console name="STDERR" target="System_err">
-			<PatternLayout pattern="%d %m%n" />
-		</Console>
-	</Appenders>
+    <Appenders>
+        <Console name="STDERR" target="System_err">
+            <PatternLayout pattern="%d %m%n" />
+        </Console>
+    </Appenders>
 
-	<Loggers>
-		<Root level="info">
-			<AppenderRef ref="STDERR" />
-		</Root>
-	</Loggers>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="STDERR" />
+        </Root>
+    </Loggers>
 </Configuration>

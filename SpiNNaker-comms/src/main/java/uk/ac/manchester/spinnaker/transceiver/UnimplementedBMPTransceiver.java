@@ -40,176 +40,176 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * implementations.
  */
 public abstract class UnimplementedBMPTransceiver
-		implements BMPTransceiverInterface {
-	private BMPCoords boundBMP = new BMPCoords(0, 0);
+        implements BMPTransceiverInterface {
+    private BMPCoords boundBMP = new BMPCoords(0, 0);
 
-	@Override
-	public void powerOnMachine()
-			throws InterruptedException, IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void powerOnMachine()
+            throws InterruptedException, IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void powerOffMachine()
-			throws InterruptedException, IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void powerOffMachine()
+            throws InterruptedException, IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<BMPBoard> boards)
-			throws InterruptedException, IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void power(PowerCommand powerCommand, BMPCoords bmp,
+            Collection<BMPBoard> boards)
+            throws InterruptedException, IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void setLED(Collection<Integer> leds, LEDAction action,
-			BMPCoords bmp, Collection<BMPBoard> board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void setLED(Collection<Integer> leds, LEDAction action,
+            BMPCoords bmp, Collection<BMPBoard> board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int readFPGARegister(FPGA fpga, MemoryLocation register,
-			BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int readFPGARegister(FPGA fpga, MemoryLocation register,
+            BMPCoords bmp, BMPBoard board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
-			BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
+            BMPCoords bmp, BMPBoard board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void resetFPGA(BMPCoords bmp, BMPBoard board,
-			FPGAResetType resetType) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void resetFPGA(BMPCoords bmp, BMPBoard board,
+            FPGAResetType resetType) throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, int length)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, ByteBuffer data)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, ByteBuffer data)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, File file)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, File file)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, int length)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int length)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, int length)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, File file)
-			throws ProcessException, IOException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, File file)
+            throws ProcessException, IOException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, ByteBuffer data)
-			throws ProcessException, IOException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, ByteBuffer data)
+            throws ProcessException, IOException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
-			@NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
-			throws ProcessException, IOException, InterruptedException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeFlash(@Valid BMPCoords bmp, @Valid BMPBoard board,
+            @NotNull MemoryLocation baseAddress, @NotNull ByteBuffer data)
+            throws ProcessException, IOException, InterruptedException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress, int size, InputStream stream)
-			throws ProcessException, IOException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress, int size, InputStream stream)
+            throws ProcessException, IOException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void writeBMPFlash(BMPCoords bmp, BMPBoard board,
-			MemoryLocation baseAddress) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void writeBMPFlash(BMPCoords bmp, BMPBoard board,
+            MemoryLocation baseAddress) throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+            throws IOException, ProcessException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void bind(BMPCoords bmp) {
-		boundBMP = bmp;
-	}
+    @Override
+    public void bind(BMPCoords bmp) {
+        boundBMP = bmp;
+    }
 
-	@Override
-	public BMPCoords getBoundBMP() {
-		return boundBMP;
-	}
+    @Override
+    public BMPCoords getBoundBMP() {
+        return boundBMP;
+    }
 
-	@Override
-	public void close() throws IOException {
-	}
+    @Override
+    public void close() throws IOException {
+    }
 
-	@Override
-	public int pingBoard(String address) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int pingBoard(String address) {
+        throw new UnsupportedOperationException();
+    }
 }

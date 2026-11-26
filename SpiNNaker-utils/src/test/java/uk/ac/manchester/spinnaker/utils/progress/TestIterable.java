@@ -28,93 +28,93 @@ import uk.ac.manchester.spinnaker.utils.Counter;
 
 public class TestIterable {
 
-	private static final String PERCENTS =
-			"|0%                          50%                         100%|";
+    private static final String PERCENTS =
+            "|0%                          50%                         100%|";
 
-	private static final String DASHES =
-			" ------------------------------------------------------------";
+    private static final String DASHES =
+            " ------------------------------------------------------------";
 
-	/**
-	 * How to match a platform-independent newline. Fortunately, CR-only
-	 * platforms are gone.
-	 */
-	private static final String NEWLINE = "\\r?\\n";
+    /**
+     * How to match a platform-independent newline. Fortunately, CR-only
+     * platforms are gone.
+     */
+    private static final String NEWLINE = "\\r?\\n";
 
-	private static PrintStream printer(ByteArrayOutputStream baos) {
-		return new PrintStream(baos, true, UTF_8);
-	}
+    private static PrintStream printer(ByteArrayOutputStream baos) {
+        return new PrintStream(baos, true, UTF_8);
+    }
 
-	private static String[] lines(ByteArrayOutputStream baos) {
-		return baos.toString(UTF_8).stripTrailing().split(NEWLINE, -1);
-	}
+    private static String[] lines(ByteArrayOutputStream baos) {
+        return baos.toString(UTF_8).stripTrailing().split(NEWLINE, -1);
+    }
 
-	@Test
-	public void testBasic() {
-		var description = "Easiest";
-		try (var pb = new ProgressIterable<>(
-				List.of(1, 2, 3, 4, 5), description,
-				printer(new ByteArrayOutputStream()))) {
-			int sum = 0;
-			for (int i : pb) {
-				sum += i;
-			}
-			assertEquals(1 + 2 + 3 + 4 + 5, sum);
-		}
-	}
+    @Test
+    public void testBasic() {
+        var description = "Easiest";
+        try (var pb = new ProgressIterable<>(
+                List.of(1, 2, 3, 4, 5), description,
+                printer(new ByteArrayOutputStream()))) {
+            int sum = 0;
+            for (int i : pb) {
+                sum += i;
+            }
+            assertEquals(1 + 2 + 3 + 4 + 5, sum);
+        }
+    }
 
-	@Test
-	public void testSimple() {
-		var baos = new ByteArrayOutputStream();
-		var description = "Easiest";
-		try (var pb = new ProgressIterable<>(List.of(1, 2, 3, 4, 5, 6, 7),
-				description, printer(baos))) {
-			int sum = 0;
-			for (int i : pb) {
-				sum += i;
-			}
-			assertEquals(1 + 2 + 3 + 4 + 5 + 6 + 7, sum);
-			var lines = lines(baos);
-			assertEquals(4, lines.length);
-			assertEquals(description, lines[0]);
-			assertEquals(PERCENTS, lines[1]);
-			assertEquals(DASHES, lines[2]);
-		}
-	}
+    @Test
+    public void testSimple() {
+        var baos = new ByteArrayOutputStream();
+        var description = "Easiest";
+        try (var pb = new ProgressIterable<>(List.of(1, 2, 3, 4, 5, 6, 7),
+                description, printer(baos))) {
+            int sum = 0;
+            for (int i : pb) {
+                sum += i;
+            }
+            assertEquals(1 + 2 + 3 + 4 + 5 + 6 + 7, sum);
+            var lines = lines(baos);
+            assertEquals(4, lines.length);
+            assertEquals(description, lines[0]);
+            assertEquals(PERCENTS, lines[1]);
+            assertEquals(DASHES, lines[2]);
+        }
+    }
 
-	@Test
-	public void testStopEarly() {
-		var baos = new ByteArrayOutputStream();
-		var description = "Early";
-		try (var bar =
-				new ProgressIterable<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-						description, printer(baos))) {
-			for (int i : bar) {
-				if (i == 3) {
-					break;
-				}
-			}
-		}
-		var lines = lines(baos);
-		assertEquals(4, lines.length);
-		assertEquals(description, lines[0]);
-		assertEquals(PERCENTS, lines[1]);
-		assertEquals(60 / 10 * 3 + 1, lines[2].length());
-	}
+    @Test
+    public void testStopEarly() {
+        var baos = new ByteArrayOutputStream();
+        var description = "Early";
+        try (var bar =
+                new ProgressIterable<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                        description, printer(baos))) {
+            for (int i : bar) {
+                if (i == 3) {
+                    break;
+                }
+            }
+        }
+        var lines = lines(baos);
+        assertEquals(4, lines.length);
+        assertEquals(description, lines[0]);
+        assertEquals(PERCENTS, lines[1]);
+        assertEquals(60 / 10 * 3 + 1, lines[2].length());
+    }
 
-	@Test
-	public void testForEachRemaining() {
-		var baos = new ByteArrayOutputStream();
-		var description = "Easiest";
-		try (var pb = new ProgressIterable<>(List.of(1, 2, 3, 4, 5),
-				description, printer(baos))) {
-			var sum = new Counter();
-			pb.forEach(sum::add);
-			assertEquals(1 + 2 + 3 + 4 + 5, sum.get());
-			String[] lines = lines(baos);
-			assertEquals(4, lines.length);
-			assertEquals(description, lines[0]);
-			assertEquals(PERCENTS, lines[1]);
-			assertEquals(DASHES, lines[2]);
-		}
-	}
+    @Test
+    public void testForEachRemaining() {
+        var baos = new ByteArrayOutputStream();
+        var description = "Easiest";
+        try (var pb = new ProgressIterable<>(List.of(1, 2, 3, 4, 5),
+                description, printer(baos))) {
+            var sum = new Counter();
+            pb.forEach(sum::add);
+            assertEquals(1 + 2 + 3 + 4 + 5, sum.get());
+            String[] lines = lines(baos);
+            assertEquals(4, lines.length);
+            assertEquals(description, lines[0]);
+            assertEquals(PERCENTS, lines[1]);
+            assertEquals(DASHES, lines[2]);
+        }
+    }
 }

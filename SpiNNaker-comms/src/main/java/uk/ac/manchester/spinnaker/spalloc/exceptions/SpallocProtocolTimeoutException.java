@@ -19,27 +19,27 @@ import java.io.IOException;
 
 /** Thrown upon a protocol-level timeout. */
 public class SpallocProtocolTimeoutException extends IOException {
-	private static final long serialVersionUID = -3573271239107837119L;
+    private static final long serialVersionUID = -3573271239107837119L;
 
-	/**
-	 * Constructs a Timeout exception with a message and underlying cause.
-	 *
-	 * @param msg
-	 *            The message of the exception
-	 * @param cause
-	 *            The cause of the exception
-	 */
-	public SpallocProtocolTimeoutException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    /**
+     * Constructs a Timeout exception with a message and underlying cause.
+     *
+     * @param msg
+     *            The message of the exception
+     * @param cause
+     *            The cause of the exception
+     */
+    public SpallocProtocolTimeoutException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 
-	/**
-	 * Constructs a Timeout exception with a message.
-	 *
-	 * @param msg
-	 *            The message of the exception
-	 */
-	public SpallocProtocolTimeoutException(String msg) {
-		super(msg);
-	}
+    /**
+     * Constructs a Timeout exception with a message.
+     *
+     * @param msg
+     *            The message of the exception
+     */
+    public SpallocProtocolTimeoutException(String msg) {
+        super(msg);
+    }
 }

@@ -19,25 +19,25 @@ package uk.ac.manchester.spinnaker.nmpi.model;
  * A message indicating that the queue is empty.
  */
 public class QueueEmpty implements QueueNextResponse {
-	/** Any warning returned. */
-	private String warning;
+    /** Any warning returned. */
+    private String warning;
 
-	/**
-	 * Get any warning returned.
-	 *
-	 * @return The warning
-	 */
-	public String getWarning() {
-		return warning;
-	}
+    /**
+     * Get any warning returned.
+     *
+     * @return The warning
+     */
+    public String getWarning() {
+        return warning;
+    }
 
-	/**
-	 * Set the warning.
-	 *
-	 * @param warning
-	 *            The warning to set
-	 */
-	public void setWarning(final String warning) {
-		this.warning = warning;
-	}
+    /**
+     * Set the warning.
+     *
+     * @param warning
+     *            The warning to set
+     */
+    public void setWarning(final String warning) {
+        this.warning = warning;
+    }
 }

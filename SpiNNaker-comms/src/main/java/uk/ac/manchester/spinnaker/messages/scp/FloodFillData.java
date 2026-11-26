@@ -42,86 +42,86 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @see FloodFillEnd
  */
 public class FloodFillData extends SCPRequest<EmptyResponse> {
-	private static final int FFD_NNP_FORWARD_RETRY =
-			(FORWARD_LINKS << BYTE3) | ((DELAY | DATA_RESEND) << BYTE2);
+    private static final int FFD_NNP_FORWARD_RETRY =
+            (FORWARD_LINKS << BYTE3) | ((DELAY | DATA_RESEND) << BYTE2);
 
-	/**
-	 * Constructs a request to flood fill some byte data.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the packet, between 0 and 127
-	 * @param blockNumber
-	 *            Which block this block is, between 0 and 255
-	 * @param baseAddress
-	 *            The base address where the data is to be loaded
-	 * @param data
-	 *            The data to load, between 4 and 256 bytes and the size must be
-	 *            divisible by 4.
-	 */
-	public FloodFillData(byte nearestNeighbourID, int blockNumber,
-			MemoryLocation baseAddress, byte[] data) {
-		this(nearestNeighbourID, blockNumber, baseAddress, data, 0,
-				data.length);
-	}
+    /**
+     * Constructs a request to flood fill some byte data.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the packet, between 0 and 127
+     * @param blockNumber
+     *            Which block this block is, between 0 and 255
+     * @param baseAddress
+     *            The base address where the data is to be loaded
+     * @param data
+     *            The data to load, between 4 and 256 bytes and the size must be
+     *            divisible by 4.
+     */
+    public FloodFillData(byte nearestNeighbourID, int blockNumber,
+            MemoryLocation baseAddress, byte[] data) {
+        this(nearestNeighbourID, blockNumber, baseAddress, data, 0,
+                data.length);
+    }
 
-	/**
-	 * Constructs a request to flood fill with some of the byte data.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the packet, between 0 and 127
-	 * @param blockNumber
-	 *            Which block this block is, between 0 and 255
-	 * @param baseAddress
-	 *            The base address where the data is to be loaded
-	 * @param data
-	 *            The data to load, between 4 and 256 bytes and the size must be
-	 *            divisible by 4
-	 * @param offset
-	 *            Where in the array the data starts at.
-	 * @param length
-	 *            The length of the data; must be divisible by 4.
-	 */
-	public FloodFillData(byte nearestNeighbourID, int blockNumber,
-			MemoryLocation baseAddress, byte[] data, int offset, int length) {
-		super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
-				keyBase(blockNumber, length), baseAddress.address,
-				wrap(data, offset, length));
-	}
+    /**
+     * Constructs a request to flood fill with some of the byte data.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the packet, between 0 and 127
+     * @param blockNumber
+     *            Which block this block is, between 0 and 255
+     * @param baseAddress
+     *            The base address where the data is to be loaded
+     * @param data
+     *            The data to load, between 4 and 256 bytes and the size must be
+     *            divisible by 4
+     * @param offset
+     *            Where in the array the data starts at.
+     * @param length
+     *            The length of the data; must be divisible by 4.
+     */
+    public FloodFillData(byte nearestNeighbourID, int blockNumber,
+            MemoryLocation baseAddress, byte[] data, int offset, int length) {
+        super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
+                keyBase(blockNumber, length), baseAddress.address,
+                wrap(data, offset, length));
+    }
 
-	/**
-	 * Constructs a request to flood fill some byte buffer data.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the packet, between 0 and 127
-	 * @param blockNumber
-	 *            Which block this block is, between 0 and 255
-	 * @param baseAddress
-	 *            The base address where the data is to be loaded
-	 * @param data
-	 *            The data to load, starting at the <i>position</i> and going to
-	 *            the <i>limit</i>. Must be between 4 and 256 bytes and the size
-	 *            must be divisible by 4. The position and limit of the buffer
-	 *            will not be updated by this constructor.
-	 */
-	public FloodFillData(byte nearestNeighbourID, int blockNumber,
-			MemoryLocation baseAddress, ByteBuffer data) {
-		super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
-				keyBase(blockNumber, data.remaining()), baseAddress.address,
-				data);
-	}
+    /**
+     * Constructs a request to flood fill some byte buffer data.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the packet, between 0 and 127
+     * @param blockNumber
+     *            Which block this block is, between 0 and 255
+     * @param baseAddress
+     *            The base address where the data is to be loaded
+     * @param data
+     *            The data to load, starting at the <i>position</i> and going to
+     *            the <i>limit</i>. Must be between 4 and 256 bytes and the size
+     *            must be divisible by 4. The position and limit of the buffer
+     *            will not be updated by this constructor.
+     */
+    public FloodFillData(byte nearestNeighbourID, int blockNumber,
+            MemoryLocation baseAddress, ByteBuffer data) {
+        super(BOOT_MONITOR_CORE, CMD_FFD, idFwdRty(nearestNeighbourID),
+                keyBase(blockNumber, data.remaining()), baseAddress.address,
+                data);
+    }
 
-	private static int idFwdRty(byte nearestNeighbourID) {
-		return FFD_NNP_FORWARD_RETRY | toUnsignedInt(nearestNeighbourID);
-	}
+    private static int idFwdRty(byte nearestNeighbourID) {
+        return FFD_NNP_FORWARD_RETRY | toUnsignedInt(nearestNeighbourID);
+    }
 
-	private static int keyBase(int blockNumber, int size) {
-		// This is the base for NN keys used
-		return (blockNumber << BYTE2) | ((size / WORD_SIZE - 1) << BYTE1);
-	}
+    private static int keyBase(int blockNumber, int size) {
+        // This is the base for NN keys used
+        return (blockNumber << BYTE2) | ((size / WORD_SIZE - 1) << BYTE1);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Flood Fill", CMD_FFD, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Flood Fill", CMD_FFD, buffer);
+    }
 }

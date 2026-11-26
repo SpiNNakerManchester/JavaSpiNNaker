@@ -28,64 +28,64 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 
 public class TestFpgaLinkData {
 
-	private static ChipLocation location00 = new ChipLocation(0, 0);
+    private static ChipLocation location00 = new ChipLocation(0, 0);
 
-	private static ChipLocation location01 = new ChipLocation(0, 1);
+    private static ChipLocation location01 = new ChipLocation(0, 1);
 
-	private static InetAddress localhost() throws UnknownHostException {
-		byte[] bytes = {127, 0, 0, 1};
-		return InetAddress.getByAddress(bytes);
-	}
+    private static InetAddress localhost() throws UnknownHostException {
+        byte[] bytes = {127, 0, 0, 1};
+        return InetAddress.getByAddress(bytes);
+    }
 
-	private void checkDifferent(FPGALinkData link1, FPGALinkData link2) {
-		assertNotEquals(link1, link2);
-		assertNotEquals(link1.hashCode(), link2.hashCode());
-		assertNotEquals(link1.toString(), link2.toString());
-	}
+    private void checkDifferent(FPGALinkData link1, FPGALinkData link2) {
+        assertNotEquals(link1, link2);
+        assertNotEquals(link1.hashCode(), link2.hashCode());
+        assertNotEquals(link1.toString(), link2.toString());
+    }
 
-	private void checkSame(FPGALinkData link1, FPGALinkData link2) {
-		assertEquals(link1, link2);
-		assertEquals(link1.hashCode(), link2.hashCode());
-		assertEquals(link1.toString(), link2.toString());
-	}
+    private void checkSame(FPGALinkData link1, FPGALinkData link2) {
+        assertEquals(link1, link2);
+        assertEquals(link1.hashCode(), link2.hashCode());
+        assertEquals(link1.toString(), link2.toString());
+    }
 
-	@Test
-	public void testEquals() throws UnknownHostException {
-		var link1 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
-				localhost());
-		var link2 = new FPGALinkData(34, FpgaId.byId(2), location00, NORTHEAST,
-				localhost());
-		assertTrue(link1.sameAs(link2));
-		checkSame(link1, link2);
-		assertEquals(link1, link1);
-		assertEquals(ChipLocation.ZERO_ZERO, link1.asChipLocation());
-	}
+    @Test
+    public void testEquals() throws UnknownHostException {
+        var link1 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
+                localhost());
+        var link2 = new FPGALinkData(34, FpgaId.byId(2), location00, NORTHEAST,
+                localhost());
+        assertTrue(link1.sameAs(link2));
+        checkSame(link1, link2);
+        assertEquals(link1, link1);
+        assertEquals(ChipLocation.ZERO_ZERO, link1.asChipLocation());
+    }
 
-	@Test
-	public void testDifferent() throws UnknownHostException {
-		var link1 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
-				localhost());
-		var link2 = new FPGALinkData(33, TOP_RIGHT, location00, NORTHEAST,
-				localhost());
-		var link3 = new FPGALinkData(34, TOP_RIGHT, location01, NORTHEAST,
-				localhost());
-		var link4 =
-				new FPGALinkData(34, TOP_RIGHT, location00, NORTH, localhost());
-		byte[] bytes = {127, 0, 0, 2};
-		var address2 = InetAddress.getByAddress(bytes);
-		var link5 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
-				address2);
-		var link6 = new FPGALinkData(34, FpgaId.LEFT, location00,
-				Direction.NORTHEAST, localhost());
+    @Test
+    public void testDifferent() throws UnknownHostException {
+        var link1 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
+                localhost());
+        var link2 = new FPGALinkData(33, TOP_RIGHT, location00, NORTHEAST,
+                localhost());
+        var link3 = new FPGALinkData(34, TOP_RIGHT, location01, NORTHEAST,
+                localhost());
+        var link4 =
+                new FPGALinkData(34, TOP_RIGHT, location00, NORTH, localhost());
+        byte[] bytes = {127, 0, 0, 2};
+        var address2 = InetAddress.getByAddress(bytes);
+        var link5 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
+                address2);
+        var link6 = new FPGALinkData(34, FpgaId.LEFT, location00,
+                Direction.NORTHEAST, localhost());
 
-		checkDifferent(link1, link2);
-		checkDifferent(link1, link3);
-		checkDifferent(link1, link4);
-		checkDifferent(link1, link5);
-		checkDifferent(link1, link6);
+        checkDifferent(link1, link2);
+        checkDifferent(link1, link3);
+        checkDifferent(link1, link4);
+        checkDifferent(link1, link5);
+        checkDifferent(link1, link6);
 
-		assertNotEquals(link1, null);
-		assertNotEquals(link1, "link1");
-	}
+        assertNotEquals(link1, null);
+        assertNotEquals(link1, "link1");
+    }
 
 }

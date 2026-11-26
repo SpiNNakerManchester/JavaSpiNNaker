@@ -26,81 +26,81 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.Job;
  * Manages the NMPI queue, receiving jobs and submitting them to be run.
  */
 public interface NMPIQueueManager {
-	/**
-	 * Get jobs that are marked as running or in progress in some form.
-	 *
-	 * @return A list of jobs.
-	 */
-	List<? extends Job> getJobs();
+    /**
+     * Get jobs that are marked as running or in progress in some form.
+     *
+     * @return A list of jobs.
+     */
+    List<? extends Job> getJobs();
 
-	/**
-	 * Register a listener against the manager for new jobs.
-	 *
-	 * @param listener
-	 *            The listener to register
-	 */
-	void addListener(NMPIQueueListener listener);
+    /**
+     * Register a listener against the manager for new jobs.
+     *
+     * @param listener
+     *            The listener to register
+     */
+    void addListener(NMPIQueueListener listener);
 
-	/**
-	 * Process responses from the queue now.
-	 */
-	void processResponsesFromQueue();
+    /**
+     * Process responses from the queue now.
+     */
+    void processResponsesFromQueue();
 
-	/**
-	 * Appends log messages to the log.
-	 *
-	 * @param id
-	 *            The ID of the job
-	 * @param logToAppend
-	 *            The messages to append
-	 */
-	void appendJobLog(int id, String logToAppend);
+    /**
+     * Appends log messages to the log.
+     *
+     * @param id
+     *            The ID of the job
+     * @param logToAppend
+     *            The messages to append
+     */
+    void appendJobLog(int id, String logToAppend);
 
-	/**
-	 * Mark a job as running.
-	 *
-	 * @param id
-	 *            The ID of the job.
-	 */
-	void setJobRunning(int id);
+    /**
+     * Mark a job as running.
+     *
+     * @param id
+     *            The ID of the job.
+     */
+    void setJobRunning(int id);
 
-	/**
-	 * Marks a job as finished successfully.
-	 *
-	 * @param id
-	 *            The ID of the job
-	 * @param logToAppend
-	 *            Any additional log messages to append to the existing log
-	 *            (null if none)
-	 * @param outputs
-	 *            The outputs of the job (null if none)
-	 * @param provenance
-	 *            JSON provenance information
-	 */
-	void setJobFinished(int id, String logToAppend,
-			List<DataItem> outputs, ObjectNode provenance);
+    /**
+     * Marks a job as finished successfully.
+     *
+     * @param id
+     *            The ID of the job
+     * @param logToAppend
+     *            Any additional log messages to append to the existing log
+     *            (null if none)
+     * @param outputs
+     *            The outputs of the job (null if none)
+     * @param provenance
+     *            JSON provenance information
+     */
+    void setJobFinished(int id, String logToAppend,
+            List<DataItem> outputs, ObjectNode provenance);
 
-	/**
-	 * Marks a job as finished with an error.
-	 *
-	 * @param id
-	 *            The ID of the job
-	 * @param logToAppend
-	 *            Any additional log messages to append to the existing log
-	 *            (null if none)
-	 * @param outputs
-	 *            Any outputs generated, or null if none
-	 * @param error
-	 *            The error details
-	 * @param provenance
-	 *            JSON provenance information
-	 */
-	void setJobError(int id, String logToAppend,
-			List<DataItem> outputs, Throwable error,
-			ObjectNode provenance);
+    /**
+     * Marks a job as finished with an error.
+     *
+     * @param id
+     *            The ID of the job
+     * @param logToAppend
+     *            Any additional log messages to append to the existing log
+     *            (null if none)
+     * @param outputs
+     *            Any outputs generated, or null if none
+     * @param error
+     *            The error details
+     * @param provenance
+     *            JSON provenance information
+     */
+    void setJobError(int id, String logToAppend,
+            List<DataItem> outputs, Throwable error,
+            ObjectNode provenance);
 
-	/**
-	 * Close the manager.
-	 */
-	void close();
+    /**
+     * Close the manager.
+     */
+    void close();
 }

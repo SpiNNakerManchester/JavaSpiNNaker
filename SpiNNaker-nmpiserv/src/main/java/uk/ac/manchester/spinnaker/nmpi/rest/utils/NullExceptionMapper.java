@@ -31,17 +31,17 @@ import org.slf4j.Logger;
  */
 @Provider
 public class NullExceptionMapper
-		implements ExceptionMapper<NullPointerException> {
-	/** Log. */
-	private static final Logger logger = getLogger(NullExceptionMapper.class);
+        implements ExceptionMapper<NullPointerException> {
+    /** Log. */
+    private static final Logger logger = getLogger(NullExceptionMapper.class);
 
-	@Override
-	public Response toResponse(final NullPointerException exception) {
-		var msg = exception.getMessage();
-		if (isNull(msg) || msg.isEmpty()) {
-			msg = "bad parameter";
-		}
-		logger.info("trapped exception in service method", exception);
-		return status(BAD_REQUEST).entity(msg).build();
-	}
+    @Override
+    public Response toResponse(final NullPointerException exception) {
+        var msg = exception.getMessage();
+        if (isNull(msg) || msg.isEmpty()) {
+            msg = "bad parameter";
+        }
+        logger.info("trapped exception in service method", exception);
+        return status(BAD_REQUEST).entity(msg).build();
+    }
 }

@@ -39,167 +39,167 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *            type of the concrete subclass of this class.
  */
 abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
-	private static final Logger log = getLogger(SQLiteConnectionManager.class);
+    private static final Logger log = getLogger(SQLiteConnectionManager.class);
 
-	@GuardedBy("itself")
-	private final ConnectionProvider<APIType> connProvider;
+    @GuardedBy("itself")
+    private final ConnectionProvider<APIType> connProvider;
 
-	/**
-	 * Wraps the Connection provide.
-	 *
-	 * @param connProvider
-	 *            The source of database connections.
-	 * @see Connection
-	 */
-	protected SQLiteConnectionManager(
-			ConnectionProvider<APIType> connProvider) {
-		this.connProvider = connProvider;
-	}
+    /**
+     * Wraps the Connection provide.
+     *
+     * @param connProvider
+     *            The source of database connections.
+     * @see Connection
+     */
+    protected SQLiteConnectionManager(
+            ConnectionProvider<APIType> connProvider) {
+        this.connProvider = connProvider;
+    }
 
-	/**
-	 * Set the arguments to a prepared statement. Convenience method.
-	 *
-	 * @param statement
-	 *            The prepared statement
-	 * @param args
-	 *            The arguments to set. Each may be {@link Boolean},
-	 *            {@link Integer}, {@link Long}, {@link Double}, {@link String},
-	 *            {@code byte[]}, or {@code null}.
-	 * @throws SQLException
-	 *             If the prepared statement is not currently open.
-	 */
-	protected static void setArguments(PreparedStatement statement,
-			Object... args) throws SQLException {
-		statement.clearParameters();
-		int idx = 1;
-		for (Object o : args) {
-			statement.setObject(idx, o);
-			idx++;
-		}
-	}
+    /**
+     * Set the arguments to a prepared statement. Convenience method.
+     *
+     * @param statement
+     *            The prepared statement
+     * @param args
+     *            The arguments to set. Each may be {@link Boolean},
+     *            {@link Integer}, {@link Long}, {@link Double}, {@link String},
+     *            {@code byte[]}, or {@code null}.
+     * @throws SQLException
+     *             If the prepared statement is not currently open.
+     */
+    protected static void setArguments(PreparedStatement statement,
+            Object... args) throws SQLException {
+        statement.clearParameters();
+        int idx = 1;
+        for (Object o : args) {
+            statement.setObject(idx, o);
+            idx++;
+        }
+    }
 
-	/**
-	 * A wrapped piece of code that produces a result.
-	 *
-	 * @param <T>
-	 *            The type of the result of the call
-	 */
-	@FunctionalInterface
-	interface CallWithResult<T> {
-		/**
-		 * The wrapped code.
-		 *
-		 * @param conn
-		 *            The connection that has a running transaction on it.
-		 * @return The result of the code.
-		 * @throws SQLException
-		 *             If anything goes wrong.
-		 */
-		T call(Connection conn) throws SQLException;
-	}
+    /**
+     * A wrapped piece of code that produces a result.
+     *
+     * @param <T>
+     *            The type of the result of the call
+     */
+    @FunctionalInterface
+    interface CallWithResult<T> {
+        /**
+         * The wrapped code.
+         *
+         * @param conn
+         *            The connection that has a running transaction on it.
+         * @return The result of the code.
+         * @throws SQLException
+         *             If anything goes wrong.
+         */
+        T call(Connection conn) throws SQLException;
+    }
 
-	/**
-	 * A wrapped piece of code that doesn't produce a result.
-	 *
-	 */
-	@FunctionalInterface
-	interface CallWithoutResult {
-		/**
-		 * The wrapped code.
-		 *
-		 * @param conn
-		 *            The connection that has a running transaction on it.
-		 * @throws SQLException
-		 *             If anything goes wrong.
-		 */
-		void call(Connection conn) throws SQLException;
-	}
+    /**
+     * A wrapped piece of code that doesn't produce a result.
+     *
+     */
+    @FunctionalInterface
+    interface CallWithoutResult {
+        /**
+         * The wrapped code.
+         *
+         * @param conn
+         *            The connection that has a running transaction on it.
+         * @throws SQLException
+         *             If anything goes wrong.
+         */
+        void call(Connection conn) throws SQLException;
+    }
 
-	/**
-	 * Wrapper for applying a transaction correctly.
-	 *
-	 * @param <T>
-	 *            The type of the result of the wrapped call.
-	 * @param call
-	 *            What is wrapped. Produces a result.
-	 * @param actionDescription
-	 *            Extra message to use with wrapping exception.
-	 * @return The value returned by the call
-	 * @throws StorageException
-	 *             If anything goes wrong
-	 */
-	final <T> T callR(CallWithResult<T> call, String actionDescription)
-			throws StorageException {
-		synchronized (connProvider) {
-			try (var conn = connProvider.getConnection()) {
-				startTransaction(conn);
-				try {
-					var result = call.call(conn);
-					conn.commit();
-					return result;
-				} catch (Exception e) {
-					conn.rollback();
-					throw e;
-				}
-			} catch (SQLException | IllegalStateException e) {
-				throw new StorageException("while " + actionDescription, e);
-			}
-		}
-	}
+    /**
+     * Wrapper for applying a transaction correctly.
+     *
+     * @param <T>
+     *            The type of the result of the wrapped call.
+     * @param call
+     *            What is wrapped. Produces a result.
+     * @param actionDescription
+     *            Extra message to use with wrapping exception.
+     * @return The value returned by the call
+     * @throws StorageException
+     *             If anything goes wrong
+     */
+    final <T> T callR(CallWithResult<T> call, String actionDescription)
+            throws StorageException {
+        synchronized (connProvider) {
+            try (var conn = connProvider.getConnection()) {
+                startTransaction(conn);
+                try {
+                    var result = call.call(conn);
+                    conn.commit();
+                    return result;
+                } catch (Exception e) {
+                    conn.rollback();
+                    throw e;
+                }
+            } catch (SQLException | IllegalStateException e) {
+                throw new StorageException("while " + actionDescription, e);
+            }
+        }
+    }
 
-	/**
-	 * Wrapper for applying a transaction correctly.
-	 *
-	 * @param call
-	 *            What is wrapped. Produces no result.
-	 * @param actionDescription
-	 *            Extra message to use with wrapping exception.
-	 * @throws StorageException
-	 *             If anything goes wrong
-	 */
-	final void callV(CallWithoutResult call, String actionDescription)
-			throws StorageException {
-		synchronized (connProvider) {
-			try (var conn = connProvider.getConnection()) {
-				startTransaction(conn);
-				try {
-					call.call(conn);
-					conn.commit();
-					return;
-				} catch (Exception e) {
-					conn.rollback();
-					throw e;
-				}
-			} catch (SQLException | IllegalStateException e) {
-				throw new StorageException("while " + actionDescription, e);
-			}
-		}
-	}
+    /**
+     * Wrapper for applying a transaction correctly.
+     *
+     * @param call
+     *            What is wrapped. Produces no result.
+     * @param actionDescription
+     *            Extra message to use with wrapping exception.
+     * @throws StorageException
+     *             If anything goes wrong
+     */
+    final void callV(CallWithoutResult call, String actionDescription)
+            throws StorageException {
+        synchronized (connProvider) {
+            try (var conn = connProvider.getConnection()) {
+                startTransaction(conn);
+                try {
+                    call.call(conn);
+                    conn.commit();
+                    return;
+                } catch (Exception e) {
+                    conn.rollback();
+                    throw e;
+                }
+            } catch (SQLException | IllegalStateException e) {
+                throw new StorageException("while " + actionDescription, e);
+            }
+        }
+    }
 
-	private static final int TRIES = 50;
+    private static final int TRIES = 50;
 
-	private void startTransaction(Connection conn) throws SQLException {
-		var code = SQLITE_BUSY;
-		for (int i = 0; i < TRIES; i++) {
-			try {
-				conn.setAutoCommit(false);
-				return;
-			} catch (SQLiteException e) {
-				switch (e.getResultCode()) {
-				case SQLITE_BUSY:
-				case SQLITE_BUSY_RECOVERY:
-				case SQLITE_BUSY_SNAPSHOT:
-				case SQLITE_BUSY_TIMEOUT:
-					if (log.isDebugEnabled()) {
-						log.debug("database busy; trying to relock");
-					}
-					code = e.getResultCode();
-					continue;
-				default:
-					throw e;
-				}
-			}
-		}
-		throw new SQLiteException("database very busy", code);
-	}
+    private void startTransaction(Connection conn) throws SQLException {
+        var code = SQLITE_BUSY;
+        for (int i = 0; i < TRIES; i++) {
+            try {
+                conn.setAutoCommit(false);
+                return;
+            } catch (SQLiteException e) {
+                switch (e.getResultCode()) {
+                case SQLITE_BUSY:
+                case SQLITE_BUSY_RECOVERY:
+                case SQLITE_BUSY_SNAPSHOT:
+                case SQLITE_BUSY_TIMEOUT:
+                    if (log.isDebugEnabled()) {
+                        log.debug("database busy; trying to relock");
+                    }
+                    code = e.getResultCode();
+                    continue;
+                default:
+                    throw e;
+                }
+            }
+        }
+        throw new SQLiteException("database very busy", code);
+    }
 }

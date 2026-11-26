@@ -17,21 +17,21 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /** SCP IP tag Commands. For {@code cmd_iptag()} in {@code scamp-cmd.c}. */
 enum IPTagCommand {
-	/** Create. */
-	NEW(0),
-	/** Update. */
-	SET(1),
-	/** Fetch. */
-	GET(2),
-	/** Delete. */
-	CLR(3),
-	/** Update Meta. */
-	TTO(4);
+    /** Create. */
+    NEW(0),
+    /** Update. */
+    SET(1),
+    /** Fetch. */
+    GET(2),
+    /** Delete. */
+    CLR(3),
+    /** Update Meta. */
+    TTO(4);
 
-	/** The SCAMP-encoded value. */
-	public final byte value;
+    /** The SCAMP-encoded value. */
+    public final byte value;
 
-	IPTagCommand(int value) {
-		this.value = (byte) value;
-	}
+    IPTagCommand(int value) {
+        this.value = (byte) value;
+    }
 }

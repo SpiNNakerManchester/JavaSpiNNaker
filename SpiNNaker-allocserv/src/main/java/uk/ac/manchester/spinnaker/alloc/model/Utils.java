@@ -20,21 +20,21 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /** Miscellaneous utilities. */
 public abstract class Utils {
-	private Utils() {
-	}
+    private Utils() {
+    }
 
-	/**
-	 * Extract a chip from a result set row.
-	 *
-	 * @param row
-	 *            The row to extract from.
-	 * @param x
-	 *            The <em>name</em> of the column with the X coordinate.
-	 * @param y
-	 *            The <em>name</em> of the column with the Y coordinate.
-	 * @return The chip location.
-	 */
-	public static ChipLocation chip(Row row, String x, String y) {
-		return new ChipLocation(row.getInt(x), row.getInt(y));
-	}
+    /**
+     * Extract a chip from a result set row.
+     *
+     * @param row
+     *            The row to extract from.
+     * @param x
+     *            The <em>name</em> of the column with the X coordinate.
+     * @param y
+     *            The <em>name</em> of the column with the Y coordinate.
+     * @return The chip location.
+     */
+    public static ChipLocation chip(Row row, String x, String y) {
+        return new ChipLocation(row.getInt(x), row.getInt(y));
+    }
 }

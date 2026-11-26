@@ -26,12 +26,12 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  * Indicates that message sending to a BMP timed out.
  */
 public final class BMPSendTimedOutException
-		extends SocketTimeoutException {
-	private static final long serialVersionUID = 1660563278795501381L;
+        extends SocketTimeoutException {
+    private static final long serialVersionUID = 1660563278795501381L;
 
-	BMPSendTimedOutException(SCPRequest<?> req, int timeout) {
-		super(format("Operation %s (%s) timed out after %f seconds",
-				req.scpRequestHeader.command, req,
-				timeout / (double) MSEC_PER_SEC));
-	}
+    BMPSendTimedOutException(SCPRequest<?> req, int timeout) {
+        super(format("Operation %s (%s) timed out after %f seconds",
+                req.scpRequestHeader.command, req,
+                timeout / (double) MSEC_PER_SEC));
+    }
 }

@@ -30,20 +30,20 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  */
 public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 
-	/**
-	 * Constructs a request to start an initialisation of the FPGAs.
-	 *
-	 * @param board
-	 *            Which board's FPGA to initialise.
-	 * @param mask
-	 *            Which FPGAs on the board to initialise.
-	 */
-	public InitFPGA(BMPBoard board, int mask) {
-		super(board, CMD_XILINX, Init.code, mask);
-	}
+    /**
+     * Constructs a request to start an initialisation of the FPGAs.
+     *
+     * @param board
+     *            Which board's FPGA to initialise.
+     * @param mask
+     *            Which FPGAs on the board to initialise.
+     */
+    public InitFPGA(BMPBoard board, int mask) {
+        super(board, CMD_XILINX, Init.code, mask);
+    }
 
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Init XILINX", CMD_XILINX, buffer);
-	}
+    @Override
+    public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new BMPResponse("Init XILINX", CMD_XILINX, buffer);
+    }
 }

@@ -37,46 +37,46 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
  */
 @Component
 public class BasicAuthEntryPoint implements AuthenticationEntryPoint {
-	private static final Logger log = getLogger(BasicAuthEntryPoint.class);
+      private static final Logger log = getLogger(BasicAuthEntryPoint.class);
 
-	private static final String AUTH = "WWW-Authenticate";
+      private static final String AUTH = "WWW-Authenticate";
 
-	@Autowired
-	private AuthProperties props;
+      @Autowired
+      private AuthProperties props;
 
-	private String basicChallenge() {
-		return format("Basic realm=\"%s\"", props.getRealm());
-	}
+      private String basicChallenge() {
+            return format("Basic realm=\"%s\"", props.getRealm());
+      }
 
-	private String openidChallenge() {
-		return format("Bearer realm=\"%s\"", props.getRealm());
-	}
+      private String openidChallenge() {
+            return format("Bearer realm=\"%s\"", props.getRealm());
+      }
 
-	@Override
-	public void commence(HttpServletRequest request,
-			HttpServletResponse response, AuthenticationException authEx)
-			throws IOException {
-		log.debug("issuing request for log in to {}", request.getRemoteAddr());
-		/*
-		 * The two API auth methods should be separate headers; the specs say
-		 * they can be one, but that's an area where things get "exciting"
-		 * (i.e., ambiguous) so we don't!
-		 */
-		if (props.isBasic()) {
-			response.addHeader(AUTH, basicChallenge());
-		}
-		if (props.getOpenid().isEnable()) {
-			response.addHeader(AUTH, openidChallenge());
-		}
-		response.setStatus(SC_UNAUTHORIZED);
+      @Override
+      public void commence(HttpServletRequest request,
+                  HttpServletResponse response, AuthenticationException authEx)
+                  throws IOException {
+            log.debug("issuing request for log in to {}", request.getRemoteAddr());
+            /*
+             * The two API auth methods should be separate headers; the specs say
+             * they can be one, but that's an area where things get "exciting"
+             * (i.e., ambiguous) so we don't!
+             */
+            if (props.isBasic()) {
+                  response.addHeader(AUTH, basicChallenge());
+            }
+            if (props.getOpenid().isEnable()) {
+                  response.addHeader(AUTH, openidChallenge());
+            }
+            response.setStatus(SC_UNAUTHORIZED);
 
-		// Provide a basic body; NB, don't need to close the writer
-		response.setCharacterEncoding("UTF-8");
-		response.setContentType("text/plain");
-		var writer = response.getWriter();
-		writer.println("log in required, "
-				+ "either with BASIC auth or HBP/EBRAINS bearer token "
-				+ "(if they are enabled)");
-		writer.flush(); // Commit the response
-	}
+            // Provide a basic body; NB, don't need to close the writer
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("text/plain");
+            var writer = response.getWriter();
+            writer.println("log in required, "
+                        + "either with BASIC auth or HBP/EBRAINS bearer token "
+                        + "(if they are enabled)");
+            writer.flush(); // Commit the response
+      }
 }

@@ -21,40 +21,40 @@ import java.util.List;
  * A single item of provenance data.
  */
 public class ProvenanceItem {
-	/** The path of the item. */
-	private final List<String> path;
+    /** The path of the item. */
+    private final List<String> path;
 
-	/** The value if the item. */
-	private final String value;
+    /** The value if the item. */
+    private final String value;
 
-	/**
-	 * Create a provenance item.
-	 *
-	 * @param path
-	 *            The location of the item in the provenance tree.
-	 * @param value
-	 *            The content of the value.
-	 */
-	public ProvenanceItem(final List<String> path, final String value) {
-		this.path = path;
-		this.value = value;
-	}
+    /**
+     * Create a provenance item.
+     *
+     * @param path
+     *            The location of the item in the provenance tree.
+     * @param value
+     *            The content of the value.
+     */
+    public ProvenanceItem(final List<String> path, final String value) {
+        this.path = path;
+        this.value = value;
+    }
 
-	/**
-	 * Get the path to the item.
-	 *
-	 * @return The path
-	 */
-	public List<String> getPath() {
-		return path;
-	}
+    /**
+     * Get the path to the item.
+     *
+     * @return The path
+     */
+    public List<String> getPath() {
+        return path;
+    }
 
-	/**
-	 * Get the value of the item.
-	 *
-	 * @return The value
-	 */
-	public String getValue() {
-		return value;
-	}
+    /**
+     * Get the value of the item.
+     *
+     * @return The value
+     */
+    public String getValue() {
+        return value;
+    }
 }

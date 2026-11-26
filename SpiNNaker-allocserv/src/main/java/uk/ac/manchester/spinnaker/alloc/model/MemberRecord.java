@@ -31,139 +31,139 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @JsonInclude(NON_NULL)
 public class MemberRecord {
-	private int id;
+      private int id;
 
-	private int groupId;
+      private int groupId;
 
-	private String groupName;
+      private String groupName;
 
-	private URI groupUrl;
+      private URI groupUrl;
 
-	private int userId;
+      private int userId;
 
-	@NotBlank
-	private String userName;
+      @NotBlank
+      private String userName;
 
-	private URI userUrl;
+      private URI userUrl;
 
-	/**
-	 * {@return The ID of this membership. Distinct from both the user and the
-	 *         group}
-	 */
-	public int getId() {
-		return id;
-	}
+      /**
+       * {@return The ID of this membership. Distinct from both the user and the
+       *         group}
+       */
+      public int getId() {
+            return id;
+      }
 
-	/**
-	 * Sets the ID of this membership.
-	 *
-	 * @param id
-	 *            The ID of this membership. Distinct from both the user and the
-	 *            group.
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+      /**
+       * Sets the ID of this membership.
+       *
+       * @param id
+       *            The ID of this membership. Distinct from both the user and the
+       *            group.
+       */
+      public void setId(int id) {
+            this.id = id;
+      }
 
-	/**
-	 * {@return The ID of the group that this is a membership of}
-	 */
-	public int getGroupId() {
-		return groupId;
-	}
+      /**
+       * {@return The ID of the group that this is a membership of}
+       */
+      public int getGroupId() {
+            return groupId;
+      }
 
-	/**
-	 * Sets the ID of the group that this is a membership of.
-	 *
-	 * @param groupId
-	 *            The ID of the group that this is a membership of.
-	 */
-	public void setGroupId(int groupId) {
-		this.groupId = groupId;
-	}
+      /**
+       * Sets the ID of the group that this is a membership of.
+       *
+       * @param groupId
+       *            The ID of the group that this is a membership of.
+       */
+      public void setGroupId(int groupId) {
+            this.groupId = groupId;
+      }
 
-	/**
-	 * {@return The name of the group that this is a membership of}
-	 */
-	public String getGroupName() {
-		return groupName;
-	}
+      /**
+       * {@return The name of the group that this is a membership of}
+       */
+      public String getGroupName() {
+            return groupName;
+      }
 
-	/**
-	 * Sets the name of the group that this is a membership of.
-	 *
-	 * @param groupName
-	 *            The name of the group that this is a membership of.
-	 */
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
+      /**
+       * Sets the name of the group that this is a membership of.
+       *
+       * @param groupName
+       *            The name of the group that this is a membership of.
+       */
+      public void setGroupName(String groupName) {
+            this.groupName = groupName;
+      }
 
-	/**
-	 * {@return The URL for the group that this is a membership of}
-	 */
-	public URI getGroupUrl() {
-		return groupUrl;
-	}
+      /**
+       * {@return The URL for the group that this is a membership of}
+       */
+      public URI getGroupUrl() {
+            return groupUrl;
+      }
 
-	/**
-	 * Sets the URL for the group that this is a membership of.
-	 *
-	 * @param groupUrl
-	 *            The URL for the group that this is a membership of.
-	 */
-	public void setGroupUrl(URI groupUrl) {
-		this.groupUrl = groupUrl;
-	}
+      /**
+       * Sets the URL for the group that this is a membership of.
+       *
+       * @param groupUrl
+       *            The URL for the group that this is a membership of.
+       */
+      public void setGroupUrl(URI groupUrl) {
+            this.groupUrl = groupUrl;
+      }
 
-	/**
-	 * {@return The ID of the user that this is a membership of}
-	 */
-	public int getUserId() {
-		return userId;
-	}
+      /**
+       * {@return The ID of the user that this is a membership of}
+       */
+      public int getUserId() {
+            return userId;
+      }
 
-	/**
-	 * Sets the ID of the user that this is a membership of.
-	 *
-	 * @param userId
-	 *            The ID of the user that this is a membership of.
-	 */
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
+      /**
+       * Sets the ID of the user that this is a membership of.
+       *
+       * @param userId
+       *            The ID of the user that this is a membership of.
+       */
+      public void setUserId(int userId) {
+            this.userId = userId;
+      }
 
-	/**
-	 * {@return The name of the user that this is a membership of}
-	 */
-	public String getUserName() {
-		return userName;
-	}
+      /**
+       * {@return The name of the user that this is a membership of}
+       */
+      public String getUserName() {
+            return userName;
+      }
 
-	/**
-	 * Set the name of the user that this is a membership of.
-	 *
-	 * @param userName
-	 *            The name of the user that this is a membership of.
-	 */
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+      /**
+       * Set the name of the user that this is a membership of.
+       *
+       * @param userName
+       *            The name of the user that this is a membership of.
+       */
+      public void setUserName(String userName) {
+            this.userName = userName;
+      }
 
-	/**
-	 * {@return The URL for the user that this is a membership of}
-	 */
-	public URI getUserUrl() {
-		return userUrl;
-	}
+      /**
+       * {@return The URL for the user that this is a membership of}
+       */
+      public URI getUserUrl() {
+            return userUrl;
+      }
 
-	/**
-	 * Sets the URL for the user that this is a membership of.
-	 *
-	 * @param userUrl
-	 *            The URL for the user that this is a membership of.
-	 */
-	public void setUserUrl(URI userUrl) {
-		this.userUrl = userUrl;
-	}
+      /**
+       * Sets the URL for the user that this is a membership of.
+       *
+       * @param userUrl
+       *            The URL for the user that this is a membership of.
+       */
+      public void setUserUrl(URI userUrl) {
+            this.userUrl = userUrl;
+      }
 }

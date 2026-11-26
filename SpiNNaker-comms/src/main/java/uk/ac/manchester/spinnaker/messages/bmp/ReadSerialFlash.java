@@ -33,50 +33,50 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code sf_read()} in {@code bmp_ssp.c}.
  */
 public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
-	private static int validate(int size) {
-		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
-			throw new IllegalArgumentException(
-					"size must be in range 1 to 256");
-		}
-		return size;
-	}
+    private static int validate(int size) {
+        if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
+            throw new IllegalArgumentException(
+                    "size must be in range 1 to 256");
+        }
+        return size;
+    }
 
-	/**
-	 * Construct a request to read a region of serial flash.
-	 *
-	 * @param board
-	 *            which board to read the flash of
-	 * @param address
-	 *            The positive base address to start the read from
-	 * @param size
-	 *            The number of bytes to read, between 1 and 256
-	 */
-	public ReadSerialFlash(BMPBoard board, MemoryLocation address, int size) {
-		super(board, CMD_BMP_SF, address.address, validate(size), READ.value);
-	}
+    /**
+     * Construct a request to read a region of serial flash.
+     *
+     * @param board
+     *            which board to read the flash of
+     * @param address
+     *            The positive base address to start the read from
+     * @param size
+     *            The number of bytes to read, between 1 and 256
+     */
+    public ReadSerialFlash(BMPBoard board, MemoryLocation address, int size) {
+        super(board, CMD_BMP_SF, address.address, validate(size), READ.value);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/**
-	 * An SCP response to a request to read a region of memory on a chip. Note
-	 * that it is up to the caller to manage the buffer position of the returned
-	 * response if it is to be read from multiple times.
-	 */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<ByteBuffer> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read Serial Flash", CMD_BMP_SF, buffer);
-		}
+    /**
+     * An SCP response to a request to read a region of memory on a chip. Note
+     * that it is up to the caller to manage the buffer position of the returned
+     * response if it is to be read from multiple times.
+     */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<ByteBuffer> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+            super("Read Serial Flash", CMD_BMP_SF, buffer);
+        }
 
-		/**
-		 * {@return The data read, in a little-endian read-only buffer}
-		 */
-		@Override
-		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-		}
-	}
+        /**
+         * {@return The data read, in a little-endian read-only buffer}
+         */
+        @Override
+        protected ByteBuffer parse(ByteBuffer buffer) {
+            return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+        }
+    }
 }

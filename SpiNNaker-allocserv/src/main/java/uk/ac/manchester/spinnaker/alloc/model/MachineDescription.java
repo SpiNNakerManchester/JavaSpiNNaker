@@ -33,327 +33,327 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * Descriptive detail for a machine. Used for HTML generation.
  */
 public class MachineDescription {
-	private int id;
+    private int id;
 
-	@NotBlank
-	private String name;
+    @NotBlank
+    private String name;
 
-	@ValidTriadWidth
-	private int width;
+    @ValidTriadWidth
+    private int width;
 
-	@ValidTriadHeight
-	private int height;
+    @ValidTriadHeight
+    private int height;
 
-	@PositiveOrZero
-	private int numInUse;
+    @PositiveOrZero
+    private int numInUse;
 
-	private List<@Valid JobInfo> jobs = List.of();
+    private List<@Valid JobInfo> jobs = List.of();
 
-	private List<@NotBlank String> tags = List.of();
+    private List<@NotBlank String> tags = List.of();
 
-	private List<@Valid BoardCoords> dead = List.of();
+    private List<@Valid BoardCoords> dead = List.of();
 
-	private List<@Valid BoardCoords> live;
+    private List<@Valid BoardCoords> live;
 
-	private Optional<Long> quota = Optional.empty();
+    private Optional<Long> quota = Optional.empty();
 
-	/**
-	 * {@return the machine ID}
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * {@return the machine ID}
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Sets the machine ID.
-	 *
-	 * @param id
-	 *            the machine ID
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+    /**
+     * Sets the machine ID.
+     *
+     * @param id
+     *            the machine ID
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	/**
-	 * {@return the machine name}
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * {@return the machine name}
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Sets the machine name.
-	 *
-	 * @param name
-	 *            the machine name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Sets the machine name.
+     *
+     * @param name
+     *            the machine name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * {@return the width of the machine in triads}
-	 */
-	public int getWidth() {
-		return width;
-	}
+    /**
+     * {@return the width of the machine in triads}
+     */
+    public int getWidth() {
+        return width;
+    }
 
-	/**
-	 * Sets the width of the machine in triads.
-	 *
-	 * @param width
-	 *            the width of the machine in triads
-	 */
-	public void setWidth(int width) {
-		this.width = width;
-	}
+    /**
+     * Sets the width of the machine in triads.
+     *
+     * @param width
+     *            the width of the machine in triads
+     */
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
-	/**
-	 * {@return the height of the machine in triads}
-	 */
-	public int getHeight() {
-		return height;
-	}
+    /**
+     * {@return the height of the machine in triads}
+     */
+    public int getHeight() {
+        return height;
+    }
 
-	/**
-	 * Sets the height of the machine in triads.
-	 *
-	 * @param height
-	 *            the height of the machine in triads
-	 */
-	public void setHeight(int height) {
-		this.height = height;
-	}
+    /**
+     * Sets the height of the machine in triads.
+     *
+     * @param height
+     *            the height of the machine in triads
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
-	/**
-	 * {@return the number of boards in use}
-	 */
-	public int getNumInUse() {
-		return numInUse;
-	}
+    /**
+     * {@return the number of boards in use}
+     */
+    public int getNumInUse() {
+        return numInUse;
+    }
 
-	/**
-	 * Sets the number of boards in use.
-	 *
-	 * @param numInUse
-	 *            the number of boards in use
-	 */
-	public void setNumInUse(int numInUse) {
-		this.numInUse = numInUse;
-	}
+    /**
+     * Sets the number of boards in use.
+     *
+     * @param numInUse
+     *            the number of boards in use
+     */
+    public void setNumInUse(int numInUse) {
+        this.numInUse = numInUse;
+    }
 
-	/**
-	 * {@return the in-service boards}
-	 */
-	public List<BoardCoords> getLive() {
-		return live;
-	}
+    /**
+     * {@return the in-service boards}
+     */
+    public List<BoardCoords> getLive() {
+        return live;
+    }
 
-	/**
-	 * Sets the in-service boards.
-	 *
-	 * @param live
-	 *            the in-service boards
-	 */
-	public void setLive(List<BoardCoords> live) {
-		this.live = copy(live);
-	}
+    /**
+     * Sets the in-service boards.
+     *
+     * @param live
+     *            the in-service boards
+     */
+    public void setLive(List<BoardCoords> live) {
+        this.live = copy(live);
+    }
 
-	/**
-	 * Sets the in-service boards.
-	 *
-	 * @param live
-	 *            the in-service boards
-	 */
-	public void setLive(MappableIterable<BoardCoords> live) {
-		this.live = copy(live.toList());
-	}
+    /**
+     * Sets the in-service boards.
+     *
+     * @param live
+     *            the in-service boards
+     */
+    public void setLive(MappableIterable<BoardCoords> live) {
+        this.live = copy(live.toList());
+    }
 
-	/**
-	 * {@return the out-of-service boards}
-	 */
-	public List<BoardCoords> getDead() {
-		return dead;
-	}
+    /**
+     * {@return the out-of-service boards}
+     */
+    public List<BoardCoords> getDead() {
+        return dead;
+    }
 
-	/**
-	 * Sets the out-of-service boards.
-	 *
-	 * @param dead
-	 *            the out-of-service boards
-	 */
-	public void setDead(List<BoardCoords> dead) {
-		this.dead = copy(dead);
-	}
+    /**
+     * Sets the out-of-service boards.
+     *
+     * @param dead
+     *            the out-of-service boards
+     */
+    public void setDead(List<BoardCoords> dead) {
+        this.dead = copy(dead);
+    }
 
-	/**
-	 * Sets the out-of-service boards.
-	 *
-	 * @param dead
-	 *            the out-of-service boards
-	 */
-	public void setDead(MappableIterable<BoardCoords> dead) {
-		this.dead = copy(dead.toList());
-	}
+    /**
+     * Sets the out-of-service boards.
+     *
+     * @param dead
+     *            the out-of-service boards
+     */
+    public void setDead(MappableIterable<BoardCoords> dead) {
+        this.dead = copy(dead.toList());
+    }
 
-	/**
-	 * {@return the machine's jobs}
-	 */
-	public List<JobInfo> getJobs() {
-		return jobs;
-	}
+    /**
+     * {@return the machine's jobs}
+     */
+    public List<JobInfo> getJobs() {
+        return jobs;
+    }
 
-	/**
-	 * Sets the machine's jobs.
-	 *
-	 * @param jobs
-	 *            the machine's jobs
-	 */
-	public void setJobs(List<JobInfo> jobs) {
-		this.jobs = copy(jobs);
-	}
+    /**
+     * Sets the machine's jobs.
+     *
+     * @param jobs
+     *            the machine's jobs
+     */
+    public void setJobs(List<JobInfo> jobs) {
+        this.jobs = copy(jobs);
+    }
 
-	/**
-	 * Sets the machine's jobs.
-	 *
-	 * @param jobs
-	 *            the machine's jobs
-	 */
-	public void setJobs(MappableIterable<JobInfo> jobs) {
-		this.jobs = copy(jobs.toList());
-	}
+    /**
+     * Sets the machine's jobs.
+     *
+     * @param jobs
+     *            the machine's jobs
+     */
+    public void setJobs(MappableIterable<JobInfo> jobs) {
+        this.jobs = copy(jobs.toList());
+    }
 
-	/**
-	 * {@return the machine's tags}
-	 */
-	public List<String> getTags() {
-		return tags;
-	}
+    /**
+     * {@return the machine's tags}
+     */
+    public List<String> getTags() {
+        return tags;
+    }
 
-	/**
-	 * Sets the machine's tags.
-	 *
-	 * @param tags
-	 *            the machine's tags
-	 */
-	public void setTags(List<String> tags) {
-		this.tags = copy(tags);
-	}
+    /**
+     * Sets the machine's tags.
+     *
+     * @param tags
+     *            the machine's tags
+     */
+    public void setTags(List<String> tags) {
+        this.tags = copy(tags);
+    }
 
-	/**
-	 * Sets the machine's tags.
-	 *
-	 * @param tags
-	 *            the machine's tags
-	 */
-	public void setTags(MappableIterable<String> tags) {
-		this.tags = copy(tags.toList());
-	}
+    /**
+     * Sets the machine's tags.
+     *
+     * @param tags
+     *            the machine's tags
+     */
+    public void setTags(MappableIterable<String> tags) {
+        this.tags = copy(tags.toList());
+    }
 
-	/**
-	 * {@return the quota (if that information is to be exposed to the current
-	 *         user and is meaningful)}
-	 */
-	public Optional<Long> getQuota() {
-		return quota;
-	}
+    /**
+     * {@return the quota (if that information is to be exposed to the current
+     *         user and is meaningful)}
+     */
+    public Optional<Long> getQuota() {
+        return quota;
+    }
 
-	/**
-	 * Sets the current user's quota.
-	 *
-	 * @param quota
-	 *            the current user's quota
-	 */
-	public void setQuota(Long quota) {
-		this.quota = Optional.ofNullable(quota);
-	}
+    /**
+     * Sets the current user's quota.
+     *
+     * @param quota
+     *            the current user's quota
+     */
+    public void setQuota(Long quota) {
+        this.quota = Optional.ofNullable(quota);
+    }
 
-	/** Information about a single job. */
-	public static class JobInfo {
-		private int id;
+    /** Information about a single job. */
+    public static class JobInfo {
+        private int id;
 
-		private URI url;
+        private URI url;
 
-		private Optional<String> owner = Optional.empty();
+        private Optional<String> owner = Optional.empty();
 
-		private List<@Valid BoardCoords> boards = List.of();
+        private List<@Valid BoardCoords> boards = List.of();
 
-		/**
-		 * {@return the job ID}
-		 */
-		public int getId() {
-			return id;
-		}
+        /**
+         * {@return the job ID}
+         */
+        public int getId() {
+            return id;
+        }
 
-		/**
-		 * Sets the job ID.
-		 *
-		 * @param id
-		 *            the job ID
-		 */
-		public void setId(int id) {
-			this.id = id;
-		}
+        /**
+         * Sets the job ID.
+         *
+         * @param id
+         *            the job ID
+         */
+        public void setId(int id) {
+            this.id = id;
+        }
 
-		/**
-		 * {@return the URL for more detail}
-		 */
-		public Optional<URI> getUrl() {
-			return Optional.ofNullable(url);
-		}
+        /**
+         * {@return the URL for more detail}
+         */
+        public Optional<URI> getUrl() {
+            return Optional.ofNullable(url);
+        }
 
-		/**
-		 * Sets the URL for more detail.
-		 *
-		 * @param url
-		 *            the URL for more detail
-		 */
-		public void setUrl(URI url) {
-			this.url = url;
-		}
+        /**
+         * Sets the URL for more detail.
+         *
+         * @param url
+         *            the URL for more detail
+         */
+        public void setUrl(URI url) {
+            this.url = url;
+        }
 
-		/**
-		 * {@return the board coordinates of all boards allocated to the job}
-		 */
-		public List<BoardCoords> getBoards() {
-			return boards;
-		}
+        /**
+         * {@return the board coordinates of all boards allocated to the job}
+         */
+        public List<BoardCoords> getBoards() {
+            return boards;
+        }
 
-		/**
-		 * Sets the board coordinates of all boards allocated to the job.
-		 *
-		 * @param boards
-		 *            the board coordinates of all boards allocated to the job
-		 */
-		public void setBoards(List<BoardCoords> boards) {
-			this.boards = copy(boards);
-		}
+        /**
+         * Sets the board coordinates of all boards allocated to the job.
+         *
+         * @param boards
+         *            the board coordinates of all boards allocated to the job
+         */
+        public void setBoards(List<BoardCoords> boards) {
+            this.boards = copy(boards);
+        }
 
-		/**
-		 * Sets the board coordinates of all boards allocated to the job.
-		 *
-		 * @param boards
-		 *            the board coordinates of all boards allocated to the job
-		 */
-		public void setBoards(MappableIterable<BoardCoords> boards) {
-			this.boards = copy(boards.toList());
-		}
+        /**
+         * Sets the board coordinates of all boards allocated to the job.
+         *
+         * @param boards
+         *            the board coordinates of all boards allocated to the job
+         */
+        public void setBoards(MappableIterable<BoardCoords> boards) {
+            this.boards = copy(boards.toList());
+        }
 
-		/**
-		 * {@return the owner (if that information is to be exposed)}
-		 */
-		public Optional<String> getOwner() {
-			return owner;
-		}
+        /**
+         * {@return the owner (if that information is to be exposed)}
+         */
+        public Optional<String> getOwner() {
+            return owner;
+        }
 
-		/**
-		 * Sets the owner of the job.
-		 *
-		 * @param owner
-		 *            the owner of the job
-		 */
-		public void setOwner(String owner) {
-			this.owner = Optional.ofNullable(owner);
-		}
-	}
+        /**
+         * Sets the owner of the job.
+         *
+         * @param owner
+         *            the owner of the job
+         */
+        public void setOwner(String owner) {
+            this.owner = Optional.ofNullable(owner);
+        }
+    }
 }

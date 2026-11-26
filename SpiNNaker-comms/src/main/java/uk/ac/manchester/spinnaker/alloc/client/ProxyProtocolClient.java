@@ -29,88 +29,88 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * that doesn't need to care and shouldn't care.
  */
 interface ProxyProtocolClient extends AutoCloseable {
-	/**
-	 * Open a connected channel to a SpiNNaker board in the current job.
-	 *
-	 * @param chip
-	 *            The coordinates of the ethernet chip of the board to connect
-	 *            to.
-	 * @param port
-	 *            The UDP port to connect to.
-	 * @param receiveQueue
-	 *            Where to enqueue received messages.
-	 * @return The connected channel.
-	 * @throws InterruptedException
-	 *             If interrupted while waiting for a reply.
-	 */
-	ConnectedChannel openChannel(ChipLocation chip, int port,
-			BlockingQueue<ByteBuffer> receiveQueue) throws InterruptedException;
+    /**
+     * Open a connected channel to a SpiNNaker board in the current job.
+     *
+     * @param chip
+     *            The coordinates of the ethernet chip of the board to connect
+     *            to.
+     * @param port
+     *            The UDP port to connect to.
+     * @param receiveQueue
+     *            Where to enqueue received messages.
+     * @return The connected channel.
+     * @throws InterruptedException
+     *             If interrupted while waiting for a reply.
+     */
+    ConnectedChannel openChannel(ChipLocation chip, int port,
+            BlockingQueue<ByteBuffer> receiveQueue) throws InterruptedException;
 
-	/**
-	 * Open an unconnected channel to any SpiNNaker board in the current job.
-	 *
-	 * @param receiveQueue
-	 *            Where to enqueue received messages.
-	 * @return The unconnected channel.
-	 * @throws InterruptedException
-	 *             If interrupted while waiting for a reply.
-	 */
-	UnconnectedChannel openUnconnectedChannel(
-			BlockingQueue<ByteBuffer> receiveQueue) throws InterruptedException;
+    /**
+     * Open an unconnected channel to any SpiNNaker board in the current job.
+     *
+     * @param receiveQueue
+     *            Where to enqueue received messages.
+     * @return The unconnected channel.
+     * @throws InterruptedException
+     *             If interrupted while waiting for a reply.
+     */
+    UnconnectedChannel openUnconnectedChannel(
+            BlockingQueue<ByteBuffer> receiveQueue) throws InterruptedException;
 
-	/**
-	 * Is the underlying websocket in the state OPEN.
-	 *
-	 * @return state equals ReadyState.OPEN
-	 */
-	boolean isOpen();
+    /**
+     * Is the underlying websocket in the state OPEN.
+     *
+     * @return state equals ReadyState.OPEN
+     */
+    boolean isOpen();
 
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * Note that this may process the close asynchronously.
-	 */
-	@Override
-	void close();
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note that this may process the close asynchronously.
+     */
+    @Override
+    void close();
 
-	interface ConnectedChannel extends Closeable {
-		/**
-		 * Send a message to the board that the channel is connected to.
-		 *
-		 * @param msg
-		 *            The payload of the message to send. Might be a serialized
-		 *            SDP message, for example.
-		 * @throws IOException
-		 *             If the message cannot be sent.
-		 */
-		void send(ByteBuffer msg) throws IOException;
-	}
+    interface ConnectedChannel extends Closeable {
+        /**
+         * Send a message to the board that the channel is connected to.
+         *
+         * @param msg
+         *            The payload of the message to send. Might be a serialized
+         *            SDP message, for example.
+         * @throws IOException
+         *             If the message cannot be sent.
+         */
+        void send(ByteBuffer msg) throws IOException;
+    }
 
-	interface UnconnectedChannel extends Closeable {
-		/**
-		 * {@return The "local" address for this channel}
-		 */
-		Inet4Address getAddress();
+    interface UnconnectedChannel extends Closeable {
+        /**
+         * {@return The "local" address for this channel}
+         */
+        Inet4Address getAddress();
 
-		/**
-		 * {@return The "local" port for this channel}
-		 */
-		int getPort();
+        /**
+         * {@return The "local" port for this channel}
+         */
+        int getPort();
 
-		/**
-		 * Send a message to a board in the allocation of the current job.
-		 *
-		 * @param chip
-		 *            Which ethernet chip to send to.
-		 * @param port
-		 *            Which UDP port to send to.
-		 * @param msg
-		 *            The payload of the message to send. Might be a serialized
-		 *            SDP message, for example.
-		 * @throws IOException
-		 *             If the message cannot be sent.
-		 */
-		void send(ChipLocation chip, int port, ByteBuffer msg)
-				throws IOException;
-	}
+        /**
+         * Send a message to a board in the allocation of the current job.
+         *
+         * @param chip
+         *            Which ethernet chip to send to.
+         * @param port
+         *            Which UDP port to send to.
+         * @param msg
+         *            The payload of the message to send. Might be a serialized
+         *            SDP message, for example.
+         * @throws IOException
+         *             If the message cannot be sent.
+         */
+        void send(ChipLocation chip, int port, ByteBuffer msg)
+                throws IOException;
+    }
 }

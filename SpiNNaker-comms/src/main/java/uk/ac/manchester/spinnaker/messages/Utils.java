@@ -25,21 +25,21 @@ import java.nio.ByteBuffer;
  * Utilities for working with messages.
  */
 public abstract class Utils {
-	private Utils() {
-	}
+    private Utils() {
+    }
 
-	/**
-	 * Convert a word to a buffer that could form part of a message understood
-	 * by SpiNNaker.
-	 *
-	 * @param value
-	 *            The value to put in the buffer as a single 32-bit word.
-	 * @return The buffer, flipped. The buffer is writable and has a backing
-	 *         array.
-	 */
-	public static ByteBuffer wordAsBuffer(int value) {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
-		b.putInt(value).flip();
-		return b;
-	}
+    /**
+     * Convert a word to a buffer that could form part of a message understood
+     * by SpiNNaker.
+     *
+     * @param value
+     *            The value to put in the buffer as a single 32-bit word.
+     * @return The buffer, flipped. The buffer is writable and has a backing
+     *         array.
+     */
+    public static ByteBuffer wordAsBuffer(int value) {
+        ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+        b.putInt(value).flip();
+        return b;
+    }
 }

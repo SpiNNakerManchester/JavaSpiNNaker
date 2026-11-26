@@ -17,32 +17,32 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /** SCP Command codes for reinjection. */
 enum ReinjectorCommand implements CommandCode {
-	/** Set the router's main timeout. */
-	SET_ROUTER_TIMEOUT(0),
-	/** Set the router's emergency timeout. */
-	SET_ROUTER_EMERGENCY_TIMEOUT(1),
-	/** Set what packet types are reinjected. */
-	SET_PACKET_TYPES(2),
-	/** Get the status of the reinjector. */
-	GET_STATUS(3),
-	/** Reset the counters inside the reinjector. */
-	RESET_COUNTERS(4),
-	/** Stop the reinjector. */
-	EXIT(5),
-	/** Clear the reinjector's queues. */
-	CLEAR(6);
+    /** Set the router's main timeout. */
+    SET_ROUTER_TIMEOUT(0),
+    /** Set the router's emergency timeout. */
+    SET_ROUTER_EMERGENCY_TIMEOUT(1),
+    /** Set what packet types are reinjected. */
+    SET_PACKET_TYPES(2),
+    /** Get the status of the reinjector. */
+    GET_STATUS(3),
+    /** Reset the counters inside the reinjector. */
+    RESET_COUNTERS(4),
+    /** Stop the reinjector. */
+    EXIT(5),
+    /** Clear the reinjector's queues. */
+    CLEAR(6);
 
-	/**
-	 * The encoded form of the command.
-	 */
-	private final short value;
+    /**
+     * The encoded form of the command.
+     */
+    private final short value;
 
-	ReinjectorCommand(int cmd) {
-		this.value = (short) cmd;
-	}
+    ReinjectorCommand(int cmd) {
+        this.value = (short) cmd;
+    }
 
-	@Override
-	public short getValue() {
-		return value;
-	}
+    @Override
+    public short getValue() {
+        return value;
+    }
 }

@@ -24,49 +24,49 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ListFetchingIterTest {
-	@Test
-	void basicUse() {
-		var lfi = new ListFetchingIter<Integer>() {
-			private int i = 0;
+    @Test
+    void basicUse() {
+        var lfi = new ListFetchingIter<Integer>() {
+            private int i = 0;
 
-			@Override
-			List<Integer> fetchNext() {
-				i++;
-				return List.of(i * 3, i * 3 + 1);
-			}
+            @Override
+            List<Integer> fetchNext() {
+                i++;
+                return List.of(i * 3, i * 3 + 1);
+            }
 
-			@Override
-			boolean canFetchMore() {
-				return i < 4;
-			}
-		};
+            @Override
+            boolean canFetchMore() {
+                return i < 4;
+            }
+        };
 
-		var all = new ArrayList<Integer>();
-		lfi.forEachRemaining(all::addAll);
-		assertEquals(List.of(3, 4, 6, 7, 9, 10, 12, 13), all);
-	}
+        var all = new ArrayList<Integer>();
+        lfi.forEachRemaining(all::addAll);
+        assertEquals(List.of(3, 4, 6, 7, 9, 10, 12, 13), all);
+    }
 
-	@Test
-	void throwing() {
-		var lfi = new ListFetchingIter<Integer>() {
-			private int i = 0;
+    @Test
+    void throwing() {
+        var lfi = new ListFetchingIter<Integer>() {
+            private int i = 0;
 
-			@Override
-			List<Integer> fetchNext() throws IOException {
-				if (i++ > 2) {
-					throw new IOException("swallowed");
-				}
-				return List.of(i * 3, i * 3 + 1);
-			}
+            @Override
+            List<Integer> fetchNext() throws IOException {
+                if (i++ > 2) {
+                    throw new IOException("swallowed");
+                }
+                return List.of(i * 3, i * 3 + 1);
+            }
 
-			@Override
-			boolean canFetchMore() {
-				return i < 4;
-			}
-		};
+            @Override
+            boolean canFetchMore() {
+                return i < 4;
+            }
+        };
 
-		var all = new ArrayList<Integer>();
-		lfi.forEachRemaining(all::addAll);
-		assertEquals(List.of(3, 4, 6, 7, 9, 10), all);
-	}
+        var all = new ArrayList<Integer>();
+        lfi.forEachRemaining(all::addAll);
+        assertEquals(List.of(3, 4, 6, 7, 9, 10), all);
+    }
 }

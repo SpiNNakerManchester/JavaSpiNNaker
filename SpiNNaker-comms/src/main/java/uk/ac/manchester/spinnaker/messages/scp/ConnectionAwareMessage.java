@@ -25,15 +25,15 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * response object.
  */
 public interface ConnectionAwareMessage extends SerializableMessage {
-	/**
-	 * Tell the object what connection it is being sent on. This will usually
-	 * (except during testing) be called prior to issuing the sequence number,
-	 * but the information provided should not be used until the response is
-	 * being parsed.
-	 *
-	 * @param connection
-	 *            The connection. Should <em>not</em> be modified by this
-	 *            method.
-	 */
-	void setConnection(SCPConnection connection);
+    /**
+     * Tell the object what connection it is being sent on. This will usually
+     * (except during testing) be called prior to issuing the sequence number,
+     * but the information provided should not be used until the response is
+     * being parsed.
+     *
+     * @param connection
+     *            The connection. Should <em>not</em> be modified by this
+     *            method.
+     */
+    void setConnection(SCPConnection connection);
 }

@@ -37,40 +37,40 @@ import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
  */
 @Path("/storages")
 public interface UnicoreFileClient {
-	/**
-	 * Upload a file.
-	 *
-	 * @param authHeader
-	 *            The authorization header to authenticate with.
-	 * @param id
-	 *            The id of the storage on the server.
-	 * @param filePath
-	 *            The path at which to store the file (directories are
-	 *            automatically created).
-	 * @param input
-	 *            The input stream containing the file to upload.
-	 * @throws WebApplicationException
-	 *             If anything goes wrong.
-	 */
-	@PUT
-	@Path("{id}/files/{filePath}")
-	@Consumes("application/octet-stream")
-	void upload(@HeaderParam("Authorization") String authHeader,
-			@PathParam("id") String id,
-			@PathParam("filePath") String filePath, InputStream input)
-			throws WebApplicationException;
+    /**
+     * Upload a file.
+     *
+     * @param authHeader
+     *            The authorization header to authenticate with.
+     * @param id
+     *            The id of the storage on the server.
+     * @param filePath
+     *            The path at which to store the file (directories are
+     *            automatically created).
+     * @param input
+     *            The input stream containing the file to upload.
+     * @throws WebApplicationException
+     *             If anything goes wrong.
+     */
+    @PUT
+    @Path("{id}/files/{filePath}")
+    @Consumes("application/octet-stream")
+    void upload(@HeaderParam("Authorization") String authHeader,
+            @PathParam("id") String id,
+            @PathParam("filePath") String filePath, InputStream input)
+            throws WebApplicationException;
 
-	/**
-	 * Get a client for the API.
-	 *
-	 * @param url
-	 *            The URL to connect to.
-	 * @return A proxy of the API.
-	 */
-	static UnicoreFileClient createClient(String url) {
-		var mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, UnicoreFileClient.class,
-				List.of(new JacksonJsonProvider()));
-	}
+    /**
+     * Get a client for the API.
+     *
+     * @param url
+     *            The URL to connect to.
+     * @return A proxy of the API.
+     */
+    static UnicoreFileClient createClient(String url) {
+        var mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(SNAKE_CASE);
+        return JAXRSClientFactory.create(url, UnicoreFileClient.class,
+                List.of(new JacksonJsonProvider()));
+    }
 }

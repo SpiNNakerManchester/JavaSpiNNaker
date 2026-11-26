@@ -24,37 +24,37 @@ import java.sql.Connection;
  * creating thread.
  */
 public final class OneThread {
-	/** The thread to which a connection (and related classes) are bound. */
-	final Thread thread;
+    /** The thread to which a connection (and related classes) are bound. */
+    final Thread thread;
 
-	/**
-	 * Create the wrapper.
-	 *
-	 * @param conn
-	 *            The connection that is being protected.
-	 * @return The wrapped connection.
-	 */
-	public static Connection threadBound(Connection conn) {
-		var ot = new OneThread();
-		return new OTConnection(ot, conn, true);
-	}
+    /**
+     * Create the wrapper.
+     *
+     * @param conn
+     *            The connection that is being protected.
+     * @return The wrapped connection.
+     */
+    public static Connection threadBound(Connection conn) {
+        var ot = new OneThread();
+        return new OTConnection(ot, conn, true);
+    }
 
-	/**
-	 * Create the wrapper. This wrapper cannot be closed (the
-	 * {@link Connection#close()} method fails silently); it is up to the caller
-	 * to save the wrapped connection and close it at the right time.
-	 *
-	 * @param conn
-	 *            The connection that is being protected.
-	 * @return The wrapped connection.
-	 */
-	public static Connection uncloseableThreadBound(Connection conn) {
-		var ot = new OneThread();
-		return new OTConnection(ot, conn, false);
-	}
+    /**
+     * Create the wrapper. This wrapper cannot be closed (the
+     * {@link Connection#close()} method fails silently); it is up to the caller
+     * to save the wrapped connection and close it at the right time.
+     *
+     * @param conn
+     *            The connection that is being protected.
+     * @return The wrapped connection.
+     */
+    public static Connection uncloseableThreadBound(Connection conn) {
+        var ot = new OneThread();
+        return new OTConnection(ot, conn, false);
+    }
 
-	/** <em>Only</em> the factory methods can make this. */
-	private OneThread() {
-		this.thread = currentThread();
-	}
+    /** <em>Only</em> the factory methods can make this. */
+    private OneThread() {
+        this.thread = currentThread();
+    }
 }

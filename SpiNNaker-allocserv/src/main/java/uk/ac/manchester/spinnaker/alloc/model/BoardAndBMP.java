@@ -22,31 +22,31 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  * A Board and a BMP.
  */
 public class BoardAndBMP {
-	/** The board identifier. */
-	public final int boardId;
+    /** The board identifier. */
+    public final int boardId;
 
-	/** The BMP identifier. */
-	public final BMPAndMachine bmp;
+    /** The BMP identifier. */
+    public final BMPAndMachine bmp;
 
-	/**
-	 * Make a new Board-and-BMP from a database query.
-	 *
-	 * @param result
-	 *            The database query results to read from.
-	 */
-	public BoardAndBMP(Row result) {
-		this.boardId = result.getInt("board_id");
-		this.bmp = new BMPAndMachine(result);
-	}
+    /**
+     * Make a new Board-and-BMP from a database query.
+     *
+     * @param result
+     *            The database query results to read from.
+     */
+    public BoardAndBMP(Row result) {
+        this.boardId = result.getInt("board_id");
+        this.bmp = new BMPAndMachine(result);
+    }
 
-	/**
-	 * Make a new Board-and-BMP from the provided state.
-	 *
-	 * @param bs
-	 *     State of the board.
-	 */
-	public BoardAndBMP(BoardState bs) {
-		this.boardId = bs.board;
-		this.bmp = new BMPAndMachine(bs);
-	}
+    /**
+     * Make a new Board-and-BMP from the provided state.
+     *
+     * @param bs
+     *     State of the board.
+     */
+    public BoardAndBMP(BoardState bs) {
+        this.boardId = bs.board;
+        this.bmp = new BMPAndMachine(bs);
+    }
 }

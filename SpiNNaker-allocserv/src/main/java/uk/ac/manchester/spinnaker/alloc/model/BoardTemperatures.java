@@ -21,19 +21,19 @@ import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
  * A board temperature.
  */
 public class BoardTemperatures {
-	/** The board temperature. */
-	public final double boardTemperature;
+      /** The board temperature. */
+      public final double boardTemperature;
 
-	/** The BMP temperature. */
-	public final Double bmpTemperature;
+      /** The BMP temperature. */
+      public final Double bmpTemperature;
 
-	/**
-	 * Make a new BoardTemperatures object.
-	 *
-	 * @param adcInfo The ADCInformation.
-	 */
-	public BoardTemperatures(ADCInfo adcInfo) {
-		this.boardTemperature = adcInfo.tempTop;
-		this.bmpTemperature = adcInfo.tempExt0;
-	}
+      /**
+       * Make a new BoardTemperatures object.
+       *
+       * @param adcInfo The ADCInformation.
+       */
+      public BoardTemperatures(ADCInfo adcInfo) {
+            this.boardTemperature = adcInfo.tempTop;
+            this.bmpTemperature = adcInfo.tempExt0;
+      }
 }

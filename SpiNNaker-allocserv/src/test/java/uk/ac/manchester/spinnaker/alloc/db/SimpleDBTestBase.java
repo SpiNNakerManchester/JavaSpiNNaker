@@ -37,23 +37,23 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(SpringBootTest.class)
 public abstract class SimpleDBTestBase extends TestSupport {
-	/**
-	 * The DB connection. Only valid in a test. <em>Must not</em> be modified by
-	 * subclasses.
-	 */
-	@SuppressWarnings("checkstyle:visibilitymodifier")
-	protected Connection c;
+    /**
+     * The DB connection. Only valid in a test. <em>Must not</em> be modified by
+     * subclasses.
+     */
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected Connection c;
 
-	@BeforeEach
-	@SuppressWarnings("MustBeClosed")
-	void getConnection() throws IOException {
-		c = db.getConnection();
-		assumeTrue(c != null, "connection not generated");
-		killDB();
-	}
+    @BeforeEach
+    @SuppressWarnings("MustBeClosed")
+    void getConnection() throws IOException {
+        c = db.getConnection();
+        assumeTrue(c != null, "connection not generated");
+        killDB();
+    }
 
-	@AfterEach
-	void closeConnection() {
-		c.close();
-	}
+    @AfterEach
+    void closeConnection() {
+        c.close();
+    }
 }

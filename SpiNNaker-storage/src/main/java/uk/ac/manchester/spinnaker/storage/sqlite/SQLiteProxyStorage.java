@@ -33,73 +33,73 @@ import uk.ac.manchester.spinnaker.storage.ProxyInformation;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 
 abstract class SQLiteProxyStorage<T extends DatabaseAPI>
-		extends SQLiteConnectionManager<T> implements ProxyAwareStorage {
+        extends SQLiteConnectionManager<T> implements ProxyAwareStorage {
 
-	protected SQLiteProxyStorage(ConnectionProvider<T> connProvider) {
-		super(connProvider);
-	}
+    protected SQLiteProxyStorage(ConnectionProvider<T> connProvider) {
+        super(connProvider);
+    }
 
-	@Override
-	public ProxyInformation getProxyInformation() throws StorageException {
-		return callR(conn -> getProxyInfo(conn), "get proxy");
-	}
+    @Override
+    public ProxyInformation getProxyInformation() throws StorageException {
+        return callR(conn -> getProxyInfo(conn), "get proxy");
+    }
 
-	/**
-	 * Get the proxy information from a database.
-	 *
-	 * @param conn
-	 *            The connection to read the data from.
-	 * @return The proxy information.
-	 * @throws IllegalStateException
-	 *             If a bad row is retrieved; should be unreachable if SQL is
-	 *             synched to code.
-	 * @throws SQLException
-	 *             If there is an error reading the database.
-	 */
-	private ProxyInformation getProxyInfo(Connection conn) throws SQLException {
-		String spallocUri = null;
-		String jobUri = null;
-		var headers = new HashMap<String, String>();
-		var cookies = new HashMap<String, String>();
+    /**
+     * Get the proxy information from a database.
+     *
+     * @param conn
+     *            The connection to read the data from.
+     * @return The proxy information.
+     * @throws IllegalStateException
+     *             If a bad row is retrieved; should be unreachable if SQL is
+     *             synched to code.
+     * @throws SQLException
+     *             If there is an error reading the database.
+     */
+    private ProxyInformation getProxyInfo(Connection conn) throws SQLException {
+        String spallocUri = null;
+        String jobUri = null;
+        var headers = new HashMap<String, String>();
+        var cookies = new HashMap<String, String>();
 
-		try (var s = conn.prepareStatement(GET_PROXY_INFORMATION);
-				var rs = s.executeQuery()) {
-			while (rs.next()) {
-				var kind = rs.getString("kind");
-				var name = rs.getString("name");
-				var value = rs.getString("value");
-				if (name == null || value == null) {
-					continue;
-				}
-				switch (kind) {
-				case SPALLOC:
-					switch (name) {
-					case SPALLOC_URI:
-						spallocUri = value;
-						break;
-					case PROXY_URI:
-						jobUri = value;
-						break;
-					default:
-						throw new IllegalStateException("unreachable reached");
-					}
-					break;
+        try (var s = conn.prepareStatement(GET_PROXY_INFORMATION);
+                var rs = s.executeQuery()) {
+            while (rs.next()) {
+                var kind = rs.getString("kind");
+                var name = rs.getString("name");
+                var value = rs.getString("value");
+                if (name == null || value == null) {
+                    continue;
+                }
+                switch (kind) {
+                case SPALLOC:
+                    switch (name) {
+                    case SPALLOC_URI:
+                        spallocUri = value;
+                        break;
+                    case PROXY_URI:
+                        jobUri = value;
+                        break;
+                    default:
+                        throw new IllegalStateException("unreachable reached");
+                    }
+                    break;
 
-				case COOKIE:
-					cookies.put(name, value);
-					break;
-				case HEADER:
-					headers.put(name, value);
-					break;
-				default:
-					throw new IllegalStateException("unreachable reached");
-				}
-			}
-		}
-		// If we don't have all pieces of info, we can't talk to the proxy
-		if (spallocUri == null || jobUri == null) {
-			return null;
-		}
-		return new ProxyInformation(spallocUri, jobUri, headers, cookies);
-	}
+                case COOKIE:
+                    cookies.put(name, value);
+                    break;
+                case HEADER:
+                    headers.put(name, value);
+                    break;
+                default:
+                    throw new IllegalStateException("unreachable reached");
+                }
+            }
+        }
+        // If we don't have all pieces of info, we can't talk to the proxy
+        if (spallocUri == null || jobUri == null) {
+            return null;
+        }
+        return new ProxyInformation(spallocUri, jobUri, headers, cookies);
+    }
 }

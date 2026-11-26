@@ -21,6 +21,6 @@ import org.slf4j.Logger;
 
 /** Holds the log for primary job lifecycle events. */
 interface JobLifecycle {
-	/** Where to log primary job lifecycle events. */
-	Logger log = getLogger(JobLifecycle.class);
+    /** Where to log primary job lifecycle events. */
+    Logger log = getLogger(JobLifecycle.class);
 }

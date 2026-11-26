@@ -49,174 +49,174 @@ import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
  * A connection for handling the Data Speed Up protocol.
  */
 final class GatherDownloadConnection implements AutoCloseable {
-	private long lastSend = 0L;
+    private long lastSend = 0L;
 
-	private static final Logger log = getLogger(GatherDownloadConnection.class);
+    private static final Logger log = getLogger(GatherDownloadConnection.class);
 
-	/**
-	 * Packet minimum send interval, in <em>nanoseconds</em>.
-	 */
-	private static final int INTER_SEND_INTERVAL_NS = 60000;
+    /**
+     * Packet minimum send interval, in <em>nanoseconds</em>.
+     */
+    private static final int INTER_SEND_INTERVAL_NS = 60000;
 
-	/** An empty buffer. Used so we don't try to read zero bytes. */
-	private static final ByteBuffer EMPTY_DATA = allocate(0);
+    /** An empty buffer. Used so we don't try to read zero bytes. */
+    private static final ByteBuffer EMPTY_DATA = allocate(0);
 
-	/** cap of where a transaction id will get to. */
-	private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
+    /** cap of where a transaction id will get to. */
+    private static final int TRANSACTION_ID_CAP = 0xFFFFFFFF;
 
-	private final IPTag iptag;
+    private final IPTag iptag;
 
-	private final SCPConnection connection;
+    private final SCPConnection connection;
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param iptag
-	 *            The tag to reprogram to talk to this connection.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
-	 */
-	@MustBeClosed
-	@SuppressWarnings("MustBeClosed")
-	GatherDownloadConnection(IPTag iptag)
-			throws IOException, ProcessException, InterruptedException {
-		this.iptag = iptag;
-		this.connection = new SCPConnection(iptag.getDestination(), null, null,
-						iptag.getBoardAddress());
-		this.setupTag();
-	}
+    /**
+     * Create an instance.
+     *
+     * @param iptag
+     *            The tag to reprogram to talk to this connection.
+     * @throws IOException
+     *             If IO fails.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the reprogramming.
+     */
+    @MustBeClosed
+    @SuppressWarnings("MustBeClosed")
+    GatherDownloadConnection(IPTag iptag)
+            throws IOException, ProcessException, InterruptedException {
+        this.iptag = iptag;
+        this.connection = new SCPConnection(iptag.getDestination(), null, null,
+                        iptag.getBoardAddress());
+        this.setupTag();
+    }
 
-	void setupTag() throws ProcessException, IOException, InterruptedException {
-		var process = new TxrxProcess(new SingletonConnectionSelector<>(
-				connection), null);
-		process.call(new IPTagSet(connection.getChip(), null, 0,
-					iptag.getTag(), iptag.isStripSDP(), true));
-	}
+    void setupTag() throws ProcessException, IOException, InterruptedException {
+        var process = new TxrxProcess(new SingletonConnectionSelector<>(
+                connection), null);
+        process.call(new IPTagSet(connection.getChip(), null, 0,
+                    iptag.getTag(), iptag.isStripSDP(), true));
+    }
 
-	/**
-	 * Get the next transaction ID to use.
-	 *
-	 * @param gatherCore The core being used to download data.
-	 * @return The next transaction ID to use.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
-	 */
-	public int getNextTransactionId(HasCoreLocation gatherCore)
-			throws ProcessException, IOException, InterruptedException {
-		var addr = getVcpuAddress(gatherCore).add(CPU_USER_1_START_ADDRESS);
-		var process = new TxrxProcess(
-				new SingletonConnectionSelector<>(connection), null);
-		var transactionId = process.retrieve(
-				new ReadMemory(gatherCore.getScampCore(), addr, WORD_SIZE))
-				.getInt();
-		return (transactionId + 1) & TRANSACTION_ID_CAP;
-	}
+    /**
+     * Get the next transaction ID to use.
+     *
+     * @param gatherCore The core being used to download data.
+     * @return The next transaction ID to use.
+     * @throws IOException
+     *             If IO fails.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the reprogramming.
+     */
+    public int getNextTransactionId(HasCoreLocation gatherCore)
+            throws ProcessException, IOException, InterruptedException {
+        var addr = getVcpuAddress(gatherCore).add(CPU_USER_1_START_ADDRESS);
+        var process = new TxrxProcess(
+                new SingletonConnectionSelector<>(connection), null);
+        var transactionId = process.retrieve(
+                new ReadMemory(gatherCore.getScampCore(), addr, WORD_SIZE))
+                .getInt();
+        return (transactionId + 1) & TRANSACTION_ID_CAP;
+    }
 
-	private void sendMsg(SDPMessage msg) throws IOException {
-		if (waitUntil(lastSend + INTER_SEND_INTERVAL_NS)) {
-			throw new InterruptedIOException(
-					"interrupted while waiting to send");
-		}
-		connection.send(msg);
-		lastSend = nanoTime();
-	}
+    private void sendMsg(SDPMessage msg) throws IOException {
+        if (waitUntil(lastSend + INTER_SEND_INTERVAL_NS)) {
+            throw new InterruptedIOException(
+                    "interrupted while waiting to send");
+        }
+        connection.send(msg);
+        lastSend = nanoTime();
+    }
 
-	/**
-	 * Send a message asking the extra monitor core to read from a region of
-	 * SDRAM and send it to us (using the configured IPtag).
-	 *
-	 * @param extraMonitorCore
-	 *            The location of the monitor.
-	 * @param address
-	 *            Where to read from.
-	 * @param length
-	 *            How many bytes to read.
-	 * @param transactionId
-	 *            The transaction id of this stream.
-	 * @throws IOException
-	 *             If message sending fails.
-	 */
-	void sendStart(CoreLocation extraMonitorCore, MemoryLocation address,
-			int length, int transactionId) throws IOException {
-		sendMsg(StartSendingMessage.create(extraMonitorCore, address, length,
-				transactionId));
-	}
+    /**
+     * Send a message asking the extra monitor core to read from a region of
+     * SDRAM and send it to us (using the configured IPtag).
+     *
+     * @param extraMonitorCore
+     *            The location of the monitor.
+     * @param address
+     *            Where to read from.
+     * @param length
+     *            How many bytes to read.
+     * @param transactionId
+     *            The transaction id of this stream.
+     * @throws IOException
+     *             If message sending fails.
+     */
+    void sendStart(CoreLocation extraMonitorCore, MemoryLocation address,
+            int length, int transactionId) throws IOException {
+        sendMsg(StartSendingMessage.create(extraMonitorCore, address, length,
+                transactionId));
+    }
 
-	/**
-	 * Sends a message telling the extra monitor to stop sending fixed route
-	 * packets.
-	 *
-	 * @param extraMonitorCore
-	 *            The location of the monitor.
-	 * @param transactionId
-	 *            The transaction id of this stream.
-	 * @throws IOException
-	 *             If message sending fails.
-	 */
-	void sendClear(CoreLocation extraMonitorCore, int transactionId)
-			throws IOException {
-		sendMsg(ClearMessage.create(extraMonitorCore, transactionId));
-	}
+    /**
+     * Sends a message telling the extra monitor to stop sending fixed route
+     * packets.
+     *
+     * @param extraMonitorCore
+     *            The location of the monitor.
+     * @param transactionId
+     *            The transaction id of this stream.
+     * @throws IOException
+     *             If message sending fails.
+     */
+    void sendClear(CoreLocation extraMonitorCore, int transactionId)
+            throws IOException {
+        sendMsg(ClearMessage.create(extraMonitorCore, transactionId));
+    }
 
-	/**
-	 * Send a message asking the extra monitor core to ask it to resend some
-	 * data.
-	 *
-	 * @param msg
-	 *            The message to send, built as part of a sequence of such
-	 *            messages.
-	 * @throws IOException
-	 *             If message sending fails.
-	 */
-	void sendMissing(MissingSequenceNumbersMessage msg) throws IOException {
-		sendMsg(msg);
-	}
+    /**
+     * Send a message asking the extra monitor core to ask it to resend some
+     * data.
+     *
+     * @param msg
+     *            The message to send, built as part of a sequence of such
+     *            messages.
+     * @throws IOException
+     *             If message sending fails.
+     */
+    void sendMissing(MissingSequenceNumbersMessage msg) throws IOException {
+        sendMsg(msg);
+    }
 
-	/**
-	 * Receive a data-speed-up payload packet.
-	 *
-	 * @param timeout
-	 *            How long to wait for the packet.
-	 * @return The packet's raw contents. On timeout, an empty buffer will be
-	 *         returned. Never returns {@code null}.
-	 * @throws IOException
-	 *             If a non-recoverable error (e.g., closed channel) happens.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	ByteBuffer getNextPacket(int timeout)
-			throws IOException, InterruptedException {
-		try {
-			var b = connection.receive(timeout);
-			if (b == null) {
-				return EMPTY_DATA;
-			}
-			return b;
-		} catch (SocketTimeoutException e) {
-			log.debug("received timeout");
-			return EMPTY_DATA;
-		}
-	}
+    /**
+     * Receive a data-speed-up payload packet.
+     *
+     * @param timeout
+     *            How long to wait for the packet.
+     * @return The packet's raw contents. On timeout, an empty buffer will be
+     *         returned. Never returns {@code null}.
+     * @throws IOException
+     *             If a non-recoverable error (e.g., closed channel) happens.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     */
+    ByteBuffer getNextPacket(int timeout)
+            throws IOException, InterruptedException {
+        try {
+            var b = connection.receive(timeout);
+            if (b == null) {
+                return EMPTY_DATA;
+            }
+            return b;
+        } catch (SocketTimeoutException e) {
+            log.debug("received timeout");
+            return EMPTY_DATA;
+        }
+    }
 
-	/**
-	 * Get the chip this gatherer is downloading from.
-	 *
-	 * @return The chip of the gatherer.
-	 */
-	ChipLocation getChip() {
-		return connection.getChip();
-	}
+    /**
+     * Get the chip this gatherer is downloading from.
+     *
+     * @return The chip of the gatherer.
+     */
+    ChipLocation getChip() {
+        return connection.getChip();
+    }
 
-	@Override
-	public void close() throws IOException {
-		connection.close();
-	}
+    @Override
+    public void close() throws IOException {
+        connection.close();
+    }
 }

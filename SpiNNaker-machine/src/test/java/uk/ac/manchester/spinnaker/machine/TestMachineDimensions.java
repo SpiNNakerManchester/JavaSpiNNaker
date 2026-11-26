@@ -20,23 +20,23 @@ import org.junit.jupiter.api.Test;
 
 public class TestMachineDimensions {
 
-	public TestMachineDimensions() {
-	}
+    public TestMachineDimensions() {
+    }
 
-	@Test
-	public void testEquals() {
-		var m1 = new MachineDimensions(2, 3);
-		var m2 = new MachineDimensions(2, 3);
-		assertEquals(m1, m2);
-		assertEquals(m1.hashCode(), m2.hashCode());
-		assertEquals(m1.toString(), m2.toString());
-	}
+    @Test
+    public void testEquals() {
+        var m1 = new MachineDimensions(2, 3);
+        var m2 = new MachineDimensions(2, 3);
+        assertEquals(m1, m2);
+        assertEquals(m1.hashCode(), m2.hashCode());
+        assertEquals(m1.toString(), m2.toString());
+    }
 
-	@Test
-	public void testNullEquals() {
-		var m1 = new MachineDimensions(2, 3);
-		MachineDimensions m2 = null;
-		assertNotEquals(m1, m2);
-		assertFalse(m1.equals(m2));
-	}
+    @Test
+    public void testNullEquals() {
+        var m1 = new MachineDimensions(2, 3);
+        MachineDimensions m2 = null;
+        assertNotEquals(m1, m2);
+        assertFalse(m1.equals(m2));
+    }
 }

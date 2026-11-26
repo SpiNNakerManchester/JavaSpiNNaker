@@ -29,29 +29,29 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * Calls {@code cmd_flash_write()} in {@code bmp_cmd.c}.
  */
 public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
-	/** The size of chunk that will be transferred. Fixed. */
-	public static final int FLASH_CHUNK_SIZE = 4096;
+    /** The size of chunk that will be transferred. Fixed. */
+    public static final int FLASH_CHUNK_SIZE = 4096;
 
-	/**
-	 * Constructs a request to write memory to flash.
-	 *
-	 * @param board
-	 *            the board with the BMP to write the flash of
-	 * @param baseAddress
-	 *            The positive base address where the chunk is located
-	 * @param erase
-	 *            Whether to erase first
-	 */
-	public WriteFlashBuffer(BMPBoard board, MemoryLocation baseAddress,
-			boolean erase) {
-		super(board, CMD_FLASH_WRITE, baseAddress.address, FLASH_CHUNK_SIZE,
-				erase ? 1 : 0);
-	}
+    /**
+     * Constructs a request to write memory to flash.
+     *
+     * @param board
+     *            the board with the BMP to write the flash of
+     * @param baseAddress
+     *            The positive base address where the chunk is located
+     * @param erase
+     *            Whether to erase first
+     */
+    public WriteFlashBuffer(BMPBoard board, MemoryLocation baseAddress,
+            boolean erase) {
+        super(board, CMD_FLASH_WRITE, baseAddress.address, FLASH_CHUNK_SIZE,
+                erase ? 1 : 0);
+    }
 
-	@Override
-	public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPRequest.BMPResponse("Transfer chunk to flash",
-				CMD_FLASH_WRITE, buffer);
-	}
+    @Override
+    public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
+            throws Exception {
+        return new BMPRequest.BMPResponse("Transfer chunk to flash",
+                CMD_FLASH_WRITE, buffer);
+    }
 }

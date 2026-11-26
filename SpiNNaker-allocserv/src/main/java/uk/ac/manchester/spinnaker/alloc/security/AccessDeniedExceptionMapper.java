@@ -48,40 +48,40 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @Role(ROLE_SUPPORT)
 @UsedInJavadocOnly(PreAuthorize.class)
 class AccessDeniedExceptionMapper
-		implements ExceptionMapper<AccessDeniedException> {
-	private static final Logger log =
-			getLogger(AccessDeniedExceptionMapper.class);
+            implements ExceptionMapper<AccessDeniedException> {
+      private static final Logger log =
+                  getLogger(AccessDeniedExceptionMapper.class);
 
-	private static final String BLAND_AUTH_MSG = "computer says no";
+      private static final String BLAND_AUTH_MSG = "computer says no";
 
-	@Context
-	private UriInfo ui;
+      @Context
+      private UriInfo ui;
 
-	@Context
-	private HttpServletRequest req;
+      @Context
+      private HttpServletRequest req;
 
-	@Override
-	public Response toResponse(AccessDeniedException exception) {
-		// Actually produce useful logging; the default is ghastly!
-		var p = req.getUserPrincipal();
-		if (p instanceof AbstractAuthenticationToken) {
-			var who = (AbstractAuthenticationToken) p;
-			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
-					who.getName(),
-					who.getAuthorities().stream()
-							.map(GrantedAuthority::getAuthority)
-							.collect(toSet()));
-		} else if (p instanceof OAuth2AuthenticatedPrincipal) {
-			var who = (OAuth2AuthenticatedPrincipal) p;
-			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
-					who.getName(),
-					who.getAuthorities().stream()
-							.map(GrantedAuthority::getAuthority)
-							.collect(toSet()));
-		} else {
-			log.warn("access denied: {} : {}", ui.getAbsolutePath(), p);
-		}
-		// But the user gets a bland response
-		return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
-	}
+      @Override
+      public Response toResponse(AccessDeniedException exception) {
+            // Actually produce useful logging; the default is ghastly!
+            var p = req.getUserPrincipal();
+            if (p instanceof AbstractAuthenticationToken) {
+                  var who = (AbstractAuthenticationToken) p;
+                  log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
+                              who.getName(),
+                              who.getAuthorities().stream()
+                                          .map(GrantedAuthority::getAuthority)
+                                          .collect(toSet()));
+            } else if (p instanceof OAuth2AuthenticatedPrincipal) {
+                  var who = (OAuth2AuthenticatedPrincipal) p;
+                  log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
+                              who.getName(),
+                              who.getAuthorities().stream()
+                                          .map(GrantedAuthority::getAuthority)
+                                          .collect(toSet()));
+            } else {
+                  log.warn("access denied: {} : {}", ui.getAbsolutePath(), p);
+            }
+            // But the user gets a bland response
+            return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
+      }
 }

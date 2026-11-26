@@ -34,108 +34,108 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  * operation. Subclass to add the behaviours you want.
  */
 public abstract class StubMachine implements Machine {
-	@Override
-	public boolean waitForChange(Duration timeout) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public boolean waitForChange(Duration timeout) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getId() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getId() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String getName() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Set<String> getTags() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Set<String> getTags() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getWidth() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getWidth() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getHeight() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getHeight() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public boolean isInService() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public boolean isInService() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public List<BoardCoords> getDeadBoards() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<BoardCoords> getDeadBoards() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public List<DownLink> getDownLinks() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<DownLink> getDownLinks() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<BoardLocation> getBoardByChip(HasChipLocation chip) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<BoardLocation> getBoardByChip(HasChipLocation chip) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<BoardLocation> getBoardByPhysicalCoords(
-			PhysicalCoords coords) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<BoardLocation> getBoardByPhysicalCoords(
+            PhysicalCoords coords) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<BoardLocation> getBoardByLogicalCoords(TriadCoords coords) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<BoardLocation> getBoardByLogicalCoords(TriadCoords coords) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<BoardLocation> getBoardByIPAddress(String address) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<BoardLocation> getBoardByIPAddress(String address) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String getRootBoardBMPAddress() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public String getRootBoardBMPAddress() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public List<Integer> getBoardNumbers() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<Integer> getBoardNumbers() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public List<Integer> getAvailableBoards() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<Integer> getAvailableBoards() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String getBMPAddress(BMPCoords bmp) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public String getBMPAddress(BMPCoords bmp) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public List<Integer> getBoardNumbers(BMPCoords bmp) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<Integer> getBoardNumbers(BMPCoords bmp) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public final boolean equals(Object other) {
-		if (other instanceof Machine) {
-			var m = (Machine) other;
-			return getId() == m.getId();
-		}
-		return false;
-	}
+    @Override
+    public final boolean equals(Object other) {
+        if (other instanceof Machine) {
+            var m = (Machine) other;
+            return getId() == m.getId();
+        }
+        return false;
+    }
 
-	@Override
-	public final int hashCode() {
-		return getId();
-	}
+    @Override
+    public final int hashCode() {
+        return getId();
+    }
 }

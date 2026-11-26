@@ -38,54 +38,54 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.ReportProperties;
 @Component
 @Role(ROLE_SUPPORT)
 public class ReportMailSender {
-	private static final Logger log = getLogger(ReportMailSender.class);
+      private static final Logger log = getLogger(ReportMailSender.class);
 
-	@Autowired(required = false)
-	private JavaMailSender emailSender;
+      @Autowired(required = false)
+      private JavaMailSender emailSender;
 
-	@Autowired
-	private SpallocProperties properties;
+      @Autowired
+      private SpallocProperties properties;
 
-	private ReportProperties props;
+      private ReportProperties props;
 
-	@PostConstruct
-	private void getProps() {
-		props = properties.getReportEmail();
-	}
+      @PostConstruct
+      private void getProps() {
+            props = properties.getReportEmail();
+      }
 
-	private static boolean haveProp(String propValue) {
-		return nonNull(propValue) && !propValue.isBlank();
-	}
+      private static boolean haveProp(String propValue) {
+            return nonNull(propValue) && !propValue.isBlank();
+      }
 
-	/**
-	 * Send an assembled message if the service is configured to do so.
-	 * <p>
-	 * <strong>NB:</strong> This call may take some time; do not hold a
-	 * transaction open when calling this.
-	 *
-	 * @param email
-	 *            The message contents to send.
-	 */
-	public void sendServiceMail(Object email) {
-		if (nonNull(emailSender) && haveProp(props.getTo()) && props.isSend()) {
-			sendMessage(email.toString());
-		}
-	}
+      /**
+       * Send an assembled message if the service is configured to do so.
+       * <p>
+       * <strong>NB:</strong> This call may take some time; do not hold a
+       * transaction open when calling this.
+       *
+       * @param email
+       *            The message contents to send.
+       */
+      public void sendServiceMail(Object email) {
+            if (nonNull(emailSender) && haveProp(props.getTo()) && props.isSend()) {
+                  sendMessage(email.toString());
+            }
+      }
 
-	private void sendMessage(String body) {
-		var message = new SimpleMailMessage();
-		if (haveProp(props.getFrom())) {
-			message.setFrom(props.getFrom());
-		}
-		message.setTo(props.getTo());
-		if (haveProp(props.getSubject())) {
-			message.setSubject(props.getSubject());
-		}
-		message.setText(body);
-		try {
-			emailSender.send(message);
-		} catch (MailException e) {
-			log.warn("problem when sending email", e);
-		}
-	}
+      private void sendMessage(String body) {
+            var message = new SimpleMailMessage();
+            if (haveProp(props.getFrom())) {
+                  message.setFrom(props.getFrom());
+            }
+            message.setTo(props.getTo());
+            if (haveProp(props.getSubject())) {
+                  message.setSubject(props.getSubject());
+            }
+            message.setText(body);
+            try {
+                  emailSender.send(message);
+            } catch (MailException e) {
+                  log.warn("problem when sending email", e);
+            }
+      }
 }

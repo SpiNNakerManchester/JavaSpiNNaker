@@ -32,267 +32,267 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  */
 public interface BufferManagerStorage extends ProxyAwareStorage {
 
-	/**
-	 * Retrieves some bytes from the database. The bytes represent the contents
-	 * of a recording region of a particular SpiNNaker core.
-	 *
-	 * @param region
-	 *            The (DSE) region descriptor.
-	 * @return The region contents.
-	 * @throws IllegalArgumentException
-	 *             If there's no such saved region.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	byte[] getContents(Region region) throws StorageException;
+    /**
+     * Retrieves some bytes from the database. The bytes represent the contents
+     * of a recording region of a particular SpiNNaker core.
+     *
+     * @param region
+     *            The (DSE) region descriptor.
+     * @return The region contents.
+     * @throws IllegalArgumentException
+     *             If there's no such saved region.
+     * @throws StorageException
+     *             If anything goes wrong.
+     */
+    byte[] getContents(Region region) throws StorageException;
 
-	/**
-	 * Removes some bytes from the database. The bytes represent the contents of
-	 * a DSE region of a particular SpiNNaker core.
-	 *
-	 * @param core
-	 *            The core that has the memory region.
-	 * @param region
-	 *            The region ID.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 * @throws UnsupportedOperationException
-	 *             This method is unsupported.
-	 * @deprecated Currently unsupported; underlying database structure absent
-	 */
-	@Deprecated
-	default void deleteRegionContents(HasCoreLocation core, int region)
-			throws StorageException {
-		throw new UnsupportedOperationException();
-	}
+    /**
+     * Removes some bytes from the database. The bytes represent the contents of
+     * a DSE region of a particular SpiNNaker core.
+     *
+     * @param core
+     *            The core that has the memory region.
+     * @param region
+     *            The region ID.
+     * @throws StorageException
+     *             If anything goes wrong.
+     * @throws UnsupportedOperationException
+     *             This method is unsupported.
+     * @deprecated Currently unsupported; underlying database structure absent
+     */
+    @Deprecated
+    default void deleteRegionContents(HasCoreLocation core, int region)
+            throws StorageException {
+        throw new UnsupportedOperationException();
+    }
 
-	/**
-	 * Get a list of all cores that have data stored in the database.
-	 * <i>Warning: this is a potentially expensive operation!</i>
-	 *
-	 * @return A list of cores for which something is stored.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	List<CoreLocation> getCoresWithStorage() throws StorageException;
+    /**
+     * Get a list of all cores that have data stored in the database.
+     * <i>Warning: this is a potentially expensive operation!</i>
+     *
+     * @return A list of cores for which something is stored.
+     * @throws StorageException
+     *             If anything goes wrong.
+     */
+    List<CoreLocation> getCoresWithStorage() throws StorageException;
 
-	/**
-	 * Get a list of all regions for a particular core that have data stored in
-	 * the database.
-	 *
-	 * @param core
-	 *            The core that has the memory regions.
-	 * @return A list of region IDs for which something is stored.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	List<Integer> getRegionsWithStorage(HasCoreLocation core)
-			throws StorageException;
+    /**
+     * Get a list of all regions for a particular core that have data stored in
+     * the database.
+     *
+     * @param core
+     *            The core that has the memory regions.
+     * @return A list of region IDs for which something is stored.
+     * @throws StorageException
+     *             If anything goes wrong.
+     */
+    List<Integer> getRegionsWithStorage(HasCoreLocation core)
+            throws StorageException;
 
-	/**
-	 * A region descriptor. Not expected to support useful notions of equality.
-	 */
-	class Region {
-		private static final int INT_SIZE = 4;
+    /**
+     * A region descriptor. Not expected to support useful notions of equality.
+     */
+    class Region {
+        private static final int INT_SIZE = 4;
 
-		/**
-		 * What core owned the region? Note that the region might be retrieved
-		 * from another core of the same chip.
-		 */
-		@Valid
-		public final CoreLocation core;
+        /**
+         * What core owned the region? Note that the region might be retrieved
+         * from another core of the same chip.
+         */
+        @Valid
+        public final CoreLocation core;
 
-		/**
-		 * What was the index of the region in the table of regions for the
-		 * core.
-		 */
-		public final int regionIndex;
+        /**
+         * What was the index of the region in the table of regions for the
+         * core.
+         */
+        public final int regionIndex;
 
-		/**
-		 * Where should the data be downloaded from.
-		 *
-		 * <em>This is not necessarily the start of the region.</em>
-		 */
-		@NotNull
-		public final MemoryLocation startAddress;
+        /**
+         * Where should the data be downloaded from.
+         *
+         * <em>This is not necessarily the start of the region.</em>
+         */
+        @NotNull
+        public final MemoryLocation startAddress;
 
-		/**
-		 * How much data should be downloaded.
-		 *
-		 * <em>This is not necessarily the size of the region</em>
-		 */
-		@Positive
-		public final int size;
+        /**
+         * How much data should be downloaded.
+         *
+         * <em>This is not necessarily the size of the region</em>
+         */
+        @Positive
+        public final int size;
 
-		/**
-		 * How much data was originally requested.
-		 */
-		@Positive
-		public final int realSize;
+        /**
+         * How much data was originally requested.
+         */
+        @Positive
+        public final int realSize;
 
-		/**
-		 * How many extra bytes are being read at the start of the region in
-		 * order to get an aligned read.
-		 */
-		@PositiveOrZero
-		public final int initialIgnore;
+        /**
+         * How many extra bytes are being read at the start of the region in
+         * order to get an aligned read.
+         */
+        @PositiveOrZero
+        public final int initialIgnore;
 
-		/**
-		 * How many extra bytes are being read at the end of the region in order
-		 * to get an aligned read.
-		 */
-		@PositiveOrZero
-		public final int finalIgnore;
+        /**
+         * How many extra bytes are being read at the end of the region in order
+         * to get an aligned read.
+         */
+        @PositiveOrZero
+        public final int finalIgnore;
 
-		/**
-		 * States is a recording region
-		 * True if this region is appended after every run/loop.
-		 * False is this region is overwritten aevery run.
-		 */
-		@NotNull
-		public final boolean isRecording;
+        /**
+         * States is a recording region
+         * True if this region is appended after every run/loop.
+         * False is this region is overwritten aevery run.
+         */
+        @NotNull
+        public final boolean isRecording;
 
-		/**
-		 * Create a region descriptor.
-		 *
-		 * @param core
-		 *            What core owned the region? Note that the region might be
-		 *            retrieved from another core of the same chip.
-		 * @param regionIndex
-		 *            What was the index of the region in the table of regions
-		 *            for the core?
-		 * @param startLocation
-		 *            Where should the data be downloaded from? <em>This is not
-		 *            necessarily the start of the region.</em>
-		 * @param size
-		 *            How much data should be downloaded? <em>This is not
-		 *            necessarily the size of the region.</em>
-		 * @param isRecording
-		 *            States is a recording region
-		 *            True if this region is appended after every run/loop.
-		 *            False is this region is overwritten aevery run.
-		 *
-		 */
-		public Region(HasCoreLocation core, int regionIndex,
-				MemoryLocation startLocation, int size, boolean isRecording) {
-			this.core = core.asCoreLocation();
-			this.regionIndex = regionIndex;
-			realSize = size;
-			initialIgnore = startLocation.subWordAlignment();
-			size += initialIgnore;
-			startAddress = startLocation.add(-initialIgnore);
-			// Looks weird, but works
-			finalIgnore = (INT_SIZE - (size % INT_SIZE)) % INT_SIZE;
-			size += finalIgnore;
-			this.size = size;
-			this.isRecording = isRecording;
-		}
+        /**
+         * Create a region descriptor.
+         *
+         * @param core
+         *            What core owned the region? Note that the region might be
+         *            retrieved from another core of the same chip.
+         * @param regionIndex
+         *            What was the index of the region in the table of regions
+         *            for the core?
+         * @param startLocation
+         *            Where should the data be downloaded from? <em>This is not
+         *            necessarily the start of the region.</em>
+         * @param size
+         *            How much data should be downloaded? <em>This is not
+         *            necessarily the size of the region.</em>
+         * @param isRecording
+         *            States is a recording region
+         *            True if this region is appended after every run/loop.
+         *            False is this region is overwritten aevery run.
+         *
+         */
+        public Region(HasCoreLocation core, int regionIndex,
+                MemoryLocation startLocation, int size, boolean isRecording) {
+            this.core = core.asCoreLocation();
+            this.regionIndex = regionIndex;
+            realSize = size;
+            initialIgnore = startLocation.subWordAlignment();
+            size += initialIgnore;
+            startAddress = startLocation.add(-initialIgnore);
+            // Looks weird, but works
+            finalIgnore = (INT_SIZE - (size % INT_SIZE)) % INT_SIZE;
+            size += finalIgnore;
+            this.size = size;
+            this.isRecording = isRecording;
+        }
 
-		/**
-		 * Whether this is an aligned buffer.
-		 *
-		 * Aligned buffers can be read with efficient reading techniques.
-		 *
-		 * @return Whether this is an aligned buffer
-		 */
-		public final boolean isAligned() {
-			return initialIgnore == 0 && finalIgnore == 0;
-		}
+        /**
+         * Whether this is an aligned buffer.
+         *
+         * Aligned buffers can be read with efficient reading techniques.
+         *
+         * @return Whether this is an aligned buffer
+         */
+        public final boolean isAligned() {
+            return initialIgnore == 0 && finalIgnore == 0;
+        }
 
-		/**
-		 * {@return Whether this is a non-empty buffer}
-		 */
-		public final boolean isNonEmpty() {
-			return size > 0;
-		}
+        /**
+         * {@return Whether this is a non-empty buffer}
+         */
+        public final boolean isNonEmpty() {
+            return size > 0;
+        }
 
-		@Override
-		public String toString() {
-			return "Region " + regionIndex + " on " + core.toString();
-		}
-	}
+        @Override
+        public String toString() {
+            return "Region " + regionIndex + " on " + core.toString();
+        }
+    }
 
-	/**
-	 * Stores some bytes in the database. The bytes represent the contents of a
-	 * DSE region of a particular SpiNNaker core.
-	 *
-	 * @param region
-	 *            The DSE region that this is the contents of.
-	 * @param contents
-	 *            The contents to store.
-	 * @return The storage ID. (Not currently used elsewhere.)
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 * @throws UnsupportedOperationException
-	 *             This method is unsupported.
-	 * @deprecated Currently unsupported; underlying database structure absent
-	 */
-	@Deprecated
-	default int storeDSEContents(Region region, byte[] contents)
-			throws StorageException {
-		throw new UnsupportedOperationException();
-	}
+    /**
+     * Stores some bytes in the database. The bytes represent the contents of a
+     * DSE region of a particular SpiNNaker core.
+     *
+     * @param region
+     *            The DSE region that this is the contents of.
+     * @param contents
+     *            The contents to store.
+     * @return The storage ID. (Not currently used elsewhere.)
+     * @throws StorageException
+     *             If anything goes wrong.
+     * @throws UnsupportedOperationException
+     *             This method is unsupported.
+     * @deprecated Currently unsupported; underlying database structure absent
+     */
+    @Deprecated
+    default int storeDSEContents(Region region, byte[] contents)
+            throws StorageException {
+        throw new UnsupportedOperationException();
+    }
 
-	/**
-	 * Stores some bytes in the database. The bytes represent the contents of a
-	 * DSE region of a particular SpiNNaker core.
-	 *
-	 * @param region
-	 *            The DSE region that this is the contents of.
-	 * @param contents
-	 *            The contents to store.
-	 * @return The storage ID. (Not currently used elsewhere.)
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 * @deprecated Currently unsupported; underlying database structure absent
-	 */
-	@Deprecated
-	default int storeRegionContents(Region region, ByteBuffer contents)
-			throws StorageException {
-		var ary = new byte[contents.remaining()];
-		contents.slice().get(ary);
-		return storeDSEContents(region, ary);
-	}
+    /**
+     * Stores some bytes in the database. The bytes represent the contents of a
+     * DSE region of a particular SpiNNaker core.
+     *
+     * @param region
+     *            The DSE region that this is the contents of.
+     * @param contents
+     *            The contents to store.
+     * @return The storage ID. (Not currently used elsewhere.)
+     * @throws StorageException
+     *             If anything goes wrong.
+     * @deprecated Currently unsupported; underlying database structure absent
+     */
+    @Deprecated
+    default int storeRegionContents(Region region, ByteBuffer contents)
+            throws StorageException {
+        var ary = new byte[contents.remaining()];
+        contents.slice().get(ary);
+        return storeDSEContents(region, ary);
+    }
 
-	/**
-	 * Extract some bytes to the database. The bytes represent the contents
-	 * of a recording region of a particular SpiNNaker core.
-	 *
-	 * @param region
-	 *            The recording region doing the recording.
-	 * @param contents
-	 *            The bytes to append.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	void addRecordingContents(Region region, byte[] contents)
-			throws StorageException;
+    /**
+     * Extract some bytes to the database. The bytes represent the contents
+     * of a recording region of a particular SpiNNaker core.
+     *
+     * @param region
+     *            The recording region doing the recording.
+     * @param contents
+     *            The bytes to append.
+     * @throws StorageException
+     *             If anything goes wrong.
+     */
+    void addRecordingContents(Region region, byte[] contents)
+            throws StorageException;
 
-	/**
-	 * Testing method.
-	 *
-	 * Other usage not supported!
-	 *
-	 * @throws StorageException
-	 *     If there is an error writing to the database.
-	 */
-	void insertMockExtraction() throws StorageException;
+    /**
+     * Testing method.
+     *
+     * Other usage not supported!
+     *
+     * @throws StorageException
+     *     If there is an error writing to the database.
+     */
+    void insertMockExtraction() throws StorageException;
 
-	/**
-	 * Extract some bytes to the database. The bytes represent the contents
-	 * of a recording region of a particular SpiNNaker core.
-	 *
-	 * @param region
-	 *            The recording region that is being recorded.
-	 * @param contents
-	 *            The contents to extract.
-	 * @throws StorageException
-	 *             If anything goes wrong.
-	 */
-	default void addRecordingContents(Region region, ByteBuffer contents)
-			throws StorageException {
-		var ary = new byte[contents.remaining()];
-		contents.slice().get(ary);
-		addRecordingContents(region, ary);
-	}
+    /**
+     * Extract some bytes to the database. The bytes represent the contents
+     * of a recording region of a particular SpiNNaker core.
+     *
+     * @param region
+     *            The recording region that is being recorded.
+     * @param contents
+     *            The contents to extract.
+     * @throws StorageException
+     *             If anything goes wrong.
+     */
+    default void addRecordingContents(Region region, ByteBuffer contents)
+            throws StorageException {
+        var ary = new byte[contents.remaining()];
+        contents.slice().get(ary);
+        addRecordingContents(region, ary);
+    }
 }

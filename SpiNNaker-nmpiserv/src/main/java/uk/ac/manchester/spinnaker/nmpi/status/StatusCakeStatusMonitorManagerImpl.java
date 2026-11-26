@@ -28,42 +28,42 @@ import uk.ac.manchester.spinnaker.nmpi.rest.StatusCake;
  * Status monitor manager that uses the StatusCake service.
  */
 public class StatusCakeStatusMonitorManagerImpl
-		implements StatusMonitorManager {
-	/** The URL of the service. */
-	private static final String SERVICE_URL = "https://push.statuscake.com/";
+        implements StatusMonitorManager {
+    /** The URL of the service. */
+    private static final String SERVICE_URL = "https://push.statuscake.com/";
 
-	/** The REST API to call. */
-	private StatusCake statusCake;
+    /** The REST API to call. */
+    private StatusCake statusCake;
 
-	/** The Primary Key to use for updates. */
-	@Value("${statusCake.primaryKey}")
-	private String primaryKey;
+    /** The Primary Key to use for updates. */
+    @Value("${statusCake.primaryKey}")
+    private String primaryKey;
 
-	/** The Test ID to use for updates. */
-	@Value("${statusCake.testID}")
-	private String testID;
+    /** The Test ID to use for updates. */
+    @Value("${statusCake.testID}")
+    private String testID;
 
-	/** Logging. */
-	private static final Logger logger =
-			getLogger(StatusCakeStatusMonitorManagerImpl.class);
+    /** Logging. */
+    private static final Logger logger =
+            getLogger(StatusCakeStatusMonitorManagerImpl.class);
 
-	/**
-	 * Initialise the service.
-	 */
-	@PostConstruct
-	private void init() {
-		statusCake = StatusCake.createClient(SERVICE_URL);
-	}
+    /**
+     * Initialise the service.
+     */
+    @PostConstruct
+    private void init() {
+        statusCake = StatusCake.createClient(SERVICE_URL);
+    }
 
-	@Override
-	public void updateStatus(final int runningJobs, final int nBoardsInUse) {
-		logger.debug(
-				"Updating to Status Cake - runningJobs = {}, nBoardsInUse = {}",
-				runningJobs, nBoardsInUse);
-		try {
-			statusCake.pushUpdate(primaryKey, testID, nBoardsInUse);
-		} catch (Throwable e) {
-			logger.error("Error updating to Status Cake", e);
-		}
-	}
+    @Override
+    public void updateStatus(final int runningJobs, final int nBoardsInUse) {
+        logger.debug(
+                "Updating to Status Cake - runningJobs = {}, nBoardsInUse = {}",
+                runningJobs, nBoardsInUse);
+        try {
+            statusCake.pushUpdate(primaryKey, testID, nBoardsInUse);
+        } catch (Throwable e) {
+            logger.error("Error updating to Status Cake", e);
+        }
+    }
 }

@@ -28,61 +28,61 @@ import uk.ac.manchester.spinnaker.messages.model.CPUState;
  * Cores failed to reach a given state within a timeout.
  */
 public class CoresNotInStateException extends SpinnmanException {
-	private static final long serialVersionUID = 1790369744408178478L;
+    private static final long serialVersionUID = 1790369744408178478L;
 
-	private static final String OP_TMPL =
-			"waiting for cores to reach one of %s";
+    private static final String OP_TMPL =
+            "waiting for cores to reach one of %s";
 
-	private static final String TMPL =
-			"operation '" + OP_TMPL + "' timed out after %f seconds";
+    private static final String TMPL =
+            "operation '" + OP_TMPL + "' timed out after %f seconds";
 
-	/** What the timeout was. */
-	private float timeout;
+    /** What the timeout was. */
+    private float timeout;
 
-	/** What operation was being done. */
-	private String operation;
+    /** What operation was being done. */
+    private String operation;
 
-	/** Which cores have failed. */
-	private CoreSubsets failedCores;
+    /** Which cores have failed. */
+    private CoreSubsets failedCores;
 
-	CoresNotInStateException(Integer timeout, EnumSet<CPUState> expectedStates,
-			CoreSubsets failedCores) {
-		this(convertTimeout(timeout), expectedStates, failedCores);
-	}
+    CoresNotInStateException(Integer timeout, EnumSet<CPUState> expectedStates,
+            CoreSubsets failedCores) {
+        this(convertTimeout(timeout), expectedStates, failedCores);
+    }
 
-	private static float convertTimeout(Integer timeout) {
-		if (timeout == null) {
-			return POSITIVE_INFINITY;
-		}
-		return timeout / (float) MSEC_PER_SEC;
-	}
+    private static float convertTimeout(Integer timeout) {
+        if (timeout == null) {
+            return POSITIVE_INFINITY;
+        }
+        return timeout / (float) MSEC_PER_SEC;
+    }
 
-	CoresNotInStateException(float timeout, EnumSet<CPUState> expectedStates,
-			CoreSubsets failedCores) {
-		super(format(TMPL, expectedStates, timeout));
-		this.operation = format(OP_TMPL, timeout);
-		this.timeout = timeout;
-		this.failedCores = failedCores;
-	}
+    CoresNotInStateException(float timeout, EnumSet<CPUState> expectedStates,
+            CoreSubsets failedCores) {
+        super(format(TMPL, expectedStates, timeout));
+        this.operation = format(OP_TMPL, timeout);
+        this.timeout = timeout;
+        this.failedCores = failedCores;
+    }
 
-	/**
-	 * {@return How long did we wait for the cores to enter the desired state}
-	 */
-	public float getTimeout() {
-		return timeout;
-	}
+    /**
+     * {@return How long did we wait for the cores to enter the desired state}
+     */
+    public float getTimeout() {
+        return timeout;
+    }
 
-	/**
-	 * {@return What were we attempting to do when the failure happened}
-	 */
-	public String getOperation() {
-		return operation;
-	}
+    /**
+     * {@return What were we attempting to do when the failure happened}
+     */
+    public String getOperation() {
+        return operation;
+    }
 
-	/**
-	 * {@return What cores have failed}
-	 */
-	public CoreSubsets getFailedCores() {
-		return failedCores;
-	}
+    /**
+     * {@return What cores have failed}
+     */
+    public CoreSubsets getFailedCores() {
+        return failedCores;
+    }
 }

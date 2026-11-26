@@ -21,24 +21,24 @@ import java.net.URI;
 import java.util.List;
 
 class Jobs {
-	/** The jobs of the machine. */
-	List<URI> jobs;
+    /** The jobs of the machine. */
+    List<URI> jobs;
 
-	/** The link to the next page of jobs. */
-	URI next;
+    /** The link to the next page of jobs. */
+    URI next;
 
-	/** The link to the previous page of jobs. */
-	URI prev;
+    /** The link to the previous page of jobs. */
+    URI prev;
 
-	public void setJobs(List<URI> jobs) {
-		this.jobs = readOnlyCopy(jobs);
-	}
+    public void setJobs(List<URI> jobs) {
+        this.jobs = readOnlyCopy(jobs);
+    }
 
-	public void setNext(URI next) {
-		this.next = next;
-	}
+    public void setNext(URI next) {
+        this.next = next;
+    }
 
-	public void setPrev(URI prev) {
-		this.prev = prev;
-	}
+    public void setPrev(URI prev) {
+        this.prev = prev;
+    }
 }

@@ -42,86 +42,86 @@ import jakarta.validation.Payload;
 @Documented
 @Retention(RUNTIME)
 @Target({
-	METHOD, FIELD, PARAMETER, TYPE_USE
+    METHOD, FIELD, PARAMETER, TYPE_USE
 })
 @Constraint(validatedBy = IPAddress.Validator.class)
 public @interface IPAddress {
-	/**
-	 * Whether {@code null} is allowed. It defaults to being disallowed.
-	 *
-	 * @return Whether to accept {@code null}.
-	 */
-	boolean nullOK() default false;
+    /**
+     * Whether {@code null} is allowed. It defaults to being disallowed.
+     *
+     * @return Whether to accept {@code null}.
+     */
+    boolean nullOK() default false;
 
-	/**
-	 * Whether the empty string is allowed. It defaults to being disallowed.
-	 *
-	 * @return Whether to accept the empty string.
-	 */
-	boolean emptyOK() default false;
+    /**
+     * Whether the empty string is allowed. It defaults to being disallowed.
+     *
+     * @return Whether to accept the empty string.
+     */
+    boolean emptyOK() default false;
 
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() default "'${validatedValue}' is a bad IPv4 address";
+    /**
+     * Message on constraint violated.
+     *
+     * @return Message
+     */
+    String message() default "'${validatedValue}' is a bad IPv4 address";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 * @hidden
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Group of constraints. Required by validation spec.
+     *
+     * @return Constraint groups, if any
+     * @hidden
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 * @hidden
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload info. Required by validation spec.
+     *
+     * @return Payloads, if any.
+     * @hidden
+     */
+    Class<? extends Payload>[] payload() default {};
 
-	/**
-	 * Validator for {@link IPAddress} constraints. Not intended for direct use.
-	 *
-	 * @hidden
-	 */
-	class Validator implements ConstraintValidator<IPAddress, String> {
-		private Pattern pattern;
+    /**
+     * Validator for {@link IPAddress} constraints. Not intended for direct use.
+     *
+     * @hidden
+     */
+    class Validator implements ConstraintValidator<IPAddress, String> {
+        private Pattern pattern;
 
-		private boolean emptyOK;
+        private boolean emptyOK;
 
-		private boolean nullOK;
+        private boolean nullOK;
 
-		@Override
-		public void initialize(IPAddress annotation) {
-			if (isNull(pattern)) {
-				pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
-			}
-			emptyOK = annotation.emptyOK();
-			nullOK = annotation.nullOK();
-		}
+        @Override
+        public void initialize(IPAddress annotation) {
+            if (isNull(pattern)) {
+                pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
+            }
+            emptyOK = annotation.emptyOK();
+            nullOK = annotation.nullOK();
+        }
 
-		@Override
-		public boolean isValid(String value,
-				ConstraintValidatorContext context) {
-			if (isNull(value)) {
-				return nullOK;
-			} else if (value.isEmpty()) {
-				return emptyOK;
-			}
-			if (!pattern.matcher(value).matches()) {
-				return false;
-			}
-			// Cheap checks succeeded; use the real parser now!
-			try {
-				InetAddress.getByName(value);
-				return true;
-			} catch (UnknownHostException e) {
-				return false;
-			}
-		}
-	}
+        @Override
+        public boolean isValid(String value,
+                ConstraintValidatorContext context) {
+            if (isNull(value)) {
+                return nullOK;
+            } else if (value.isEmpty()) {
+                return emptyOK;
+            }
+            if (!pattern.matcher(value).matches()) {
+                return false;
+            }
+            // Cheap checks succeeded; use the real parser now!
+            try {
+                InetAddress.getByName(value);
+                return true;
+            } catch (UnknownHostException e) {
+                return false;
+            }
+        }
+    }
 }

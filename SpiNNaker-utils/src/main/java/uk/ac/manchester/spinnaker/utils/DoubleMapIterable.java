@@ -28,30 +28,30 @@ import java.util.Map;
  *            Class of the Object to be supplied by the final Iterator.
  */
 public final class DoubleMapIterable<V> implements MappableIterable<V> {
-	private final Iterable<? extends Map<?, V>> outer;
+    private final Iterable<? extends Map<?, V>> outer;
 
-	/**
-	 * Creates an Iterable given a Map of Maps.
-	 *
-	 * @param outermap
-	 *            A double map with any type(s) as the keys.
-	 */
-	public DoubleMapIterable(Map<?, ? extends Map<?, V>> outermap) {
-		this(outermap.values());
-	}
+    /**
+     * Creates an Iterable given a Map of Maps.
+     *
+     * @param outermap
+     *            A double map with any type(s) as the keys.
+     */
+    public DoubleMapIterable(Map<?, ? extends Map<?, V>> outermap) {
+        this(outermap.values());
+    }
 
-	/**
-	 * Create an Iterator give a Collection/Iterable of Maps .
-	 *
-	 * @param outer
-	 *            An iterable of Maps.
-	 */
-	public DoubleMapIterable(Iterable<? extends Map<?, V>> outer) {
-		this.outer = outer;
-	}
+    /**
+     * Create an Iterator give a Collection/Iterable of Maps .
+     *
+     * @param outer
+     *            An iterable of Maps.
+     */
+    public DoubleMapIterable(Iterable<? extends Map<?, V>> outer) {
+        this.outer = outer;
+    }
 
-	@Override
-	public Iterator<V> iterator() {
-		return new DoubleMapIterator<>(outer);
-	}
+    @Override
+    public Iterator<V> iterator() {
+        return new DoubleMapIterator<>(outer);
+    }
 }

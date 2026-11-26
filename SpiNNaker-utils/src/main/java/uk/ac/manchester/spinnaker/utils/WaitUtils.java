@@ -27,34 +27,34 @@ import com.google.errorprone.annotations.CheckReturnValue;
  * Utilities for waiting very short periods of time.
  */
 public abstract class WaitUtils {
-	@UsedInJavadocOnly(LockSupport.class)
-	private WaitUtils() {
-	}
+    @UsedInJavadocOnly(LockSupport.class)
+    private WaitUtils() {
+    }
 
-	/**
-	 * Wait until the given time has passed. May decide to not wait at all.
-	 *
-	 * @param nanoTimestamp
-	 *            The first time at which the code may return. If in the past,
-	 *            returns immediately.
-	 * @return Whether the wait stopped because the thread was interrupted. The
-	 *         caller <em>must</em> decide what to do in that case.
-	 * @see System#nanoTime()
-	 * @see LockSupport#parkNanos(long)
-	 * @see <a href="https://stackoverflow.com/q/35875117/301832">Stack
-	 *      Overflow</a>
-	 */
-	@CheckReturnValue
-	public static boolean waitUntil(long nanoTimestamp) {
-		// Critical: this is static so JVM can inline this code!
-		while (true) {
-			long dt = nanoTimestamp - nanoTime();
-			if (dt <= 0) {
-				return interrupted();
-			} else if (interrupted()) {
-				return true;
-			}
-			parkNanos(dt);
-		}
-	}
+    /**
+     * Wait until the given time has passed. May decide to not wait at all.
+     *
+     * @param nanoTimestamp
+     *            The first time at which the code may return. If in the past,
+     *            returns immediately.
+     * @return Whether the wait stopped because the thread was interrupted. The
+     *         caller <em>must</em> decide what to do in that case.
+     * @see System#nanoTime()
+     * @see LockSupport#parkNanos(long)
+     * @see <a href="https://stackoverflow.com/q/35875117/301832">Stack
+     *      Overflow</a>
+     */
+    @CheckReturnValue
+    public static boolean waitUntil(long nanoTimestamp) {
+        // Critical: this is static so JVM can inline this code!
+        while (true) {
+            long dt = nanoTimestamp - nanoTime();
+            if (dt <= 0) {
+                return interrupted();
+            } else if (interrupted()) {
+                return true;
+            }
+            parkNanos(dt);
+        }
+    }
 }

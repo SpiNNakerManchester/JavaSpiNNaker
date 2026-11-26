@@ -14,13 +14,13 @@
 
 -- Get boards with more problem reports than a critical threshold
 WITH report_counts AS (
-	SELECT
-		board_reports.board_id,
-		COUNT(board_reports.report_id) AS num_reports
-	FROM board_reports
-	JOIN boards USING (board_id)
-	WHERE boards.functioning != 0 -- Ignore disabled boards
-	GROUP BY board_id)
+    SELECT
+        board_reports.board_id,
+        COUNT(board_reports.report_id) AS num_reports
+    FROM board_reports
+    JOIN boards USING (board_id)
+    WHERE boards.functioning != 0 -- Ignore disabled boards
+    GROUP BY board_id)
 SELECT
     boards.board_id,
     report_counts.num_reports,
@@ -29,6 +29,6 @@ SELECT
     boards.z,
     boards.address
 FROM
-	report_counts
-	JOIN boards USING (board_id)
+    report_counts
+    JOIN boards USING (board_id)
 WHERE report_counts.num_reports >= :threshold;

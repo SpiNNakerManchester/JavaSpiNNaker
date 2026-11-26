@@ -43,34 +43,34 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class SendSignal extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Construct a request to send a signal to cores.
-	 *
-	 * @param appID
-	 *            The ID of the application to signal (only for multicast
-	 *            signals).
-	 * @param signal
-	 *            The signal to send.
-	 */
-	public SendSignal(AppID appID, Signal signal) {
-		super(BOOT_MONITOR_CORE, CMD_SIG, signal.type.value,
-				data(appID, signal), ALL_CORE_SIGNAL_MASK);
-	}
+    /**
+     * Construct a request to send a signal to cores.
+     *
+     * @param appID
+     *            The ID of the application to signal (only for multicast
+     *            signals).
+     * @param signal
+     *            The signal to send.
+     */
+    public SendSignal(AppID appID, Signal signal) {
+        super(BOOT_MONITOR_CORE, CMD_SIG, signal.type.value,
+                data(appID, signal), ALL_CORE_SIGNAL_MASK);
+    }
 
-	// @formatter:off
-	/*
-	 * [ 31-24  |  23-16 | 15-8 |    7-0 ]
-	 * [ unused | signal | mask | app_id ]
-	 */
-	// @formatter:on
-	private static int data(AppID appID, Signal signal) {
-		return (signal.value << BYTE2) | (APP_MASK << BYTE1)
-				| (appID.appID << BYTE0);
-	}
+    // @formatter:off
+    /*
+     * [ 31-24  |  23-16 | 15-8 |    7-0 ]
+     * [ unused | signal | mask | app_id ]
+     */
+    // @formatter:on
+    private static int data(AppID appID, Signal signal) {
+        return (signal.value << BYTE2) | (APP_MASK << BYTE1)
+                | (appID.appID << BYTE0);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Send Signal", CMD_SIG, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Send Signal", CMD_SIG, buffer);
+    }
 }

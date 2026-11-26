@@ -25,36 +25,36 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 public final class InetIdTuple {
-	/** The InetAddress of this tuple which may be {@code null}. */
-	public final InetAddress address;
+    /** The InetAddress of this tuple which may be {@code null}. */
+    public final InetAddress address;
 
-	/** The ID of this tuple. */
-	public final int id;
+    /** The ID of this tuple. */
+    public final int id;
 
-	/**
-	 * Make an instance.
-	 *
-	 * @param address
-	 *            The IP address of this tuple, which may be {@code null}.
-	 * @param id
-	 *            The ID of this tuple.
-	 */
-	public InetIdTuple(InetAddress address, int id) {
-		this.address = address;
-		this.id = id;
-	}
+    /**
+     * Make an instance.
+     *
+     * @param address
+     *            The IP address of this tuple, which may be {@code null}.
+     * @param id
+     *            The ID of this tuple.
+     */
+    public InetIdTuple(InetAddress address, int id) {
+        this.address = address;
+        this.id = id;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(address, id);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(address, id);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof InetIdTuple) {
-			var other = (InetIdTuple) obj;
-			return (id == other.id) && Objects.equals(address, other.address);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof InetIdTuple) {
+            var other = (InetIdTuple) obj;
+            return (id == other.id) && Objects.equals(address, other.address);
+        }
+        return false;
+    }
 }

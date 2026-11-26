@@ -19,33 +19,33 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** Basic information about firmware. */
 public enum FirmwareDescriptors {
-	/** The main firmware copy. */
-	Primary(0x10000, 256, 54, 53),
-	/** The backup firmware copy. */
-	Backup(0x20000, 256, 54, 53),
-	/** The firmware used for booting. */
-	Boot(0, 32, 6, 5);
+    /** The main firmware copy. */
+    Primary(0x10000, 256, 54, 53),
+    /** The backup firmware copy. */
+    Backup(0x20000, 256, 54, 53),
+    /** The firmware used for booting. */
+    Boot(0, 32, 6, 5);
 
-	/** The location of the firmware descriptor in BMP memory. */
-	public final MemoryLocation address;
+    /** The location of the firmware descriptor in BMP memory. */
+    public final MemoryLocation address;
 
-	/**
-	 * The amount of data to read to understand the firmware. The size of the
-	 * firmware's header block.
-	 */
-	public final int blockSize;
+    /**
+     * The amount of data to read to understand the firmware. The size of the
+     * firmware's header block.
+     */
+    public final int blockSize;
 
-	/** The index of the version in the header block. */
-	public final int versionIndex;
+    /** The index of the version in the header block. */
+    public final int versionIndex;
 
-	/** The index of the timestamp in the header block. */
-	public final int timestampIndex;
+    /** The index of the timestamp in the header block. */
+    public final int timestampIndex;
 
-	FirmwareDescriptors(int address, int blockSize, int versionIndex,
-			int timestampIndex) {
-		this.address = new MemoryLocation(address);
-		this.blockSize = blockSize;
-		this.versionIndex = versionIndex;
-		this.timestampIndex = timestampIndex;
-	}
+    FirmwareDescriptors(int address, int blockSize, int versionIndex,
+            int timestampIndex) {
+        this.address = new MemoryLocation(address);
+        this.blockSize = blockSize;
+        this.versionIndex = versionIndex;
+        this.timestampIndex = timestampIndex;
+    }
 }

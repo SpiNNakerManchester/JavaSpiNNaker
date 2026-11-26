@@ -50,177 +50,177 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 @JsonDeserialize(using = TriadCoords.Deserializer.class)
 public final class TriadCoords implements Comparable<TriadCoords> {
-	/** The width and height of a triad, in chips. */
-	private static final int TRIAD_CHIP_SIZE = 12;
+    /** The width and height of a triad, in chips. */
+    private static final int TRIAD_CHIP_SIZE = 12;
 
-	private static final int TRIAD_MAJOR_OFFSET = 8;
+    private static final int TRIAD_MAJOR_OFFSET = 8;
 
-	private static final int TRIAD_MINOR_OFFSET = 4;
+    private static final int TRIAD_MINOR_OFFSET = 4;
 
-	/** Parses the string produced by {@link #toString()}. */
-	private static final Pattern PATTERN =
-			Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
+    /** Parses the string produced by {@link #toString()}. */
+    private static final Pattern PATTERN =
+            Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
 
-	/** X coordinate of triad. */
-	@ValidTriadX
-	public final int x;
+    /** X coordinate of triad. */
+    @ValidTriadX
+    public final int x;
 
-	/** Y coordinate of triad. */
-	@ValidTriadY
-	public final int y;
+    /** Y coordinate of triad. */
+    @ValidTriadY
+    public final int y;
 
-	/** Z coordinate of triad. */
-	@ValidTriadZ
-	public final int z;
+    /** Z coordinate of triad. */
+    @ValidTriadZ
+    public final int z;
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param x
-	 *            X coordinate.
-	 * @param y
-	 *            Y coordinate.
-	 * @param z
-	 *            Z coordinate.
-	 */
-	@JsonCreator
-	public TriadCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
-			@JsonProperty("z") int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
+    /**
+     * Create an instance.
+     *
+     * @param x
+     *            X coordinate.
+     * @param y
+     *            Y coordinate.
+     * @param z
+     *            Z coordinate.
+     */
+    @JsonCreator
+    public TriadCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
+            @JsonProperty("z") int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 
-	/**
-	 * Create an instance from its serial form. The serial form (where the
-	 * numbers may vary) is:
-	 *
-	 * {@code [x:3,y:5,z:2]}
-	 *
-	 * @param serialForm
-	 *            The form to deserialise.
-	 * @throws IllegalArgumentException
-	 *             If the string is not in the right form.
-	 */
-	@JsonCreator
-	public TriadCoords(String serialForm) {
-		var m = PATTERN.matcher(serialForm);
-		if (!m.matches()) {
-			throw new IllegalArgumentException(
-					"bad argument: " + serialForm);
-		}
-		int idx = 0;
-		x = parseInt(m.group(++idx));
-		y = parseInt(m.group(++idx));
-		z = parseInt(m.group(++idx));
-	}
+    /**
+     * Create an instance from its serial form. The serial form (where the
+     * numbers may vary) is:
+     *
+     * {@code [x:3,y:5,z:2]}
+     *
+     * @param serialForm
+     *            The form to deserialise.
+     * @throws IllegalArgumentException
+     *             If the string is not in the right form.
+     */
+    @JsonCreator
+    public TriadCoords(String serialForm) {
+        var m = PATTERN.matcher(serialForm);
+        if (!m.matches()) {
+            throw new IllegalArgumentException(
+                    "bad argument: " + serialForm);
+        }
+        int idx = 0;
+        x = parseInt(m.group(++idx));
+        y = parseInt(m.group(++idx));
+        z = parseInt(m.group(++idx));
+    }
 
-	/**
-	 * Convert these coordinates into a <em>machine-global</em> chip location.
-	 *
-	 * @return The chip location relative to the root of the machine.
-	 */
-	public ChipLocation asChipLocation() {
-		int rootX = x * TRIAD_CHIP_SIZE;
-		int rootY = y * TRIAD_CHIP_SIZE;
-		switch (z) {
-		case 1:
-			rootX += TRIAD_MAJOR_OFFSET;
-			rootY += TRIAD_MINOR_OFFSET;
-			break;
-		case 2:
-			rootX += TRIAD_MINOR_OFFSET;
-			rootY += TRIAD_MAJOR_OFFSET;
-			break;
-		case 0:
-		default:
-			break;
-		}
-		return new ChipLocation(rootX, rootY);
-	}
+    /**
+     * Convert these coordinates into a <em>machine-global</em> chip location.
+     *
+     * @return The chip location relative to the root of the machine.
+     */
+    public ChipLocation asChipLocation() {
+        int rootX = x * TRIAD_CHIP_SIZE;
+        int rootY = y * TRIAD_CHIP_SIZE;
+        switch (z) {
+        case 1:
+            rootX += TRIAD_MAJOR_OFFSET;
+            rootY += TRIAD_MINOR_OFFSET;
+            break;
+        case 2:
+            rootX += TRIAD_MINOR_OFFSET;
+            rootY += TRIAD_MAJOR_OFFSET;
+            break;
+        case 0:
+        default:
+            break;
+        }
+        return new ChipLocation(rootX, rootY);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TriadCoords) {
-			var other = (TriadCoords) obj;
-			return x == other.x && y == other.y && z == other.z;
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TriadCoords) {
+            var other = (TriadCoords) obj;
+            return x == other.x && y == other.y && z == other.z;
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return x * 25 + y * 5 + z;
-	}
+    @Override
+    public int hashCode() {
+        return x * 25 + y * 5 + z;
+    }
 
-	@Override
-	public String toString() {
-		return "[x:" + x + ",y:" + y + ",z:" + z + "]";
-	}
+    @Override
+    public String toString() {
+        return "[x:" + x + ",y:" + y + ",z:" + z + "]";
+    }
 
-	@Override
-	public int compareTo(TriadCoords other) {
-		int cmp = compare(x, other.x);
-		if (cmp != 0) {
-			return cmp;
-		}
-		cmp = compare(y, other.y);
-		if (cmp != 0) {
-			return cmp;
-		}
-		return compare(z, other.z);
-	}
+    @Override
+    public int compareTo(TriadCoords other) {
+        int cmp = compare(x, other.x);
+        if (cmp != 0) {
+            return cmp;
+        }
+        cmp = compare(y, other.y);
+        if (cmp != 0) {
+            return cmp;
+        }
+        return compare(z, other.z);
+    }
 
-	/** JSON deserializer for {@link TriadCoords}. */
-	static final class Deserializer extends DeserializerHelper<TriadCoords> {
-		private static final long serialVersionUID = 1L;
+    /** JSON deserializer for {@link TriadCoords}. */
+    static final class Deserializer extends DeserializerHelper<TriadCoords> {
+        private static final long serialVersionUID = 1L;
 
-		Deserializer() {
-			super(TriadCoords.class);
-		}
+        Deserializer() {
+            super(TriadCoords.class);
+        }
 
-		@Override
-		TriadCoords deserializeArray() throws IOException {
-			int x = getNextIntOfArray();
-			int y = getNextIntOfArray();
-			int z = getNextIntOfArray();
-			requireEndOfArray();
-			return new TriadCoords(x, y, z);
-		}
+        @Override
+        TriadCoords deserializeArray() throws IOException {
+            int x = getNextIntOfArray();
+            int y = getNextIntOfArray();
+            int z = getNextIntOfArray();
+            requireEndOfArray();
+            return new TriadCoords(x, y, z);
+        }
 
-		@Override
-		TriadCoords deserializeObject() throws IOException {
-			Integer x = null, y = null, z = null;
-			String name;
-			while ((name = getNextFieldName()) != null) {
-				switch (name) {
-				case "x":
-					x = requireSetOnceInt(name, x);
-					break;
-				case "y":
-					y = requireSetOnceInt(name, y);
-					break;
-				case "z":
-					z = requireSetOnceInt(name, z);
-					break;
-				default:
-					unknownProperty(name);
-				}
-			}
-			if (x == null || y == null || z == null) {
-				missingProperty("x", x, "y", y, "z", z);
-			}
-			return new TriadCoords(x, y, z);
-		}
+        @Override
+        TriadCoords deserializeObject() throws IOException {
+            Integer x = null, y = null, z = null;
+            String name;
+            while ((name = getNextFieldName()) != null) {
+                switch (name) {
+                case "x":
+                    x = requireSetOnceInt(name, x);
+                    break;
+                case "y":
+                    y = requireSetOnceInt(name, y);
+                    break;
+                case "z":
+                    z = requireSetOnceInt(name, z);
+                    break;
+                default:
+                    unknownProperty(name);
+                }
+            }
+            if (x == null || y == null || z == null) {
+                missingProperty("x", x, "y", y, "z", z);
+            }
+            return new TriadCoords(x, y, z);
+        }
 
-		@Override
-		TriadCoords deserializeString(String string) {
-			return new TriadCoords(string);
-		}
+        @Override
+        TriadCoords deserializeString(String string) {
+            return new TriadCoords(string);
+        }
 
-		@Override
-		public List<Object> getKnownPropertyNames() {
-			return List.of("x", "y", "z");
-		}
-	}
+        @Override
+        public List<Object> getKnownPropertyNames() {
+            return List.of("x", "y", "z");
+        }
+    }
 }

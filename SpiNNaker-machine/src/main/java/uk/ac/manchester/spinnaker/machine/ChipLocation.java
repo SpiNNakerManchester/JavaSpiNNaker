@@ -42,93 +42,93 @@ import com.google.errorprone.annotations.Immutable;
  */
 @JsonIgnoreProperties({"scamp-core", "scamp_core", "scampCore"})
 public final class ChipLocation
-		implements HasChipLocation, Comparable<ChipLocation>, Serializable {
-	private static final long serialVersionUID = -2343484354316378507L;
+        implements HasChipLocation, Comparable<ChipLocation>, Serializable {
+    private static final long serialVersionUID = -2343484354316378507L;
 
-	/** The X coordinate. */
-	@ValidX
-	private final int x;
+    /** The X coordinate. */
+    @ValidX
+    private final int x;
 
-	/** The Y coordinate. */
-	@ValidY
-	private final int y;
+    /** The Y coordinate. */
+    @ValidY
+    private final int y;
 
-	/**
-	 * The location (0,0), which is in the bottom/left corner and typically the
-	 * Ethernet-enabled chip for the lead board of an allocation. It is also
-	 * typically the boot board of an allocation.
-	 */
-	public static final ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
+    /**
+     * The location (0,0), which is in the bottom/left corner and typically the
+     * Ethernet-enabled chip for the lead board of an allocation. It is also
+     * typically the boot board of an allocation.
+     */
+    public static final ChipLocation ZERO_ZERO = new ChipLocation(0, 0);
 
-	/**
-	 * The location (1,0), which is the one to the east/right of the bottom/left
-	 * corner.
-	 * <p>
-	 * This location has special meaning on a 4 chip board.
-	 */
-	public static final ChipLocation ONE_ZERO = new ChipLocation(1, 0);
+    /**
+     * The location (1,0), which is the one to the east/right of the bottom/left
+     * corner.
+     * <p>
+     * This location has special meaning on a 4 chip board.
+     */
+    public static final ChipLocation ONE_ZERO = new ChipLocation(1, 0);
 
-	/**
-	 * Create the location of a chip on a SpiNNaker machine.
-	 *
-	 * @param x
-	 *            The X coordinate
-	 * @param y
-	 *            The Y coordinate
-	 * @throws IllegalArgumentException
-	 *             Thrown is either x or y is negative or too big.
-	 */
-	@JsonCreator
-	public ChipLocation(@JsonProperty(value = "x", required = true) int x,
-			@JsonProperty(value = "y", required = true) int y) {
-		validateChipLocation(x, y);
-		this.x = x;
-		this.y = y;
-	}
+    /**
+     * Create the location of a chip on a SpiNNaker machine.
+     *
+     * @param x
+     *            The X coordinate
+     * @param y
+     *            The Y coordinate
+     * @throws IllegalArgumentException
+     *             Thrown is either x or y is negative or too big.
+     */
+    @JsonCreator
+    public ChipLocation(@JsonProperty(value = "x", required = true) int x,
+            @JsonProperty(value = "y", required = true) int y) {
+        validateChipLocation(x, y);
+        this.x = x;
+        this.y = y;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj instanceof ChipLocation) {
-			var that = (ChipLocation) obj;
-			return (x == that.x) && (y == that.y);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof ChipLocation) {
+            var that = (ChipLocation) obj;
+            return (x == that.x) && (y == that.y);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return (x << COORD_SHIFT) ^ y;
-	}
+    @Override
+    public int hashCode() {
+        return (x << COORD_SHIFT) ^ y;
+    }
 
-	@Override
-	public int compareTo(ChipLocation other) {
-		int cmp = compare(x, other.x);
-		if (cmp == 0) {
-			cmp = compare(y, other.y);
-		}
-		return cmp;
-	}
+    @Override
+    public int compareTo(ChipLocation other) {
+        int cmp = compare(x, other.x);
+        if (cmp == 0) {
+            cmp = compare(y, other.y);
+        }
+        return cmp;
+    }
 
-	@Override
-	public int getX() {
-		return x;
-	}
+    @Override
+    public int getX() {
+        return x;
+    }
 
-	@Override
-	public int getY() {
-		return y;
-	}
+    @Override
+    public int getY() {
+        return y;
+    }
 
-	@Override
-	public String toString() {
-		return "X:" + getX() + " Y:" + getY();
-	}
+    @Override
+    public String toString() {
+        return "X:" + getX() + " Y:" + getY();
+    }
 
-	@Override
-	public ChipLocation asChipLocation() {
-		return this;
-	}
+    @Override
+    public ChipLocation asChipLocation() {
+        return this;
+    }
 }

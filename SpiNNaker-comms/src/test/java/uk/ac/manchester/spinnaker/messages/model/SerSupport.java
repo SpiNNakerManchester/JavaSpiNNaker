@@ -22,22 +22,22 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 abstract class SerSupport {
-	private SerSupport() {
-	}
+    private SerSupport() {
+    }
 
-	static byte[] serialize(Object obj) throws IOException {
-		var baos = new ByteArrayOutputStream();
-		try (var oos = new ObjectOutputStream(baos)) {
-			oos.writeObject(obj);
-		}
-		return baos.toByteArray();
-	}
+    static byte[] serialize(Object obj) throws IOException {
+        var baos = new ByteArrayOutputStream();
+        try (var oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(obj);
+        }
+        return baos.toByteArray();
+    }
 
-	static <T> T deserialize(byte[] bytes, Class<T> cls)
-			throws ClassNotFoundException, IOException {
-		var bais = new ByteArrayInputStream(bytes);
-		try (var ois = new ObjectInputStream(bais)) {
-			return cls.cast(ois.readObject());
-		}
-	}
+    static <T> T deserialize(byte[] bytes, Class<T> cls)
+            throws ClassNotFoundException, IOException {
+        var bais = new ByteArrayInputStream(bytes);
+        try (var ois = new ObjectInputStream(bais)) {
+            return cls.cast(ois.readObject());
+        }
+    }
 }

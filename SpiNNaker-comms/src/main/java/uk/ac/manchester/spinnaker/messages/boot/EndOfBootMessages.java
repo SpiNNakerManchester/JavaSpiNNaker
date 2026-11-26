@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.boot.BootOpCode.FLOOD_FILL_CON
  * The message indicating the end of a flood fill for booting.
  */
 class EndOfBootMessages extends BootMessage {
-	EndOfBootMessages() {
-		super(FLOOD_FILL_CONTROL, 1, 0, 0);
-	}
+    EndOfBootMessages() {
+        super(FLOOD_FILL_CONTROL, 1, 0, 0);
+    }
 }

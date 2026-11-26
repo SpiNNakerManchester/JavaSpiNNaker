@@ -26,28 +26,28 @@ import java.nio.ReadOnlyBufferException;
 import org.junit.jupiter.api.Test;
 
 public class TestByteBufferUtils {
-	@Test
-	public void testSlice() {
-		var bb = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
-		var s = ByteBufferUtils.slice(bb, 4, 4);
-		s.putInt(0x01020304);
+    @Test
+    public void testSlice() {
+        var bb = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
+        var s = ByteBufferUtils.slice(bb, 4, 4);
+        s.putInt(0x01020304);
 
-		// Check range enforcement
-		assertThrows(BufferOverflowException.class, () -> s.put((byte) 0));
+        // Check range enforcement
+        assertThrows(BufferOverflowException.class, () -> s.put((byte) 0));
 
-		// Check write-through worked
-		assertEquals(0, bb.getInt());
-		assertEquals(0x01020304, bb.getInt());
-		assertEquals(0, bb.getInt());
+        // Check write-through worked
+        assertEquals(0, bb.getInt());
+        assertEquals(0x01020304, bb.getInt());
+        assertEquals(0, bb.getInt());
 
-		// Check read-only carried around
-		bb = bb.asReadOnlyBuffer();
-		var r = ByteBufferUtils.slice(bb, 4, 4);
-		assertThrows(ReadOnlyBufferException.class, () -> r.putInt(0x5060708));
-		assertEquals(0x01020304, r.getInt());
+        // Check read-only carried around
+        bb = bb.asReadOnlyBuffer();
+        var r = ByteBufferUtils.slice(bb, 4, 4);
+        assertThrows(ReadOnlyBufferException.class, () -> r.putInt(0x5060708));
+        assertEquals(0x01020304, r.getInt());
 
-		// Check range sanity enforced
-		assertThrows(IllegalArgumentException.class,
-				() -> ByteBufferUtils.slice(r, 0, 16));
-	}
+        // Check range sanity enforced
+        assertThrows(IllegalArgumentException.class,
+                () -> ByteBufferUtils.slice(r, 0, 16));
+    }
 }

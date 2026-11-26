@@ -42,27 +42,27 @@ import jakarta.validation.constraints.PositiveOrZero;
 @Constraint(validatedBy = {})
 @ReportAsSingleViolation
 public @interface ValidTriadY {
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() default "Y coordinate (${validatedValue}) "
-			+ "must be at least 0 and no more than 63";
+    /**
+     * Message on constraint violated.
+     *
+     * @return Message
+     */
+    String message() default "Y coordinate (${validatedValue}) "
+            + "must be at least 0 and no more than 63";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 * @hidden
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Group of constraints. Required by validation spec.
+     *
+     * @return Constraint groups, if any
+     * @hidden
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 * @hidden
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload info. Required by validation spec.
+     *
+     * @return Payloads, if any.
+     * @hidden
+     */
+    Class<? extends Payload>[] payload() default {};
 }

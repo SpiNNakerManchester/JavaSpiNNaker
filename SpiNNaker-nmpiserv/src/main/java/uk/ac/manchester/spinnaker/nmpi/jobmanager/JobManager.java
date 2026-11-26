@@ -83,732 +83,732 @@ import uk.ac.manchester.spinnaker.nmpi.status.StatusMonitorManager;
 @Service("service")
 // TODO needs security; Role = JobEngine
 public class JobManager implements NMPIQueueListener, JobManagerInterface {
-	/** Assumed number of chips on a board. */
-	private static final double CHIPS_PER_BOARD = 48.0;
-
-	/** Assumed number of cores usable per chip. */
-	private static final double CORES_PER_CHIP = 15.0;
-
-	/** Default number of boards to request. */
-	private static final int DEFAULT_N_BOARDS = 3;
-
-	/** Number of milliseconds per second. */
-	private static final double MILLISECONDS_PER_SECOND = 1000.0;
-
-	/** Threshold before the number of boards is scaled up. */
-	private static final double SCALE_UP_THRESHOLD = 0.1;
-
-	/** Seconds between status updates. */
-	public static final int STATUS_UPDATE_PERIOD = 10;
-
-	/** The machine manager. */
-	@Autowired
-	private MachineManager machineManager;
-
-	/** The NMPI queue manager. */
-	@Autowired
-	private NMPIQueueManager queueManager;
-
-	/** The output manager. */
-	@Autowired
-	private OutputManagerImpl outputManager;
-
-	/** The status updater. */
-	@Autowired
-	private StatusMonitorManager statusMonitorManager;
-
-	/** The base URL of the REST service. */
-	private final URL baseUrl;
-
-	/** The Job Execution factory. */
-	@Autowired
-	private JobExecuterFactory jobExecuterFactory;
-
-	/** True if jobs should be restarted on failure. */
-	@Value("${restartJobExecutorOnFailure}")
-	private boolean restartJobExecuterOnFailure;
-
-	/** The name of the setup script. */
-	@Value("${setupScript}")
-	private Resource setupScript;
-
-	/** Logging. */
-	private static final Logger logger = getLogger(JobManager.class);
-
-	/** Job ID &rarr; Machine(s) allocated. */
-	private final Map<Integer, List<SpinnakerMachine>> allocatedMachines =
-			new HashMap<>();
-
-	/** Executor ID &rarr; Executor. */
-	private final Map<String, JobExecuter> jobExecuters = new HashMap<>();
-
-	/** Executor ID &rarr; Job ID. */
-	private final Map<String, Job> executorJobId = new HashMap<>();
-
-	/** Job ID &rarr; Directory of temporary output files. */
-	private final Map<Integer, File> jobOutputTempFiles = new HashMap<>();
-
-	/** Job ID &rarr; Job Provenance data. */
-	private final Map<Integer, ObjectNode> jobProvenance = new HashMap<>();
-
-	/** Job ID &rarr; Job owner. */
-	private final Map<Integer, String> jobOwner = new HashMap<>();
-
-	/** Thread group for the executor. */
-	private ThreadGroup threadGroup;
-
-	/**
-	 * Calls {@link #updateStatus()} every {@link #STATUS_UPDATE_PERIOD}
-	 * seconds.
-	 */
-	private final ScheduledExecutorService scheduler =
-			newScheduledThreadPool(1);
-
-	/**
-	 * Create a job manager.
-	 *
-	 * @param baseUrl
-	 *            The URL of the REST service of the manager.
-	 */
-	public JobManager(final URL baseUrl) {
-		this.baseUrl = requireNonNull(baseUrl);
-		logger.info("Base URL is {}", baseUrl);
-	}
-
-	/**
-	 * Start the manager's worker threads.
-	 *
-	 * @throws IOException
-	 *             If we get an error starting a job.
-	 */
-	@PostConstruct
-	private void startManager() throws IOException {
-		threadGroup = new ThreadGroup("NMPI");
-
-		// Start looking for jobs after the startup of the services
-		scheduler.schedule(() -> startJobs(), STATUS_UPDATE_PERIOD,
-				TimeUnit.SECONDS);
-	}
-
-	private void startJobs() {
-		// Get all jobs that are supposedly running or waiting and start them
-		// again
-		for (var job : queueManager.getJobs()) {
-			try {
-				addJob((Job) job);
-			} catch (IOException e) {
-				logger.error("Error adding job at startup", e);
-			}
-		}
-
-		// Start the queue manager
-		queueManager.addListener(this);
-		new Thread(threadGroup, queueManager::processResponsesFromQueue,
-				"QueueManager").start();
-		scheduler.scheduleAtFixedRate(this::updateStatus,
-				0, STATUS_UPDATE_PERIOD, TimeUnit.SECONDS);
-	}
-
-	/**
-	 * Stop the manager's worker threads.
-	 */
-	@PreDestroy
-	private void stopManager() {
-		scheduler.shutdown();
-		queueManager.close(); // Stops the queue manager thread eventually
-	}
-
-	@Override
-	public void addJob(final Job job) throws IOException {
-		requireNonNull(job);
-		logger.info("New job {}", job.getId());
-		jobOwner.put(job.getId(), job.getUserId());
-
-		// Start an executer for the job
-		launchExecuter(job);
-	}
-
-	/**
-	 * You need to hold the lock on {@link #jobExecuters} when running this
-	 * method.
-	 *
-	 * @param job
-	 *            The job to execute
-	 * @throws IOException
-	 *             If there is an error starting the job
-	 */
-	private void launchExecuter(final Job job) throws IOException {
-		final var executer =
-				jobExecuterFactory.createJobExecuter(this, baseUrl);
-		synchronized (jobExecuters) {
-			var executerId = executer.getExecuterId();
-			jobExecuters.put(executerId, executer);
-			executorJobId.put(executerId, job);
-			jobExecuters.notifyAll();
-		}
-		executer.startExecuter();
-	}
-
-	@Override
-	public Job getNextJob(final String executerId) {
-		requireNonNull(executerId);
-		Job job = null;
-		synchronized (jobExecuters) {
-			job = executorJobId.get(executerId);
-			while (isNull(job)) {
-				waitfor(jobExecuters);
-				job = executorJobId.get(executerId);
-			}
-		}
-		logger.info("Executer {} is running {}", executerId, job.getId());
-		queueManager.setJobRunning(job.getId());
-		return job;
-	}
-
-	@Override
-	public SpinnakerMachine getLargestJobMachine(final int id,
-			final double runTime) {
-		// TODO Check quota to get the largest machine within the quota
-		try {
-			return machineManager.getMachines().stream()
-					.max(comparing(SpinnakerMachine::getArea))
-					.orElse(null);
-		} catch (IOException e) {
-			throw new InternalServerErrorException(e);
-		}
-	}
-
-	@Override
-	public SpinnakerMachine getJobMachine(final int id, final int nCores,
-			final int nChips, final int nBoards, final double runTime) {
-
-		logger.info(
-				"Request for {} cores or {} chips or {} boards for {} seconds",
-				nCores, nChips, nBoards, runTime / MILLISECONDS_PER_SECOND);
-
-		int nBoardsToRequest = nBoards;
-
-		// If nothing specified, use 3 boards
-		if ((nBoards <= 0) && (nChips <= 0) && (nCores <= 0)) {
-			nBoardsToRequest = DEFAULT_N_BOARDS;
-		}
-
-		// If boards not specified, use cores or chips
-		if (nBoardsToRequest <= 0) {
-			double nChipsExact = nChips;
-
-			// If chips not specified, use cores
-			if (nChipsExact <= 0) {
-				nChipsExact = nCores / CORES_PER_CHIP;
-			}
-
-			double nBoardsExact = nChips / CHIPS_PER_BOARD;
-
-			if ((ceil(nBoardsExact) - nBoardsExact) < SCALE_UP_THRESHOLD) {
-				nBoardsExact += 1.0;
-			}
-			if (nBoardsExact < 1.0) {
-				nBoardsExact = 1.0;
-			}
-			nBoardsExact = ceil(nBoardsExact);
-			nBoardsToRequest = (int) nBoardsExact;
-		}
-
-		final var machine = allocateMachineForJob(id, jobOwner.get(id),
-				nBoardsToRequest);
-		logger.info("Running {} on {}", id, machine.getMachineName());
-		addProvenance(id, asList("spinnaker_machine"),
-				machine.getMachineName());
-
-		return machine;
-	}
-
-	/**
-	 * Searches the list for the machine with the given name.
-	 *
-	 * @param id
-	 *            The job id.
-	 * @param machineName
-	 *            The name of the machine to find.
-	 * @param remove
-	 *            Whether the machine found should be removed or not.
-	 * @return The machine found
-	 * @throws WebApplicationException
-	 *             if machine not found
-	 */
-	private SpinnakerMachine findMachine(final int id,
-			final String machineName, final boolean remove) {
-		var machines = allocatedMachines.get(id);
-		if (isNull(machines)) {
-			throw new WebApplicationException(
-					"No machines found for job " + id, NOT_FOUND);
-		}
-		for (var machine : machines) {
-			if (machine.getMachineName().equals(machineName)) {
-				if (remove) {
-					machines.remove(machine);
-				}
-				return machine;
-			}
-		}
-		throw new WebApplicationException(
-				"Machine " + machineName + " does not exist for job " + id,
-				BAD_REQUEST);
-	}
-
-	@Override
-	public void releaseMachine(final int id, final String machineName) {
-		synchronized (allocatedMachines) {
-			var machine = findMachine(id, machineName, true);
-			try {
-				machineManager.releaseMachine(machine);
-			} catch (IOException e) {
-				throw new InternalServerErrorException(e);
-			}
-		}
-	}
-
-	@Override
-	public void setMachinePower(final int id, final String machineName,
-			final boolean powerOn) {
-		synchronized (allocatedMachines) {
-			var machine = findMachine(id, machineName, false);
-			try {
-				machineManager.setMachinePower(machine, powerOn);
-			} catch (IOException e) {
-				throw new InternalServerErrorException(e);
-			}
-		}
-	}
-
-	@Override
-	public ChipCoordinates getChipCoordinates(final int id,
-			final String machineName, final int chipX, final int chipY) {
-		synchronized (allocatedMachines) {
-			var machine = findMachine(id, machineName, false);
-			try {
-				return machineManager.getChipCoordinates(machine, chipX, chipY);
-			} catch (IOException e) {
-				throw new InternalServerErrorException(e);
-			}
-		}
-	}
-
-	/**
-	 * Get a machine to run the job on.
-	 *
-	 * @param id
-	 *            The ID of the job
-	 * @param user
-	 *            The user to run the job as
-	 * @param nBoardsToRequest
-	 *            The number of boards to request
-	 * @return The machine allocated
-	 */
-	private SpinnakerMachine allocateMachineForJob(final int id,
-			final String user, final int nBoardsToRequest) {
-		try {
-			final var machine = machineManager.getNextAvailableMachine(
-					nBoardsToRequest, user, id);
-			synchronized (allocatedMachines) {
-				allocatedMachines.computeIfAbsent(
-						id, ignored -> new ArrayList<>()).add(machine);
-			}
-			return machine;
-		} catch (IOException e) {
-			throw new InternalServerErrorException(e);
-		}
-	}
-
-	/**
-	 * Get the list of machines currently allocated to a job.
-	 *
-	 * @param id
-	 *            The id of the job.
-	 * @return The list of machines for the job.
-	 */
-	private List<SpinnakerMachine> getMachineForJob(final int id) {
-		synchronized (allocatedMachines) {
-			return allocatedMachines.get(id);
-		}
-	}
-
-	@Override
-	public void extendJobMachineLease(final int id, final double runTime) {
-		// Does Nothing
-	}
-
-	private boolean isMachineAvailable(final SpinnakerMachine machine) {
-		try {
-			return machineManager.isMachineAvailable(machine);
-		} catch (IOException e) {
-			throw new InternalServerErrorException(e);
-		}
-	}
-
-	@Override
-	public JobMachineAllocated checkMachineLease(final int id,
-			final int waitTime) {
-		final var machines = getMachineForJob(id);
-
-		// Return false if any machine is gone
-		if (!machines.stream().allMatch(this::isMachineAvailable)) {
-			return new JobMachineAllocated(false);
-		}
-
-		// Wait for the state change of any machine
-		waitForAnyMachineStateChange(waitTime, machines);
-
-		// Again check for a machine which is gone
-		return new JobMachineAllocated(machines.stream()
-				.allMatch(this::isMachineAvailable));
-	}
-
-	/**
-	 * Wait for something to happen to any of a list of machines.
-	 *
-	 * @param waitTime
-	 *            How long to wait
-	 * @param machines
-	 *            What to wait for events from.
-	 */
-	private void waitForAnyMachineStateChange(final int waitTime,
-			final List<SpinnakerMachine> machines) {
-		final var stateChangeSync = new LinkedBlockingQueue<>();
-		try {
-			for (final var machine : machines) {
-				final var stateThread = new Thread(threadGroup, () -> {
-					try {
-						machineManager.waitForMachineStateChange(machine,
-								waitTime);
-						stateChangeSync.offer(machine);
-					} catch (IOException e) {
-						throw new InternalServerErrorException(e);
-					}
-				}, "waiting for " + machine);
-				stateThread.setDaemon(true);
-				stateThread.start();
-			}
-			stateChangeSync.take();
-		} catch (final InterruptedException e) {
-			// Does Nothing
-		}
-	}
-
-	@Override
-	public void appendLog(final int id, final String logToAppend) {
-		logger.debug("Updating log for {}", id);
-		logger.trace("{}: {}", id, logToAppend);
-		queueManager.appendJobLog(id, requireNonNull(logToAppend));
-	}
-
-	static void checkFileIsInFolder(final File folder, final File file) {
-		try {
-			if (!file.getCanonicalPath().startsWith(
-					folder.getCanonicalPath() + File.separator)) {
-				logger.error("File {} is not in folder {}", file, folder);
-				throw new WebApplicationException(INTERNAL_SERVER_ERROR);
-			}
-		} catch (final IOException e) {
-			logger.error("Error checking if file {} is in folder {}",
-					file, folder, e);
-			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	@Override
-	public void addOutput(final String projectId, final int id,
-			final String output, final InputStream input) {
-		requireNonNull(output);
-		requireNonNull(input);
-		try {
-			if (!jobOutputTempFiles.containsKey(id)) {
-				final var tempOutputDir = createTempFile("jobOutput", ".tmp");
-				forceDelete(tempOutputDir);
-				forceMkdir(tempOutputDir);
-				jobOutputTempFiles.put(id, tempOutputDir);
-			}
-		} catch (final IOException e) {
-			logger.error("Error creating temporary output directory for {}",
-					id, e);
-			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
-		}
-
-		final var folder = jobOutputTempFiles.get(id);
-		final var outputFile = new File(folder, output);
-		checkFileIsInFolder(folder, outputFile);
-		try {
-			forceMkdirParent(outputFile);
-			copyInputStreamToFile(input, outputFile);
-		} catch (final IOException e) {
-			logger.error("Error writing file {} for job {}",
-					outputFile, id, e);
-			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	/**
-	 * Get the output data items for a job from a list of outputs.
-	 *
-	 * @param projectId
-	 *            The ID of the project of the job
-	 * @param id
-	 *            The ID of the job
-	 * @param baseFile
-	 *            The base file location for the files
-	 * @param outputs
-	 *            The output files
-	 * @return The list of data items.
-	 * @throws IOException
-	 *             If there was an error dealing with a file.
-	 */
-	private List<DataItem> getOutputFiles(final String projectId, final int id,
-			final String baseFile, final List<String> outputs)
-			throws IOException {
-		final var outputItems = new ArrayList<DataItem>();
-		if (nonNull(outputs)) {
-			final var outputFiles =
-					outputs.stream().map(File::new).collect(toList());
-			outputItems.addAll(outputManager.addOutputs(projectId, id,
-					new File(baseFile), outputFiles));
-		}
-		final var directory = jobOutputTempFiles.remove(id);
-		if (nonNull(directory)) {
-			outputItems.addAll(outputManager.addOutputs(projectId, id,
-					directory, listFiles(directory, null, true)));
-		}
-		return outputItems;
-	}
-
-	@Override
-	public void addProvenance(final int id, final List<String> path,
-			final String value) {
-		synchronized (jobProvenance) {
-			final var provenance = jobProvenance.computeIfAbsent(id,
-					ignored -> new ObjectNode(JsonNodeFactory.instance));
-
-			// Traverse the object node to find the path to add to
-			var current = provenance;
-			boolean add = true;
-			for (int i = 0; i < path.size() - 1; i++) {
-				var item = path.get(i);
-				var subNode = current.get(item);
-
-				// If the path is not present, add it
-				if (isNull(subNode)) {
-					subNode = current.putObject(item);
-				}
-
-				// If the item is an ObjectNode, go to the next item
-				if (subNode instanceof ObjectNode) {
-					current = (ObjectNode) subNode;
-
-					// If the item exists and is not an ObjectNode, this is an
-					// error as a non-object can't contain values
-				} else {
-					add = false;
-					logger.warn("Could not add provenance item {} to job {}: "
-							+ "Node {} is not an object",
-							path, id, item);
-					break;
-				}
-			}
-
-			// If we can add the item, add it
-			if (add) {
-				current.put(path.get(path.size() - 1), value);
-			}
-		}
-	}
-
-	/**
-	 * Get the provenance for a job.
-	 *
-	 * @param id
-	 *            The ID of the job
-	 * @return The provenance as a JSON data item
-	 */
-	private ObjectNode getProvenance(final int id) {
-		synchronized (jobProvenance) {
-			return jobProvenance.remove(id);
-		}
-	}
-
-	@Override
-	public void setJobFinished(final String projectId, final int id,
-			final String logToAppend, final String baseDirectory,
-			final List<String> outputs) {
-		requireNonNull(projectId);
-		requireNonNull(logToAppend);
-		requireNonNull(baseDirectory);
-		requireNonNull(outputs);
-		jobOwner.remove(id);
-		logger.info("Marking job {} as finished", id);
-		releaseAllocatedMachines(id);
-
-		// Do these before anything that can throw
-		final var prov = getProvenance(id);
-
-		try {
-			queueManager.setJobFinished(id, logToAppend,
-					getOutputFiles(projectId, id, baseDirectory, outputs),
-					prov);
-		} catch (final IOException e) {
-			logger.error("Error creating URLs while updating job", e);
-		}
-	}
-
-	private void releaseMachine(final SpinnakerMachine machine) {
-		try {
-			machineManager.releaseMachine(machine);
-		} catch (IOException e) {
-			throw new InternalServerErrorException(e);
-		}
-	}
-
-	/**
-	 * Release the machines allocated to a job.
-	 *
-	 * @param id
-	 *            The ID of the job
-	 * @return {@code true} if there were machines removed by this.
-	 */
-	private boolean releaseAllocatedMachines(final int id) {
-		synchronized (allocatedMachines) {
-			final var machines = allocatedMachines.remove(id);
-			if (nonNull(machines)) {
-				machines.forEach(this::releaseMachine);
-			}
-			return nonNull(machines);
-		}
-	}
-
-	@Override
-	public void setJobError(final String projectId, final int id,
-			final String error, final String logToAppend,
-			final String baseDirectory, final List<String> outputs,
-			final RemoteStackTrace stackTrace) {
-		requireNonNull(projectId);
-		requireNonNull(error);
-		requireNonNull(logToAppend);
-		requireNonNull(baseDirectory);
-		requireNonNull(outputs);
-		requireNonNull(stackTrace);
-
-		jobOwner.remove(id);
-
-		logger.info("Marking job {} as error", id);
-		releaseAllocatedMachines(id);
-
-		final var exception = reconstructRemoteException(error, stackTrace);
-		// Do these before anything that can throw
-		final var prov = getProvenance(id);
-
-		try {
-			queueManager.setJobError(id, logToAppend,
-					getOutputFiles(projectId, id, baseDirectory, outputs),
-					exception, prov);
-		} catch (final IOException e) {
-			logger.error("Error creating URLs while updating job", e);
-		}
-	}
-
-	/**
-	 * Convert a remote exception to a local one.
-	 *
-	 * @param error
-	 *            The error message.
-	 * @param stackTrace
-	 *            The stack trace.
-	 * @return The exception.
-	 */
-	private Exception reconstructRemoteException(final String error,
-			final RemoteStackTrace stackTrace) {
-		final var exception = new Exception(error);
-		exception.setStackTrace(stackTrace.getElements().stream()
-				.map(RemoteStackTraceElement::toSTE)
-				.toArray(StackTraceElement[]::new));
-		return exception;
-	}
-
-	/**
-	 * Mark the executor as having exited.
-	 *
-	 * @param executorId
-	 *            The ID of the executor in question
-	 * @param logToAppend
-	 *            The log messages
-	 */
-	public void setExecutorExited(final String executorId,
-			final String logToAppend) {
-		Job job = null;
-		synchronized (jobExecuters) {
-			job = executorJobId.remove(requireNonNull(executorId));
-			jobExecuters.remove(executorId);
-		}
-		if (nonNull(job)) {
-			final int id = job.getId();
-			if (jobOwner.containsKey(id)) {
-				logger.debug("Executer {} for Job {} has exited, "
-						+ "but job not exited cleanly", executorId, id);
-				jobOwner.remove(id);
-				releaseAllocatedMachines(id);
-				final var prov = getProvenance(id);
-				try {
-					final var projectId = job.getCollab();
-					queueManager.setJobError(id, logToAppend,
-							getOutputFiles(projectId, id, null, null),
-							new Exception("Job did not finish cleanly"), prov);
-				} catch (final IOException e) {
-					logger.error("Error creating URLs while updating job", e);
-					queueManager.setJobError(id, logToAppend,
-							new ArrayList<DataItem>(),
-							new Exception("Job did not finish cleanly"), prov);
-				}
-			} else {
-				logger.debug("Executer {} for Job {} has exited",
-						executorId, id);
-			}
-		} else {
-			logger.error("An executer {} has exited without a job. "
-					+ "This could indicate an error!", executorId);
-			logger.error(logToAppend);
-
-			if (restartJobExecuterOnFailure) {
-				logger.warn("Restarting of executers is currently disabled");
-			}
-		}
-	}
-
-	@Override
-	public Response getJobProcessManager() {
-		final var jobManagerStream =
-				getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER);
-		if (isNull(jobManagerStream)) {
-			throw new UnsatisfiedLinkError(
-					JOB_PROCESS_MANAGER + " not found in classpath");
-		}
-		return ok(jobManagerStream).type(APPLICATION_OCTET_STREAM).build();
-	}
-
-	@Override
-	public Response getSetupScript() throws IOException {
-		return ok(setupScript.getInputStream())
-				.type(APPLICATION_OCTET_STREAM).build();
-	}
-
-	/**
-	 * Updates the status.
-	 */
-	private void updateStatus() {
-		int nBoardsInUse = 0;
-		synchronized (allocatedMachines) {
-			for (var machines: allocatedMachines.values()) {
-				nBoardsInUse += machines.stream()
-						.mapToInt(SpinnakerMachine::getnBoards).sum();
-			}
-		}
-		statusMonitorManager.updateStatus(
-				jobExecuters.size(), nBoardsInUse);
-	}
+    /** Assumed number of chips on a board. */
+    private static final double CHIPS_PER_BOARD = 48.0;
+
+    /** Assumed number of cores usable per chip. */
+    private static final double CORES_PER_CHIP = 15.0;
+
+    /** Default number of boards to request. */
+    private static final int DEFAULT_N_BOARDS = 3;
+
+    /** Number of milliseconds per second. */
+    private static final double MILLISECONDS_PER_SECOND = 1000.0;
+
+    /** Threshold before the number of boards is scaled up. */
+    private static final double SCALE_UP_THRESHOLD = 0.1;
+
+    /** Seconds between status updates. */
+    public static final int STATUS_UPDATE_PERIOD = 10;
+
+    /** The machine manager. */
+    @Autowired
+    private MachineManager machineManager;
+
+    /** The NMPI queue manager. */
+    @Autowired
+    private NMPIQueueManager queueManager;
+
+    /** The output manager. */
+    @Autowired
+    private OutputManagerImpl outputManager;
+
+    /** The status updater. */
+    @Autowired
+    private StatusMonitorManager statusMonitorManager;
+
+    /** The base URL of the REST service. */
+    private final URL baseUrl;
+
+    /** The Job Execution factory. */
+    @Autowired
+    private JobExecuterFactory jobExecuterFactory;
+
+    /** True if jobs should be restarted on failure. */
+    @Value("${restartJobExecutorOnFailure}")
+    private boolean restartJobExecuterOnFailure;
+
+    /** The name of the setup script. */
+    @Value("${setupScript}")
+    private Resource setupScript;
+
+    /** Logging. */
+    private static final Logger logger = getLogger(JobManager.class);
+
+    /** Job ID &rarr; Machine(s) allocated. */
+    private final Map<Integer, List<SpinnakerMachine>> allocatedMachines =
+            new HashMap<>();
+
+    /** Executor ID &rarr; Executor. */
+    private final Map<String, JobExecuter> jobExecuters = new HashMap<>();
+
+    /** Executor ID &rarr; Job ID. */
+    private final Map<String, Job> executorJobId = new HashMap<>();
+
+    /** Job ID &rarr; Directory of temporary output files. */
+    private final Map<Integer, File> jobOutputTempFiles = new HashMap<>();
+
+    /** Job ID &rarr; Job Provenance data. */
+    private final Map<Integer, ObjectNode> jobProvenance = new HashMap<>();
+
+    /** Job ID &rarr; Job owner. */
+    private final Map<Integer, String> jobOwner = new HashMap<>();
+
+    /** Thread group for the executor. */
+    private ThreadGroup threadGroup;
+
+    /**
+     * Calls {@link #updateStatus()} every {@link #STATUS_UPDATE_PERIOD}
+     * seconds.
+     */
+    private final ScheduledExecutorService scheduler =
+            newScheduledThreadPool(1);
+
+    /**
+     * Create a job manager.
+     *
+     * @param baseUrl
+     *            The URL of the REST service of the manager.
+     */
+    public JobManager(final URL baseUrl) {
+        this.baseUrl = requireNonNull(baseUrl);
+        logger.info("Base URL is {}", baseUrl);
+    }
+
+    /**
+     * Start the manager's worker threads.
+     *
+     * @throws IOException
+     *             If we get an error starting a job.
+     */
+    @PostConstruct
+    private void startManager() throws IOException {
+        threadGroup = new ThreadGroup("NMPI");
+
+        // Start looking for jobs after the startup of the services
+        scheduler.schedule(() -> startJobs(), STATUS_UPDATE_PERIOD,
+                TimeUnit.SECONDS);
+    }
+
+    private void startJobs() {
+        // Get all jobs that are supposedly running or waiting and start them
+        // again
+        for (var job : queueManager.getJobs()) {
+            try {
+                addJob((Job) job);
+            } catch (IOException e) {
+                logger.error("Error adding job at startup", e);
+            }
+        }
+
+        // Start the queue manager
+        queueManager.addListener(this);
+        new Thread(threadGroup, queueManager::processResponsesFromQueue,
+                "QueueManager").start();
+        scheduler.scheduleAtFixedRate(this::updateStatus,
+                0, STATUS_UPDATE_PERIOD, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Stop the manager's worker threads.
+     */
+    @PreDestroy
+    private void stopManager() {
+        scheduler.shutdown();
+        queueManager.close(); // Stops the queue manager thread eventually
+    }
+
+    @Override
+    public void addJob(final Job job) throws IOException {
+        requireNonNull(job);
+        logger.info("New job {}", job.getId());
+        jobOwner.put(job.getId(), job.getUserId());
+
+        // Start an executer for the job
+        launchExecuter(job);
+    }
+
+    /**
+     * You need to hold the lock on {@link #jobExecuters} when running this
+     * method.
+     *
+     * @param job
+     *            The job to execute
+     * @throws IOException
+     *             If there is an error starting the job
+     */
+    private void launchExecuter(final Job job) throws IOException {
+        final var executer =
+                jobExecuterFactory.createJobExecuter(this, baseUrl);
+        synchronized (jobExecuters) {
+            var executerId = executer.getExecuterId();
+            jobExecuters.put(executerId, executer);
+            executorJobId.put(executerId, job);
+            jobExecuters.notifyAll();
+        }
+        executer.startExecuter();
+    }
+
+    @Override
+    public Job getNextJob(final String executerId) {
+        requireNonNull(executerId);
+        Job job = null;
+        synchronized (jobExecuters) {
+            job = executorJobId.get(executerId);
+            while (isNull(job)) {
+                waitfor(jobExecuters);
+                job = executorJobId.get(executerId);
+            }
+        }
+        logger.info("Executer {} is running {}", executerId, job.getId());
+        queueManager.setJobRunning(job.getId());
+        return job;
+    }
+
+    @Override
+    public SpinnakerMachine getLargestJobMachine(final int id,
+            final double runTime) {
+        // TODO Check quota to get the largest machine within the quota
+        try {
+            return machineManager.getMachines().stream()
+                    .max(comparing(SpinnakerMachine::getArea))
+                    .orElse(null);
+        } catch (IOException e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+    @Override
+    public SpinnakerMachine getJobMachine(final int id, final int nCores,
+            final int nChips, final int nBoards, final double runTime) {
+
+        logger.info(
+                "Request for {} cores or {} chips or {} boards for {} seconds",
+                nCores, nChips, nBoards, runTime / MILLISECONDS_PER_SECOND);
+
+        int nBoardsToRequest = nBoards;
+
+        // If nothing specified, use 3 boards
+        if ((nBoards <= 0) && (nChips <= 0) && (nCores <= 0)) {
+            nBoardsToRequest = DEFAULT_N_BOARDS;
+        }
+
+        // If boards not specified, use cores or chips
+        if (nBoardsToRequest <= 0) {
+            double nChipsExact = nChips;
+
+            // If chips not specified, use cores
+            if (nChipsExact <= 0) {
+                nChipsExact = nCores / CORES_PER_CHIP;
+            }
+
+            double nBoardsExact = nChips / CHIPS_PER_BOARD;
+
+            if ((ceil(nBoardsExact) - nBoardsExact) < SCALE_UP_THRESHOLD) {
+                nBoardsExact += 1.0;
+            }
+            if (nBoardsExact < 1.0) {
+                nBoardsExact = 1.0;
+            }
+            nBoardsExact = ceil(nBoardsExact);
+            nBoardsToRequest = (int) nBoardsExact;
+        }
+
+        final var machine = allocateMachineForJob(id, jobOwner.get(id),
+                nBoardsToRequest);
+        logger.info("Running {} on {}", id, machine.getMachineName());
+        addProvenance(id, asList("spinnaker_machine"),
+                machine.getMachineName());
+
+        return machine;
+    }
+
+    /**
+     * Searches the list for the machine with the given name.
+     *
+     * @param id
+     *            The job id.
+     * @param machineName
+     *            The name of the machine to find.
+     * @param remove
+     *            Whether the machine found should be removed or not.
+     * @return The machine found
+     * @throws WebApplicationException
+     *             if machine not found
+     */
+    private SpinnakerMachine findMachine(final int id,
+            final String machineName, final boolean remove) {
+        var machines = allocatedMachines.get(id);
+        if (isNull(machines)) {
+            throw new WebApplicationException(
+                    "No machines found for job " + id, NOT_FOUND);
+        }
+        for (var machine : machines) {
+            if (machine.getMachineName().equals(machineName)) {
+                if (remove) {
+                    machines.remove(machine);
+                }
+                return machine;
+            }
+        }
+        throw new WebApplicationException(
+                "Machine " + machineName + " does not exist for job " + id,
+                BAD_REQUEST);
+    }
+
+    @Override
+    public void releaseMachine(final int id, final String machineName) {
+        synchronized (allocatedMachines) {
+            var machine = findMachine(id, machineName, true);
+            try {
+                machineManager.releaseMachine(machine);
+            } catch (IOException e) {
+                throw new InternalServerErrorException(e);
+            }
+        }
+    }
+
+    @Override
+    public void setMachinePower(final int id, final String machineName,
+            final boolean powerOn) {
+        synchronized (allocatedMachines) {
+            var machine = findMachine(id, machineName, false);
+            try {
+                machineManager.setMachinePower(machine, powerOn);
+            } catch (IOException e) {
+                throw new InternalServerErrorException(e);
+            }
+        }
+    }
+
+    @Override
+    public ChipCoordinates getChipCoordinates(final int id,
+            final String machineName, final int chipX, final int chipY) {
+        synchronized (allocatedMachines) {
+            var machine = findMachine(id, machineName, false);
+            try {
+                return machineManager.getChipCoordinates(machine, chipX, chipY);
+            } catch (IOException e) {
+                throw new InternalServerErrorException(e);
+            }
+        }
+    }
+
+    /**
+     * Get a machine to run the job on.
+     *
+     * @param id
+     *            The ID of the job
+     * @param user
+     *            The user to run the job as
+     * @param nBoardsToRequest
+     *            The number of boards to request
+     * @return The machine allocated
+     */
+    private SpinnakerMachine allocateMachineForJob(final int id,
+            final String user, final int nBoardsToRequest) {
+        try {
+            final var machine = machineManager.getNextAvailableMachine(
+                    nBoardsToRequest, user, id);
+            synchronized (allocatedMachines) {
+                allocatedMachines.computeIfAbsent(
+                        id, ignored -> new ArrayList<>()).add(machine);
+            }
+            return machine;
+        } catch (IOException e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+    /**
+     * Get the list of machines currently allocated to a job.
+     *
+     * @param id
+     *            The id of the job.
+     * @return The list of machines for the job.
+     */
+    private List<SpinnakerMachine> getMachineForJob(final int id) {
+        synchronized (allocatedMachines) {
+            return allocatedMachines.get(id);
+        }
+    }
+
+    @Override
+    public void extendJobMachineLease(final int id, final double runTime) {
+        // Does Nothing
+    }
+
+    private boolean isMachineAvailable(final SpinnakerMachine machine) {
+        try {
+            return machineManager.isMachineAvailable(machine);
+        } catch (IOException e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+    @Override
+    public JobMachineAllocated checkMachineLease(final int id,
+            final int waitTime) {
+        final var machines = getMachineForJob(id);
+
+        // Return false if any machine is gone
+        if (!machines.stream().allMatch(this::isMachineAvailable)) {
+            return new JobMachineAllocated(false);
+        }
+
+        // Wait for the state change of any machine
+        waitForAnyMachineStateChange(waitTime, machines);
+
+        // Again check for a machine which is gone
+        return new JobMachineAllocated(machines.stream()
+                .allMatch(this::isMachineAvailable));
+    }
+
+    /**
+     * Wait for something to happen to any of a list of machines.
+     *
+     * @param waitTime
+     *            How long to wait
+     * @param machines
+     *            What to wait for events from.
+     */
+    private void waitForAnyMachineStateChange(final int waitTime,
+            final List<SpinnakerMachine> machines) {
+        final var stateChangeSync = new LinkedBlockingQueue<>();
+        try {
+            for (final var machine : machines) {
+                final var stateThread = new Thread(threadGroup, () -> {
+                    try {
+                        machineManager.waitForMachineStateChange(machine,
+                                waitTime);
+                        stateChangeSync.offer(machine);
+                    } catch (IOException e) {
+                        throw new InternalServerErrorException(e);
+                    }
+                }, "waiting for " + machine);
+                stateThread.setDaemon(true);
+                stateThread.start();
+            }
+            stateChangeSync.take();
+        } catch (final InterruptedException e) {
+            // Does Nothing
+        }
+    }
+
+    @Override
+    public void appendLog(final int id, final String logToAppend) {
+        logger.debug("Updating log for {}", id);
+        logger.trace("{}: {}", id, logToAppend);
+        queueManager.appendJobLog(id, requireNonNull(logToAppend));
+    }
+
+    static void checkFileIsInFolder(final File folder, final File file) {
+        try {
+            if (!file.getCanonicalPath().startsWith(
+                    folder.getCanonicalPath() + File.separator)) {
+                logger.error("File {} is not in folder {}", file, folder);
+                throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+            }
+        } catch (final IOException e) {
+            logger.error("Error checking if file {} is in folder {}",
+                    file, folder, e);
+            throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public void addOutput(final String projectId, final int id,
+            final String output, final InputStream input) {
+        requireNonNull(output);
+        requireNonNull(input);
+        try {
+            if (!jobOutputTempFiles.containsKey(id)) {
+                final var tempOutputDir = createTempFile("jobOutput", ".tmp");
+                forceDelete(tempOutputDir);
+                forceMkdir(tempOutputDir);
+                jobOutputTempFiles.put(id, tempOutputDir);
+            }
+        } catch (final IOException e) {
+            logger.error("Error creating temporary output directory for {}",
+                    id, e);
+            throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+        }
+
+        final var folder = jobOutputTempFiles.get(id);
+        final var outputFile = new File(folder, output);
+        checkFileIsInFolder(folder, outputFile);
+        try {
+            forceMkdirParent(outputFile);
+            copyInputStreamToFile(input, outputFile);
+        } catch (final IOException e) {
+            logger.error("Error writing file {} for job {}",
+                    outputFile, id, e);
+            throw new WebApplicationException(INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Get the output data items for a job from a list of outputs.
+     *
+     * @param projectId
+     *            The ID of the project of the job
+     * @param id
+     *            The ID of the job
+     * @param baseFile
+     *            The base file location for the files
+     * @param outputs
+     *            The output files
+     * @return The list of data items.
+     * @throws IOException
+     *             If there was an error dealing with a file.
+     */
+    private List<DataItem> getOutputFiles(final String projectId, final int id,
+            final String baseFile, final List<String> outputs)
+            throws IOException {
+        final var outputItems = new ArrayList<DataItem>();
+        if (nonNull(outputs)) {
+            final var outputFiles =
+                    outputs.stream().map(File::new).collect(toList());
+            outputItems.addAll(outputManager.addOutputs(projectId, id,
+                    new File(baseFile), outputFiles));
+        }
+        final var directory = jobOutputTempFiles.remove(id);
+        if (nonNull(directory)) {
+            outputItems.addAll(outputManager.addOutputs(projectId, id,
+                    directory, listFiles(directory, null, true)));
+        }
+        return outputItems;
+    }
+
+    @Override
+    public void addProvenance(final int id, final List<String> path,
+            final String value) {
+        synchronized (jobProvenance) {
+            final var provenance = jobProvenance.computeIfAbsent(id,
+                    ignored -> new ObjectNode(JsonNodeFactory.instance));
+
+            // Traverse the object node to find the path to add to
+            var current = provenance;
+            boolean add = true;
+            for (int i = 0; i < path.size() - 1; i++) {
+                var item = path.get(i);
+                var subNode = current.get(item);
+
+                // If the path is not present, add it
+                if (isNull(subNode)) {
+                    subNode = current.putObject(item);
+                }
+
+                // If the item is an ObjectNode, go to the next item
+                if (subNode instanceof ObjectNode) {
+                    current = (ObjectNode) subNode;
+
+                    // If the item exists and is not an ObjectNode, this is an
+                    // error as a non-object can't contain values
+                } else {
+                    add = false;
+                    logger.warn("Could not add provenance item {} to job {}: "
+                            + "Node {} is not an object",
+                            path, id, item);
+                    break;
+                }
+            }
+
+            // If we can add the item, add it
+            if (add) {
+                current.put(path.get(path.size() - 1), value);
+            }
+        }
+    }
+
+    /**
+     * Get the provenance for a job.
+     *
+     * @param id
+     *            The ID of the job
+     * @return The provenance as a JSON data item
+     */
+    private ObjectNode getProvenance(final int id) {
+        synchronized (jobProvenance) {
+            return jobProvenance.remove(id);
+        }
+    }
+
+    @Override
+    public void setJobFinished(final String projectId, final int id,
+            final String logToAppend, final String baseDirectory,
+            final List<String> outputs) {
+        requireNonNull(projectId);
+        requireNonNull(logToAppend);
+        requireNonNull(baseDirectory);
+        requireNonNull(outputs);
+        jobOwner.remove(id);
+        logger.info("Marking job {} as finished", id);
+        releaseAllocatedMachines(id);
+
+        // Do these before anything that can throw
+        final var prov = getProvenance(id);
+
+        try {
+            queueManager.setJobFinished(id, logToAppend,
+                    getOutputFiles(projectId, id, baseDirectory, outputs),
+                    prov);
+        } catch (final IOException e) {
+            logger.error("Error creating URLs while updating job", e);
+        }
+    }
+
+    private void releaseMachine(final SpinnakerMachine machine) {
+        try {
+            machineManager.releaseMachine(machine);
+        } catch (IOException e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+    /**
+     * Release the machines allocated to a job.
+     *
+     * @param id
+     *            The ID of the job
+     * @return {@code true} if there were machines removed by this.
+     */
+    private boolean releaseAllocatedMachines(final int id) {
+        synchronized (allocatedMachines) {
+            final var machines = allocatedMachines.remove(id);
+            if (nonNull(machines)) {
+                machines.forEach(this::releaseMachine);
+            }
+            return nonNull(machines);
+        }
+    }
+
+    @Override
+    public void setJobError(final String projectId, final int id,
+            final String error, final String logToAppend,
+            final String baseDirectory, final List<String> outputs,
+            final RemoteStackTrace stackTrace) {
+        requireNonNull(projectId);
+        requireNonNull(error);
+        requireNonNull(logToAppend);
+        requireNonNull(baseDirectory);
+        requireNonNull(outputs);
+        requireNonNull(stackTrace);
+
+        jobOwner.remove(id);
+
+        logger.info("Marking job {} as error", id);
+        releaseAllocatedMachines(id);
+
+        final var exception = reconstructRemoteException(error, stackTrace);
+        // Do these before anything that can throw
+        final var prov = getProvenance(id);
+
+        try {
+            queueManager.setJobError(id, logToAppend,
+                    getOutputFiles(projectId, id, baseDirectory, outputs),
+                    exception, prov);
+        } catch (final IOException e) {
+            logger.error("Error creating URLs while updating job", e);
+        }
+    }
+
+    /**
+     * Convert a remote exception to a local one.
+     *
+     * @param error
+     *            The error message.
+     * @param stackTrace
+     *            The stack trace.
+     * @return The exception.
+     */
+    private Exception reconstructRemoteException(final String error,
+            final RemoteStackTrace stackTrace) {
+        final var exception = new Exception(error);
+        exception.setStackTrace(stackTrace.getElements().stream()
+                .map(RemoteStackTraceElement::toSTE)
+                .toArray(StackTraceElement[]::new));
+        return exception;
+    }
+
+    /**
+     * Mark the executor as having exited.
+     *
+     * @param executorId
+     *            The ID of the executor in question
+     * @param logToAppend
+     *            The log messages
+     */
+    public void setExecutorExited(final String executorId,
+            final String logToAppend) {
+        Job job = null;
+        synchronized (jobExecuters) {
+            job = executorJobId.remove(requireNonNull(executorId));
+            jobExecuters.remove(executorId);
+        }
+        if (nonNull(job)) {
+            final int id = job.getId();
+            if (jobOwner.containsKey(id)) {
+                logger.debug("Executer {} for Job {} has exited, "
+                        + "but job not exited cleanly", executorId, id);
+                jobOwner.remove(id);
+                releaseAllocatedMachines(id);
+                final var prov = getProvenance(id);
+                try {
+                    final var projectId = job.getCollab();
+                    queueManager.setJobError(id, logToAppend,
+                            getOutputFiles(projectId, id, null, null),
+                            new Exception("Job did not finish cleanly"), prov);
+                } catch (final IOException e) {
+                    logger.error("Error creating URLs while updating job", e);
+                    queueManager.setJobError(id, logToAppend,
+                            new ArrayList<DataItem>(),
+                            new Exception("Job did not finish cleanly"), prov);
+                }
+            } else {
+                logger.debug("Executer {} for Job {} has exited",
+                        executorId, id);
+            }
+        } else {
+            logger.error("An executer {} has exited without a job. "
+                    + "This could indicate an error!", executorId);
+            logger.error(logToAppend);
+
+            if (restartJobExecuterOnFailure) {
+                logger.warn("Restarting of executers is currently disabled");
+            }
+        }
+    }
+
+    @Override
+    public Response getJobProcessManager() {
+        final var jobManagerStream =
+                getClass().getResourceAsStream("/" + JOB_PROCESS_MANAGER);
+        if (isNull(jobManagerStream)) {
+            throw new UnsatisfiedLinkError(
+                    JOB_PROCESS_MANAGER + " not found in classpath");
+        }
+        return ok(jobManagerStream).type(APPLICATION_OCTET_STREAM).build();
+    }
+
+    @Override
+    public Response getSetupScript() throws IOException {
+        return ok(setupScript.getInputStream())
+                .type(APPLICATION_OCTET_STREAM).build();
+    }
+
+    /**
+     * Updates the status.
+     */
+    private void updateStatus() {
+        int nBoardsInUse = 0;
+        synchronized (allocatedMachines) {
+            for (var machines: allocatedMachines.values()) {
+                nBoardsInUse += machines.stream()
+                        .mapToInt(SpinnakerMachine::getnBoards).sum();
+            }
+        }
+        statusMonitorManager.updateStatus(
+                jobExecuters.size(), nBoardsInUse);
+    }
 }

@@ -19,16 +19,16 @@ package uk.ac.manchester.spinnaker.nmpi.model.job;
  * The possible statuses of a process.
  */
 public enum Status {
-	/**
-	 * Indicates that the process is currently running.
-	 */
-	Running,
-	/**
-	 * Indicates that the process has completed successfully.
-	 */
-	Finished,
-	/**
-	 * Indicates that the process has stopped with an error.
-	 */
-	Error
+    /**
+     * Indicates that the process is currently running.
+     */
+    Running,
+    /**
+     * Indicates that the process has completed successfully.
+     */
+    Finished,
+    /**
+     * Indicates that the process has stopped with an error.
+     */
+    Error
 }

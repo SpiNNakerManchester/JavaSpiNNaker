@@ -41,29 +41,29 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @Role(ROLE_INFRASTRUCTURE)
 @UsedInJavadocOnly(PostFilter.class)
 class AnyTypeMethodSecurityExpressionHandler
-		extends DefaultMethodSecurityExpressionHandler {
-	@Override
-	public Object filter(Object target, Expression expr,
-			EvaluationContext ctx) {
-		if (isNull(target)) {
-			// We can handle this case here!
-			return null;
-		}
-		if (target instanceof Collection || target.getClass().isArray()
-				|| target instanceof Map || target instanceof Stream) {
-			return super.filter(target, expr, ctx);
-		}
-		if (target instanceof Optional) {
-			return filterOptional((Optional<?>) target, expr, ctx);
-		} else {
-			return filterOptional(Optional.of(target), expr, ctx).orElse(null);
-		}
-	}
+            extends DefaultMethodSecurityExpressionHandler {
+      @Override
+      public Object filter(Object target, Expression expr,
+                  EvaluationContext ctx) {
+            if (isNull(target)) {
+                  // We can handle this case here!
+                  return null;
+            }
+            if (target instanceof Collection || target.getClass().isArray()
+                        || target instanceof Map || target instanceof Stream) {
+                  return super.filter(target, expr, ctx);
+            }
+            if (target instanceof Optional) {
+                  return filterOptional((Optional<?>) target, expr, ctx);
+            } else {
+                  return filterOptional(Optional.of(target), expr, ctx).orElse(null);
+            }
+      }
 
-	@SuppressWarnings("unchecked")
-	private <T> Optional<T> filterOptional(Optional<T> target, Expression expr,
-			EvaluationContext ctx) {
-		return ((Stream<T>) super.filter(target.stream(), expr, ctx))
-				.findFirst();
-	}
+      @SuppressWarnings("unchecked")
+      private <T> Optional<T> filterOptional(Optional<T> target, Expression expr,
+                  EvaluationContext ctx) {
+            return ((Stream<T>) super.filter(target.stream(), expr, ctx))
+                        .findFirst();
+      }
 }

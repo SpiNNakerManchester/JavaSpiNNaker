@@ -23,12 +23,12 @@ import java.nio.ByteBuffer;
  * Message which indicates that the toolchain has paused or stopped.
  */
 public class PauseStop extends AbstractNotificationMessage {
-	/** Create an instance. */
-	public PauseStop() {
-		super(STOP_PAUSE_NOTIFICATION);
-	}
+    /** Create an instance. */
+    public PauseStop() {
+        super(STOP_PAUSE_NOTIFICATION);
+    }
 
-	PauseStop(ByteBuffer buffer) {
-		super(buffer);
-	}
+    PauseStop(ByteBuffer buffer) {
+        super(buffer);
+    }
 }

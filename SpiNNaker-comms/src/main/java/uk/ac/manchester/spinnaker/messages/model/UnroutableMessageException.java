@@ -23,25 +23,25 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
  * final destination.
  */
 public class UnroutableMessageException
-		extends UnexpectedResponseCodeException {
-	private static final long serialVersionUID = 2106128799950032057L;
+        extends UnexpectedResponseCodeException {
+    private static final long serialVersionUID = 2106128799950032057L;
 
-	/** The full header from the response message. */
-	public final SDPHeader header;
+    /** The full header from the response message. */
+    public final SDPHeader header;
 
-	/**
-	 * Constructs the unable to send Exception.
-	 *
-	 * @param operation
-	 *            The overall operation that we were doing.
-	 * @param command
-	 *            The command that we were handling a response to.
-	 * @param header
-	 *            The header that indicated a problem with routing.
-	 */
-	public UnroutableMessageException(String operation, Enum<?> command,
-			SDPHeader header) {
-		super(operation, command, SCPResult.RC_ROUTE);
-		this.header = header;
-	}
+    /**
+     * Constructs the unable to send Exception.
+     *
+     * @param operation
+     *            The overall operation that we were doing.
+     * @param command
+     *            The command that we were handling a response to.
+     * @param header
+     *            The header that indicated a problem with routing.
+     */
+    public UnroutableMessageException(String operation, Enum<?> command,
+            SDPHeader header) {
+        super(operation, command, SCPResult.RC_ROUTE);
+        this.header = header;
+    }
 }

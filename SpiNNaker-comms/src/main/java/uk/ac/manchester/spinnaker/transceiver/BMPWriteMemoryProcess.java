@@ -40,95 +40,95 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  */
 class BMPWriteMemoryProcess extends BMPCommandProcess {
 
-	/**
-	 * Constructs a process to Write to memory on a BMP.
-	 *
-	 * @param connectionSelector
-	 *            How to select how to communicate.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	BMPWriteMemoryProcess(ConnectionSelector<BMPConnection> connectionSelector,
-			RetryTracker retryTracker) {
-		super(connectionSelector, retryTracker);
-	}
+    /**
+     * Constructs a process to Write to memory on a BMP.
+     *
+     * @param connectionSelector
+     *            How to select how to communicate.
+     * @param retryTracker
+     *            Object used to track how many retries were used in an
+     *            operation. May be {@code null} if no suck tracking is
+     *            required.
+     */
+    BMPWriteMemoryProcess(ConnectionSelector<BMPConnection> connectionSelector,
+            RetryTracker retryTracker) {
+        super(connectionSelector, retryTracker);
+    }
 
-	/**
-	 * Writes memory onto a BMP from a buffer.
-	 *
-	 * @param board
-	 *            Which board's BMP to write to.
-	 * @param baseAddress
-	 *            Where to start copying to.
-	 * @param data
-	 *            The buffer of data to be copied. The copied region extends
-	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
-	 *            (exclusive). This method is not obligated to preserve either
-	 *            the position or the limit, though the current implementation
-	 *            does so. The contents of the buffer will not be modified.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void writeMemory(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer data)
-			throws IOException, ProcessException, InterruptedException {
-		execute(new BMPWriteIterator(board, baseAddress, data.remaining()) {
-			private int offset = data.position();
+    /**
+     * Writes memory onto a BMP from a buffer.
+     *
+     * @param board
+     *            Which board's BMP to write to.
+     * @param baseAddress
+     *            Where to start copying to.
+     * @param data
+     *            The buffer of data to be copied. The copied region extends
+     *            from the <i>position</i> (inclusive) to the <i>limit</i>
+     *            (exclusive). This method is not obligated to preserve either
+     *            the position or the limit, though the current implementation
+     *            does so. The contents of the buffer will not be modified.
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     */
+    void writeMemory(BMPBoard board, MemoryLocation baseAddress,
+            ByteBuffer data)
+            throws IOException, ProcessException, InterruptedException {
+        execute(new BMPWriteIterator(board, baseAddress, data.remaining()) {
+            private int offset = data.position();
 
-			@Override
-			ByteBuffer prepareSendBuffer(int chunkSize) {
-				var buffer = slice(data, offset, chunkSize);
-				offset += chunkSize;
-				return buffer;
-			}
-		});
-	}
+            @Override
+            ByteBuffer prepareSendBuffer(int chunkSize) {
+                var buffer = slice(data, offset, chunkSize);
+                offset += chunkSize;
+                return buffer;
+            }
+        });
+    }
 
-	/**
-	 * Writes memory onto a BMP from an input stream.
-	 *
-	 * @param board
-	 *            Which board's BMP to write to.
-	 * @param baseAddress
-	 *            Where to start copying to.
-	 * @param data
-	 *            Where to get data from
-	 * @param bytesToWrite
-	 *            How many bytes should be copied from the stream?
-	 * @throws IOException
-	 *             If anything goes wrong with networking or the input stream.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void writeMemory(BMPBoard board, MemoryLocation baseAddress,
-			InputStream data, int bytesToWrite)
-			throws IOException, ProcessException, InterruptedException {
-		var exn = new ValueHolder<IOException>();
-		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
+    /**
+     * Writes memory onto a BMP from an input stream.
+     *
+     * @param board
+     *            Which board's BMP to write to.
+     * @param baseAddress
+     *            Where to start copying to.
+     * @param data
+     *            Where to get data from
+     * @param bytesToWrite
+     *            How many bytes should be copied from the stream?
+     * @throws IOException
+     *             If anything goes wrong with networking or the input stream.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     */
+    void writeMemory(BMPBoard board, MemoryLocation baseAddress,
+            InputStream data, int bytesToWrite)
+            throws IOException, ProcessException, InterruptedException {
+        var exn = new ValueHolder<IOException>();
+        var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 
-		execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
-			@Override
-			ByteBuffer prepareSendBuffer(int chunkSize) {
-				try {
-					return read(data, workingBuffer, chunkSize);
-				} catch (IOException e) {
-					exn.setValue(e); // Smuggle the exception out!
-					return null;
-				}
-			}
-		});
-		if (exn.getValue() != null) {
-			throw exn.getValue();
-		}
-	}
+        execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
+            @Override
+            ByteBuffer prepareSendBuffer(int chunkSize) {
+                try {
+                    return read(data, workingBuffer, chunkSize);
+                } catch (IOException e) {
+                    exn.setValue(e); // Smuggle the exception out!
+                    return null;
+                }
+            }
+        });
+        if (exn.getValue() != null) {
+            throw exn.getValue();
+        }
+    }
 }
 
 /**
@@ -139,64 +139,64 @@ class BMPWriteMemoryProcess extends BMPCommandProcess {
  * This is a one-shot iterable.
  */
 abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
-	private final BMPBoard board;
+    private final BMPBoard board;
 
-	private int sizeRemaining;
+    private int sizeRemaining;
 
-	private MemoryLocation address;
+    private MemoryLocation address;
 
-	private ByteBuffer sendBuffer;
+    private ByteBuffer sendBuffer;
 
-	/**
-	 * Constructs the iterator for writing a stream of chunks.
-	 *
-	 * @param board
-	 *            Where the write messages are going.
-	 * @param address
-	 *            Where the writes start at.
-	 * @param size
-	 *            What size of memory will be written.
-	 */
-	BMPWriteIterator(BMPBoard board, MemoryLocation address, int size) {
-		this.board = board;
-		this.address = address;
-		this.sizeRemaining = size;
-	}
+    /**
+     * Constructs the iterator for writing a stream of chunks.
+     *
+     * @param board
+     *            Where the write messages are going.
+     * @param address
+     *            Where the writes start at.
+     * @param size
+     *            What size of memory will be written.
+     */
+    BMPWriteIterator(BMPBoard board, MemoryLocation address, int size) {
+        this.board = board;
+        this.address = address;
+        this.sizeRemaining = size;
+    }
 
-	/**
-	 * Get the next chunk.
-	 *
-	 * @param plannedSize
-	 *            What size the chunk should be. Up to
-	 *            {@link Constants#UDP_MESSAGE_MAX_SIZE}.
-	 * @return The chunk, or {@code null} if no chunk available.
-	 */
-	@UsedInJavadocOnly(Constants.class)
-	abstract ByteBuffer prepareSendBuffer(int plannedSize);
+    /**
+     * Get the next chunk.
+     *
+     * @param plannedSize
+     *            What size the chunk should be. Up to
+     *            {@link Constants#UDP_MESSAGE_MAX_SIZE}.
+     * @return The chunk, or {@code null} if no chunk available.
+     */
+    @UsedInJavadocOnly(Constants.class)
+    abstract ByteBuffer prepareSendBuffer(int plannedSize);
 
-	@Override
-	public Iterator<BMPWriteMemory> iterator() {
-		return new Iterator<>() {
-			@Override
-			public boolean hasNext() {
-				if (sizeRemaining < 1) {
-					return false;
-				}
-				sendBuffer = prepareSendBuffer(
-						min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
-				return sendBuffer != null;
-			}
+    @Override
+    public Iterator<BMPWriteMemory> iterator() {
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                if (sizeRemaining < 1) {
+                    return false;
+                }
+                sendBuffer = prepareSendBuffer(
+                        min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
+                return sendBuffer != null;
+            }
 
-			@Override
-			public BMPWriteMemory next() {
-				int chunkSize = sendBuffer.remaining();
-				try {
-					return new BMPWriteMemory(board, address, sendBuffer);
-				} finally {
-					address = address.add(chunkSize);
-					sizeRemaining -= chunkSize;
-				}
-			}
-		};
-	}
+            @Override
+            public BMPWriteMemory next() {
+                int chunkSize = sendBuffer.remaining();
+                try {
+                    return new BMPWriteMemory(board, address, sendBuffer);
+                } finally {
+                    address = address.add(chunkSize);
+                    sizeRemaining -= chunkSize;
+                }
+            }
+        };
+    }
 }

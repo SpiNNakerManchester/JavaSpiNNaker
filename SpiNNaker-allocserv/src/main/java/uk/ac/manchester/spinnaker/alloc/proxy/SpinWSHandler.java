@@ -64,340 +64,340 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @Component
 public class SpinWSHandler extends BinaryWebSocketHandler
-		implements HandshakeInterceptor {
-	private static final Logger log = getLogger(SpinWSHandler.class);
+        implements HandshakeInterceptor {
+    private static final Logger log = getLogger(SpinWSHandler.class);
 
-	@Autowired
-	private SpallocAPI spallocCore;
+    @Autowired
+    private SpallocAPI spallocCore;
 
-	@Autowired
-	private SpallocProperties properties;
+    @Autowired
+    private SpallocProperties properties;
 
-	private InetAddress localHost;
+    private InetAddress localHost;
 
-	private ExecutorService executor;
+    private ExecutorService executor;
 
-	private final ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
+    private final ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
 
-	SpinWSHandler() {
-		var group = new ThreadGroup("ws/udp workers");
-		executor =
-				newCachedThreadPool(r -> new Daemon(group, r, "ws/udp worker"));
-	}
+    SpinWSHandler() {
+        var group = new ThreadGroup("ws/udp workers");
+        executor =
+                newCachedThreadPool(r -> new Daemon(group, r, "ws/udp worker"));
+    }
 
-	/** The path that we match in this handler. */
-	public static final String PATH = "proxy/{id:\\d+}";
+    /** The path that we match in this handler. */
+    public static final String PATH = "proxy/{id:\\d+}";
 
-	/** The name of the field in the {@link #PATH}. */
-	private static final String ID = "id";
+    /** The name of the field in the {@link #PATH}. */
+    private static final String ID = "id";
 
-	/** The {@link #PATH} as a template. */
-	private final UriTemplate template = new UriTemplate(PATH);
+    /** The {@link #PATH} as a template. */
+    private final UriTemplate template = new UriTemplate(PATH);
 
-	/**
-	 * Type-safe session property descriptor.
-	 *
-	 * @param <T>
-	 *            The type of the property.
-	 */
-	private static final class Property<T> {
-		private final String name;
+    /**
+     * Type-safe session property descriptor.
+     *
+     * @param <T>
+     *            The type of the property.
+     */
+    private static final class Property<T> {
+        private final String name;
 
-		private final Class<T> cls;
+        private final Class<T> cls;
 
-		/**
-		 * Constructs the property descriptor.
-		 *
-		 * @param name
-		 *            The name of the property.
-		 * @param cls
-		 *            The class of the property.
-		 */
-		Property(String name, Class<T> cls) {
-			this.name = SpinWSHandler.class + ":" + name;
-			this.cls = cls;
-		}
+        /**
+         * Constructs the property descriptor.
+         *
+         * @param name
+         *            The name of the property.
+         * @param cls
+         *            The class of the property.
+         */
+        Property(String name, Class<T> cls) {
+            this.name = SpinWSHandler.class + ":" + name;
+            this.cls = cls;
+        }
 
-		T get(WebSocketSession session) {
-			return cls.cast(session.getAttributes().get(name));
-		}
+        T get(WebSocketSession session) {
+            return cls.cast(session.getAttributes().get(name));
+        }
 
-		void put(Map<String, Object> attributes, T value) {
-			attributes.put(name, value);
-		}
-	}
+        void put(Map<String, Object> attributes, T value) {
+            attributes.put(name, value);
+        }
+    }
 
-	private static final Property<Job> JOB =
-			new Property<>("job", Job.class);
+    private static final Property<Job> JOB =
+            new Property<>("job", Job.class);
 
-	private static final Property<ProxyCore> PROXY =
-			new Property<>("proxy", ProxyCore.class);
+    private static final Property<ProxyCore> PROXY =
+            new Property<>("proxy", ProxyCore.class);
 
-	// -----------------------------------------------------------
-	// Satisfy the APIs that we use to plug into Spring
+    // -----------------------------------------------------------
+    // Satisfy the APIs that we use to plug into Spring
 
-	@PostConstruct
-	private void initLocalHost() throws UnknownHostException {
-		var props = properties.getProxy();
-		if (!props.getLocalHost().isBlank()) {
-			this.localHost = InetAddress.getByName(props.getLocalHost());
-		}
-	}
+    @PostConstruct
+    private void initLocalHost() throws UnknownHostException {
+        var props = properties.getProxy();
+        if (!props.getLocalHost().isBlank()) {
+            this.localHost = InetAddress.getByName(props.getLocalHost());
+        }
+    }
 
-	@PreDestroy
-	private void stopPool() {
-		/*
-		 * The threads inside don't need to be explicitly stopped as they're all
-		 * daemon threads.
-		 */
-		executor.shutdown();
-	}
+    @PreDestroy
+    private void stopPool() {
+        /*
+         * The threads inside don't need to be explicitly stopped as they're all
+         * daemon threads.
+         */
+        executor.shutdown();
+    }
 
-	/**
-	 * Look up the job that websocket is being created for and attach it to the
-	 * websocket's attributes. {@inheritDoc}
-	 *
-	 * @return Whether we found the job and attached it.
-	 */
-	@Override
-	public boolean beforeHandshake(ServerHttpRequest request,
-			ServerHttpResponse response, WebSocketHandler wsHandler,
-			Map<String, Object> attributes) {
-		var j = lookUpJobFromPath(request);
-		// If we have a job, remember it and succeed
-		j.ifPresent(job -> JOB.put(attributes, job));
-		log.debug("Before handshake with request uri {}, job {}",
-				request.getURI(), j);
-		return j.isPresent();
-	}
+    /**
+     * Look up the job that websocket is being created for and attach it to the
+     * websocket's attributes. {@inheritDoc}
+     *
+     * @return Whether we found the job and attached it.
+     */
+    @Override
+    public boolean beforeHandshake(ServerHttpRequest request,
+            ServerHttpResponse response, WebSocketHandler wsHandler,
+            Map<String, Object> attributes) {
+        var j = lookUpJobFromPath(request);
+        // If we have a job, remember it and succeed
+        j.ifPresent(job -> JOB.put(attributes, job));
+        log.debug("Before handshake with request uri {}, job {}",
+                request.getURI(), j);
+        return j.isPresent();
+    }
 
-	/** Empty method to satisfy interface. {@inheritDoc} */
-	@Override
-	public void afterHandshake(ServerHttpRequest request,
-			ServerHttpResponse response, WebSocketHandler wsHandler,
-			Exception exception) {
-		log.debug("Handshake done for uri {}", request.getURI());
-	}
+    /** Empty method to satisfy interface. {@inheritDoc} */
+    @Override
+    public void afterHandshake(ServerHttpRequest request,
+            ServerHttpResponse response, WebSocketHandler wsHandler,
+            Exception exception) {
+        log.debug("Handshake done for uri {}", request.getURI());
+    }
 
-	/**
-	 * Websocket established; connect to the proxy handler.
-	 *
-	 * @param session
-	 *            The websocket session to connect.
-	 */
-	@Override
-	public void afterConnectionEstablished(WebSocketSession session) {
-		log.debug("Websocket session {} established", session);
-		initProxyCore(session, JOB.get(session));
-	}
+    /**
+     * Websocket established; connect to the proxy handler.
+     *
+     * @param session
+     *            The websocket session to connect.
+     */
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) {
+        log.debug("Websocket session {} established", session);
+        initProxyCore(session, JOB.get(session));
+    }
 
-	/**
-	 * Websocket closed; disconnect the proxy handler.
-	 *
-	 * @param session
-	 *            The websocket session to disconnect.
-	 * @param status
-	 *            Why the session closed. (Unimportant for this code)
-	 */
-	@Override
-	public void afterConnectionClosed(WebSocketSession session,
-			CloseStatus status) {
-		log.debug("Websocket session {} closed", session);
-		closed(session, PROXY.get(session), JOB.get(session));
-	}
+    /**
+     * Websocket closed; disconnect the proxy handler.
+     *
+     * @param session
+     *            The websocket session to disconnect.
+     * @param status
+     *            Why the session closed. (Unimportant for this code)
+     */
+    @Override
+    public void afterConnectionClosed(WebSocketSession session,
+            CloseStatus status) {
+        log.debug("Websocket session {} closed", session);
+        closed(session, PROXY.get(session), JOB.get(session));
+    }
 
-	/**
-	 * Websocket message received, dispatch it to the proxy for handling.
-	 *
-	 * @param session
-	 *            The websocket session that the message was received on.
-	 * @param message
-	 *            The received message.
-	 */
-	@Override
-	protected void handleBinaryMessage(WebSocketSession session,
-			BinaryMessage message) throws Exception {
-		delegateToProxy(message, PROXY.get(session));
-	}
+    /**
+     * Websocket message received, dispatch it to the proxy for handling.
+     *
+     * @param session
+     *            The websocket session that the message was received on.
+     * @param message
+     *            The received message.
+     */
+    @Override
+    protected void handleBinaryMessage(WebSocketSession session,
+            BinaryMessage message) throws Exception {
+        delegateToProxy(message, PROXY.get(session));
+    }
 
-	/**
-	 * Log exceptions from the transport level. Except for {@link EOFException}
-	 * because that's just fine and comes up in a normal disconnect.
-	 *
-	 * @param session
-	 *            The websocket session that had the error.
-	 * @param exception
-	 *            What happened.
-	 */
-	@Override
-	public void handleTransportError(WebSocketSession session,
-			Throwable exception) {
-		if (!(exception instanceof EOFException)) {
-			// We don't log EOFException
-			log.warn("transport error for {}", session, exception);
-		} else {
-			log.debug("End of web socket session {}", session, exception);
-		}
-		// Don't need to close; afterConnectionClosed() will be called next
-	}
+    /**
+     * Log exceptions from the transport level. Except for {@link EOFException}
+     * because that's just fine and comes up in a normal disconnect.
+     *
+     * @param session
+     *            The websocket session that had the error.
+     * @param exception
+     *            What happened.
+     */
+    @Override
+    public void handleTransportError(WebSocketSession session,
+            Throwable exception) {
+        if (!(exception instanceof EOFException)) {
+            // We don't log EOFException
+            log.warn("transport error for {}", session, exception);
+        } else {
+            log.debug("End of web socket session {}", session, exception);
+        }
+        // Don't need to close; afterConnectionClosed() will be called next
+    }
 
-	// -----------------------------------------------------------
-	// General implementation methods
+    // -----------------------------------------------------------
+    // General implementation methods
 
-	private Optional<Job> lookUpJobFromPath(ServerHttpRequest request) {
-		return getFieldFromTemplate(template, request.getURI(), ID)
-				// Convert to integer
-				.flatMap(Utils::parseInteger)
-				// IDs are only ever valid if positive
-				.filter(Utils::positive)
-				// Do the lookup of the job
-				.flatMap(this::getJob);
-	}
+    private Optional<Job> lookUpJobFromPath(ServerHttpRequest request) {
+        return getFieldFromTemplate(template, request.getURI(), ID)
+                // Convert to integer
+                .flatMap(Utils::parseInteger)
+                // IDs are only ever valid if positive
+                .filter(Utils::positive)
+                // Do the lookup of the job
+                .flatMap(this::getJob);
+    }
 
-	/**
-	 * How to look up the job. Note that the underlying object is security
-	 * aware, so we need the authorisation step.
-	 *
-	 * @param jobId
-	 *            The job identifier
-	 * @return The job, if one is known and the current user is allowed to read
-	 *         details of it (owner or admin).
-	 */
-	private Optional<Job> getJob(int jobId) {
-		var permit = new Permit(SecurityContextHolder.getContext());
-		// How to look up a job; the permit is needed!
-		return permit.authorize(() -> spallocCore.getJob(permit, jobId));
-	}
+    /**
+     * How to look up the job. Note that the underlying object is security
+     * aware, so we need the authorisation step.
+     *
+     * @param jobId
+     *            The job identifier
+     * @return The job, if one is known and the current user is allowed to read
+     *         details of it (owner or admin).
+     */
+    private Optional<Job> getJob(int jobId) {
+        var permit = new Permit(SecurityContextHolder.getContext());
+        // How to look up a job; the permit is needed!
+        return permit.authorize(() -> spallocCore.getJob(permit, jobId));
+    }
 
-	/**
-	 * Connection established and job looked up. Make a proxy.
-	 *
-	 * @param session
-	 *            The Websocket session
-	 * @param job
-	 *            The job extracted from the websocket path
-	 * @throws NotFound
-	 *             If the job ID can't be mapped to a job
-	 * @throws RequestFailedException
-	 *             If the job doesn't have an allocated machine
-	 */
-	@UsedInJavadocOnly(NotFound.class)
-	protected final void initProxyCore(WebSocketSession session, Job job) {
-		var proxy = job.getMachine()
-				.map(machine -> new ProxyCore(session, machine.getConnections(),
-						executor, idIssuer::issueId,
-						properties.getProxy().isLogWriteCounts(), localHost))
-				.orElseThrow(
-						() -> new RequestFailedException(SERVICE_UNAVAILABLE,
-								"job not in state where proxying permitted"));
-		PROXY.put(session.getAttributes(), proxy);
-		job.rememberProxy(proxy);
-		log.debug("user {} has web socket {} connected for job {}",
-				session.getPrincipal(), session, job.getId());
-	}
+    /**
+     * Connection established and job looked up. Make a proxy.
+     *
+     * @param session
+     *            The Websocket session
+     * @param job
+     *            The job extracted from the websocket path
+     * @throws NotFound
+     *             If the job ID can't be mapped to a job
+     * @throws RequestFailedException
+     *             If the job doesn't have an allocated machine
+     */
+    @UsedInJavadocOnly(NotFound.class)
+    protected final void initProxyCore(WebSocketSession session, Job job) {
+        var proxy = job.getMachine()
+                .map(machine -> new ProxyCore(session, machine.getConnections(),
+                        executor, idIssuer::issueId,
+                        properties.getProxy().isLogWriteCounts(), localHost))
+                .orElseThrow(
+                        () -> new RequestFailedException(SERVICE_UNAVAILABLE,
+                                "job not in state where proxying permitted"));
+        PROXY.put(session.getAttributes(), proxy);
+        job.rememberProxy(proxy);
+        log.debug("user {} has web socket {} connected for job {}",
+                session.getPrincipal(), session, job.getId());
+    }
 
-	/**
-	 * Connection closed.
-	 *
-	 * @param session
-	 *            The Websocket session
-	 * @param proxy
-	 *            The proxy handler for our custom protocol
-	 * @param job
-	 *            What job we are working for
-	 */
-	protected final void closed(WebSocketSession session, ProxyCore proxy,
-			Job job) {
-		if (proxy != null) {
-			proxy.close();
-			job.forgetProxy(proxy);
-		}
-		log.debug("user {} has disconnected web socket {}",
-				session.getPrincipal(), session);
-	}
+    /**
+     * Connection closed.
+     *
+     * @param session
+     *            The Websocket session
+     * @param proxy
+     *            The proxy handler for our custom protocol
+     * @param job
+     *            What job we are working for
+     */
+    protected final void closed(WebSocketSession session, ProxyCore proxy,
+            Job job) {
+        if (proxy != null) {
+            proxy.close();
+            job.forgetProxy(proxy);
+        }
+        log.debug("user {} has disconnected web socket {}",
+                session.getPrincipal(), session);
+    }
 
-	/**
-	 * Message was sent to us.
-	 *
-	 * @param message
-	 *            The body of the message.
-	 * @param proxy
-	 *            The socket proxy will be handling the message
-	 * @throws IOException
-	 *             If the proxy fails to handle the message in a bad way
-	 */
-	protected final void delegateToProxy(BinaryMessage message, ProxyCore proxy)
-			throws IOException {
-		proxy.handleClientMessage(message.getPayload().order(LITTLE_ENDIAN));
-	}
+    /**
+     * Message was sent to us.
+     *
+     * @param message
+     *            The body of the message.
+     * @param proxy
+     *            The socket proxy will be handling the message
+     * @throws IOException
+     *             If the proxy fails to handle the message in a bad way
+     */
+    protected final void delegateToProxy(BinaryMessage message, ProxyCore proxy)
+            throws IOException {
+        proxy.handleClientMessage(message.getPayload().order(LITTLE_ENDIAN));
+    }
 
-	/**
-	 * Handles giving each proxy connection its own ID. We give them unique IDs
-	 * so that if someone opens multiple websockets to the same job, they can't
-	 * get the same ID for the connections underneath; that would be just too
-	 * confusing!
-	 */
-	private static final class ConnectionIDIssuer {
-		private int id;
+    /**
+     * Handles giving each proxy connection its own ID. We give them unique IDs
+     * so that if someone opens multiple websockets to the same job, they can't
+     * get the same ID for the connections underneath; that would be just too
+     * confusing!
+     */
+    private static final class ConnectionIDIssuer {
+        private int id;
 
-		/**
-		 * Issue an ID.
-		 *
-		 * @return A new ID. Never zero.
-		 */
-		private synchronized int issueId() {
-			int thisId;
-			do {
-				thisId = ++id;
-			} while (thisId == 0);
-			return thisId;
-		}
-	}
+        /**
+         * Issue an ID.
+         *
+         * @return A new ID. Never zero.
+         */
+        private synchronized int issueId() {
+            int thisId;
+            do {
+                thisId = ++id;
+            } while (thisId == 0);
+            return thisId;
+        }
+    }
 }
 
 abstract class Utils {
-	private Utils() {
-	}
+    private Utils() {
+    }
 
-	/**
-	 * Match the template against the path of the URI and extract a field.
-	 *
-	 * @param template
-	 *            The template
-	 * @param uri
-	 *            The URI
-	 * @param key
-	 *            The name of the field to extract
-	 * @return The content of the field, if present. Otherwise
-	 *         {@link Optional#empty()}.
-	 */
-	static Optional<String> getFieldFromTemplate(UriTemplate template,
-			URI uri, String key) {
-		var templateResults = template.match(uri.getPath());
-		if (templateResults == null) {
-			return Optional.empty();
-		}
-		var val = templateResults.get(key);
-		return Optional.ofNullable(val);
-	}
+    /**
+     * Match the template against the path of the URI and extract a field.
+     *
+     * @param template
+     *            The template
+     * @param uri
+     *            The URI
+     * @param key
+     *            The name of the field to extract
+     * @return The content of the field, if present. Otherwise
+     *         {@link Optional#empty()}.
+     */
+    static Optional<String> getFieldFromTemplate(UriTemplate template,
+            URI uri, String key) {
+        var templateResults = template.match(uri.getPath());
+        if (templateResults == null) {
+            return Optional.empty();
+        }
+        var val = templateResults.get(key);
+        return Optional.ofNullable(val);
+    }
 
-	/**
-	 * Parse a string as a decimal integer.
-	 *
-	 * @param val
-	 *            The string to parse.
-	 * @return The integer, or {@link Optional#empty()} if the parse fails.
-	 */
-	static Optional<Integer> parseInteger(String val) {
-		try {
-			return Optional.of(parseInt(val));
-		} catch (NumberFormatException ignored) {
-			// Do nothing here
-		}
-		return Optional.empty();
-	}
+    /**
+     * Parse a string as a decimal integer.
+     *
+     * @param val
+     *            The string to parse.
+     * @return The integer, or {@link Optional#empty()} if the parse fails.
+     */
+    static Optional<Integer> parseInteger(String val) {
+        try {
+            return Optional.of(parseInt(val));
+        } catch (NumberFormatException ignored) {
+            // Do nothing here
+        }
+        return Optional.empty();
+    }
 
-	static boolean positive(int n) {
-		return n > 0;
-	}
+    static boolean positive(int n) {
+        return n > 0;
+    }
 }

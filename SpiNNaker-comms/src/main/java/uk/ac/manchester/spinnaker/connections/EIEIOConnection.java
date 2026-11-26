@@ -31,144 +31,144 @@ import uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessage;
 
 /** A UDP connection for sending and receiving raw EIEIO messages. */
 public class EIEIOConnection
-		extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>> {
-	/**
-	 * Create an EIEIO connection only available for listening.
-	 *
-	 * @param localHost
-	 *            The local IP address to bind to. If not specified, it defaults
-	 *            to binding to all interfaces, unless remoteHost is specified,
-	 *            in which case binding is done to the IP address that will be
-	 *            used to send packets.
-	 * @param localPort
-	 *            The local port to bind to, 0 or between 1025 and 65535.
-	 * @throws IOException
-	 *             If there is an error setting up the communication channel
-	 */
-	public EIEIOConnection(InetAddress localHost, Integer localPort)
-			throws IOException {
-		super(localHost, localPort, null, null, IPTOS_THROUGHPUT);
-	}
+        extends UDPConnection<EIEIOMessage<? extends EIEIOHeader>> {
+    /**
+     * Create an EIEIO connection only available for listening.
+     *
+     * @param localHost
+     *            The local IP address to bind to. If not specified, it defaults
+     *            to binding to all interfaces, unless remoteHost is specified,
+     *            in which case binding is done to the IP address that will be
+     *            used to send packets.
+     * @param localPort
+     *            The local port to bind to, 0 or between 1025 and 65535.
+     * @throws IOException
+     *             If there is an error setting up the communication channel
+     */
+    public EIEIOConnection(InetAddress localHost, Integer localPort)
+            throws IOException {
+        super(localHost, localPort, null, null, IPTOS_THROUGHPUT);
+    }
 
-	/**
-	 * Create an EIEIO connection where the mechanism for the sending and
-	 * listening is implemented by a subclass.
-	 *
-	 * @hidden
-	 */
-	protected EIEIOConnection() {
-		super(null, null);
-	}
+    /**
+     * Create an EIEIO connection where the mechanism for the sending and
+     * listening is implemented by a subclass.
+     *
+     * @hidden
+     */
+    protected EIEIOConnection() {
+        super(null, null);
+    }
 
-	/**
-	 * Sends an EIEIO message down this connection.
-	 *
-	 * @param eieioMessage
-	 *            The EIEIO message to be sent
-	 * @throws IOException
-	 *             If there is an error sending the message
-	 */
-	public void sendEIEIOMessage(EIEIOMessage<?> eieioMessage)
-			throws IOException {
-		var b = newMessageBuffer();
-		eieioMessage.addToBuffer(b);
-		b.flip();
-		send(b);
-	}
+    /**
+     * Sends an EIEIO message down this connection.
+     *
+     * @param eieioMessage
+     *            The EIEIO message to be sent
+     * @throws IOException
+     *             If there is an error sending the message
+     */
+    public void sendEIEIOMessage(EIEIOMessage<?> eieioMessage)
+            throws IOException {
+        var b = newMessageBuffer();
+        eieioMessage.addToBuffer(b);
+        b.flip();
+        send(b);
+    }
 
-	/**
-	 * Send a raw command.
-	 *
-	 * @param command
-	 *            The command to send.
-	 * @throws IOException
-	 *             If sending fails.
-	 */
-	protected void sendCommand(int command) throws IOException {
-		sendCommand(EIEIOCommandID.get(command));
-	}
+    /**
+     * Send a raw command.
+     *
+     * @param command
+     *            The command to send.
+     * @throws IOException
+     *             If sending fails.
+     */
+    protected void sendCommand(int command) throws IOException {
+        sendCommand(EIEIOCommandID.get(command));
+    }
 
-	/**
-	 * Send a raw command.
-	 *
-	 * @param command
-	 *            The command to send.
-	 * @throws IOException
-	 *             If sending fails.
-	 */
-	protected void sendCommand(EIEIOCommand command) throws IOException {
-		sendEIEIOMessage(new EIEIOCommandMessage(command));
-	}
+    /**
+     * Send a raw command.
+     *
+     * @param command
+     *            The command to send.
+     * @throws IOException
+     *             If sending fails.
+     */
+    protected void sendCommand(EIEIOCommand command) throws IOException {
+        sendEIEIOMessage(new EIEIOCommandMessage(command));
+    }
 
-	/**
-	 * Send a raw command.
-	 *
-	 * @param command
-	 *            The command to send.
-	 * @param ipAddress
-	 *            The host to send to.
-	 * @param port
-	 *            The port to send to.
-	 * @throws IOException
-	 *             If sending fails.
-	 */
-	protected void sendCommand(EIEIOCommand command, InetAddress ipAddress,
-			int port) throws IOException {
-		sendEIEIOMessageTo(new EIEIOCommandMessage(command), ipAddress, port);
-	}
+    /**
+     * Send a raw command.
+     *
+     * @param command
+     *            The command to send.
+     * @param ipAddress
+     *            The host to send to.
+     * @param port
+     *            The port to send to.
+     * @throws IOException
+     *             If sending fails.
+     */
+    protected void sendCommand(EIEIOCommand command, InetAddress ipAddress,
+            int port) throws IOException {
+        sendEIEIOMessageTo(new EIEIOCommandMessage(command), ipAddress, port);
+    }
 
-	/**
-	 * Receive a raw command.
-	 *
-	 * @return the command ID
-	 * @throws IOException
-	 *             If receiving fails.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 */
-	protected EIEIOCommand receiveCommand()
-			throws IOException, InterruptedException {
-		var msg = receiveMessage();
-		if (msg instanceof EIEIOCommandMessage) {
-			return ((EIEIOCommandMessage) msg).getHeader().command;
-		}
-		throw new IOException("unexpected data message");
-	}
+    /**
+     * Receive a raw command.
+     *
+     * @return the command ID
+     * @throws IOException
+     *             If receiving fails.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     */
+    protected EIEIOCommand receiveCommand()
+            throws IOException, InterruptedException {
+        var msg = receiveMessage();
+        if (msg instanceof EIEIOCommandMessage) {
+            return ((EIEIOCommandMessage) msg).getHeader().command;
+        }
+        throw new IOException("unexpected data message");
+    }
 
-	/**
-	 * Send an EIEIO message to a specific destination.
-	 *
-	 * @param eieioMessage
-	 *            The message to send.
-	 * @param ipAddress
-	 *            The host to send to.
-	 * @param port
-	 *            The port to send to.
-	 * @throws IOException
-	 *             If anything goes wrong in sending.
-	 */
-	public void sendEIEIOMessageTo(
-			EIEIOMessage<? extends EIEIOHeader> eieioMessage,
-			InetAddress ipAddress, int port) throws IOException {
-		var b = newMessageBuffer();
-		eieioMessage.addToBuffer(b);
-		b.flip();
-		sendTo(b, ipAddress, port);
-	}
+    /**
+     * Send an EIEIO message to a specific destination.
+     *
+     * @param eieioMessage
+     *            The message to send.
+     * @param ipAddress
+     *            The host to send to.
+     * @param port
+     *            The port to send to.
+     * @throws IOException
+     *             If anything goes wrong in sending.
+     */
+    public void sendEIEIOMessageTo(
+            EIEIOMessage<? extends EIEIOHeader> eieioMessage,
+            InetAddress ipAddress, int port) throws IOException {
+        var b = newMessageBuffer();
+        eieioMessage.addToBuffer(b);
+        b.flip();
+        sendTo(b, ipAddress, port);
+    }
 
-	private static final int MASK = 0xC000;
+    private static final int MASK = 0xC000;
 
-	private static final int FLAG = 0x4000;
+    private static final int FLAG = 0x4000;
 
-	@Override
-	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(int timeout)
-			throws IOException, InterruptedException {
-		var b = receive(timeout);
-		short header = b.getShort();
-		if ((header & MASK) == FLAG) {
-			return readCommandMessage(b);
-		} else {
-			return readDataMessage(b);
-		}
-	}
+    @Override
+    public EIEIOMessage<? extends EIEIOHeader> receiveMessage(int timeout)
+            throws IOException, InterruptedException {
+        var b = receive(timeout);
+        short header = b.getShort();
+        if ((header & MASK) == FLAG) {
+            return readCommandMessage(b);
+        } else {
+            return readDataMessage(b);
+        }
+    }
 }

@@ -35,82 +35,82 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
  * The description of the overall service.
  */
 public class ServiceDescription {
-	private Version version;
+      private Version version;
 
-	@JsonInclude(NON_NULL)
-	private URI jobsRef;
+      @JsonInclude(NON_NULL)
+      private URI jobsRef;
 
-	@JsonInclude(NON_NULL)
-	private URI machinesRef;
+      @JsonInclude(NON_NULL)
+      private URI machinesRef;
 
-	@JsonInclude(NON_NULL)
-	private String csrfHeader;
+      @JsonInclude(NON_NULL)
+      private String csrfHeader;
 
-	@JsonInclude(NON_NULL)
-	private String csrfToken;
+      @JsonInclude(NON_NULL)
+      private String csrfToken;
 
-	/** Create an instance. */
-	public ServiceDescription() {
-	}
+      /** Create an instance. */
+      public ServiceDescription() {
+      }
 
-	ServiceDescription(Version version, UriInfo ui, SecurityContext sec,
-			CsrfToken token) {
-		this.version = version;
-		if (sec.isUserInRole("READER")) {
-			var ub = ui.getAbsolutePathBuilder().path("{resource}");
-			jobsRef = ub.build(JOB);
-			machinesRef = ub.build(MACH);
-		}
-		if (nonNull(token)) {
-			csrfHeader = token.getHeaderName();
-			csrfToken = token.getToken();
-		}
-	}
+      ServiceDescription(Version version, UriInfo ui, SecurityContext sec,
+                  CsrfToken token) {
+            this.version = version;
+            if (sec.isUserInRole("READER")) {
+                  var ub = ui.getAbsolutePathBuilder().path("{resource}");
+                  jobsRef = ub.build(JOB);
+                  machinesRef = ub.build(MACH);
+            }
+            if (nonNull(token)) {
+                  csrfHeader = token.getHeaderName();
+                  csrfToken = token.getToken();
+            }
+      }
 
-	/**
-	 * {@return The service version}
-	 */
-	public Version getVersion() {
-		return version;
-	}
+      /**
+       * {@return The service version}
+       */
+      public Version getVersion() {
+            return version;
+      }
 
-	void setVersion(Version version) {
-		this.version = version;
-	}
+      void setVersion(Version version) {
+            this.version = version;
+      }
 
-	/**
-	 * {@return Where to work with jobs}
-	 */
-	public URI getJobsRef() {
-		return jobsRef;
-	}
+      /**
+       * {@return Where to work with jobs}
+       */
+      public URI getJobsRef() {
+            return jobsRef;
+      }
 
-	void setJobsRef(URI jobsRef) {
-		this.jobsRef = jobsRef;
-	}
+      void setJobsRef(URI jobsRef) {
+            this.jobsRef = jobsRef;
+      }
 
-	/**
-	 * {@return Where to work with machines}
-	 */
-	public URI getMachinesRef() {
-		return machinesRef;
-	}
+      /**
+       * {@return Where to work with machines}
+       */
+      public URI getMachinesRef() {
+            return machinesRef;
+      }
 
-	void setMachinesRef(URI machinesRef) {
-		this.machinesRef = machinesRef;
-	}
+      void setMachinesRef(URI machinesRef) {
+            this.machinesRef = machinesRef;
+      }
 
-	/**
-	 * {@return the name of the HTTP header to pass the CSRF token in}
-	 */
-	public String getCsrfHeader() {
-		return csrfHeader;
-	}
+      /**
+       * {@return the name of the HTTP header to pass the CSRF token in}
+       */
+      public String getCsrfHeader() {
+            return csrfHeader;
+      }
 
-	/**
-	 * {@return the CSRF token}
-	 */
-	public String getCsrfToken() {
-		return csrfToken;
-	}
+      /**
+       * {@return the CSRF token}
+       */
+      public String getCsrfToken() {
+            return csrfToken;
+      }
 }

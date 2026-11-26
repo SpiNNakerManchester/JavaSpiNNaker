@@ -31,60 +31,60 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_flash_erase()} in {@code bmp_cmd.c}.
  */
 public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
-	private static final int LOW_BOUNDARY = 65536;
+    private static final int LOW_BOUNDARY = 65536;
 
-	private static final int MEMORY_LIMIT = 524288;
+    private static final int MEMORY_LIMIT = 524288;
 
-	/**
-	 * Construct a request to erase flash memory on a BMP.
-	 *
-	 * @param board
-	 *            the board with the BMP to write the memory of
-	 * @param baseAddress
-	 *            The positive base address to start the erase at
-	 * @param size
-	 *            The number of bytes to erase
-	 * @throws IllegalArgumentException
-	 *             If the baseAddress or size make no sense
-	 */
-	public EraseFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
-		super(board, CMD_FLASH_ERASE, baseAddress.address,
-				baseAddress.address + size);
-		// Check that we've been actually asked to do something sane!
-		if (size <= 0) {
-			throw new IllegalArgumentException("no data");
-		}
-		int addr = baseAddress.address;
-		if (addr < 0 || addr + size > MEMORY_LIMIT || addr + size < 0) {
-			throw new IllegalArgumentException("address not in flash");
-		}
-		if ((addr % FLASH_CHUNK_SIZE) != 0) {
-			throw new IllegalArgumentException("not on 4kB boundary");
-		}
-		if (addr < LOW_BOUNDARY && addr + size > LOW_BOUNDARY) {
-			throw new IllegalArgumentException("crosses flash 4k/32k boundary");
-		}
-	}
+    /**
+     * Construct a request to erase flash memory on a BMP.
+     *
+     * @param board
+     *            the board with the BMP to write the memory of
+     * @param baseAddress
+     *            The positive base address to start the erase at
+     * @param size
+     *            The number of bytes to erase
+     * @throws IllegalArgumentException
+     *             If the baseAddress or size make no sense
+     */
+    public EraseFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
+        super(board, CMD_FLASH_ERASE, baseAddress.address,
+                baseAddress.address + size);
+        // Check that we've been actually asked to do something sane!
+        if (size <= 0) {
+            throw new IllegalArgumentException("no data");
+        }
+        int addr = baseAddress.address;
+        if (addr < 0 || addr + size > MEMORY_LIMIT || addr + size < 0) {
+            throw new IllegalArgumentException("address not in flash");
+        }
+        if ((addr % FLASH_CHUNK_SIZE) != 0) {
+            throw new IllegalArgumentException("not on 4kB boundary");
+        }
+        if (addr < LOW_BOUNDARY && addr + size > LOW_BOUNDARY) {
+            throw new IllegalArgumentException("crosses flash 4k/32k boundary");
+        }
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/** The response from a request to erase flash. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<MemoryLocation> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
-		}
+    /** The response from a request to erase flash. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<MemoryLocation> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Erase flash memory", CMD_FLASH_ERASE, buffer);
+        }
 
-		/**
-		 * {@return Where the buffer is located}
-		 */
-		@Override
-		protected MemoryLocation parse(ByteBuffer buffer) {
-			return new MemoryLocation(buffer.getInt());
-		}
-	}
+        /**
+         * {@return Where the buffer is located}
+         */
+        @Override
+        protected MemoryLocation parse(ByteBuffer buffer) {
+            return new MemoryLocation(buffer.getInt());
+        }
+    }
 }

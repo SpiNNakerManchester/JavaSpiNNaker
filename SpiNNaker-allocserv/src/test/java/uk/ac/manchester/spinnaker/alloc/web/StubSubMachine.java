@@ -28,58 +28,58 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
  * every operation. Subclass to add the behaviours you want.
  */
 public abstract class StubSubMachine implements SpallocAPI.SubMachine {
-	@Override
-	public Machine getMachine() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Machine getMachine() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getRootX() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getRootX() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getRootY() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getRootY() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getRootZ() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getRootZ() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getWidth() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getWidth() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getHeight() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getHeight() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getDepth() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getDepth() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public List<ConnectionInfo> getConnections() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<ConnectionInfo> getConnections() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public List<BoardCoordinates> getBoards() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public List<BoardCoordinates> getBoards() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public PowerState getPower() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public PowerState getPower() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void setPower(PowerState powerState) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void setPower(PowerState powerState) {
+        throw new UnsupportedOperationException();
+    }
 }

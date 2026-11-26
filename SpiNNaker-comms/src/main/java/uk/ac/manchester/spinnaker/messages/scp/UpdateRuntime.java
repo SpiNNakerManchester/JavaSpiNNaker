@@ -30,33 +30,33 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class UpdateRuntime extends FECRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to update the runtime info.
-	 *
-	 * @param core
-	 *            The SpiNNaker core to update the runtime info of.
-	 * @param runTime
-	 *            The number of machine timesteps.
-	 * @param infiniteRun
-	 *            Whether we are doing infinite running.
-	 * @param currentTime
-	 *            The current simulation time.
-	 * @param numSyncSteps
-	 *            The number of timesteps before we pause to synchronise.
-	 */
-	public UpdateRuntime(HasCoreLocation core, int runTime, boolean infiniteRun,
-			int currentTime, int numSyncSteps) {
-		super(core, true, NEW_RUNTIME_ID, runTime, bool(infiniteRun),
-				currentTime, numSyncSteps);
-	}
+    /**
+     * Constructs a request to update the runtime info.
+     *
+     * @param core
+     *            The SpiNNaker core to update the runtime info of.
+     * @param runTime
+     *            The number of machine timesteps.
+     * @param infiniteRun
+     *            Whether we are doing infinite running.
+     * @param currentTime
+     *            The current simulation time.
+     * @param numSyncSteps
+     *            The number of timesteps before we pause to synchronise.
+     */
+    public UpdateRuntime(HasCoreLocation core, int runTime, boolean infiniteRun,
+            int currentTime, int numSyncSteps) {
+        super(core, true, NEW_RUNTIME_ID, runTime, bool(infiniteRun),
+                currentTime, numSyncSteps);
+    }
 
-	private static int bool(boolean value) {
-		return value ? 1 : 0;
-	}
+    private static int bool(boolean value) {
+        return value ? 1 : 0;
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("update runtime", NEW_RUNTIME_ID, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("update runtime", NEW_RUNTIME_ID, buffer);
+    }
 }

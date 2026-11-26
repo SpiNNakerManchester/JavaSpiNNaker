@@ -28,71 +28,71 @@ import org.springframework.core.io.Resource;
  */
 public class SQL {
 
-	private final String sql;
+    private final String sql;
 
-	/**
-	 * Create a new SQL string.
-	 *
-	 * @param sql The String containing SQL
-	 */
-	public SQL(String sql) {
-		this.sql = sql;
-	}
+    /**
+     * Create a new SQL string.
+     *
+     * @param sql The String containing SQL
+     */
+    public SQL(String sql) {
+        this.sql = sql;
+    }
 
-	/**
-	 * Create a new SQL string from a resource.
-	 *
-	 * @param resource The resource containing
-	 */
-	public SQL(Resource resource) {
-		this(readResource(resource));
-	}
+    /**
+     * Create a new SQL string from a resource.
+     *
+     * @param resource The resource containing
+     */
+    public SQL(Resource resource) {
+        this(readResource(resource));
+    }
 
-	/**
-	 * Create a new SQL string with parameters that can be replaced.
-	 *
-	 * @param sql The String containing SQL with replaceable parts
-	 * @param parameters The parameters that are to be replaced
-	 * @param values The values that the parameters are to be replaced with
-	 */
-	public SQL(String sql, List<String> parameters, List<String> values) {
+    /**
+     * Create a new SQL string with parameters that can be replaced.
+     *
+     * @param sql The String containing SQL with replaceable parts
+     * @param parameters The parameters that are to be replaced
+     * @param values The values that the parameters are to be replaced with
+     */
+    public SQL(String sql, List<String> parameters, List<String> values) {
 
-		// Translate the string
-		var sqlString = sql;
+        // Translate the string
+        var sqlString = sql;
 
-		// Replace the parameters with the values
-		for (int i = 0; i < parameters.size(); i++) {
-			sqlString = sqlString.replace(parameters.get(i), values.get(i));
-		}
-		this.sql = sqlString;
-	}
+        // Replace the parameters with the values
+        for (int i = 0; i < parameters.size(); i++) {
+            sqlString = sqlString.replace(parameters.get(i), values.get(i));
+        }
+        this.sql = sqlString;
+    }
 
-	/**
-	 * Create a new SQL string with parameters that can be replaced.
-	 *
-	 * @param resource The resource containing SQL with replaceable parts
-	 * @param parameters The parameters that are to be replaced
-	 * @param values The values that the parameters are to be replaced with
-	 */
-	public SQL(Resource resource, List<String> parameters,
-			List<String> values) {
-		this(readResource(resource), parameters, values);
-	}
+    /**
+     * Create a new SQL string with parameters that can be replaced.
+     *
+     * @param resource The resource containing SQL with replaceable parts
+     * @param parameters The parameters that are to be replaced
+     * @param values The values that the parameters are to be replaced with
+     */
+    public SQL(Resource resource, List<String> parameters,
+            List<String> values) {
+        this(readResource(resource), parameters, values);
+    }
 
-	private static String readResource(Resource resource) {
-		try (var is = resource.getInputStream()) {
-			return IOUtils.toString(is, UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to read SQL resource", e);
-		}
-	}
+    private static String readResource(Resource resource) {
+        try (var is = resource.getInputStream()) {
+            return IOUtils.toString(is, UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read SQL resource", e);
+        }
+    }
 
-	/**
-	 * Get the SQL to be executed.
-	 *
-	 * @return The SQL.
-	 */
-	public String getSQL() {
-		return sql;
-	}
+    /**
+     * Get the SQL to be executed.
+     *
+     * @return The SQL.
+     */
+    public String getSQL() {
+        return sql;
+    }
 }

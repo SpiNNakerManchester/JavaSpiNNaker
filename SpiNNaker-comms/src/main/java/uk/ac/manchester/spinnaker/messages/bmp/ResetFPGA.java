@@ -31,20 +31,20 @@ import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetT
  */
 public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
 
-	/**
-	 * Constructs a request to perform a reset of the FPGA.
-	 *
-	 * @param board
-	 *            Which board to reset the FPGAs of.
-	 * @param resetType
-	 *            What type of reset to do.
-	 */
-	public ResetFPGA(BMPBoard board, FPGAResetType resetType) {
-		super(board, CMD_XILINX, Reset.code, resetType.ordinal());
-	}
+    /**
+     * Constructs a request to perform a reset of the FPGA.
+     *
+     * @param board
+     *            Which board to reset the FPGAs of.
+     * @param resetType
+     *            What type of reset to do.
+     */
+    public ResetFPGA(BMPBoard board, FPGAResetType resetType) {
+        super(board, CMD_XILINX, Reset.code, resetType.ordinal());
+    }
 
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Reset XILINX", CMD_XILINX, buffer);
-	}
+    @Override
+    public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new BMPResponse("Reset XILINX", CMD_XILINX, buffer);
+    }
 }

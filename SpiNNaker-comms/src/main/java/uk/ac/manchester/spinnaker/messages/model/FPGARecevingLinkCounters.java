@@ -26,39 +26,39 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  */
 @SARKStruct("spio")
 public enum FPGARecevingLinkCounters {
-	/** Packets received on link. */
-	PRVL(0),
-	/** Incorrect 2-of-7 flits received on link. */
-	FLTE(16),
-	/** Framing errors on link. */
-	FRME(32),
-	/** Glitches detected on link. */
-	GLTE(48);
+    /** Packets received on link. */
+    PRVL(0),
+    /** Incorrect 2-of-7 flits received on link. */
+    FLTE(16),
+    /** Framing errors on link. */
+    FRME(32),
+    /** Glitches detected on link. */
+    GLTE(48);
 
-	private static final MemoryLocation BASE_ADDRESS =
-			new MemoryLocation(0x00060000);
+    private static final MemoryLocation BASE_ADDRESS =
+            new MemoryLocation(0x00060000);
 
-	private static final int COUNTER_SIZE = 4;
+    private static final int COUNTER_SIZE = 4;
 
-	private final int offset;
+    private final int offset;
 
-	FPGARecevingLinkCounters(int offset) {
-		this.offset = offset;
-	}
+    FPGARecevingLinkCounters(int offset) {
+        this.offset = offset;
+    }
 
-	/**
-	 * Get the address of the counter for a particular link.
-	 *
-	 * @param linkNumber
-	 *            The link number. Must be 0, 1, or 2.
-	 * @return The address (in FPGA space).
-	 * @throws IllegalArgumentException
-	 *             if a bad link number is given.
-	 */
-	public MemoryLocation address(int linkNumber) {
-		if (linkNumber < 0 || linkNumber > 2) {
-			throw new IllegalArgumentException("linkNumber must be 0, 1, or 2");
-		}
-		return BASE_ADDRESS.add(offset + linkNumber * COUNTER_SIZE);
-	}
+    /**
+     * Get the address of the counter for a particular link.
+     *
+     * @param linkNumber
+     *            The link number. Must be 0, 1, or 2.
+     * @return The address (in FPGA space).
+     * @throws IllegalArgumentException
+     *             if a bad link number is given.
+     */
+    public MemoryLocation address(int linkNumber) {
+        if (linkNumber < 0 || linkNumber > 2) {
+            throw new IllegalArgumentException("linkNumber must be 0, 1, or 2");
+        }
+        return BASE_ADDRESS.add(offset + linkNumber * COUNTER_SIZE);
+    }
 }

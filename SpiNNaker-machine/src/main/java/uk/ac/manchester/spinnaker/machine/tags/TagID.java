@@ -40,64 +40,64 @@ import jakarta.validation.Payload;
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
 @Constraint(validatedBy = TagIDValidator.class)
 public @interface TagID {
-	/**
-	 * Whether to allow the SCAMP-dedicated tag.
-	 *
-	 * @return Whether 0 is allowed.
-	 */
-	boolean scamp() default false;
+    /**
+     * Whether to allow the SCAMP-dedicated tag.
+     *
+     * @return Whether 0 is allowed.
+     */
+    boolean scamp() default false;
 
-	/**
-	 * Whether to also allow ephemeral tags.
-	 *
-	 * @return Whether 8-15 are allowed
-	 */
-	boolean ephemeral() default false;
+    /**
+     * Whether to also allow ephemeral tags.
+     *
+     * @return Whether 8-15 are allowed
+     */
+    boolean ephemeral() default false;
 
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() default "${validatedValue} is a bad tag identifier";
+    /**
+     * Message on constraint violated.
+     *
+     * @return Message
+     */
+    String message() default "${validatedValue} is a bad tag identifier";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 * @hidden
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Group of constraints. Required by validation spec.
+     *
+     * @return Constraint groups, if any
+     * @hidden
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 * @hidden
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload info. Required by validation spec.
+     *
+     * @return Payloads, if any.
+     * @hidden
+     */
+    Class<? extends Payload>[] payload() default {};
 }
 
 class TagIDValidator implements ConstraintValidator<TagID, Integer> {
-	private static final int MAX_TAG = 7;
+    private static final int MAX_TAG = 7;
 
-	private static final int MAX_EPHEMERAL = 15;
+    private static final int MAX_EPHEMERAL = 15;
 
-	private int min;
+    private int min;
 
-	private int max;
+    private int max;
 
-	@Override
-	public void initialize(TagID annotation) {
-		min = annotation.scamp() ? 0 : 1;
-		max = annotation.ephemeral() ? MAX_EPHEMERAL : MAX_TAG;
-	}
+    @Override
+    public void initialize(TagID annotation) {
+        min = annotation.scamp() ? 0 : 1;
+        max = annotation.ephemeral() ? MAX_EPHEMERAL : MAX_TAG;
+    }
 
-	@Override
-	public boolean isValid(Integer value, ConstraintValidatorContext context) {
-		if (isNull(value)) {
-			return true;
-		}
-		return (value >= min) && (value <= max);
-	}
+    @Override
+    public boolean isValid(Integer value, ConstraintValidatorContext context) {
+        if (isNull(value)) {
+            return true;
+        }
+        return (value >= min) && (value <= max);
+    }
 }

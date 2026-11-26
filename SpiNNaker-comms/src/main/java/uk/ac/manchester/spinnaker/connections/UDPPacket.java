@@ -22,38 +22,38 @@ import java.nio.ByteBuffer;
  * A packet with an address.
  */
 public class UDPPacket {
-	private final ByteBuffer byteBuffer;
+    private final ByteBuffer byteBuffer;
 
-	private final InetSocketAddress address;
+    private final InetSocketAddress address;
 
-	/**
-	 * Create a buffer with an address.
-	 *
-	 * @param byteBuffer
-	 *            The buffer
-	 * @param address
-	 *            The address
-	 */
-	UDPPacket(ByteBuffer byteBuffer, InetSocketAddress address) {
-		this.byteBuffer = byteBuffer;
-		this.address = address;
-	}
+    /**
+     * Create a buffer with an address.
+     *
+     * @param byteBuffer
+     *            The buffer
+     * @param address
+     *            The address
+     */
+    UDPPacket(ByteBuffer byteBuffer, InetSocketAddress address) {
+        this.byteBuffer = byteBuffer;
+        this.address = address;
+    }
 
-	/**
-	 * Get the buffer with the content of the packet.
-	 *
-	 * @return The buffer
-	 */
-	public ByteBuffer getByteBuffer() {
-		return byteBuffer;
-	}
+    /**
+     * Get the buffer with the content of the packet.
+     *
+     * @return The buffer
+     */
+    public ByteBuffer getByteBuffer() {
+        return byteBuffer;
+    }
 
-	/**
-	 * Get the address.
-	 *
-	 * @return The address
-	 */
-	public InetSocketAddress getAddress() {
-		return address;
-	}
+    /**
+     * Get the address.
+     *
+     * @return The address
+     */
+    public InetSocketAddress getAddress() {
+        return address;
+    }
 }

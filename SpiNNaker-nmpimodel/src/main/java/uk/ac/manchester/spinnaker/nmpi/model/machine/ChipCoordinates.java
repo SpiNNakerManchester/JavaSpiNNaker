@@ -19,61 +19,61 @@ package uk.ac.manchester.spinnaker.nmpi.model.machine;
  * Represents a set of coordinates of a chip within a machine.
  */
 public class ChipCoordinates {
-	/**
-	 * The cabinet containing the frame containing the board containing the
-	 * chip.
-	 */
-	private int cabinet;
+    /**
+     * The cabinet containing the frame containing the board containing the
+     * chip.
+     */
+    private int cabinet;
 
-	/** The frame containing the board containing the chip. */
-	private int frame;
+    /** The frame containing the board containing the chip. */
+    private int frame;
 
-	/** The board containing the chip. */
-	private int board;
+    /** The board containing the chip. */
+    private int board;
 
-	/**
-	 * Create a new set of ChipCoordinates.
-	 *
-	 * @param cabinet
-	 *            The cabinet containing the frame containing the board
-	 *            containing the chip.
-	 * @param frame
-	 *            The frame containing the board containing the chip.
-	 * @param board
-	 *            The board containing the chip.
-	 */
-	public ChipCoordinates(final int cabinet, final int frame,
-			final int board) {
-		this.cabinet = cabinet;
-		this.frame = frame;
-		this.board = board;
-	}
+    /**
+     * Create a new set of ChipCoordinates.
+     *
+     * @param cabinet
+     *            The cabinet containing the frame containing the board
+     *            containing the chip.
+     * @param frame
+     *            The frame containing the board containing the chip.
+     * @param board
+     *            The board containing the chip.
+     */
+    public ChipCoordinates(final int cabinet, final int frame,
+            final int board) {
+        this.cabinet = cabinet;
+        this.frame = frame;
+        this.board = board;
+    }
 
-	/**
-	 * Get the cabinet containing the frame containing the board containing the
-	 * chip.
-	 *
-	 * @return The cabinet number
-	 */
-	public int getCabinet() {
-		return cabinet;
-	}
+    /**
+     * Get the cabinet containing the frame containing the board containing the
+     * chip.
+     *
+     * @return The cabinet number
+     */
+    public int getCabinet() {
+        return cabinet;
+    }
 
-	/**
-	 * Get the frame containing the board containing the chip.
-	 *
-	 * @return The frame number
-	 */
-	public int getFrame() {
-		return frame;
-	}
+    /**
+     * Get the frame containing the board containing the chip.
+     *
+     * @return The frame number
+     */
+    public int getFrame() {
+        return frame;
+    }
 
-	/**
-	 * Get the board containing the chip.
-	 *
-	 * @return The board number
-	 */
-	public int getBoard() {
-		return board;
-	}
+    /**
+     * Get the board containing the chip.
+     *
+     * @return The board number
+     */
+    public int getBoard() {
+        return board;
+    }
 }

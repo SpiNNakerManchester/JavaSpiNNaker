@@ -17,60 +17,60 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="Group List" name="title"/>
+      <jsp:param value="Group List" name="title"/>
 </jsp:include>
 <body>
 
 <h1>Spalloc Groups</h1>
 <p>
 <button onclick="location.href='${ createGroupUri }'"
-		type="button">Create a new group</button>
+            type="button">Create a new group</button>
 <p>
 <table>
-	<thead>
-		<tr>
-			<th>Group</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr><th colspan="2" class="minordetail">Internal Groups</th></tr>
-		<c:forEach items="${ localgroups }" var="item">
-			<tr>
-				<td>
-					<c:out value="${ item.key }" escapeXml="true" />
-				</td>
-				<td>
-					<button onclick="location.href='${ item.value }'"
-							type="button">Manage</button>
-				</td>
-			</tr>
-		</c:forEach>
-		<tr><th colspan="2" class="minordetail">HBP Organisations</th></tr>
-		<c:forEach items="${ orggroups }" var="item">
-			<tr>
-				<td>
-					<c:out value="${ item.key }" escapeXml="true" />
-				</td>
-				<td>
-					<button onclick="location.href='${ item.value }'"
-							type="button">Manage</button>
-				</td>
-			</tr>
-		</c:forEach>
-		<tr><th colspan="2" class="minordetail">HBP Collabratories</th></tr>
-		<c:forEach items="${ collabgroups }" var="item">
-			<tr>
-				<td>
-					<c:out value="${ item.key }" escapeXml="true" />
-				</td>
-				<td>
-					<button onclick="location.href='${ item.value }'"
-							type="button">Manage</button>
-				</td>
-			</tr>
-		</c:forEach>
-	</tbody>
+      <thead>
+            <tr>
+                  <th>Group</th>
+                  <th>Actions</th>
+            </tr>
+      </thead>
+      <tbody>
+            <tr><th colspan="2" class="minordetail">Internal Groups</th></tr>
+            <c:forEach items="${ localgroups }" var="item">
+                  <tr>
+                        <td>
+                              <c:out value="${ item.key }" escapeXml="true" />
+                        </td>
+                        <td>
+                              <button onclick="location.href='${ item.value }'"
+                                          type="button">Manage</button>
+                        </td>
+                  </tr>
+            </c:forEach>
+            <tr><th colspan="2" class="minordetail">HBP Organisations</th></tr>
+            <c:forEach items="${ orggroups }" var="item">
+                  <tr>
+                        <td>
+                              <c:out value="${ item.key }" escapeXml="true" />
+                        </td>
+                        <td>
+                              <button onclick="location.href='${ item.value }'"
+                                          type="button">Manage</button>
+                        </td>
+                  </tr>
+            </c:forEach>
+            <tr><th colspan="2" class="minordetail">HBP Collabratories</th></tr>
+            <c:forEach items="${ collabgroups }" var="item">
+                  <tr>
+                        <td>
+                              <c:out value="${ item.key }" escapeXml="true" />
+                        </td>
+                        <td>
+                              <button onclick="location.href='${ item.value }'"
+                                          type="button">Manage</button>
+                        </td>
+                  </tr>
+            </c:forEach>
+      </tbody>
 </table>
 
 <jsp:include page="footer.jsp" />

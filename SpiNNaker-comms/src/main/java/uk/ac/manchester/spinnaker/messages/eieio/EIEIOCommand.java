@@ -20,10 +20,10 @@ package uk.ac.manchester.spinnaker.messages.eieio;
  * message.
  */
 public interface EIEIOCommand {
-	/**
-	 * Get the encoded ID number of the command.
-	 *
-	 * @return The encoded form.
-	 */
-	int getValue();
+    /**
+     * Get the encoded ID number of the command.
+     *
+     * @return The encoded form.
+     */
+    int getValue();
 }

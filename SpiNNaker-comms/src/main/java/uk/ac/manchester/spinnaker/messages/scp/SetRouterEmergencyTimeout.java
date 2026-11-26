@@ -31,28 +31,28 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code extra_monitor_support.c}.
  */
 public class SetRouterEmergencyTimeout
-		extends ReinjectorRequest<EmptyResponse> {
+        extends ReinjectorRequest<EmptyResponse> {
 
-	/**
-	 * Creates a request to timeout the router.
-	 *
-	 * @param core
-	 *            The coordinates of the monitor core.
-	 * @param timeoutMantissa
-	 *            The mantissa of the timeout value, between 0 and 15.
-	 * @param timeoutExponent
-	 *            The exponent of the timeout value, between 0 and 15.
-	 */
-	public SetRouterEmergencyTimeout(HasCoreLocation core, int timeoutMantissa,
-			int timeoutExponent) {
-		super(core, SET_ROUTER_EMERGENCY_TIMEOUT,
-				encodeTimeout(timeoutMantissa, timeoutExponent));
-	}
+    /**
+     * Creates a request to timeout the router.
+     *
+     * @param core
+     *            The coordinates of the monitor core.
+     * @param timeoutMantissa
+     *            The mantissa of the timeout value, between 0 and 15.
+     * @param timeoutExponent
+     *            The exponent of the timeout value, between 0 and 15.
+     */
+    public SetRouterEmergencyTimeout(HasCoreLocation core, int timeoutMantissa,
+            int timeoutExponent) {
+        super(core, SET_ROUTER_EMERGENCY_TIMEOUT,
+                encodeTimeout(timeoutMantissa, timeoutExponent));
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Set router emergency timeout",
-				SET_ROUTER_EMERGENCY_TIMEOUT, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Set router emergency timeout",
+                SET_ROUTER_EMERGENCY_TIMEOUT, buffer);
+    }
 }

@@ -19,8 +19,8 @@ package uk.ac.manchester.spinnaker.transceiver;
  * Marks a class that is used to track how many retries were used.
  */
 public interface RetryTracker {
-	/**
-	 * Note that a retry was required.
-	 */
-	void retryNeeded();
+    /**
+     * Note that a retry was required.
+     */
+    void retryNeeded();
 }

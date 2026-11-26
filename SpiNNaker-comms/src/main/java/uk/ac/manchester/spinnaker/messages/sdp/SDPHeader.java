@@ -30,321 +30,321 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  * Represents the header of an SDP message.
  */
 public final class SDPHeader implements SerializableMessage {
-	private static final int MAX_PORT = 7;
+    private static final int MAX_PORT = 7;
 
-	// Cpu:Port packing within port/cpu byte:
-	// [ P|P|P | C|C|C|C|C ]
-	private static final int CPU_ADDR_BITS = 5;
+    // Cpu:Port packing within port/cpu byte:
+    // [ P|P|P | C|C|C|C|C ]
+    private static final int CPU_ADDR_BITS = 5;
 
-	private static final int CPU_MASK = (1 << CPU_ADDR_BITS) - 1;
+    private static final int CPU_MASK = (1 << CPU_ADDR_BITS) - 1;
 
-	private static final int PORT_BITS = 8 - CPU_ADDR_BITS;
+    private static final int PORT_BITS = 8 - CPU_ADDR_BITS;
 
-	private static final int PORT_MASK = (1 << PORT_BITS) - 1;
+    private static final int PORT_MASK = (1 << PORT_BITS) - 1;
 
-	@Valid
-	private SDPLocation destination;
+    @Valid
+    private SDPLocation destination;
 
-	private int destinationPort;
+    private int destinationPort;
 
-	@Valid
-	private SDPLocation source;
+    @Valid
+    private SDPLocation source;
 
-	private int sourcePort;
+    private int sourcePort;
 
-	private Flag flags;
+    private Flag flags;
 
-	private int tag;
+    private int tag;
 
-	/**
-	 * Create a header with all fields set to default. Note that messages
-	 * containing this header <i>cannot</i> be sent until a source and
-	 * destination have been set!
-	 */
-	public SDPHeader() {
-	}
+    /**
+     * Create a header with all fields set to default. Note that messages
+     * containing this header <i>cannot</i> be sent until a source and
+     * destination have been set!
+     */
+    public SDPHeader() {
+    }
 
-	/**
-	 * Create a simple header with just the flags and destination set. Note that
-	 * messages containing this header <i>cannot</i> be sent until a source has
-	 * also been set!
-	 *
-	 * @param flags
-	 *            The header flags.
-	 * @param destination
-	 *            Where the message is bound for.
-	 * @param destinationPort
-	 *            the <i>SDP port</i> that the message routes through. Note that
-	 *            this is <b>not</b> a UDP port! Those are associated with a
-	 *            connection, not a message.
-	 * @throws IllegalArgumentException
-	 *             if a bad SDP port is given
-	 */
-	public SDPHeader(Flag flags, SDPLocation destination,
-			int destinationPort) {
-		this.flags = flags;
-		this.destination = destination;
-		if (destinationPort < 0 || destinationPort > MAX_PORT) {
-			throw new IllegalArgumentException("port out of range");
-		}
-		this.destinationPort = destinationPort;
-	}
+    /**
+     * Create a simple header with just the flags and destination set. Note that
+     * messages containing this header <i>cannot</i> be sent until a source has
+     * also been set!
+     *
+     * @param flags
+     *            The header flags.
+     * @param destination
+     *            Where the message is bound for.
+     * @param destinationPort
+     *            the <i>SDP port</i> that the message routes through. Note that
+     *            this is <b>not</b> a UDP port! Those are associated with a
+     *            connection, not a message.
+     * @throws IllegalArgumentException
+     *             if a bad SDP port is given
+     */
+    public SDPHeader(Flag flags, SDPLocation destination,
+            int destinationPort) {
+        this.flags = flags;
+        this.destination = destination;
+        if (destinationPort < 0 || destinationPort > MAX_PORT) {
+            throw new IllegalArgumentException("port out of range");
+        }
+        this.destinationPort = destinationPort;
+    }
 
-	/**
-	 * Create a simple header with just the flags and destination set. Note that
-	 * messages containing this header <i>cannot</i> be sent until a source has
-	 * also been set!
-	 *
-	 * @param flags
-	 *            The header flags.
-	 * @param destination
-	 *            Where the message is bound for.
-	 * @param destinationPort
-	 *            the <i>SDP port</i> that the message routes through. Note that
-	 *            this is <b>not</b> a UDP port! Those are associated with a
-	 *            connection, not a message.
-	 */
-	public SDPHeader(Flag flags, SDPLocation destination,
-			SDPPort destinationPort) {
-		this.flags = flags;
-		this.destination = destination;
-		this.destinationPort = destinationPort.value;
-	}
+    /**
+     * Create a simple header with just the flags and destination set. Note that
+     * messages containing this header <i>cannot</i> be sent until a source has
+     * also been set!
+     *
+     * @param flags
+     *            The header flags.
+     * @param destination
+     *            Where the message is bound for.
+     * @param destinationPort
+     *            the <i>SDP port</i> that the message routes through. Note that
+     *            this is <b>not</b> a UDP port! Those are associated with a
+     *            connection, not a message.
+     */
+    public SDPHeader(Flag flags, SDPLocation destination,
+            SDPPort destinationPort) {
+        this.flags = flags;
+        this.destination = destination;
+        this.destinationPort = destinationPort.value;
+    }
 
-	/**
-	 * Read the header from an input buffer.
-	 *
-	 * @param buffer
-	 *            The buffer to read from.
-	 * @param isBMP
-	 *            Whether we're really talking to a BMP.
-	 */
-	public SDPHeader(ByteBuffer buffer, boolean isBMP) {
-		// Caller MUST have stripped the leading padding
-		assert buffer.position() == 2 : "leading padding must be skipped";
-		flags = Flag.get(buffer.get());
-		tag = toUnsignedInt(buffer.get());
-		int dpc = toUnsignedInt(buffer.get());
-		int spc = toUnsignedInt(buffer.get());
-		int dcy = toUnsignedInt(buffer.get());
-		int dcx = toUnsignedInt(buffer.get());
-		int scy = toUnsignedInt(buffer.get());
-		int scx = toUnsignedInt(buffer.get());
-		destinationPort = (dpc >> CPU_ADDR_BITS) & PORT_MASK;
-		sourcePort = (spc >> CPU_ADDR_BITS) & PORT_MASK;
-		destination = new SDPLocation(dcx, dcy, dpc & CPU_MASK);
-		source = new SDPLocation(scx, scy, spc & CPU_MASK);
-	}
+    /**
+     * Read the header from an input buffer.
+     *
+     * @param buffer
+     *            The buffer to read from.
+     * @param isBMP
+     *            Whether we're really talking to a BMP.
+     */
+    public SDPHeader(ByteBuffer buffer, boolean isBMP) {
+        // Caller MUST have stripped the leading padding
+        assert buffer.position() == 2 : "leading padding must be skipped";
+        flags = Flag.get(buffer.get());
+        tag = toUnsignedInt(buffer.get());
+        int dpc = toUnsignedInt(buffer.get());
+        int spc = toUnsignedInt(buffer.get());
+        int dcy = toUnsignedInt(buffer.get());
+        int dcx = toUnsignedInt(buffer.get());
+        int scy = toUnsignedInt(buffer.get());
+        int scx = toUnsignedInt(buffer.get());
+        destinationPort = (dpc >> CPU_ADDR_BITS) & PORT_MASK;
+        sourcePort = (spc >> CPU_ADDR_BITS) & PORT_MASK;
+        destination = new SDPLocation(dcx, dcy, dpc & CPU_MASK);
+        source = new SDPLocation(scx, scy, spc & CPU_MASK);
+    }
 
-	@Override
-	public void addToBuffer(ByteBuffer buffer) {
-		int dpc = ((destinationPort & PORT_MASK) << CPU_ADDR_BITS)
-				| (destination.getP() & CPU_MASK);
-		int spc = ((sourcePort & PORT_MASK) << CPU_ADDR_BITS)
-				| (source.getP() & CPU_MASK);
+    @Override
+    public void addToBuffer(ByteBuffer buffer) {
+        int dpc = ((destinationPort & PORT_MASK) << CPU_ADDR_BITS)
+                | (destination.getP() & CPU_MASK);
+        int spc = ((sourcePort & PORT_MASK) << CPU_ADDR_BITS)
+                | (source.getP() & CPU_MASK);
 
-		buffer.put(flags.value);
-		buffer.put((byte) tag);
-		buffer.put((byte) dpc);
-		buffer.put((byte) spc);
-		buffer.put((byte) destination.minor);
-		buffer.put((byte) destination.major);
-		buffer.put((byte) source.minor);
-		buffer.put((byte) source.major);
-	}
+        buffer.put(flags.value);
+        buffer.put((byte) tag);
+        buffer.put((byte) dpc);
+        buffer.put((byte) spc);
+        buffer.put((byte) destination.minor);
+        buffer.put((byte) destination.major);
+        buffer.put((byte) source.minor);
+        buffer.put((byte) source.major);
+    }
 
-	/**
-	 * What "chip" is the message going to.
-	 *
-	 * Note that there is a special address for addresses off the machine;
-	 * that address is not normally representable in a {@link CoreLocation}.
-	 *
-	 * @return "chip" the message is going to.
-	 */
-	public SDPLocation getDestination() {
-		return destination;
-	}
+    /**
+     * What "chip" is the message going to.
+     *
+     * Note that there is a special address for addresses off the machine;
+     * that address is not normally representable in a {@link CoreLocation}.
+     *
+     * @return "chip" the message is going to.
+     */
+    public SDPLocation getDestination() {
+        return destination;
+    }
 
-	/**
-	 * Sets the destination.
-	 *
-	 * @param destination
-	 *            What "chip" is the message going to. Note that there is a
-	 *            special address for addresses off the machine; that address
-	 *            is not normally representable in a {@link CoreLocation}.
-	 */
-	public void setDestination(SDPLocation destination) {
-		this.destination = destination;
-	}
+    /**
+     * Sets the destination.
+     *
+     * @param destination
+     *            What "chip" is the message going to. Note that there is a
+     *            special address for addresses off the machine; that address
+     *            is not normally representable in a {@link CoreLocation}.
+     */
+    public void setDestination(SDPLocation destination) {
+        this.destination = destination;
+    }
 
-	/**
-	 * {@return The target SDP port. Note that this is not a UDP port}
-	 */
-	public int getDestinationPort() {
-		return destinationPort;
-	}
+    /**
+     * {@return The target SDP port. Note that this is not a UDP port}
+     */
+    public int getDestinationPort() {
+        return destinationPort;
+    }
 
-	/**
-	 * Set the target SDP port. Note that this is not a UDP port.
-	 *
-	 * @param port
-	 *            The port to set it to.
-	 */
-	void setDestinationPort(SDPPort port) {
-		this.destinationPort = port.value;
-	}
+    /**
+     * Set the target SDP port. Note that this is not a UDP port.
+     *
+     * @param port
+     *            The port to set it to.
+     */
+    void setDestinationPort(SDPPort port) {
+        this.destinationPort = port.value;
+    }
 
-	/**
-	 * Set the target SDP port. Note that this is not a UDP port.
-	 *
-	 * @param port
-	 *            The port to set it to.
-	 * @throws IllegalArgumentException
-	 *             If the port number is bad.
-	 */
-	public void setDestinationPort(int port) {
-		if (port < 0 || port > MAX_PORT) {
-			throw new IllegalArgumentException("port out of range");
-		}
-		this.destinationPort = port;
-	}
+    /**
+     * Set the target SDP port. Note that this is not a UDP port.
+     *
+     * @param port
+     *            The port to set it to.
+     * @throws IllegalArgumentException
+     *             If the port number is bad.
+     */
+    public void setDestinationPort(int port) {
+        if (port < 0 || port > MAX_PORT) {
+            throw new IllegalArgumentException("port out of range");
+        }
+        this.destinationPort = port;
+    }
 
-	/**
-	 * {@return What "chip" originated the message}
-	 */
-	public SDPLocation getSource() {
-		return source;
-	}
+    /**
+     * {@return What "chip" originated the message}
+     */
+    public SDPLocation getSource() {
+        return source;
+    }
 
-	/**
-	 * Sets the source location.
-	 *
-	 * @param source
-	 *            What "chip" originates the message. Note that there is a
-	 *            special address for origination off the machine; that address
-	 *            is not normally representable in a {@link CoreLocation}.
-	 */
-	public void setSource(SDPLocation source) {
-		this.source = source;
-	}
+    /**
+     * Sets the source location.
+     *
+     * @param source
+     *            What "chip" originates the message. Note that there is a
+     *            special address for origination off the machine; that address
+     *            is not normally representable in a {@link CoreLocation}.
+     */
+    public void setSource(SDPLocation source) {
+        this.source = source;
+    }
 
-	/**
-	 * What SDP port originated the message.
-	 *
-	 * Note that this is not a UDP port.
-	 *
-	 * @return What SDP port originated the message
-	 */
-	public int getSourcePort() {
-		return sourcePort;
-	}
+    /**
+     * What SDP port originated the message.
+     *
+     * Note that this is not a UDP port.
+     *
+     * @return What SDP port originated the message
+     */
+    public int getSourcePort() {
+        return sourcePort;
+    }
 
-	/**
-	 * Set the originating SDP port. Note that this is not a UDP port.
-	 *
-	 * @param port
-	 *            The port to set it to.
-	 */
-	public void setSourcePort(SDPPort port) {
-		this.sourcePort = port.value;
-	}
+    /**
+     * Set the originating SDP port. Note that this is not a UDP port.
+     *
+     * @param port
+     *            The port to set it to.
+     */
+    public void setSourcePort(SDPPort port) {
+        this.sourcePort = port.value;
+    }
 
-	/**
-	 * Set the originating SDP port. Note that this is not a UDP port.
-	 *
-	 * @param port
-	 *            The port to set it to.
-	 * @throws IllegalArgumentException
-	 *             If the port number is bad.
-	 */
-	public void setSourcePort(int port) {
-		if (port < 0 || port > MAX_PORT) {
-			throw new IllegalArgumentException("port out of range");
-		}
-		this.sourcePort = port;
-	}
+    /**
+     * Set the originating SDP port. Note that this is not a UDP port.
+     *
+     * @param port
+     *            The port to set it to.
+     * @throws IllegalArgumentException
+     *             If the port number is bad.
+     */
+    public void setSourcePort(int port) {
+        if (port < 0 || port > MAX_PORT) {
+            throw new IllegalArgumentException("port out of range");
+        }
+        this.sourcePort = port;
+    }
 
-	/**
-	 * {@return The flags from the header}
-	 */
-	public Flag getFlags() {
-		return flags;
-	}
+    /**
+     * {@return The flags from the header}
+     */
+    public Flag getFlags() {
+        return flags;
+    }
 
-	void setFlags(Flag flags) {
-		this.flags = flags;
-	}
+    void setFlags(Flag flags) {
+        this.flags = flags;
+    }
 
-	/**
-	 * {@return The tag byte from the header}
-	 */
-	public int getTag() {
-		return tag;
-	}
+    /**
+     * {@return The tag byte from the header}
+     */
+    public int getTag() {
+        return tag;
+    }
 
-	void setTag(byte tag) {
-		this.tag = toUnsignedInt(tag);
-	}
+    void setTag(byte tag) {
+        this.tag = toUnsignedInt(tag);
+    }
 
-	/** The meanings of individual flag bits in {@link SDPHeader.Flag}. */
-	private static final class SCAMP {
-		/**
-		 * A secret agent's value.
-		 * <p>
-		 * Most plausible explanation of this (from a set of one) is that Dave
-		 * Lester thinks that Jamie Knight put it in as a reference to wearing
-		 * dinner jackets for a meeting at Pot Shrigley.
-		 */
-		private static final int BOND = 007;
+    /** The meanings of individual flag bits in {@link SDPHeader.Flag}. */
+    private static final class SCAMP {
+        /**
+         * A secret agent's value.
+         * <p>
+         * Most plausible explanation of this (from a set of one) is that Dave
+         * Lester thinks that Jamie Knight put it in as a reference to wearing
+         * dinner jackets for a meeting at Pot Shrigley.
+         */
+        private static final int BOND = 007;
 
-		/** Reply expected. */
-		private static final int SDPF_REPLY = 0x80;
+        /** Reply expected. */
+        private static final int SDPF_REPLY = 0x80;
 
-		/** Checksum before routing. */
-		@SuppressWarnings("unused")
-		private static final int SDPF_SUM = 0x40;
+        /** Checksum before routing. */
+        @SuppressWarnings("unused")
+        private static final int SDPF_SUM = 0x40;
 
-		/** Don't route via P2P. */
-		private static final int SDPF_NR = 0x20;
-	}
+        /** Don't route via P2P. */
+        private static final int SDPF_NR = 0x20;
+    }
 
-	/** Possible values of the {@code flags} field. */
-	public enum Flag {
-		/** Indicates that a reply is not expected. */
-		REPLY_NOT_EXPECTED(SCAMP.BOND),
-		/**
-		 * Indicates that a reply is not expected and the packet should not be
-		 * P2P routed.
-		 */
-		REPLY_NOT_EXPECTED_NO_P2P(SCAMP.BOND | SCAMP.SDPF_NR),
-		/** Indicates that a reply is expected. */
-		REPLY_EXPECTED(SCAMP.BOND | SCAMP.SDPF_REPLY),
-		/**
-		 * Indicates that a reply is expected and the packet should not be P2P
-		 * routed.
-		 */
-		REPLY_EXPECTED_NO_P2P(SCAMP.BOND | SCAMP.SDPF_REPLY | SCAMP.SDPF_NR);
+    /** Possible values of the {@code flags} field. */
+    public enum Flag {
+        /** Indicates that a reply is not expected. */
+        REPLY_NOT_EXPECTED(SCAMP.BOND),
+        /**
+         * Indicates that a reply is not expected and the packet should not be
+         * P2P routed.
+         */
+        REPLY_NOT_EXPECTED_NO_P2P(SCAMP.BOND | SCAMP.SDPF_NR),
+        /** Indicates that a reply is expected. */
+        REPLY_EXPECTED(SCAMP.BOND | SCAMP.SDPF_REPLY),
+        /**
+         * Indicates that a reply is expected and the packet should not be P2P
+         * routed.
+         */
+        REPLY_EXPECTED_NO_P2P(SCAMP.BOND | SCAMP.SDPF_REPLY | SCAMP.SDPF_NR);
 
-		/** The SDP-encoded form of the flag. */
-		public final byte value;
+        /** The SDP-encoded form of the flag. */
+        public final byte value;
 
-		private static final Map<Byte, Flag> MAP =
-				makeEnumBackingMap(values(), v -> v.value);
+        private static final Map<Byte, Flag> MAP =
+                makeEnumBackingMap(values(), v -> v.value);
 
-		Flag(int value) {
-			this.value = (byte) value;
-		}
+        Flag(int value) {
+            this.value = (byte) value;
+        }
 
-		/**
-		 * Given a value, get the {@code enum} member that corresponds to it.
-		 *
-		 * @param value
-		 *            The value to parse.
-		 * @return The flag it corresponds to, or {@code null} if it doesn't
-		 *         correspond to anything.
-		 */
-		public static Flag get(byte value) {
-			return MAP.get(value);
-		}
-	}
+        /**
+         * Given a value, get the {@code enum} member that corresponds to it.
+         *
+         * @param value
+         *            The value to parse.
+         * @return The flag it corresponds to, or {@code null} if it doesn't
+         *         correspond to anything.
+         */
+        public static Flag get(byte value) {
+            return MAP.get(value);
+        }
+    }
 }

@@ -24,27 +24,27 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @see SystemVariableDefinition
  */
 public enum DataType {
-	/** The value is one byte long, a {@code byte}. */
-	BYTE(1),
-	/** The value is two bytes long, a {@code short}. */
-	SHORT(2),
-	/** The value is four bytes long, an {@code int}. */
-	INT(4),
-	/** The value is eight bytes long, a {@code long}. */
-	LONG(8),
-	/** The value is an array of bytes, a {@code byte[]}. */
-	BYTE_ARRAY(16),
-	/**
-	 * The value is four bytes, representing a {@linkplain MemoryLocation memory
-	 * location}.
-	 */
-	@UsedInJavadocOnly(MemoryLocation.class)
-	ADDRESS(4);
+    /** The value is one byte long, a {@code byte}. */
+    BYTE(1),
+    /** The value is two bytes long, a {@code short}. */
+    SHORT(2),
+    /** The value is four bytes long, an {@code int}. */
+    INT(4),
+    /** The value is eight bytes long, a {@code long}. */
+    LONG(8),
+    /** The value is an array of bytes, a {@code byte[]}. */
+    BYTE_ARRAY(16),
+    /**
+     * The value is four bytes, representing a {@linkplain MemoryLocation memory
+     * location}.
+     */
+    @UsedInJavadocOnly(MemoryLocation.class)
+    ADDRESS(4);
 
-	/** The SCAMP data type descriptor code. */
-	public final int value;
+    /** The SCAMP data type descriptor code. */
+    public final int value;
 
-	DataType(int value) {
-		this.value = value;
-	}
+    DataType(int value) {
+        this.value = value;
+    }
 }

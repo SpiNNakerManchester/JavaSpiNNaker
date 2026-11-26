@@ -26,19 +26,19 @@ import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
  * This is <i>not</i> intended to be an automated test.
  */
 public final class ManualSpalloc {
-	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
+    private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
 
-	private ManualSpalloc() {
-	}
+    private ManualSpalloc() {
+    }
 
-	public static void main(String... args)
-			throws IOException, SpallocServerException, Exception {
-		try (var client = new SpallocClient(SPALLOC, PORT_DEFAULT);
-				var c = client.withConnection()) {
-			var jobs = client.listJobs();
-			for (var job : jobs) {
-				System.out.println(job);
-			}
-		}
-	}
+    public static void main(String... args)
+            throws IOException, SpallocServerException, Exception {
+        try (var client = new SpallocClient(SPALLOC, PORT_DEFAULT);
+                var c = client.withConnection()) {
+            var jobs = client.listJobs();
+            for (var job : jobs) {
+                System.out.println(job);
+            }
+        }
+    }
 }

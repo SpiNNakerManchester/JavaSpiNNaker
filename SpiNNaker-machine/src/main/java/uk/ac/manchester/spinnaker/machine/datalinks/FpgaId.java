@@ -21,37 +21,37 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
  * @see FpgaEnum
  */
 public enum FpgaId {
-	/** The FGPA link that connects to the bottom and bottom right chips. */
-	BOTTOM(0),
-	/** The FGPA link that connects to the left and top left chips. */
-	LEFT(1),
-	/** The FGPA link that connects to the top and right chips. */
-	TOP_RIGHT(2);
+    /** The FGPA link that connects to the bottom and bottom right chips. */
+    BOTTOM(0),
+    /** The FGPA link that connects to the left and top left chips. */
+    LEFT(1),
+    /** The FGPA link that connects to the top and right chips. */
+    TOP_RIGHT(2);
 
-	/** The physical ID for this link. */
-	public final int id;
+    /** The physical ID for this link. */
+    public final int id;
 
-	/**
-	 * Converts an ID into an enum.
-	 */
-	private static final FpgaId[] BY_ID = {
-		BOTTOM, LEFT, TOP_RIGHT
-	};
+    /**
+     * Converts an ID into an enum.
+     */
+    private static final FpgaId[] BY_ID = {
+        BOTTOM, LEFT, TOP_RIGHT
+    };
 
-	FpgaId(int id) {
-		this.id = id;
-	}
+    FpgaId(int id) {
+        this.id = id;
+    }
 
-	/**
-	 * Obtain the enum from the ID.
-	 *
-	 * @param id
-	 *            The physical ID for the FPGA link.
-	 * @return The ID as an enum
-	 * @throws ArrayIndexOutOfBoundsException
-	 *             Thrown if the ID is outside the known range.
-	 */
-	public static FpgaId byId(int id) throws ArrayIndexOutOfBoundsException {
-		return BY_ID[id];
-	}
+    /**
+     * Obtain the enum from the ID.
+     *
+     * @param id
+     *            The physical ID for the FPGA link.
+     * @return The ID as an enum
+     * @throws ArrayIndexOutOfBoundsException
+     *             Thrown if the ID is outside the known range.
+     */
+    public static FpgaId byId(int id) throws ArrayIndexOutOfBoundsException {
+        return BY_ID[id];
+    }
 }

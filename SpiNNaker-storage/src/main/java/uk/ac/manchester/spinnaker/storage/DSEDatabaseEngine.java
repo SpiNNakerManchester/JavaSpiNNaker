@@ -26,43 +26,43 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
  * A database interface for talking to the DSE database.
  */
 public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
-	private static String sqlDDL = loadResource("dse.sql");
+    private static String sqlDDL = loadResource("dse.sql");
 
-	/**
-	 * Create an engine interface for an in-memory database.
-	 */
-	public DSEDatabaseEngine() {
-	}
+    /**
+     * Create an engine interface for an in-memory database.
+     */
+    public DSEDatabaseEngine() {
+    }
 
-	/**
-	 * Create an engine interface for a particular database.
-	 *
-	 * @param dbFile
-	 *            The file containing the database.
-	 */
-	public DSEDatabaseEngine(File dbFile) {
-		super(dbFile);
-	}
+    /**
+     * Create an engine interface for a particular database.
+     *
+     * @param dbFile
+     *            The file containing the database.
+     */
+    public DSEDatabaseEngine(File dbFile) {
+        super(dbFile);
+    }
 
-	/**
-	 * Create an engine interface for a particular database.
-	 *
-	 * @param dbUri
-	 *            The <em>absolute</em> URI to the file containing the database.
-	 *            May contain query parameters
-	 *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
-	 */
-	public DSEDatabaseEngine(URI dbUri) {
-		super(dbUri);
-	}
+    /**
+     * Create an engine interface for a particular database.
+     *
+     * @param dbUri
+     *            The <em>absolute</em> URI to the file containing the database.
+     *            May contain query parameters
+     *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
+     */
+    public DSEDatabaseEngine(URI dbUri) {
+        super(dbUri);
+    }
 
-	@Override
-	public String getDDL() {
-		return sqlDDL;
-	}
+    @Override
+    public String getDDL() {
+        return sqlDDL;
+    }
 
-	@Override
-	public DSEStorage getStorageInterface() {
-		return new SQLiteDataSpecStorage(this);
-	}
+    @Override
+    public DSEStorage getStorageInterface() {
+        return new SQLiteDataSpecStorage(this);
+    }
 }

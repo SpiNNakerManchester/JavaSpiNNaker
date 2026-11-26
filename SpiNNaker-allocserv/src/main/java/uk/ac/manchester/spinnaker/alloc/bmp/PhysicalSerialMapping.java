@@ -45,71 +45,71 @@ import org.springframework.stereotype.Component;
  */
 @Component
 class PhysicalSerialMapping {
-	private static final Logger log = getLogger(PhysicalSerialMapping.class);
+    private static final Logger log = getLogger(PhysicalSerialMapping.class);
 
-	@Value("classpath:blacklists/spin5-serial.txt")
-	private Resource spin5serialFile;
+    @Value("classpath:blacklists/spin5-serial.txt")
+    private Resource spin5serialFile;
 
-	private final Map<String, String> physicalToLogical = new HashMap<>();
+    private final Map<String, String> physicalToLogical = new HashMap<>();
 
-	private final Map<String, String> logicalToPhysical = new HashMap<>();
+    private final Map<String, String> logicalToPhysical = new HashMap<>();
 
-	@PostConstruct
-	void loadMapping() throws IOException {
-		try (var isr = new InputStreamReader(spin5serialFile.getInputStream(),
-				UTF_8)) {
-			buffer(isr).lines().map(s -> s.replaceFirst("#.*", "").strip())
-					.filter(not(String::isBlank))
-					.forEach(this::parseOneMapping);
-		}
-		log.info("loaded physical/logical board ID map: {} entries",
-				physicalToLogical.size());
-	}
+    @PostConstruct
+    void loadMapping() throws IOException {
+        try (var isr = new InputStreamReader(spin5serialFile.getInputStream(),
+                UTF_8)) {
+            buffer(isr).lines().map(s -> s.replaceFirst("#.*", "").strip())
+                    .filter(not(String::isBlank))
+                    .forEach(this::parseOneMapping);
+        }
+        log.info("loaded physical/logical board ID map: {} entries",
+                physicalToLogical.size());
+    }
 
-	private void parseOneMapping(String line) {
-		var bits = line.split("\\s+", 2);
-		if (log.isTraceEnabled()) {
-			log.trace("parsing line: {}", Arrays.toString(bits));
-		}
-		if (bits.length < 2) {
-			log.debug("bogus line: {}", line);
-			return;
-		}
-		var physical = bits[0];
-		var logical = bits[1];
-		var old = physicalToLogical.put(physical, logical);
-		if (old != null) {
-			log.warn("replaced mapping for {} (to {}) with {}", physical, old,
-					logical);
-		}
-		old = logicalToPhysical.put(logical, physical);
-		if (old != null) {
-			log.warn("replaced mapping for {} (to {}) with {}", logical, old,
-					physical);
-		}
-	}
+    private void parseOneMapping(String line) {
+        var bits = line.split("\\s+", 2);
+        if (log.isTraceEnabled()) {
+            log.trace("parsing line: {}", Arrays.toString(bits));
+        }
+        if (bits.length < 2) {
+            log.debug("bogus line: {}", line);
+            return;
+        }
+        var physical = bits[0];
+        var logical = bits[1];
+        var old = physicalToLogical.put(physical, logical);
+        if (old != null) {
+            log.warn("replaced mapping for {} (to {}) with {}", physical, old,
+                    logical);
+        }
+        old = logicalToPhysical.put(logical, physical);
+        if (old != null) {
+            log.warn("replaced mapping for {} (to {}) with {}", logical, old,
+                    physical);
+        }
+    }
 
-	/**
-	 * Given a BMP serial identifier, get the physical serial ID for that board.
-	 *
-	 * @param bmpSerialId
-	 *            The BMP serial ID.
-	 * @return The physical board identifier, or {@code null} if the BMP serial
-	 *         ID is not recognised.
-	 */
-	public String getPhysicalId(String bmpSerialId) {
-		return logicalToPhysical.get(bmpSerialId);
-	}
+    /**
+     * Given a BMP serial identifier, get the physical serial ID for that board.
+     *
+     * @param bmpSerialId
+     *            The BMP serial ID.
+     * @return The physical board identifier, or {@code null} if the BMP serial
+     *         ID is not recognised.
+     */
+    public String getPhysicalId(String bmpSerialId) {
+        return logicalToPhysical.get(bmpSerialId);
+    }
 
-	/**
-	 * Given a physical serial identifier, get the BMP serial ID for that board.
-	 *
-	 * @param physicalSerialId
-	 *            The physical board serial ID.
-	 * @return The BMP identifier, or {@code null} if the physical board serial
-	 *         ID is not recognised.
-	 */
-	public String getBMPId(String physicalSerialId) {
-		return physicalToLogical.get(physicalSerialId);
-	}
+    /**
+     * Given a physical serial identifier, get the BMP serial ID for that board.
+     *
+     * @param physicalSerialId
+     *            The physical board serial ID.
+     * @return The BMP identifier, or {@code null} if the physical board serial
+     *         ID is not recognised.
+     */
+    public String getBMPId(String physicalSerialId) {
+        return physicalToLogical.get(physicalSerialId);
+    }
 }

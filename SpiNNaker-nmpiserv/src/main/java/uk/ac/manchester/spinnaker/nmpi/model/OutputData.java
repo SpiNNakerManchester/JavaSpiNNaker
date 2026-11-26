@@ -23,64 +23,64 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.nmpi.DataItem;
  * The output data from a Job.
  */
 public class OutputData {
-	/** The repository. */
-	private String repository;
+    /** The repository. */
+    private String repository;
 
-	/** The files of the repository. */
-	private List<DataItem> files;
+    /** The files of the repository. */
+    private List<DataItem> files;
 
-	/**
-	 * Creates an empty item of data.
-	 */
-	public OutputData() {
-		// Does Nothing
-	}
+    /**
+     * Creates an empty item of data.
+     */
+    public OutputData() {
+        // Does Nothing
+    }
 
-	/**
-	 * Make an instance for a repository.
-	 *
-	 * @param repository
-	 *            The name of the repository.
-	 */
-	public OutputData(final String repository) {
-		this.repository = repository;
-	}
+    /**
+     * Make an instance for a repository.
+     *
+     * @param repository
+     *            The name of the repository.
+     */
+    public OutputData(final String repository) {
+        this.repository = repository;
+    }
 
-	/**
-	 * Get the repository.
-	 *
-	 * @return The repository.
-	 */
-	public String getRepository() {
-		return repository;
-	}
+    /**
+     * Get the repository.
+     *
+     * @return The repository.
+     */
+    public String getRepository() {
+        return repository;
+    }
 
-	/**
-	 * Set the repository.
-	 *
-	 * @param repository
-	 *            The repository to set.
-	 */
-	public void setRepository(String repository) {
-		this.repository = repository;
-	}
+    /**
+     * Set the repository.
+     *
+     * @param repository
+     *            The repository to set.
+     */
+    public void setRepository(String repository) {
+        this.repository = repository;
+    }
 
-	/**
-	 * Get the files.
-	 *
-	 * @return The files.
-	 */
-	public List<DataItem> getFiles() {
-		return files;
-	}
+    /**
+     * Get the files.
+     *
+     * @return The files.
+     */
+    public List<DataItem> getFiles() {
+        return files;
+    }
 
-	/**
-	 * Set the files.
-	 *
-	 * @param files
-	 *            The files to set.
-	 */
-	public void setFiles(List<DataItem> files) {
-		this.files = files;
-	}
+    /**
+     * Set the files.
+     *
+     * @param files
+     *            The files to set.
+     */
+    public void setFiles(List<DataItem> files) {
+        this.files = files;
+    }
 }

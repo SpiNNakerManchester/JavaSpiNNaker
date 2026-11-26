@@ -74,276 +74,276 @@ import jakarta.validation.constraints.PositiveOrZero;
  * </table>
  */
 public class JobListEntryRecord {
-	private int id;
+    private int id;
 
-	private URI detailsUrl;
+    private URI detailsUrl;
 
-	@NotNull
-	private JobState state;
+    @NotNull
+    private JobState state;
 
-	private boolean powered;
+    private boolean powered;
 
-	private List<BoardCoords> boards;
+    private List<BoardCoords> boards;
 
-	@PositiveOrZero
-	private int machineId;
+    @PositiveOrZero
+    private int machineId;
 
-	@NotBlank
-	private String machineName;
+    @NotBlank
+    private String machineName;
 
-	private URI machineUrl;
+    private URI machineUrl;
 
-	private Instant creationTimestamp;
+    private Instant creationTimestamp;
 
-	private Duration keepaliveInterval;
+    private Duration keepaliveInterval;
 
-	private String owner;
+    private String owner;
 
-	private String host;
+    private String host;
 
-	private byte[] originalRequest;
+    private byte[] originalRequest;
 
-	/**
-	 * {@return the job's ID}
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * {@return the job's ID}
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Sets the job's ID.
-	 *
-	 * @param id
-	 *            the job's ID
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+    /**
+     * Sets the job's ID.
+     *
+     * @param id
+     *            the job's ID
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	/**
-	 * {@return the URL for more details}
-	 */
-	public Optional<URI> getDetailsUrl() {
-		return Optional.ofNullable(detailsUrl);
-	}
+    /**
+     * {@return the URL for more details}
+     */
+    public Optional<URI> getDetailsUrl() {
+        return Optional.ofNullable(detailsUrl);
+    }
 
-	/**
-	 * Sets the URL for more details.
-	 *
-	 * @param detailsUrl
-	 *            the URL for more details
-	 */
-	public void setDetailsUrl(URI detailsUrl) {
-		this.detailsUrl = detailsUrl;
-	}
+    /**
+     * Sets the URL for more details.
+     *
+     * @param detailsUrl
+     *            the URL for more details
+     */
+    public void setDetailsUrl(URI detailsUrl) {
+        this.detailsUrl = detailsUrl;
+    }
 
-	/**
-	 * {@return the job state}
-	 */
-	public JobState getState() {
-		return state;
-	}
+    /**
+     * {@return the job state}
+     */
+    public JobState getState() {
+        return state;
+    }
 
-	/**
-	 * Sets  the job state.
-	 *
-	 * @param state
-	 *            the job state
-	 */
-	public void setState(JobState state) {
-		this.state = state;
-	}
+    /**
+     * Sets  the job state.
+     *
+     * @param state
+     *            the job state
+     */
+    public void setState(JobState state) {
+        this.state = state;
+    }
 
-	/**
-	 * {@return whether the job's boards are powered on}
-	 */
-	public boolean isPowered() {
-		return powered;
-	}
+    /**
+     * {@return whether the job's boards are powered on}
+     */
+    public boolean isPowered() {
+        return powered;
+    }
 
-	/**
-	 * Sets whether the job's boards are powered on.
-	 *
-	 * @param powered
-	 *            whether the job's boards are powered on
-	 */
-	public void setPowered(boolean powered) {
-		this.powered = powered;
-	}
+    /**
+     * Sets whether the job's boards are powered on.
+     *
+     * @param powered
+     *            whether the job's boards are powered on
+     */
+    public void setPowered(boolean powered) {
+        this.powered = powered;
+    }
 
-	/**
-	 * {@return the number of boards allocated to the job}
-	 */
-	public Optional<Integer> getNumBoards() {
-		if (isNull(boards)) {
-			return Optional.empty();
-		}
-		return Optional.of(boards.size());
-	}
+    /**
+     * {@return the number of boards allocated to the job}
+     */
+    public Optional<Integer> getNumBoards() {
+        if (isNull(boards)) {
+            return Optional.empty();
+        }
+        return Optional.of(boards.size());
+    }
 
-	/**
-	 * {@return the boards of the job}
-	 */
-	public List<BoardCoords> getBoards() {
-		if (isNull(boards)) {
-			return List.of();
-		}
-		return boards;
-	}
+    /**
+     * {@return the boards of the job}
+     */
+    public List<BoardCoords> getBoards() {
+        if (isNull(boards)) {
+            return List.of();
+        }
+        return boards;
+    }
 
-	/**
-	 * Sets the boards allocated to the job.
-	 *
-	 * @param boards
-	 *            the boards allocated to the job
-	 */
-	public void setBoards(List<BoardCoords> boards) {
-		this.boards = boards;
-	}
+    /**
+     * Sets the boards allocated to the job.
+     *
+     * @param boards
+     *            the boards allocated to the job
+     */
+    public void setBoards(List<BoardCoords> boards) {
+        this.boards = boards;
+    }
 
-	/**
-	 * {@return the ID of the machine that the job is using}
-	 */
-	public int getMachineId() {
-		return machineId;
-	}
+    /**
+     * {@return the ID of the machine that the job is using}
+     */
+    public int getMachineId() {
+        return machineId;
+    }
 
-	/**
-	 * Sets the ID of the machine that the job is using.
-	 *
-	 * @param machineId
-	 *            the ID of the machine that the job is using
-	 */
-	public void setMachineId(int machineId) {
-		this.machineId = machineId;
-	}
+    /**
+     * Sets the ID of the machine that the job is using.
+     *
+     * @param machineId
+     *            the ID of the machine that the job is using
+     */
+    public void setMachineId(int machineId) {
+        this.machineId = machineId;
+    }
 
-	/**
-	 * {@return the name of the machine that the job is using}
-	 */
-	public String getMachineName() {
-		return machineName;
-	}
+    /**
+     * {@return the name of the machine that the job is using}
+     */
+    public String getMachineName() {
+        return machineName;
+    }
 
-	/**
-	 * Sets the name of the machine that the job is using.
-	 *
-	 * @param machineName
-	 *            the name of the machine that the job is using
-	 */
-	public void setMachineName(String machineName) {
-		this.machineName = machineName;
-	}
+    /**
+     * Sets the name of the machine that the job is using.
+     *
+     * @param machineName
+     *            the name of the machine that the job is using
+     */
+    public void setMachineName(String machineName) {
+        this.machineName = machineName;
+    }
 
-	/**
-	 * {@return the URL for machine info}
-	 */
-	public Optional<URI> getMachineUrl() {
-		return Optional.ofNullable(machineUrl);
-	}
+    /**
+     * {@return the URL for machine info}
+     */
+    public Optional<URI> getMachineUrl() {
+        return Optional.ofNullable(machineUrl);
+    }
 
-	/**
-	 * Sets the URL for machine info.
-	 *
-	 * @param machineUrl
-	 *            the URL for machine info
-	 */
-	public void setMachineUrl(URI machineUrl) {
-		this.machineUrl = machineUrl;
-	}
+    /**
+     * Sets the URL for machine info.
+     *
+     * @param machineUrl
+     *            the URL for machine info
+     */
+    public void setMachineUrl(URI machineUrl) {
+        this.machineUrl = machineUrl;
+    }
 
-	/**
-	 * {@return the time of the job's creation}
-	 */
-	public Instant getCreationTimestamp() {
-		return creationTimestamp;
-	}
+    /**
+     * {@return the time of the job's creation}
+     */
+    public Instant getCreationTimestamp() {
+        return creationTimestamp;
+    }
 
-	/**
-	 * Sets the time of the job's creation.
-	 *
-	 * @param creationTimestamp
-	 *            the time of the job's creation
-	 */
-	public void setCreationTimestamp(Instant creationTimestamp) {
-		this.creationTimestamp = creationTimestamp;
-	}
+    /**
+     * Sets the time of the job's creation.
+     *
+     * @param creationTimestamp
+     *            the time of the job's creation
+     */
+    public void setCreationTimestamp(Instant creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
+    }
 
-	/**
-	 * {@return the keepalive interval}
-	 */
-	public Duration getKeepaliveInterval() {
-		return keepaliveInterval;
-	}
+    /**
+     * {@return the keepalive interval}
+     */
+    public Duration getKeepaliveInterval() {
+        return keepaliveInterval;
+    }
 
-	/**
-	 * Sets the keepalive interval.
-	 *
-	 * @param keepaliveInterval
-	 *            the keepalive interval
-	 */
-	public void setKeepaliveInterval(Duration keepaliveInterval) {
-		this.keepaliveInterval = keepaliveInterval;
-	}
+    /**
+     * Sets the keepalive interval.
+     *
+     * @param keepaliveInterval
+     *            the keepalive interval
+     */
+    public void setKeepaliveInterval(Duration keepaliveInterval) {
+        this.keepaliveInterval = keepaliveInterval;
+    }
 
-	/**
-	 * {@return the owner, if not shrouded}
-	 */
-	public Optional<String> getOwner() {
-		return Optional.ofNullable(owner);
-	}
+    /**
+     * {@return the owner, if not shrouded}
+     */
+    public Optional<String> getOwner() {
+        return Optional.ofNullable(owner);
+    }
 
-	/**
-	 * Sets the owner.
-	 *
-	 * @param owner
-	 *            the owner
-	 */
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
+    /**
+     * Sets the owner.
+     *
+     * @param owner
+     *            the owner
+     */
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 
-	/**
-	 * {@return the host keeping things alive, if not shrouded}
-	 */
-	public Optional<String> getHost() {
-		return Optional.ofNullable(host);
-	}
+    /**
+     * {@return the host keeping things alive, if not shrouded}
+     */
+    public Optional<String> getHost() {
+        return Optional.ofNullable(host);
+    }
 
-	/**
-	 * Sets the host keeping things alive.
-	 *
-	 * @param host
-	 *            the host keeping things alive
-	 */
-	public void setHost(String host) {
-		this.host = host;
-	}
+    /**
+     * Sets the host keeping things alive.
+     *
+     * @param host
+     *            the host keeping things alive
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	/**
-	 * Sets the original request to create the job.
-	 *
-	 * @param originalRequest
-	 *            the original request to create the job
-	 */
-	public void setOriginalRequest(byte[] originalRequest) {
-		this.originalRequest = originalRequest;
-	}
+    /**
+     * Sets the original request to create the job.
+     *
+     * @param originalRequest
+     *            the original request to create the job
+     */
+    public void setOriginalRequest(byte[] originalRequest) {
+        this.originalRequest = originalRequest;
+    }
 
-	/**
-	 * {@return the original request to create the job}
-	 */
-	public Optional<byte[]> getOriginalRequest() {
-		return Optional.ofNullable(originalRequest);
-	}
+    /**
+     * {@return the original request to create the job}
+     */
+    public Optional<byte[]> getOriginalRequest() {
+        return Optional.ofNullable(originalRequest);
+    }
 
-	/**
-	 * {@return the original request as a string}
-	 */
-	public String getRequest() {
-		if (originalRequest == null) {
-			return "";
-		}
-		return new String(originalRequest, UTF_8);
-	}
+    /**
+     * {@return the original request as a string}
+     */
+    public String getRequest() {
+        if (originalRequest == null) {
+            return "";
+        }
+        return new String(originalRequest, UTF_8);
+    }
 }

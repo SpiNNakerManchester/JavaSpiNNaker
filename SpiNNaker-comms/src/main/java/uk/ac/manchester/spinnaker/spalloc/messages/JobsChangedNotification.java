@@ -27,55 +27,55 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class JobsChangedNotification implements Notification {
-	private List<Integer> jobsChanged = List.of();
+    private List<Integer> jobsChanged = List.of();
 
-	/** Create a notification response. */
-	public JobsChangedNotification() {
-	}
+    /** Create a notification response. */
+    public JobsChangedNotification() {
+    }
 
-	/**
-	 * A response that reports a single job has changed.
-	 *
-	 * @param jobID
-	 *            The ID of the job that has changed.
-	 */
-	public JobsChangedNotification(int jobID) {
-		setJobsChanged(List.of(jobID));
-	}
+    /**
+     * A response that reports a single job has changed.
+     *
+     * @param jobID
+     *            The ID of the job that has changed.
+     */
+    public JobsChangedNotification(int jobID) {
+        setJobsChanged(List.of(jobID));
+    }
 
-	/**
-	 * {@return What jobs have changed. Not accurate}
-	 */
-	public List<Integer> getJobsChanged() {
-		return jobsChanged;
-	}
+    /**
+     * {@return What jobs have changed. Not accurate}
+     */
+    public List<Integer> getJobsChanged() {
+        return jobsChanged;
+    }
 
-	/**
-	 * Constructs a response that describes what jobs have changed state.
-	 *
-	 * @param jobsChanged
-	 *            What jobs have changed.
-	 */
-	void setJobsChanged(List<Integer> jobsChanged) {
-		this.jobsChanged = copy(jobsChanged);
-	}
+    /**
+     * Constructs a response that describes what jobs have changed state.
+     *
+     * @param jobsChanged
+     *            What jobs have changed.
+     */
+    void setJobsChanged(List<Integer> jobsChanged) {
+        this.jobsChanged = copy(jobsChanged);
+    }
 
-	@Override
-	public boolean equals(Object other) {
-		if (!(other instanceof JobsChangedNotification)) {
-			return false;
-		}
-		return jobsChanged
-				.equals(((JobsChangedNotification) other).jobsChanged);
-	}
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof JobsChangedNotification)) {
+            return false;
+        }
+        return jobsChanged
+                .equals(((JobsChangedNotification) other).jobsChanged);
+    }
 
-	@Override
-	public int hashCode() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String toString() {
-		return "jobs changed: " + jobsChanged;
-	}
+    @Override
+    public String toString() {
+        return "jobs changed: " + jobsChanged;
+    }
 }

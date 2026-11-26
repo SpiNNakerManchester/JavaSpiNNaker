@@ -23,36 +23,36 @@ import java.util.Map;
  * What command codes are used in the notification protocol.
  */
 public enum NotificationMessageCode {
-	/** Database handshake with external program. */
-	DATABASE_CONFIRMATION(1),
-	/** Notify the external devices that the simulation has stopped. */
-	STOP_PAUSE_NOTIFICATION(10),
-	/** Notify the external devices that the simulation has started. */
-	START_RESUME_NOTIFICATION(11);
-	private final int value;
+    /** Database handshake with external program. */
+    DATABASE_CONFIRMATION(1),
+    /** Notify the external devices that the simulation has stopped. */
+    STOP_PAUSE_NOTIFICATION(10),
+    /** Notify the external devices that the simulation has started. */
+    START_RESUME_NOTIFICATION(11);
+    private final int value;
 
-	private static final Map<Integer, NotificationMessageCode> MAP =
-			makeEnumBackingMap(values(), v -> v.value);
+    private static final Map<Integer, NotificationMessageCode> MAP =
+            makeEnumBackingMap(values(), v -> v.value);
 
-	NotificationMessageCode(int value) {
-		this.value = value;
-	}
+    NotificationMessageCode(int value) {
+        this.value = value;
+    }
 
-	/**
-	 * {@return The value of this code}
-	 */
-	public int getValue() {
-		return value;
-	}
+    /**
+     * {@return The value of this code}
+     */
+    public int getValue() {
+        return value;
+    }
 
-	/**
-	 * Get a command from an ID.
-	 *
-	 * @param command
-	 *            the encoded command
-	 * @return the ID, or {@code null} if the encoded form was unrecognised.
-	 */
-	public static NotificationMessageCode get(int command) {
-		return MAP.get(command);
-	}
+    /**
+     * Get a command from an ID.
+     *
+     * @param command
+     *            the encoded command
+     * @return the ID, or {@code null} if the encoded form was unrecognised.
+     */
+    public static NotificationMessageCode get(int command) {
+        return MAP.get(command);
+    }
 }

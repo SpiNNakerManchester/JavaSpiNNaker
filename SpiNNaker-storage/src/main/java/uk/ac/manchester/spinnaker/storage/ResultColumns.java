@@ -29,10 +29,10 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 @Documented
 public @interface ResultColumns {
-	/**
-	 * Describes what columns are expected in the result.
-	 *
-	 * @return List of column names.
-	 */
-	ResultColumn[] value();
+    /**
+     * Describes what columns are expected in the result.
+     *
+     * @return List of column names.
+     */
+    ResultColumn[] value();
 }

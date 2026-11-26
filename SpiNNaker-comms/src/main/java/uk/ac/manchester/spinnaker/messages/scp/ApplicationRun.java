@@ -42,68 +42,68 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(SystemVariableDefinition.class)
 public class ApplicationRun extends SCPRequest<EmptyResponse> {
-	private static final int WAIT_BIT = 18;
+    private static final int WAIT_BIT = 18;
 
-	/**
-	 * Construct a request to run an application without wait.
-	 *
-	 * @param appID
-	 *            The ID of the application to run
-	 * @param chip
-	 *            The coordinates of the chip to run on
-	 * @param processors
-	 *            The processors of the chip to run on, between 1 and 17
-	 */
-	public ApplicationRun(AppID appID, @Valid HasChipLocation chip,
-			Collection<@ValidP Integer> processors) {
-		this(appID, chip, processors, false);
-	}
+    /**
+     * Construct a request to run an application without wait.
+     *
+     * @param appID
+     *            The ID of the application to run
+     * @param chip
+     *            The coordinates of the chip to run on
+     * @param processors
+     *            The processors of the chip to run on, between 1 and 17
+     */
+    public ApplicationRun(AppID appID, @Valid HasChipLocation chip,
+            Collection<@ValidP Integer> processors) {
+        this(appID, chip, processors, false);
+    }
 
-	/**
-	 * Construct a request to run an application with a possible wait.
-	 *
-	 * @param appId
-	 *            The ID of the application to run
-	 * @param chip
-	 *            The coordinates of the chip to run on
-	 * @param processors
-	 *            The processors of the chip to run on, between 1 and 17
-	 * @param wait
-	 *            True if the processors should enter a "wait" state on starting
-	 */
-	public ApplicationRun(AppID appId, @Valid HasChipLocation chip,
-			Collection<@ValidP Integer> processors, boolean wait) {
-		super(chip.getScampCore(), CMD_AR, idOpMask(appId, processors, wait));
-	}
+    /**
+     * Construct a request to run an application with a possible wait.
+     *
+     * @param appId
+     *            The ID of the application to run
+     * @param chip
+     *            The coordinates of the chip to run on
+     * @param processors
+     *            The processors of the chip to run on, between 1 and 17
+     * @param wait
+     *            True if the processors should enter a "wait" state on starting
+     */
+    public ApplicationRun(AppID appId, @Valid HasChipLocation chip,
+            Collection<@ValidP Integer> processors, boolean wait) {
+        super(chip.getScampCore(), CMD_AR, idOpMask(appId, processors, wait));
+    }
 
-	// @formatter:off
-	/*
-	 * bits:   [  31-24 |     23-18 |           17-0 ]
-	 * labels: [ app_id | app_flags | processor_mask ]
-	 *
-	 * It is an error to ask for this operation for the SCAMP core.
-	 * The only app_flag we use is in the lowest bit: WAIT.
-	 */
-	// @formatter:on
-	private static int idOpMask(AppID appId, Collection<Integer> processors,
-			boolean wait) {
-		int mask = 0;
-		for (int p : requireNonNull(processors,
-				"set of processors on chip must be not null")) {
-			if (p >= 1 && p < MAX_NUM_CORES) {
-				mask |= 1 << p;
-			}
-		}
-		mask |= appId.appID << BYTE3;
-		if (wait) {
-			mask |= 1 << WAIT_BIT;
-		}
-		return mask;
-	}
+    // @formatter:off
+    /*
+     * bits:   [  31-24 |     23-18 |           17-0 ]
+     * labels: [ app_id | app_flags | processor_mask ]
+     *
+     * It is an error to ask for this operation for the SCAMP core.
+     * The only app_flag we use is in the lowest bit: WAIT.
+     */
+    // @formatter:on
+    private static int idOpMask(AppID appId, Collection<Integer> processors,
+            boolean wait) {
+        int mask = 0;
+        for (int p : requireNonNull(processors,
+                "set of processors on chip must be not null")) {
+            if (p >= 1 && p < MAX_NUM_CORES) {
+                mask |= 1 << p;
+            }
+        }
+        mask |= appId.appID << BYTE3;
+        if (wait) {
+            mask |= 1 << WAIT_BIT;
+        }
+        return mask;
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Run Application", CMD_AR, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Run Application", CMD_AR, buffer);
+    }
 }

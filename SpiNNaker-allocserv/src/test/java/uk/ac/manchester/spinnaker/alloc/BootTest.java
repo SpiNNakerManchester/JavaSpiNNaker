@@ -34,31 +34,31 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @ActiveProfiles("unittest") // Disable booting CXF
 class BootTest extends TestSupport {
 
-	@Autowired
-	private SpallocServiceAPI service;
+      @Autowired
+      private SpallocServiceAPI service;
 
-	@Autowired
-	private SpallocAPI core;
+      @Autowired
+      private SpallocAPI core;
 
-	@Autowired
-	private SystemController root;
+      @Autowired
+      private SystemController root;
 
-	@Autowired
-	private AdminAPI admin;
+      @Autowired
+      private AdminAPI admin;
 
-	@Autowired
-	private AdminController adminUI;
+      @Autowired
+      private AdminController adminUI;
 
-	@Test
-	void testContextBoot() throws InterruptedException {
-		// If all these bits are there, we declare the application to be working
-		assertNotNull(service);
-		assertNotNull(core);
-		assertNotNull(db);
-		assertNotNull(root);
-		assertNotNull(admin);
-		assertNotNull(adminUI);
-		// Give background tasks a chance to run
-		Thread.sleep(5000);
-	}
+      @Test
+      void testContextBoot() throws InterruptedException {
+            // If all these bits are there, we declare the application to be working
+            assertNotNull(service);
+            assertNotNull(core);
+            assertNotNull(db);
+            assertNotNull(root);
+            assertNotNull(admin);
+            assertNotNull(adminUI);
+            // Give background tasks a chance to run
+            Thread.sleep(5000);
+      }
 }

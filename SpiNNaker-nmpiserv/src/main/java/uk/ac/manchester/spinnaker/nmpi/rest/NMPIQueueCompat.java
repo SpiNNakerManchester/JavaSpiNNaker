@@ -45,114 +45,114 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
  */
 @Path("/api/v2")
 public interface NMPIQueueCompat {
-	/**
-	 * Gets all jobs in the queue.
-	 *
-	 * @param authHeader
-	 *            The authorization header.
-	 * @param hardware
-	 *            The hardware to request the jobs for.
-	 * @param status
-	 *            The accepted status.
-	 * @return The list of jobs that meet the criteria.
-	 */
-	@GET
-	@Path("queue/")
-	@Produces("application/json")
-	JobListCompat getJobs(@HeaderParam("Authorization") String authHeader,
-			@QueryParam("hardware") String hardware,
-			@QueryParam("status") String status);
+    /**
+     * Gets all jobs in the queue.
+     *
+     * @param authHeader
+     *            The authorization header.
+     * @param hardware
+     *            The hardware to request the jobs for.
+     * @param status
+     *            The accepted status.
+     * @return The list of jobs that meet the criteria.
+     */
+    @GET
+    @Path("queue/")
+    @Produces("application/json")
+    JobListCompat getJobs(@HeaderParam("Authorization") String authHeader,
+            @QueryParam("hardware") String hardware,
+            @QueryParam("status") String status);
 
-	/**
-	 * Get the next queue item for a specific hardware system.
-	 *
-	 * @param authHeader
-	 *            The authorization header.
-	 * @param hardware
-	 *            The hardware ID.
-	 * @return The queue item.
-	 */
-	@GET
-	@Path("queue/submitted/next/{hardware}/")
-	@Produces("application/json")
-	QueueNextResponse getNextJob(
-			@HeaderParam("Authorization") String authHeader,
-			@PathParam("hardware") String hardware);
+    /**
+     * Get the next queue item for a specific hardware system.
+     *
+     * @param authHeader
+     *            The authorization header.
+     * @param hardware
+     *            The hardware ID.
+     * @return The queue item.
+     */
+    @GET
+    @Path("queue/submitted/next/{hardware}/")
+    @Produces("application/json")
+    QueueNextResponse getNextJob(
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("hardware") String hardware);
 
-	/**
-	 * Update the log of a job.
-	 *
-	 * @param authHeader
-	 *            The authorization header.
-	 * @param id
-	 *            The queue ID
-	 * @param log
-	 *            the Job Log.
-	 */
-	@PUT
-	@Path("log/{id}")
-	@Consumes("application/json")
-	void updateJobLog(@HeaderParam("Authorization") String authHeader,
-			@PathParam("id") int id, NMPILog log);
+    /**
+     * Update the log of a job.
+     *
+     * @param authHeader
+     *            The authorization header.
+     * @param id
+     *            The queue ID
+     * @param log
+     *            the Job Log.
+     */
+    @PUT
+    @Path("log/{id}")
+    @Consumes("application/json")
+    void updateJobLog(@HeaderParam("Authorization") String authHeader,
+            @PathParam("id") int id, NMPILog log);
 
-	/**
-	 * Update the status of a job.
-	 *
-	 * @param authHeader
-	 *            The authorization header.
-	 * @param id
-	 *            The queue ID
-	 * @param status
-	 *            the Job Status.
-	 */
-	@PUT
-	@Path("queue/{id}")
-	@Consumes("application/json")
-	void updateJobStatus(@HeaderParam("Authorization") String authHeader,
-			@PathParam("id") int id, JobStatusOnlyCompat status);
+    /**
+     * Update the status of a job.
+     *
+     * @param authHeader
+     *            The authorization header.
+     * @param id
+     *            The queue ID
+     * @param status
+     *            the Job Status.
+     */
+    @PUT
+    @Path("queue/{id}")
+    @Consumes("application/json")
+    void updateJobStatus(@HeaderParam("Authorization") String authHeader,
+            @PathParam("id") int id, JobStatusOnlyCompat status);
 
-	/**
-	 * Set a job when done.
-	 *
-	 * @param authHeader
-	 *            The authorization header.
-	 * @param id
-	 *            The queue ID
-	 * @param job
-	 *            The details to update
-	 */
-	@PUT
-	@Path("queue/{id}")
-	@Consumes("application/json")
-	void finishJob(@HeaderParam("Authorization") String authHeader,
-			@PathParam("id") int id, JobDoneCompat job);
+    /**
+     * Set a job when done.
+     *
+     * @param authHeader
+     *            The authorization header.
+     * @param id
+     *            The queue ID
+     * @param job
+     *            The details to update
+     */
+    @PUT
+    @Path("queue/{id}")
+    @Consumes("application/json")
+    void finishJob(@HeaderParam("Authorization") String authHeader,
+            @PathParam("id") int id, JobDoneCompat job);
 
-	/**
-	 * Get a client for the API.
-	 *
-	 * @param url
-	 *            The URL to connect to.
-	 * @return A proxy of the API.
-	 */
-	static NMPIQueueCompat createClient(String url) {
-		var mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, NMPIQueueCompat.class,
-				List.of(createProvider()));
-	}
+    /**
+     * Get a client for the API.
+     *
+     * @param url
+     *            The URL to connect to.
+     * @return A proxy of the API.
+     */
+    static NMPIQueueCompat createClient(String url) {
+        var mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(SNAKE_CASE);
+        return JAXRSClientFactory.create(url, NMPIQueueCompat.class,
+                List.of(createProvider()));
+    }
 
-	/**
-	 * Create a JSON provider capable of handling the messages on the NMPI
-	 * queue.
-	 *
-	 * @return The provider.
-	 */
-	static JacksonJsonProvider createProvider() {
-		var provider = new CustomJacksonJsonProvider();
-		provider.addDeserialiser(QueueNextResponse.class,
-				new NMPIQueueResponseDeserialiserCompat());
-		return provider;
-	}
+    /**
+     * Create a JSON provider capable of handling the messages on the NMPI
+     * queue.
+     *
+     * @return The provider.
+     */
+    static JacksonJsonProvider createProvider() {
+        var provider = new CustomJacksonJsonProvider();
+        provider.addDeserialiser(QueueNextResponse.class,
+                new NMPIQueueResponseDeserialiserCompat());
+        return provider;
+    }
 }
 
 /**
@@ -160,13 +160,13 @@ public interface NMPIQueueCompat {
  */
 @SuppressWarnings("serial")
 class NMPIQueueResponseDeserialiserCompat
-		extends PropertyBasedDeserialiser<QueueNextResponse> {
-	/**
-	 * Make a deserialiser.
-	 */
-	NMPIQueueResponseDeserialiserCompat() {
-		super(QueueNextResponse.class);
-		register("id", QueueJobCompat.class);
-		register("warning", QueueEmpty.class);
-	}
+        extends PropertyBasedDeserialiser<QueueNextResponse> {
+    /**
+     * Make a deserialiser.
+     */
+    NMPIQueueResponseDeserialiserCompat() {
+        super(QueueNextResponse.class);
+        register("id", QueueJobCompat.class);
+        register("warning", QueueEmpty.class);
+    }
 }

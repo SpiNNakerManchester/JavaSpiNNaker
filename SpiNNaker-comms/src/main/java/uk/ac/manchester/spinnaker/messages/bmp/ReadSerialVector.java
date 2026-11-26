@@ -30,35 +30,35 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
 public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
-	/**
-	 * Constructs a request for the serial data vector.
-	 *
-	 * @param board
-	 *            which board to request the serial data from
-	 */
-	public ReadSerialVector(BMPBoard board) {
-		super(board, CMD_BMP_INFO, SERIAL.value);
-	}
+    /**
+     * Constructs a request for the serial data vector.
+     *
+     * @param board
+     *            which board to request the serial data from
+     */
+    public ReadSerialVector(BMPBoard board) {
+        super(board, CMD_BMP_INFO, SERIAL.value);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for serial data. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<SerialVector> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read serial data vector", CMD_BMP_INFO, buffer);
-		}
+    /** An SCP response to a request for serial data. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<SerialVector> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read serial data vector", CMD_BMP_INFO, buffer);
+        }
 
-		/**
-		 * {@return The serial data}
-		 */
-		@Override
-		protected SerialVector parse(ByteBuffer buffer) {
-			return new SerialVector(buffer);
-		}
-	}
+        /**
+         * {@return The serial data}
+         */
+        @Override
+        protected SerialVector parse(ByteBuffer buffer) {
+            return new SerialVector(buffer);
+        }
+    }
 }

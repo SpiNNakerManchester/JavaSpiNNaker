@@ -25,22 +25,22 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  *            The type of the connection.
  */
 public class SingletonConnectionSelector<T extends Connection>
-		implements ConnectionSelector<T> {
-	private final T connection;
+        implements ConnectionSelector<T> {
+    private final T connection;
 
-	/**
-	 * Create a selector.
-	 *
-	 * @param connection
-	 *            The connection in the selector.
-	 */
-	public SingletonConnectionSelector(T connection) {
-		this.connection = connection;
-	}
+    /**
+     * Create a selector.
+     *
+     * @param connection
+     *            The connection in the selector.
+     */
+    public SingletonConnectionSelector(T connection) {
+        this.connection = connection;
+    }
 
-	@Override
-	public T getNextConnection(SCPRequest<?> request) {
-		// Ignores the request, always
-		return connection;
-	}
+    @Override
+    public T getNextConnection(SCPRequest<?> request) {
+        // Ignores the request, always
+        return connection;
+    }
 }

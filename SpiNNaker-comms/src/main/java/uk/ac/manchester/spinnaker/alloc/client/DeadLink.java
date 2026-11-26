@@ -26,44 +26,44 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /** Describes a dead or administratively disabled link. */
 @JsonFormat(shape = ARRAY)
 @JsonPropertyOrder({
-	"end1", "end2"
+    "end1", "end2"
 })
 public final class DeadLink {
-	/** One end of a dead link. */
-	public static final class End {
-		/** The board at the end of a dead link. */
-		public final BoardCoords board;
+    /** One end of a dead link. */
+    public static final class End {
+        /** The board at the end of a dead link. */
+        public final BoardCoords board;
 
-		/** The direction that the dead link goes in. */
-		public final Direction direction;
+        /** The direction that the dead link goes in. */
+        public final Direction direction;
 
-		/**
-		 * Sets the end of the dead link.
-		 *
-		 * @param board
-		 *            The board at the end of a dead link.
-		 * @param direction
-		 *            The direction that the dead link goes in.
-		 */
-		public End(@JsonProperty("board") BoardCoords board,
-				@JsonProperty("direction") Direction direction) {
-			this.board = board;
-			this.direction = direction;
-		}
-	}
+        /**
+         * Sets the end of the dead link.
+         *
+         * @param board
+         *            The board at the end of a dead link.
+         * @param direction
+         *            The direction that the dead link goes in.
+         */
+        public End(@JsonProperty("board") BoardCoords board,
+                @JsonProperty("direction") Direction direction) {
+            this.board = board;
+            this.direction = direction;
+        }
+    }
 
-	@JsonProperty
-	private DeadLink.End end1;
+    @JsonProperty
+    private DeadLink.End end1;
 
-	@JsonProperty
-	private DeadLink.End end2;
+    @JsonProperty
+    private DeadLink.End end2;
 
-	/**
-	 * Get the two ends of the dead link.
-	 *
-	 * @return The ends of the link.
-	 */
-	public List<DeadLink.End> getEnds() {
-		return List.of(end1, end2);
-	}
+    /**
+     * Get the two ends of the dead link.
+     *
+     * @return The ends of the link.
+     */
+    public List<DeadLink.End> getEnds() {
+        return List.of(end1, end2);
+    }
 }

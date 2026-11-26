@@ -21,57 +21,57 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A reference to some data to be moved into or out of a {@link Job}.
  */
 public class DataItem {
-	/** The item URL. */
-	private String url;
+    /** The item URL. */
+    private String url;
 
-	/**
-	 * Creates an empty item of data.
-	 */
-	public DataItem() {
-		// Does Nothing
-	}
+    /**
+     * Creates an empty item of data.
+     */
+    public DataItem() {
+        // Does Nothing
+    }
 
-	/**
-	 * Make an instance that wraps a URL. The meaning of the URL depends on the
-	 * usage of the data item.
-	 *
-	 * @param url
-	 *            The URL to wrap.
-	 */
-	public DataItem(final String url) {
-		this.url = url;
-	}
+    /**
+     * Make an instance that wraps a URL. The meaning of the URL depends on the
+     * usage of the data item.
+     *
+     * @param url
+     *            The URL to wrap.
+     */
+    public DataItem(final String url) {
+        this.url = url;
+    }
 
-	/**
-	 * Get the URL of the item of data.
-	 *
-	 * @return The URL
-	 */
-	public String getUrl() {
-		return url;
-	}
+    /**
+     * Get the URL of the item of data.
+     *
+     * @return The URL
+     */
+    public String getUrl() {
+        return url;
+    }
 
-	/**
-	 * Set the URL of the item of data.
-	 *
-	 * @param url
-	 *            The URL
-	 */
-	public void setUrl(final String url) {
-		this.url = url;
-	}
+    /**
+     * Set the URL of the item of data.
+     *
+     * @param url
+     *            The URL
+     */
+    public void setUrl(final String url) {
+        this.url = url;
+    }
 
-	/**
-	 * Setter that ignores other properties.
-	 *
-	 * @param key
-	 *            The key of the property
-	 * @param value
-	 *            The value of the property
-	 * @hidden
-	 */
-	@JsonAnySetter
-	public void ignoreExtra(final String key, final String value) {
-		// Ignore anything else
-	}
+    /**
+     * Setter that ignores other properties.
+     *
+     * @param key
+     *            The key of the property
+     * @param value
+     *            The value of the property
+     * @hidden
+     */
+    @JsonAnySetter
+    public void ignoreExtra(final String key, final String value) {
+        // Ignore anything else
+    }
 }

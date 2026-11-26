@@ -27,21 +27,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class JobNotifyMessage {
-	private List<Integer> jobsChanged;
+      private List<Integer> jobsChanged;
 
-	JobNotifyMessage(List<Integer> changes) {
-		jobsChanged = changes;
-	}
+      JobNotifyMessage(List<Integer> changes) {
+            jobsChanged = changes;
+      }
 
-	/**
-	 * {@return the jobs changed}
-	 */
-	@JsonProperty("jobs_changed")
-	public List<Integer> getJobsChanged() {
-		return jobsChanged;
-	}
+      /**
+       * {@return the jobs changed}
+       */
+      @JsonProperty("jobs_changed")
+      public List<Integer> getJobsChanged() {
+            return jobsChanged;
+      }
 
-	void setJobsChanged(List<Integer> jobsChanged) {
-		this.jobsChanged = jobsChanged;
-	}
+      void setJobsChanged(List<Integer> jobsChanged) {
+            this.jobsChanged = jobsChanged;
+      }
 }

@@ -50,60 +50,60 @@ import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 @JsonFormat(shape = OBJECT)
 @JsonAutoDetect(fieldVisibility = NONE)
 public class IobufRequest {
-	private Map<@NotNull File, @Valid CoreSubsets> requestMap;
+    private Map<@NotNull File, @Valid CoreSubsets> requestMap;
 
-	/**
-	 * Construct a request to read some IOBUFs.
-	 *
-	 * @param map
-	 *            A mapping from fully qualified filenames to an array of
-	 *            sub-arrays of integers, where each sub-array is three elements
-	 *            long.
-	 * @throws IllegalArgumentException
-	 *             If any core is used more than once, whether for the same
-	 *             executable or a different one.
-	 */
-	@JsonCreator(mode = DELEGATING)
-	public IobufRequest(Map<String, List<List<Integer>>> map) {
-		var requestMap = new HashMap<File, CoreSubsets>();
-		for (var name : map.keySet()) {
-			var cores = requestMap.computeIfAbsent(
-					new File(name).getAbsoluteFile(), __ -> new CoreSubsets());
-			map.get(name).forEach(node -> parseCore(cores, node));
-		}
+    /**
+     * Construct a request to read some IOBUFs.
+     *
+     * @param map
+     *            A mapping from fully qualified filenames to an array of
+     *            sub-arrays of integers, where each sub-array is three elements
+     *            long.
+     * @throws IllegalArgumentException
+     *             If any core is used more than once, whether for the same
+     *             executable or a different one.
+     */
+    @JsonCreator(mode = DELEGATING)
+    public IobufRequest(Map<String, List<List<Integer>>> map) {
+        var requestMap = new HashMap<File, CoreSubsets>();
+        for (var name : map.keySet()) {
+            var cores = requestMap.computeIfAbsent(
+                    new File(name).getAbsoluteFile(), __ -> new CoreSubsets());
+            map.get(name).forEach(node -> parseCore(cores, node));
+        }
 
-		this.requestMap = unmodifiableMap(requestMap);
+        this.requestMap = unmodifiableMap(requestMap);
 
-		if (!isSaneCores()) {
-			throw new IllegalArgumentException("overlapping uses of core");
-		}
-	}
+        if (!isSaneCores()) {
+            throw new IllegalArgumentException("overlapping uses of core");
+        }
+    }
 
-	@JsonIgnore
-	@AssertTrue(message = "core must not have two binaries mapped to it")
-	private boolean isSaneCores() {
-		int expectedSize = 0;
-		var validator = new CoreSubsets();
-		for (var s : requestMap.values()) {
-			validator.addCores(s);
-			expectedSize += s.size();
-		}
-		return validator.size() == expectedSize;
-	}
+    @JsonIgnore
+    @AssertTrue(message = "core must not have two binaries mapped to it")
+    private boolean isSaneCores() {
+        int expectedSize = 0;
+        var validator = new CoreSubsets();
+        for (var s : requestMap.values()) {
+            validator.addCores(s);
+            expectedSize += s.size();
+        }
+        return validator.size() == expectedSize;
+    }
 
-	private static void parseCore(CoreSubsets cores, List<Integer> a) {
-		int x = a.get(0);
-		int y = a.get(1);
-		int p = a.get(2);
-		cores.addCore(x, y, p);
-	}
+    private static void parseCore(CoreSubsets cores, List<Integer> a) {
+        int x = a.get(0);
+        int y = a.get(1);
+        int p = a.get(2);
+        cores.addCore(x, y, p);
+    }
 
-	/**
-	 * {@return The mapping from executables to the cores on which they are
-	 *         running}
-	 */
-	@JsonIgnore
-	public Map<File, CoreSubsets> getRequestDetails() {
-		return requestMap;
-	}
+    /**
+     * {@return The mapping from executables to the cores on which they are
+     *         running}
+     */
+    @JsonIgnore
+    public Map<File, CoreSubsets> getRequestDetails() {
+        return requestMap;
+    }
 }

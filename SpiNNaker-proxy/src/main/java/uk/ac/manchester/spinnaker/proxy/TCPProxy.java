@@ -43,175 +43,175 @@ import picocli.CommandLine.Spec;
  * {@code java -jar spinnaker-proxy.jar LOCAL_PORT REMOTE_HOST REMOTE_PORT}
  */
 public class TCPProxy {
-	/** The maximum size of a read from a TCP socket. */
-	private static final int BUFFER_SIZE = 4096;
+    /** The maximum size of a read from a TCP socket. */
+    private static final int BUFFER_SIZE = 4096;
 
-	/** The logger. */
-	static final Logger log = getLogger(TCPProxy.class);
+    /** The logger. */
+    static final Logger log = getLogger(TCPProxy.class);
 
-	private Socket client;
+    private Socket client;
 
-	private final Remote remote;
+    private final Remote remote;
 
-	TCPProxy(Socket client, String remoteHost, int remotePort) {
-		log.info("New connection from {}", client.getRemoteSocketAddress());
-		this.client = client;
-		this.remote = new Remote(remoteHost, remotePort);
+    TCPProxy(Socket client, String remoteHost, int remotePort) {
+        log.info("New connection from {}", client.getRemoteSocketAddress());
+        this.client = client;
+        this.remote = new Remote(remoteHost, remotePort);
 
-		var clientToRemote = new Thread(this::clientToRemote);
-		var remoteToClient = new Thread(this::remoteToClient);
-		clientToRemote.start();
-		remoteToClient.start();
-	}
+        var clientToRemote = new Thread(this::clientToRemote);
+        var remoteToClient = new Thread(this::remoteToClient);
+        clientToRemote.start();
+        remoteToClient.start();
+    }
 
-	/**
-	 * Read the client and send to the remote. If remote write fails, reconnect
-	 * to remote and resend. If client read fails, stop.
-	 */
-	private void clientToRemote() {
-		try {
-			remote.connect();
-			var buffer = new byte[BUFFER_SIZE];
-			try (var input = client.getInputStream()) {
-				while (client.isConnected()) {
-					int bytesRead = input.read(buffer);
-					if (bytesRead == -1) {
-						throw new IOException();
-					}
-					remote.write(buffer, 0, bytesRead);
-				}
-			} catch (IOException e) {
-				// This is likely caused by the client disconnecting.
-			}
-		} catch (InterruptedException e) {
-			// Exiting
-		}
-		forceCloseClient();
-		remote.close();
-	}
+    /**
+     * Read the client and send to the remote. If remote write fails, reconnect
+     * to remote and resend. If client read fails, stop.
+     */
+    private void clientToRemote() {
+        try {
+            remote.connect();
+            var buffer = new byte[BUFFER_SIZE];
+            try (var input = client.getInputStream()) {
+                while (client.isConnected()) {
+                    int bytesRead = input.read(buffer);
+                    if (bytesRead == -1) {
+                        throw new IOException();
+                    }
+                    remote.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                // This is likely caused by the client disconnecting.
+            }
+        } catch (InterruptedException e) {
+            // Exiting
+        }
+        forceCloseClient();
+        remote.close();
+    }
 
-	/**
-	 * Read from the remote and send to the client. If the remote read fails,
-	 * retry until working. If the client write fails, stop.
-	 */
-	private void remoteToClient() {
-		try {
-			remote.connect();
-			var buffer = new byte[BUFFER_SIZE];
-			try (var output = client.getOutputStream()) {
-				while (client.isConnected()) {
-					int bytesRead = remote.read(buffer);
-					if (bytesRead == -1) {
-						throw new IOException();
-					}
-					output.write(buffer, 0, bytesRead);
-				}
-			} catch (IOException e) {
-				// This is likely caused by the client disconnecting.
-			}
-		} catch (InterruptedException e) {
-			// Exiting
-		}
-		forceCloseClient();
-		remote.close();
-	}
+    /**
+     * Read from the remote and send to the client. If the remote read fails,
+     * retry until working. If the client write fails, stop.
+     */
+    private void remoteToClient() {
+        try {
+            remote.connect();
+            var buffer = new byte[BUFFER_SIZE];
+            try (var output = client.getOutputStream()) {
+                while (client.isConnected()) {
+                    int bytesRead = remote.read(buffer);
+                    if (bytesRead == -1) {
+                        throw new IOException();
+                    }
+                    output.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                // This is likely caused by the client disconnecting.
+            }
+        } catch (InterruptedException e) {
+            // Exiting
+        }
+        forceCloseClient();
+        remote.close();
+    }
 
-	/**
-	 * Close the client and ignore any errors.
-	 */
-	private synchronized void forceCloseClient() {
-		if (client == null) {
-			return;
-		}
-		log.info("Client {} left", client.getRemoteSocketAddress());
-		try {
-			client.close();
-		} catch (IOException e) {
-			// Ignore
-		}
-		client = null;
-	}
+    /**
+     * Close the client and ignore any errors.
+     */
+    private synchronized void forceCloseClient() {
+        if (client == null) {
+            return;
+        }
+        log.info("Client {} left", client.getRemoteSocketAddress());
+        try {
+            client.close();
+        } catch (IOException e) {
+            // Ignore
+        }
+        client = null;
+    }
 
-	static int mainLoop(int localPort, String remoteHost, int remotePort) {
-		try (var server = new ServerSocket(localPort)) {
-			log.info("listening on {}", server.getLocalSocketAddress());
-			while (true) {
-				var client = server.accept();
-				new TCPProxy(client, remoteHost, remotePort);
-			}
-		} catch (InterruptedIOException e) {
-			return CommandLine.ExitCode.OK;
-		} catch (IOException e) {
-			log.error("failure in listener", e);
-			return CommandLine.ExitCode.SOFTWARE;
-		}
-	}
+    static int mainLoop(int localPort, String remoteHost, int remotePort) {
+        try (var server = new ServerSocket(localPort)) {
+            log.info("listening on {}", server.getLocalSocketAddress());
+            while (true) {
+                var client = server.accept();
+                new TCPProxy(client, remoteHost, remotePort);
+            }
+        } catch (InterruptedIOException e) {
+            return CommandLine.ExitCode.OK;
+        } catch (IOException e) {
+            log.error("failure in listener", e);
+            return CommandLine.ExitCode.SOFTWARE;
+        }
+    }
 
-	/**
-	 * Implementation of the command line handler.
-	 */
-	@Command(name = "spinnaker-proxy", mixinStandardHelpOptions = true, //
-			versionProvider = Version.class)
-	static class CLI implements Callable<Integer> {
-		@Parameters(index = "0", paramLabel = "localPort",
-				description = "The local port to listen on.")
-		private int localPort;
+    /**
+     * Implementation of the command line handler.
+     */
+    @Command(name = "spinnaker-proxy", mixinStandardHelpOptions = true, //
+            versionProvider = Version.class)
+    static class CLI implements Callable<Integer> {
+        @Parameters(index = "0", paramLabel = "localPort",
+                description = "The local port to listen on.")
+        private int localPort;
 
-		@Parameters(index = "1", paramLabel = "remoteHost",
-				description = "The remote host to proxy.")
-		private String remoteHost;
+        @Parameters(index = "1", paramLabel = "remoteHost",
+                description = "The remote host to proxy.")
+        private String remoteHost;
 
-		@Parameters(index = "2", paramLabel = "remotePort",
-				description = "The remote port to proxy.")
-		private int remotePort;
+        @Parameters(index = "2", paramLabel = "remotePort",
+                description = "The remote port to proxy.")
+        private int remotePort;
 
-		@Spec
-		private CommandSpec spec;
+        @Spec
+        private CommandSpec spec;
 
-		private void validate(int port, String name) {
-			// TCP port numbers are really unsigned shorts
-			if (port != Short.toUnsignedInt((short) port)) {
-				throw new ParameterException(spec.commandLine(),
-						format("value '%s' for parameter '%s' is out of "
-								+ "range (0..65535)", port, name));
-			}
-		}
+        private void validate(int port, String name) {
+            // TCP port numbers are really unsigned shorts
+            if (port != Short.toUnsignedInt((short) port)) {
+                throw new ParameterException(spec.commandLine(),
+                        format("value '%s' for parameter '%s' is out of "
+                                + "range (0..65535)", port, name));
+            }
+        }
 
-		@Override
-		public Integer call() {
-			validate(localPort, "localPort");
-			validate(remotePort, "remotePort");
-			return mainLoop(localPort, remoteHost, remotePort);
-		}
-	}
+        @Override
+        public Integer call() {
+            validate(localPort, "localPort");
+            validate(remotePort, "remotePort");
+            return mainLoop(localPort, remoteHost, remotePort);
+        }
+    }
 
-	/** How to get the version number baked in by Maven. */
-	static class Version implements IVersionProvider {
-		private static final String DEFAULT = "0.1 (unpackaged)";
+    /** How to get the version number baked in by Maven. */
+    static class Version implements IVersionProvider {
+        private static final String DEFAULT = "0.1 (unpackaged)";
 
-		@Override
-		public String[] getVersion() throws Exception {
-			return new String[] {
-				requireNonNullElse(
-						getClass().getPackage().getImplementationVersion(),
-						DEFAULT)
-			};
-		}
-	}
+        @Override
+        public String[] getVersion() throws Exception {
+            return new String[] {
+                requireNonNullElse(
+                        getClass().getPackage().getImplementationVersion(),
+                        DEFAULT)
+            };
+        }
+    }
 
-	/**
-	 * The main method.
-	 *
-	 * @param args
-	 *            {@code args[0]}: The local port to listen on <br>
-	 *            {@code args[1]}: The remote host to proxy <br>
-	 *            {@code args[2]}: The remote port to proxy
-	 * @throws IOException
-	 *             If we can't start the server.
-	 * @throws IllegalArgumentException
-	 *             If the wrong number of arguments are given.
-	 */
-	public static void main(String[] args) throws IOException {
-		System.exit(new CommandLine(new CLI()).execute(args));
-	}
+    /**
+     * The main method.
+     *
+     * @param args
+     *            {@code args[0]}: The local port to listen on <br>
+     *            {@code args[1]}: The remote host to proxy <br>
+     *            {@code args[2]}: The remote port to proxy
+     * @throws IOException
+     *             If we can't start the server.
+     * @throws IllegalArgumentException
+     *             If the wrong number of arguments are given.
+     */
+    public static void main(String[] args) throws IOException {
+        System.exit(new CommandLine(new CLI()).execute(args));
+    }
 }

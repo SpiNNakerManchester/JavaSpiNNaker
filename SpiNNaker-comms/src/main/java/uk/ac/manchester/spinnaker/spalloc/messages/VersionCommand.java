@@ -23,10 +23,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  *      >Spalloc Server documentation</a>
  */
 public class VersionCommand extends Command<Integer> {
-	/**
-	 * Create a request to get the version of the spalloc server.
-	 */
-	public VersionCommand() {
-		super("version");
-	}
+    /**
+     * Create a request to get the version of the spalloc server.
+     */
+    public VersionCommand() {
+        super("version");
+    }
 }

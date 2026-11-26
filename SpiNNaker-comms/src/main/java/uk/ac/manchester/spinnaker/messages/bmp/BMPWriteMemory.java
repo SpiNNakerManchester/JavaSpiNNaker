@@ -30,29 +30,29 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  */
 public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 
-	/**
-	 * Constructs a request to write to memory on a BMP.
-	 *
-	 * @param board
-	 *            the board with the BMP to write the memory of
-	 * @param baseAddress
-	 *            The positive base address to start the write at
-	 * @param data
-	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
-	 *            buffer must be the point where the data starts, and the data
-	 *            must extend up to the <i>limit</i>. The position and limit of
-	 *            the buffer will not be updated by this constructor.
-	 */
-	public BMPWriteMemory(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer data) {
-		super(board, CMD_WRITE, baseAddress.address, data.remaining(),
-				efficientTransferUnit(baseAddress, data.remaining()).value,
-				data);
-	}
+    /**
+     * Constructs a request to write to memory on a BMP.
+     *
+     * @param board
+     *            the board with the BMP to write the memory of
+     * @param baseAddress
+     *            The positive base address to start the write at
+     * @param data
+     *            Between 1 and 256 bytes to write; the <i>position</i> of the
+     *            buffer must be the point where the data starts, and the data
+     *            must extend up to the <i>limit</i>. The position and limit of
+     *            the buffer will not be updated by this constructor.
+     */
+    public BMPWriteMemory(BMPBoard board, MemoryLocation baseAddress,
+            ByteBuffer data) {
+        super(board, CMD_WRITE, baseAddress.address, data.remaining(),
+                efficientTransferUnit(baseAddress, data.remaining()).value,
+                data);
+    }
 
-	@Override
-	public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPRequest.BMPResponse("Write", CMD_WRITE, buffer);
-	}
+    @Override
+    public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
+            throws Exception {
+        return new BMPRequest.BMPResponse("Write", CMD_WRITE, buffer);
+    }
 }

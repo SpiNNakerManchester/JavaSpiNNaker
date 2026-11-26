@@ -38,57 +38,57 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * if sent to a BMP).
  */
 public class IPTagGet extends SCPRequest<IPTagGet.Response>
-		implements ConnectionAwareMessage {
-	private final int tag;
+        implements ConnectionAwareMessage {
+    private final int tag;
 
-	private SCPConnection conn;
+    private SCPConnection conn;
 
-	// arg1 = flags[11:8] : timeout : command : dest_port : tag
-	private static int argument1(int tagID) {
-		return (GET.value << COMMAND_FIELD) | (tagID & THREE_BITS_MASK);
-	}
+    // arg1 = flags[11:8] : timeout : command : dest_port : tag
+    private static int argument1(int tagID) {
+        return (GET.value << COMMAND_FIELD) | (tagID & THREE_BITS_MASK);
+    }
 
-	/**
-	 * Constructs a request to get this IP tag on this Chip.
-	 *
-	 * @param chip
-	 *            The chip to get the tag from.
-	 * @param tag
-	 *            The tag to get the details of.
-	 */
-	public IPTagGet(HasChipLocation chip,
-			@TagID(scamp = true, ephemeral = true) int tag) {
-		super(chip.getScampCore(), CMD_IPTAG, argument1(tag), 1);
-		this.tag = tag;
-	}
+    /**
+     * Constructs a request to get this IP tag on this Chip.
+     *
+     * @param chip
+     *            The chip to get the tag from.
+     * @param tag
+     *            The tag to get the details of.
+     */
+    public IPTagGet(HasChipLocation chip,
+            @TagID(scamp = true, ephemeral = true) int tag) {
+        super(chip.getScampCore(), CMD_IPTAG, argument1(tag), 1);
+        this.tag = tag;
+    }
 
-	@Override
-	public void setConnection(SCPConnection connection) {
-		this.conn = connection;
-	}
+    @Override
+    public void setConnection(SCPConnection connection) {
+        this.conn = connection;
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException, UnknownHostException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException, UnknownHostException {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for an IP tags. */
-	protected final class Response
-			extends PayloadedResponse<TagDescription, UnknownHostException> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException, UnknownHostException {
-			super("Get IP Tag Info", CMD_IPTAG, buffer);
-		}
+    /** An SCP response to a request for an IP tags. */
+    protected final class Response
+            extends PayloadedResponse<TagDescription, UnknownHostException> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException, UnknownHostException {
+            super("Get IP Tag Info", CMD_IPTAG, buffer);
+        }
 
-		@Override
-		protected TagDescription parse(ByteBuffer buffer)
-				throws UnknownHostException {
-			requireNonNull(conn,
-					"can only describe a tag fully after the message has "
-							+ "been sent on a connection");
-			return new TagDescription(buffer, sdpHeader.getSource(),
-					conn.getRemoteIPAddress(), tag);
-		}
-	}
+        @Override
+        protected TagDescription parse(ByteBuffer buffer)
+                throws UnknownHostException {
+            requireNonNull(conn,
+                    "can only describe a tag fully after the message has "
+                            + "been sent on a connection");
+            return new TagDescription(buffer, sdpHeader.getSource(),
+                    conn.getRemoteIPAddress(), tag);
+        }
+    }
 }

@@ -133,760 +133,760 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 @Controller("mvc.adminUI")
 @PreAuthorize(IS_ADMIN)
 public class AdminControllerImpl extends DatabaseAwareBean
-		implements AdminController {
-	private static final Logger log = getLogger(AdminControllerImpl.class);
-
-	/** One board-hour in board-seconds. */
-	private static final int BOARD_HOUR = 3600;
-
-	/** Dummy map. */
-	private static final ModelMap NULL_MAP = null;
-
-	/** Dummy user. */
-	private static final Principal NULL_USER = null;
-
-	/** Dummy attributes. */
-	private static final RedirectAttributes NULL_ATTR = null;
-
-	@Autowired
-	private UserControl userManager;
-
-	@Autowired
-	private MachineStateControl machineController;
-
-	@Autowired
-	private MachineDefinitionLoader machineDefiner;
-
-	@Autowired
-	private SpallocAPI spalloc;
-
-	@Autowired
-	private QuotaManager quotaManager;
-
-	@Autowired
-	private URLPathMaker urlMaker;
-
-	private class MachineName {
-		private String name;
-
-		private boolean inService;
-
-		MachineName(Row row) {
-			name = row.getString("machine_name");
-			inService = row.getBoolean("in_service");
-		}
-	}
-
-	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
-		try (var conn = getConnection();
-				var listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return conn.transaction(false,
-					() -> Row.stream(listMachines.call(MachineName::new,
-							allowOutOfService))
-					.toMap(m -> m.name, m -> m.inService));
-		} catch (DataAccessException e) {
-			log.warn("problem when listing machines", e);
-			return Map.of();
-		}
-	}
-
-	private static AdminController admin() {
-		// Do not refactor to a constant; request-aware!
-		return on(AdminController.class);
-	}
-
-	private static SystemController system() {
-		// Do not refactor to a constant; request-aware!
-		return on(SystemController.class);
-	}
-
-	/**
-	 * All models should contain a common set of attributes that describe where
-	 * the view is rendering and where other parts of the admin interface are.
-	 * Only call from
-	 * {@link #addStandardContext(ModelAndView, RedirectAttributes)}.
-	 *
-	 * @param model
-	 *            The base model to add to. This may be the real model or the
-	 *            flash attributes.
-	 */
-	private void addStandardContextAttrs(Map<String, Object> model) {
-		var auth = getContext().getAuthentication();
-		boolean mayChangePassword =
-				auth instanceof UsernamePasswordAuthenticationToken;
-
-		model.put(BASE_URI, fromCurrentRequestUri().toUriString());
-		model.put(TRUST_LEVELS, TrustLevel.values());
-		model.put(USERS_URI, uri(admin().listUsers(NULL_MAP)));
-		model.put(CREATE_USER_URI, uri(admin().getUserCreationForm(NULL_MAP)));
-		model.put(CREATE_GROUP_URI,
-				uri(admin().getGroupCreationForm(NULL_MAP)));
-		model.put(GROUPS_URI, uri(admin().listGroups(NULL_MAP)));
-		model.put(BOARDS_URI, uri(admin().boards(NULL_MAP)));
-		model.put(MACHINE_URI, uri(admin().machineManagement(NULL_MAP)));
-		model.put(MAIN_URI, uri(system().index()));
-		model.put(CHANGE_PASSWORD_URI, urlMaker.systemUrl(
-				CHANGE_PASSWORD_PATH));
-		model.put(LOGOUT_URI, urlMaker.systemUrl(LOGOUT_PATH));
-		model.put(SPALLOC_CSS_URI, urlMaker.systemUrl(SPALLOC_CSS_PATH));
-		model.put(SPALLOC_JS_URI, urlMaker.systemUrl(SPALLOC_JS_PATH));
-		model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
-	}
-
-	/**
-	 * All models should contain a common set of attributes that describe where
-	 * the view is rendering and where other parts of the admin interface are.
-	 *
-	 * @param mav
-	 *            The model-and-view.
-	 * @param attrs
-	 *            The redirect attributes, or {@code null} if this is not a
-	 *            redirect.
-	 * @return The enhanced model-and-view.
-	 */
-	private ModelAndView addStandardContext(ModelAndView mav,
-			RedirectAttributes attrs) {
-		addStandardContextAttrs(nonNull(attrs)
-				// Real implementation of flash attrs is always a ModelMap
-				? (ModelMap) attrs.getFlashAttributes()
-				: mav.getModel());
-		return mav;
-	}
-
-	/**
-	 * All models should contain a common set of attributes that describe where
-	 * the view is rendering and where other parts of the admin interface are.
-	 *
-	 * @param mav
-	 *            The model-and-view.
-	 * @return The enhanced model-and-view.
-	 */
-	private ModelAndView addStandardContext(ModelAndView mav) {
-		return addStandardContext(mav, null);
-	}
-
-	/**
-	 * Construct a model-and-view which will redirect to a target URL. All
-	 * models should contain a common set of attributes that describe where the
-	 * view is rendering and where other parts of the admin interface are.
-	 *
-	 * @param uri
-	 *            The URI to redirect to. Only the path is currently used.
-	 * @param attrs
-	 *            The redirect attributes, or {@code null} if this is not a
-	 *            redirect.
-	 * @return The model-and-view.
-	 */
-	private ModelAndView redirectTo(URI uri, RedirectAttributes attrs) {
-		return addStandardContext(new ModelAndView("redirect:" + uri.getPath()),
-				attrs);
-	}
-
-	private ModelAndView errors(String message) {
-		return addStandardContext(error(message), null);
-	}
-
-	private ModelAndView errors(DataAccessException exception) {
-		return addStandardContext(error("database access failed: "
-				+ exception.getMostSpecificCause().getMessage()), null);
-	}
-
-	@ExceptionHandler(BindException.class)
-	ModelAndView validationError(BindException result, HttpServletRequest req) {
-		log.debug("Binding problem on request {}", req.getRequestURI());
-		if (req.getMethod() == "POST") {
-			try {
-				log.debug("Body: {}", req.getReader().lines().collect(
-						Collectors.joining()));
-			} catch (IOException e) {
-				log.debug("Failed to read request body", e);
-			}
-		}
-		if (result.hasGlobalErrors()) {
-			// I don't believe this is really reachable code
-			log.debug("global binding problem", result);
-			return errors(errorMessage(result.getGlobalError()));
-		} else if (result.hasFieldErrors()) {
-			log.debug("field binding problem", result);
-			return errors(errorMessage(result.getFieldError()));
-		} else {
-			// This should definitely be unreachable
-			log.error("unknown binding error", result);
-			return errors("unknown error");
-		}
-	}
-
-	/**
-	 * Convert thrown exceptions from the DB layer to views so the rest of the
-	 * code doesn't have to.
-	 *
-	 * @param e
-	 *            A database access exception.
-	 * @param hm
-	 *            What method generated the problem? Used to look up what was
-	 *            supposed to happen.
-	 * @return The view to render.
-	 */
-	@ExceptionHandler(DataAccessException.class)
-	ModelAndView dbException(DataAccessException e, HandlerMethod hm) {
-		var a = hm.getMethodAnnotation(Action.class);
-		if (nonNull(a)) {
-			log.warn("database access issue when {}", a.value(), e);
-		} else {
-			log.warn("database access issue", e);
-		}
-		return errors(e);
-	}
-
-	private static class AdminException extends RuntimeException {
-		private static final long serialVersionUID = 8401068773689159840L;
-
-		AdminException(String message) {
-			super(message);
-		}
-	}
-
-	private static final class NoUser extends AdminException {
-		private static final long serialVersionUID = 6430674580385445089L;
-
-		private NoUser() {
-			super("no such user");
-		}
-	}
-
-	private static final class NoGroup extends AdminException {
-		private static final long serialVersionUID = -4593707687103047377L;
-
-		private NoGroup() {
-			super("no such group");
-		}
-	}
-
-	private static final class NoBoard extends AdminException {
-		private static final long serialVersionUID = -4017368969526085002L;
-
-		private NoBoard() {
-			super("no such board");
-		}
-	}
-
-	/**
-	 * Convert thrown admin issues to views so the rest of the code doesn't have
-	 * to.
-	 *
-	 * @param e
-	 *            An admin exception.
-	 * @param hm
-	 *            What method generated the problem? Used to look up what was
-	 *            supposed to happen.
-	 * @return The view to render.
-	 */
-	@ExceptionHandler(AdminException.class)
-	ModelAndView adminException(AdminException e, HandlerMethod hm) {
-		var a = hm.getMethodAnnotation(Action.class);
-		if (nonNull(a)) {
-			log.warn("general issue when {}", a.value(), e);
-		} else {
-			log.warn("general issue", e);
-		}
-		return errors(e.getMessage());
-	}
-
-	// The actual controller methods
-
-	@Override
-	@Action("getting the main admin UI")
-	public ModelAndView mainUI(ModelMap ignored) {
-		return addStandardContext(MAIN_VIEW.view());
-	}
-
-	@Override
-	@Action("listing the users")
-	public ModelAndView listUsers(ModelMap ignored) {
-		var mav = USER_LIST_VIEW.view();
-		addLocalUserList(mav,
-				userManager.listUsers(true, this::showUserFormUrl));
-		addRemoteUserList(mav,
-				userManager.listUsers(false, this::showUserFormUrl));
-		return addStandardContext(mav);
-	}
-
-	@Override
-	@Action("getting the user-creation UI")
-	public ModelAndView getUserCreationForm(ModelMap ignored) {
-		var userForm = new UserRecord();
-		userForm.setInternal(true);
-		return addStandardContext(
-				CREATE_USER_VIEW.view(USER_OBJ, userForm));
-	}
-
-	@Override
-	@Action("creating a user")
-	public ModelAndView createUser(UserRecord user, ModelMap model,
-			RedirectAttributes attrs) {
-		user.initCreationDefaults();
-		var realUser = userManager.createUser(user, this::showGroupInfoUrl)
-				.orElseThrow(() -> new AdminException(
-						"user creation failed (duplicate username?)"));
-		int id = realUser.getUserId();
-		log.info("created user ID={} username={}", id, realUser.getUserName());
-		addNotice(attrs, "created " + realUser.getUserName());
-		return redirectTo(showUserFormUrl(id), attrs);
-	}
-
-	@Override
-	@Action("getting info about a user")
-	public ModelAndView showUserForm(int id) {
-		var mav = USER_DETAILS_VIEW.view();
-		var user = userManager.getUser(id, this::showGroupInfoUrl)
-				.orElseThrow(NoUser::new);
-		addUser(mav, user);
-		addUrl(mav, "deleteUri", deleteUserUrl(id));
-		return addStandardContext(mav);
-	}
-
-	/**
-	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
-	 *
-	 * @param id
-	 *            User ID
-	 * @return URL
-	 */
-	private URI showUserFormUrl(int id) {
-		return uri(admin().showUserForm(id));
-	}
-
-	/**
-	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
-	 *
-	 * @param member
-	 *            Record referring to user
-	 * @return URL
-	 */
-	private URI showUserFormUrl(MemberRecord member) {
-		return uri(admin().showUserForm(member.getUserId()));
-	}
-
-	/**
-	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
-	 *
-	 * @param user
-	 *            Record referring to user
-	 * @return URL
-	 */
-	private URI showUserFormUrl(UserRecord user) {
-		return uri(admin().showUserForm(user.getUserId()));
-	}
-
-	@Override
-	@Action("updating a user's details")
-	public ModelAndView submitUserForm(int id, UserRecord user, ModelMap model,
-			Principal principal) {
-		var adminUser = principal.getName();
-		user.setUserId(null);
-		log.info("updating user ID={}", id);
-		var mav = USER_DETAILS_VIEW.view(model);
-		addUser(mav,
-				userManager
-						.updateUser(id, user, adminUser, this::showGroupInfoUrl)
-						.orElseThrow(NoUser::new));
-		return addStandardContext(mav);
-	}
-
-	@Override
-	@Action("deleting a user")
-	public ModelAndView deleteUser(int id, Principal principal,
-			RedirectAttributes attrs) {
-		var adminUser = principal.getName();
-		var deletedUsername = userManager.deleteUser(id, adminUser).orElseThrow(
-				() -> new AdminException("could not delete that user"));
-		log.info("deleted user ID={} username={}", id, deletedUsername);
-		// Not sure that these are the correct place
-		var mav = redirectTo(uri(admin().listUsers(NULL_MAP)), attrs);
-		addNotice(attrs, "deleted " + deletedUsername);
-		addUser(attrs, new UserRecord());
-		return mav;
-	}
-
-	/**
-	 * Get URL for calling
-	 * {@link #deleteUser(int, Principal, RedirectAttributes) deleteUser()}
-	 * later.
-	 *
-	 * @param id
-	 *            User ID
-	 * @return URL
-	 */
-	private URI deleteUserUrl(int id) {
-		return uri(admin().deleteUser(id, NULL_USER, NULL_ATTR));
-	}
-
-	@Override
-	@Action("listing the groups")
-	public ModelAndView listGroups(ModelMap ignored) {
-		var mav = GROUP_LIST_VIEW.view();
-		addLocalGroupList(mav,
-				userManager.listGroups(INTERNAL, this::showGroupInfoUrl));
-		addOrganisationList(mav,
-				userManager.listGroups(ORGANISATION, this::showGroupInfoUrl));
-		addCollabratoryList(mav,
-				userManager.listGroups(COLLABRATORY, this::showGroupInfoUrl));
-		return addStandardContext(mav);
-	}
-
-	@Override
-	@Action("getting info about a group")
-	public ModelAndView showGroupInfo(int id) {
-		var mav = GROUP_DETAILS_VIEW.view();
-		var userLocations = new HashMap<String, URI>();
-		addGroup(mav, userManager.getGroup(id, m -> {
-			userLocations.put(m.getUserName(), showUserFormUrl(m));
-			return uri(
-					admin().removeUserFromGroup(id, m.getUserId(), NULL_ATTR));
-		}).orElseThrow(NoGroup::new));
-		addUserList(mav, userLocations);
-		addUrl(mav, "deleteUri", uri(admin().deleteGroup(id, NULL_ATTR)));
-		addUrl(mav, "addUserUri",
-				uri(admin().addUserToGroup(id, null, NULL_ATTR)));
-		addUrl(mav, "addQuotaUri",
-				uri(admin().adjustGroupQuota(id, 0, NULL_ATTR)));
-		return addStandardContext(mav);
-	}
-
-	/**
-	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
-	 *
-	 * @param id
-	 *            Group ID
-	 * @return URL
-	 */
-	private URI showGroupInfoUrl(int id) {
-		return uri(admin().showGroupInfo(id));
-	}
-
-	/**
-	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
-	 *
-	 * @param membership
-	 *            Record referring to group
-	 * @return URL
-	 */
-	private URI showGroupInfoUrl(MemberRecord membership) {
-		return uri(admin().showGroupInfo(membership.getGroupId()));
-	}
-
-	/**
-	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
-	 *
-	 * @param group
-	 *            Record referring to group
-	 * @return URL
-	 */
-	private URI showGroupInfoUrl(GroupRecord group) {
-		return uri(admin().showGroupInfo(group.getGroupId()));
-	}
-
-	@Override
-	@Action("getting the group-creation UI")
-	public ModelAndView getGroupCreationForm(ModelMap ignored) {
-		return addStandardContext(
-				CREATE_GROUP_VIEW.view(GROUP_OBJ, new CreateGroupModel()));
-	}
-
-	@Override
-	@Action("creating a group")
-	public ModelAndView createGroup(CreateGroupModel groupRequest,
-			RedirectAttributes attrs) {
-		var realGroup =
-				userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
-						.orElseThrow(() -> new AdminException(
-								"group creation failed (duplicate name?)"));
-		int id = realGroup.getGroupId();
-		log.info("created group ID={} name={}", id, realGroup.getGroupName());
-		addNotice(attrs, "created " + realGroup.getGroupName());
-		return redirectTo(showGroupInfoUrl(id), attrs);
-	}
-
-	@Override
-	@Action("adding a user to a group")
-	public ModelAndView addUserToGroup(int id, String user,
-			RedirectAttributes attrs) {
-		var g = userManager.getGroup(id, null).orElseThrow(NoGroup::new);
-		var u = userManager.getUser(user, null).orElseThrow(NoUser::new);
-		if (userManager.addUserToGroup(u, g).isPresent()) {
-			log.info("added user {} to group {}", u.getUserName(),
-					g.getGroupName());
-			addNotice(attrs, format("added user %s to group %s",
-					u.getUserName(), g.getGroupName()));
-		} else {
-			addNotice(attrs, format("user %s is already a member of group %s",
-					u.getUserName(), g.getGroupName()));
-		}
-		return redirectTo(showGroupInfoUrl(id), attrs);
-	}
-
-	@Override
-	@Action("removing a user from a group")
-	public ModelAndView removeUserFromGroup(int id, int userid,
-			RedirectAttributes attrs) {
-		var g = userManager.getGroup(id, null).orElseThrow(NoGroup::new);
-		var u = userManager.getUser(userid, null).orElseThrow(NoUser::new);
-		if (userManager.removeUserFromGroup(u, g)) {
-			log.info("removed user {} from group {}", u.getUserName(),
-					g.getGroupName());
-			addNotice(attrs, format("removed user %s from group %s",
-					u.getUserName(), g.getGroupName()));
-		} else {
-			addNotice(attrs,
-					format("user %s is already not a member of group %s",
-							u.getUserName(), g.getGroupName()));
-		}
-		return redirectTo(showGroupInfoUrl(id), attrs);
-	}
-
-	@Override
-	@Action("adjusting a group's quota")
-	public ModelAndView adjustGroupQuota(int id, int delta,
-			RedirectAttributes attrs) {
-		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -> {
-			log.info("adjusted quota for group {} to {}", aq.getName(),
-					aq.getQuota());
-			// addNotice(attrs, "quota updated");
-		});
-		return redirectTo(showGroupInfoUrl(id), attrs);
-	}
-
-	@Override
-	@Action("deleting a group")
-	public ModelAndView deleteGroup(int id, RedirectAttributes attrs) {
-		var deletedGroupName =
-				userManager.deleteGroup(id).orElseThrow(NoGroup::new);
-		log.info("deleted group ID={} groupname={}", id, deletedGroupName);
-		addNotice(attrs, "deleted " + deletedGroupName);
-		return redirectTo(uri(admin().listGroups(NULL_MAP)), attrs);
-	}
-
-	@Override
-	@Action("getting the UI for finding boards")
-	public ModelAndView boards(ModelMap ignored) {
-		var mav = BOARD_VIEW.view();
-		addBoard(mav, new BoardRecord());
-		addMachineList(mav, getMachineNames(true));
-		return addStandardContext(mav);
-	}
-
-	private Optional<BoardState> getBoardState(BoardRecord board) {
-		if (nonNull(board.getId())) {
-			return machineController.findId(board.getId());
-		} else if (board.isTriadCoordPresent()) {
-			return machineController.findTriad(board.getMachineName(),
-					new TriadCoords(board.getX(), board.getY(), board.getZ()));
-		} else if (board.isPhysicalCoordPresent()) {
-			return machineController.findPhysical(board.getMachineName(),
-					new PhysicalCoords(board.getCabinet(), board.getFrame(),
-							board.getBoard()));
-		} else if (board.isAddressPresent()) {
-			return machineController.findIP(board.getMachineName(),
-					board.getIpAddress());
-		} else {
-			// unreachable because of validation
-			return Optional.empty();
-		}
-	}
-
-	// TODO should we refactor into multiple methods?
-	@Override
-	@Action("processing changes to a board's configuration")
-	public ModelAndView board(BoardRecord board, ModelMap model) {
-		var bs = getBoardState(board).orElseThrow(NoBoard::new);
-
-		inflateBoardRecord(board, bs);
-
-		if (board.isEnabledDefined()) {
-			// We're doing a set
-			log.info("setting board-allocatable state for board {} to {}", bs,
-					board.isEnabled());
-			bs.setState(board.isEnabled());
-			spalloc.purgeDownCache();
-		}
-
-		board.setEnabled(bs.getState());
-		addBlacklistData(bs, model);
-		inflateBoardRecord(board, bs);
-		addBoard(model, board);
-		addMachineList(model, getMachineNames(true));
-		addUrl(model, TEMP_URI,	uri(admin().getTemperatures(
-				board.getId(), board.getBmpId())));
-		return addStandardContext(BOARD_VIEW.view(model));
-	}
-
-	@Override
-	@Action("saving changes to a board blacklist")
-	public ResponseEntity<Void> blacklistSave(BlacklistData bldata) {
-
-		if (bldata.isPresent()) {
-			try {
-				var blacklist = bldata.getParsedBlacklist();
-				machineController.writeBlacklistToDB(bldata.getBoardId(),
-						blacklist);
-				machineController.writeBlacklistToMachine(bldata.getBoardId(),
-						bldata.getBmpId(), blacklist);
-			} catch (InterruptedException e) {
-				throw new WebApplicationException(e);
-			}
-		}
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
-
-	@Override
-	@Action("fetching a live board blacklist from the machine")
-	public BlacklistData blacklistFetch(int boardId, int bmpId) {
-
-		log.info("pulling blacklist from board {}", boardId);
-		BlacklistData data = new BlacklistData();
-		data.setBoardId(boardId);
-		data.setBmpId(bmpId);
-		machineController.pullBlacklist(boardId, bmpId).ifPresentOrElse(bl -> {
-			data.setPresent(true);
-			data.setSynched(true);
-			data.setBlacklist(bl.render());
-		}, () -> {
-			data.setPresent(false);
-			data.setSynched(false);
-		});
-
-		return data;
-	}
-
-	@Override
-	@Action("getting board temperature data from the machine")
-	public BoardTemperatures getTemperatures(int boardId, int bmpId) {
-		try {
-			return new BoardTemperatures(
-					machineController.readTemperatureFromMachine(boardId, bmpId)
-						.orElseThrow(() -> new WebApplicationException(
-								Status.NOT_FOUND)));
-		} catch (InterruptedException e) {
-			throw new WebApplicationException(e);
-		}
-	}
-
-	/**
-	 * Add current blacklist data to model.
-	 *
-	 * @param board
-	 *            Which board's blacklist data to add.
-	 * @param model
-	 *            The model to add it to.
-	 */
-	private void addBlacklistData(BoardState board, ModelMap model) {
-		var bldata = new BlacklistData();
-		bldata.setBoardId(board.id);
-		var bl = machineController.readBlacklistFromDB(board);
-		bldata.setPresent(bl.isPresent());
-		bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
-		bldata.setSynched(machineController.isBlacklistSynched(board));
-
-		addBlacklist(model, bldata);
-		addUrl(model, BLACKLIST_URI,
-				uri(admin().blacklistFetch(board.id, board.bmpId)));
-	}
-
-	/**
-	 * Copy settings from the record out of the DB.
-	 *
-	 * @param br
-	 *            Where the values are copied to. A partial state.
-	 * @param bs
-	 *            Where the values are copied from. A complete state from the
-	 *            DB.
-	 */
-	private void inflateBoardRecord(BoardRecord br, BoardState bs) {
-		// Inflate the coordinates
-		br.setId(bs.id);
-		br.setBmpId(bs.bmpId);
-		br.setX(bs.x);
-		br.setY(bs.y);
-		br.setZ(bs.z);
-		br.setCabinet(bs.cabinet);
-		br.setFrame(bs.frame);
-		br.setBoard(bs.board);
-		br.setIpAddress(bs.address);
-		br.setMachineName(bs.machineName);
-
-		// Inflate the other properties
-		br.setPowered(bs.getPower());
-		br.setLastPowerOff(bs.getPowerOffTime().orElse(null));
-		br.setLastPowerOn(bs.getPowerOnTime().orElse(null));
-		br.setJobId(bs.getAllocatedJob().orElse(null));
-		br.setReports(bs.getReports());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * <strong>Implementation note:</strong> This is the baseline information
-	 * that {@code admin/machine.jsp} needs.
-	 */
-	@Override
-	@Action("getting a machine's configuration")
-	public ModelAndView machineManagement(ModelMap ignored) {
-		var mav = MACHINE_VIEW.view();
-		addMachineList(mav, getMachineNames(true));
-		var tagging = machineController.getMachineTagging();
-		tagging.forEach(
-				t -> t.setUrl(uri(system().getMachineInfo(t.getName()))));
-		addMachineTagging(mav, tagging);
-		addMachineReports(mav, machineController.getMachineReports());
-		return addStandardContext(mav);
-	}
-
-	@Override
-	@Action("retagging a machine")
-	public ModelAndView retagMachine(String machineName, String newTags) {
-		var tags =
-				stream(newTags.split(",")).map(String::strip).collect(toSet());
-		machineController.updateTags(machineName, tags);
-		log.info("retagged {} to have tags {}", machineName, tags);
-		return machineManagement(NULL_MAP);
-	}
-
-	@Override
-	@Action("disabling a machine")
-	public ModelAndView disableMachine(String machineName) {
-		machineController.setMachineState(machineName, false);
-		log.info("marked {} as out of service", machineName);
-		return machineManagement(NULL_MAP);
-	}
-
-	@Override
-	@Action("enabling a machine")
-	public ModelAndView enableMachine(String machineName) {
-		machineController.setMachineState(machineName, true);
-		log.info("marked {} as in service", machineName);
-		return machineManagement(NULL_MAP);
-	}
-
-	@Override
-	@Action("defining a machine")
-	public ModelAndView defineMachine(MultipartFile file) {
-		var machines = extractMachineDefinitions(file);
-		for (var m : machines) {
-			machineDefiner.loadMachineDefinition(m);
-			log.info("defined machine {}", m.getName());
-		}
-		var mav = machineManagement(NULL_MAP);
-		// Tailor with extra objects here
-		mav.addObject(DEFINED_MACHINES_OBJ, machines);
-		return mav;
-	}
-
-	private List<Machine> extractMachineDefinitions(MultipartFile file) {
-		try (var input = buffer(file.getInputStream())) {
-			return machineDefiner.readMachineDefinitions(input);
-		} catch (IOException e) {
-			throw new AdminException(
-					"problem with processing file: " + e.getMessage());
-		}
-	}
+            implements AdminController {
+      private static final Logger log = getLogger(AdminControllerImpl.class);
+
+      /** One board-hour in board-seconds. */
+      private static final int BOARD_HOUR = 3600;
+
+      /** Dummy map. */
+      private static final ModelMap NULL_MAP = null;
+
+      /** Dummy user. */
+      private static final Principal NULL_USER = null;
+
+      /** Dummy attributes. */
+      private static final RedirectAttributes NULL_ATTR = null;
+
+      @Autowired
+      private UserControl userManager;
+
+      @Autowired
+      private MachineStateControl machineController;
+
+      @Autowired
+      private MachineDefinitionLoader machineDefiner;
+
+      @Autowired
+      private SpallocAPI spalloc;
+
+      @Autowired
+      private QuotaManager quotaManager;
+
+      @Autowired
+      private URLPathMaker urlMaker;
+
+      private class MachineName {
+            private String name;
+
+            private boolean inService;
+
+            MachineName(Row row) {
+                  name = row.getString("machine_name");
+                  inService = row.getBoolean("in_service");
+            }
+      }
+
+      private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
+            try (var conn = getConnection();
+                        var listMachines = conn.query(LIST_MACHINE_NAMES)) {
+                  return conn.transaction(false,
+                              () -> Row.stream(listMachines.call(MachineName::new,
+                                          allowOutOfService))
+                              .toMap(m -> m.name, m -> m.inService));
+            } catch (DataAccessException e) {
+                  log.warn("problem when listing machines", e);
+                  return Map.of();
+            }
+      }
+
+      private static AdminController admin() {
+            // Do not refactor to a constant; request-aware!
+            return on(AdminController.class);
+      }
+
+      private static SystemController system() {
+            // Do not refactor to a constant; request-aware!
+            return on(SystemController.class);
+      }
+
+      /**
+       * All models should contain a common set of attributes that describe where
+       * the view is rendering and where other parts of the admin interface are.
+       * Only call from
+       * {@link #addStandardContext(ModelAndView, RedirectAttributes)}.
+       *
+       * @param model
+       *            The base model to add to. This may be the real model or the
+       *            flash attributes.
+       */
+      private void addStandardContextAttrs(Map<String, Object> model) {
+            var auth = getContext().getAuthentication();
+            boolean mayChangePassword =
+                        auth instanceof UsernamePasswordAuthenticationToken;
+
+            model.put(BASE_URI, fromCurrentRequestUri().toUriString());
+            model.put(TRUST_LEVELS, TrustLevel.values());
+            model.put(USERS_URI, uri(admin().listUsers(NULL_MAP)));
+            model.put(CREATE_USER_URI, uri(admin().getUserCreationForm(NULL_MAP)));
+            model.put(CREATE_GROUP_URI,
+                        uri(admin().getGroupCreationForm(NULL_MAP)));
+            model.put(GROUPS_URI, uri(admin().listGroups(NULL_MAP)));
+            model.put(BOARDS_URI, uri(admin().boards(NULL_MAP)));
+            model.put(MACHINE_URI, uri(admin().machineManagement(NULL_MAP)));
+            model.put(MAIN_URI, uri(system().index()));
+            model.put(CHANGE_PASSWORD_URI, urlMaker.systemUrl(
+                        CHANGE_PASSWORD_PATH));
+            model.put(LOGOUT_URI, urlMaker.systemUrl(LOGOUT_PATH));
+            model.put(SPALLOC_CSS_URI, urlMaker.systemUrl(SPALLOC_CSS_PATH));
+            model.put(SPALLOC_JS_URI, urlMaker.systemUrl(SPALLOC_JS_PATH));
+            model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
+      }
+
+      /**
+       * All models should contain a common set of attributes that describe where
+       * the view is rendering and where other parts of the admin interface are.
+       *
+       * @param mav
+       *            The model-and-view.
+       * @param attrs
+       *            The redirect attributes, or {@code null} if this is not a
+       *            redirect.
+       * @return The enhanced model-and-view.
+       */
+      private ModelAndView addStandardContext(ModelAndView mav,
+                  RedirectAttributes attrs) {
+            addStandardContextAttrs(nonNull(attrs)
+                        // Real implementation of flash attrs is always a ModelMap
+                        ? (ModelMap) attrs.getFlashAttributes()
+                        : mav.getModel());
+            return mav;
+      }
+
+      /**
+       * All models should contain a common set of attributes that describe where
+       * the view is rendering and where other parts of the admin interface are.
+       *
+       * @param mav
+       *            The model-and-view.
+       * @return The enhanced model-and-view.
+       */
+      private ModelAndView addStandardContext(ModelAndView mav) {
+            return addStandardContext(mav, null);
+      }
+
+      /**
+       * Construct a model-and-view which will redirect to a target URL. All
+       * models should contain a common set of attributes that describe where the
+       * view is rendering and where other parts of the admin interface are.
+       *
+       * @param uri
+       *            The URI to redirect to. Only the path is currently used.
+       * @param attrs
+       *            The redirect attributes, or {@code null} if this is not a
+       *            redirect.
+       * @return The model-and-view.
+       */
+      private ModelAndView redirectTo(URI uri, RedirectAttributes attrs) {
+            return addStandardContext(new ModelAndView("redirect:" + uri.getPath()),
+                        attrs);
+      }
+
+      private ModelAndView errors(String message) {
+            return addStandardContext(error(message), null);
+      }
+
+      private ModelAndView errors(DataAccessException exception) {
+            return addStandardContext(error("database access failed: "
+                        + exception.getMostSpecificCause().getMessage()), null);
+      }
+
+      @ExceptionHandler(BindException.class)
+      ModelAndView validationError(BindException result, HttpServletRequest req) {
+            log.debug("Binding problem on request {}", req.getRequestURI());
+            if (req.getMethod() == "POST") {
+                  try {
+                        log.debug("Body: {}", req.getReader().lines().collect(
+                                    Collectors.joining()));
+                  } catch (IOException e) {
+                        log.debug("Failed to read request body", e);
+                  }
+            }
+            if (result.hasGlobalErrors()) {
+                  // I don't believe this is really reachable code
+                  log.debug("global binding problem", result);
+                  return errors(errorMessage(result.getGlobalError()));
+            } else if (result.hasFieldErrors()) {
+                  log.debug("field binding problem", result);
+                  return errors(errorMessage(result.getFieldError()));
+            } else {
+                  // This should definitely be unreachable
+                  log.error("unknown binding error", result);
+                  return errors("unknown error");
+            }
+      }
+
+      /**
+       * Convert thrown exceptions from the DB layer to views so the rest of the
+       * code doesn't have to.
+       *
+       * @param e
+       *            A database access exception.
+       * @param hm
+       *            What method generated the problem? Used to look up what was
+       *            supposed to happen.
+       * @return The view to render.
+       */
+      @ExceptionHandler(DataAccessException.class)
+      ModelAndView dbException(DataAccessException e, HandlerMethod hm) {
+            var a = hm.getMethodAnnotation(Action.class);
+            if (nonNull(a)) {
+                  log.warn("database access issue when {}", a.value(), e);
+            } else {
+                  log.warn("database access issue", e);
+            }
+            return errors(e);
+      }
+
+      private static class AdminException extends RuntimeException {
+            private static final long serialVersionUID = 8401068773689159840L;
+
+            AdminException(String message) {
+                  super(message);
+            }
+      }
+
+      private static final class NoUser extends AdminException {
+            private static final long serialVersionUID = 6430674580385445089L;
+
+            private NoUser() {
+                  super("no such user");
+            }
+      }
+
+      private static final class NoGroup extends AdminException {
+            private static final long serialVersionUID = -4593707687103047377L;
+
+            private NoGroup() {
+                  super("no such group");
+            }
+      }
+
+      private static final class NoBoard extends AdminException {
+            private static final long serialVersionUID = -4017368969526085002L;
+
+            private NoBoard() {
+                  super("no such board");
+            }
+      }
+
+      /**
+       * Convert thrown admin issues to views so the rest of the code doesn't have
+       * to.
+       *
+       * @param e
+       *            An admin exception.
+       * @param hm
+       *            What method generated the problem? Used to look up what was
+       *            supposed to happen.
+       * @return The view to render.
+       */
+      @ExceptionHandler(AdminException.class)
+      ModelAndView adminException(AdminException e, HandlerMethod hm) {
+            var a = hm.getMethodAnnotation(Action.class);
+            if (nonNull(a)) {
+                  log.warn("general issue when {}", a.value(), e);
+            } else {
+                  log.warn("general issue", e);
+            }
+            return errors(e.getMessage());
+      }
+
+      // The actual controller methods
+
+      @Override
+      @Action("getting the main admin UI")
+      public ModelAndView mainUI(ModelMap ignored) {
+            return addStandardContext(MAIN_VIEW.view());
+      }
+
+      @Override
+      @Action("listing the users")
+      public ModelAndView listUsers(ModelMap ignored) {
+            var mav = USER_LIST_VIEW.view();
+            addLocalUserList(mav,
+                        userManager.listUsers(true, this::showUserFormUrl));
+            addRemoteUserList(mav,
+                        userManager.listUsers(false, this::showUserFormUrl));
+            return addStandardContext(mav);
+      }
+
+      @Override
+      @Action("getting the user-creation UI")
+      public ModelAndView getUserCreationForm(ModelMap ignored) {
+            var userForm = new UserRecord();
+            userForm.setInternal(true);
+            return addStandardContext(
+                        CREATE_USER_VIEW.view(USER_OBJ, userForm));
+      }
+
+      @Override
+      @Action("creating a user")
+      public ModelAndView createUser(UserRecord user, ModelMap model,
+                  RedirectAttributes attrs) {
+            user.initCreationDefaults();
+            var realUser = userManager.createUser(user, this::showGroupInfoUrl)
+                        .orElseThrow(() -> new AdminException(
+                                    "user creation failed (duplicate username?)"));
+            int id = realUser.getUserId();
+            log.info("created user ID={} username={}", id, realUser.getUserName());
+            addNotice(attrs, "created " + realUser.getUserName());
+            return redirectTo(showUserFormUrl(id), attrs);
+      }
+
+      @Override
+      @Action("getting info about a user")
+      public ModelAndView showUserForm(int id) {
+            var mav = USER_DETAILS_VIEW.view();
+            var user = userManager.getUser(id, this::showGroupInfoUrl)
+                        .orElseThrow(NoUser::new);
+            addUser(mav, user);
+            addUrl(mav, "deleteUri", deleteUserUrl(id));
+            return addStandardContext(mav);
+      }
+
+      /**
+       * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
+       *
+       * @param id
+       *            User ID
+       * @return URL
+       */
+      private URI showUserFormUrl(int id) {
+            return uri(admin().showUserForm(id));
+      }
+
+      /**
+       * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
+       *
+       * @param member
+       *            Record referring to user
+       * @return URL
+       */
+      private URI showUserFormUrl(MemberRecord member) {
+            return uri(admin().showUserForm(member.getUserId()));
+      }
+
+      /**
+       * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
+       *
+       * @param user
+       *            Record referring to user
+       * @return URL
+       */
+      private URI showUserFormUrl(UserRecord user) {
+            return uri(admin().showUserForm(user.getUserId()));
+      }
+
+      @Override
+      @Action("updating a user's details")
+      public ModelAndView submitUserForm(int id, UserRecord user, ModelMap model,
+                  Principal principal) {
+            var adminUser = principal.getName();
+            user.setUserId(null);
+            log.info("updating user ID={}", id);
+            var mav = USER_DETAILS_VIEW.view(model);
+            addUser(mav,
+                        userManager
+                                    .updateUser(id, user, adminUser, this::showGroupInfoUrl)
+                                    .orElseThrow(NoUser::new));
+            return addStandardContext(mav);
+      }
+
+      @Override
+      @Action("deleting a user")
+      public ModelAndView deleteUser(int id, Principal principal,
+                  RedirectAttributes attrs) {
+            var adminUser = principal.getName();
+            var deletedUsername = userManager.deleteUser(id, adminUser).orElseThrow(
+                        () -> new AdminException("could not delete that user"));
+            log.info("deleted user ID={} username={}", id, deletedUsername);
+            // Not sure that these are the correct place
+            var mav = redirectTo(uri(admin().listUsers(NULL_MAP)), attrs);
+            addNotice(attrs, "deleted " + deletedUsername);
+            addUser(attrs, new UserRecord());
+            return mav;
+      }
+
+      /**
+       * Get URL for calling
+       * {@link #deleteUser(int, Principal, RedirectAttributes) deleteUser()}
+       * later.
+       *
+       * @param id
+       *            User ID
+       * @return URL
+       */
+      private URI deleteUserUrl(int id) {
+            return uri(admin().deleteUser(id, NULL_USER, NULL_ATTR));
+      }
+
+      @Override
+      @Action("listing the groups")
+      public ModelAndView listGroups(ModelMap ignored) {
+            var mav = GROUP_LIST_VIEW.view();
+            addLocalGroupList(mav,
+                        userManager.listGroups(INTERNAL, this::showGroupInfoUrl));
+            addOrganisationList(mav,
+                        userManager.listGroups(ORGANISATION, this::showGroupInfoUrl));
+            addCollabratoryList(mav,
+                        userManager.listGroups(COLLABRATORY, this::showGroupInfoUrl));
+            return addStandardContext(mav);
+      }
+
+      @Override
+      @Action("getting info about a group")
+      public ModelAndView showGroupInfo(int id) {
+            var mav = GROUP_DETAILS_VIEW.view();
+            var userLocations = new HashMap<String, URI>();
+            addGroup(mav, userManager.getGroup(id, m -> {
+                  userLocations.put(m.getUserName(), showUserFormUrl(m));
+                  return uri(
+                              admin().removeUserFromGroup(id, m.getUserId(), NULL_ATTR));
+            }).orElseThrow(NoGroup::new));
+            addUserList(mav, userLocations);
+            addUrl(mav, "deleteUri", uri(admin().deleteGroup(id, NULL_ATTR)));
+            addUrl(mav, "addUserUri",
+                        uri(admin().addUserToGroup(id, null, NULL_ATTR)));
+            addUrl(mav, "addQuotaUri",
+                        uri(admin().adjustGroupQuota(id, 0, NULL_ATTR)));
+            return addStandardContext(mav);
+      }
+
+      /**
+       * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
+       *
+       * @param id
+       *            Group ID
+       * @return URL
+       */
+      private URI showGroupInfoUrl(int id) {
+            return uri(admin().showGroupInfo(id));
+      }
+
+      /**
+       * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
+       *
+       * @param membership
+       *            Record referring to group
+       * @return URL
+       */
+      private URI showGroupInfoUrl(MemberRecord membership) {
+            return uri(admin().showGroupInfo(membership.getGroupId()));
+      }
+
+      /**
+       * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
+       *
+       * @param group
+       *            Record referring to group
+       * @return URL
+       */
+      private URI showGroupInfoUrl(GroupRecord group) {
+            return uri(admin().showGroupInfo(group.getGroupId()));
+      }
+
+      @Override
+      @Action("getting the group-creation UI")
+      public ModelAndView getGroupCreationForm(ModelMap ignored) {
+            return addStandardContext(
+                        CREATE_GROUP_VIEW.view(GROUP_OBJ, new CreateGroupModel()));
+      }
+
+      @Override
+      @Action("creating a group")
+      public ModelAndView createGroup(CreateGroupModel groupRequest,
+                  RedirectAttributes attrs) {
+            var realGroup =
+                        userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
+                                    .orElseThrow(() -> new AdminException(
+                                                "group creation failed (duplicate name?)"));
+            int id = realGroup.getGroupId();
+            log.info("created group ID={} name={}", id, realGroup.getGroupName());
+            addNotice(attrs, "created " + realGroup.getGroupName());
+            return redirectTo(showGroupInfoUrl(id), attrs);
+      }
+
+      @Override
+      @Action("adding a user to a group")
+      public ModelAndView addUserToGroup(int id, String user,
+                  RedirectAttributes attrs) {
+            var g = userManager.getGroup(id, null).orElseThrow(NoGroup::new);
+            var u = userManager.getUser(user, null).orElseThrow(NoUser::new);
+            if (userManager.addUserToGroup(u, g).isPresent()) {
+                  log.info("added user {} to group {}", u.getUserName(),
+                              g.getGroupName());
+                  addNotice(attrs, format("added user %s to group %s",
+                              u.getUserName(), g.getGroupName()));
+            } else {
+                  addNotice(attrs, format("user %s is already a member of group %s",
+                              u.getUserName(), g.getGroupName()));
+            }
+            return redirectTo(showGroupInfoUrl(id), attrs);
+      }
+
+      @Override
+      @Action("removing a user from a group")
+      public ModelAndView removeUserFromGroup(int id, int userid,
+                  RedirectAttributes attrs) {
+            var g = userManager.getGroup(id, null).orElseThrow(NoGroup::new);
+            var u = userManager.getUser(userid, null).orElseThrow(NoUser::new);
+            if (userManager.removeUserFromGroup(u, g)) {
+                  log.info("removed user {} from group {}", u.getUserName(),
+                              g.getGroupName());
+                  addNotice(attrs, format("removed user %s from group %s",
+                              u.getUserName(), g.getGroupName()));
+            } else {
+                  addNotice(attrs,
+                              format("user %s is already not a member of group %s",
+                                          u.getUserName(), g.getGroupName()));
+            }
+            return redirectTo(showGroupInfoUrl(id), attrs);
+      }
+
+      @Override
+      @Action("adjusting a group's quota")
+      public ModelAndView adjustGroupQuota(int id, int delta,
+                  RedirectAttributes attrs) {
+            quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -> {
+                  log.info("adjusted quota for group {} to {}", aq.getName(),
+                              aq.getQuota());
+                  // addNotice(attrs, "quota updated");
+            });
+            return redirectTo(showGroupInfoUrl(id), attrs);
+      }
+
+      @Override
+      @Action("deleting a group")
+      public ModelAndView deleteGroup(int id, RedirectAttributes attrs) {
+            var deletedGroupName =
+                        userManager.deleteGroup(id).orElseThrow(NoGroup::new);
+            log.info("deleted group ID={} groupname={}", id, deletedGroupName);
+            addNotice(attrs, "deleted " + deletedGroupName);
+            return redirectTo(uri(admin().listGroups(NULL_MAP)), attrs);
+      }
+
+      @Override
+      @Action("getting the UI for finding boards")
+      public ModelAndView boards(ModelMap ignored) {
+            var mav = BOARD_VIEW.view();
+            addBoard(mav, new BoardRecord());
+            addMachineList(mav, getMachineNames(true));
+            return addStandardContext(mav);
+      }
+
+      private Optional<BoardState> getBoardState(BoardRecord board) {
+            if (nonNull(board.getId())) {
+                  return machineController.findId(board.getId());
+            } else if (board.isTriadCoordPresent()) {
+                  return machineController.findTriad(board.getMachineName(),
+                              new TriadCoords(board.getX(), board.getY(), board.getZ()));
+            } else if (board.isPhysicalCoordPresent()) {
+                  return machineController.findPhysical(board.getMachineName(),
+                              new PhysicalCoords(board.getCabinet(), board.getFrame(),
+                                          board.getBoard()));
+            } else if (board.isAddressPresent()) {
+                  return machineController.findIP(board.getMachineName(),
+                              board.getIpAddress());
+            } else {
+                  // unreachable because of validation
+                  return Optional.empty();
+            }
+      }
+
+      // TODO should we refactor into multiple methods?
+      @Override
+      @Action("processing changes to a board's configuration")
+      public ModelAndView board(BoardRecord board, ModelMap model) {
+            var bs = getBoardState(board).orElseThrow(NoBoard::new);
+
+            inflateBoardRecord(board, bs);
+
+            if (board.isEnabledDefined()) {
+                  // We're doing a set
+                  log.info("setting board-allocatable state for board {} to {}", bs,
+                              board.isEnabled());
+                  bs.setState(board.isEnabled());
+                  spalloc.purgeDownCache();
+            }
+
+            board.setEnabled(bs.getState());
+            addBlacklistData(bs, model);
+            inflateBoardRecord(board, bs);
+            addBoard(model, board);
+            addMachineList(model, getMachineNames(true));
+            addUrl(model, TEMP_URI,      uri(admin().getTemperatures(
+                        board.getId(), board.getBmpId())));
+            return addStandardContext(BOARD_VIEW.view(model));
+      }
+
+      @Override
+      @Action("saving changes to a board blacklist")
+      public ResponseEntity<Void> blacklistSave(BlacklistData bldata) {
+
+            if (bldata.isPresent()) {
+                  try {
+                        var blacklist = bldata.getParsedBlacklist();
+                        machineController.writeBlacklistToDB(bldata.getBoardId(),
+                                    blacklist);
+                        machineController.writeBlacklistToMachine(bldata.getBoardId(),
+                                    bldata.getBmpId(), blacklist);
+                  } catch (InterruptedException e) {
+                        throw new WebApplicationException(e);
+                  }
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+      }
+
+      @Override
+      @Action("fetching a live board blacklist from the machine")
+      public BlacklistData blacklistFetch(int boardId, int bmpId) {
+
+            log.info("pulling blacklist from board {}", boardId);
+            BlacklistData data = new BlacklistData();
+            data.setBoardId(boardId);
+            data.setBmpId(bmpId);
+            machineController.pullBlacklist(boardId, bmpId).ifPresentOrElse(bl -> {
+                  data.setPresent(true);
+                  data.setSynched(true);
+                  data.setBlacklist(bl.render());
+            }, () -> {
+                  data.setPresent(false);
+                  data.setSynched(false);
+            });
+
+            return data;
+      }
+
+      @Override
+      @Action("getting board temperature data from the machine")
+      public BoardTemperatures getTemperatures(int boardId, int bmpId) {
+            try {
+                  return new BoardTemperatures(
+                              machineController.readTemperatureFromMachine(boardId, bmpId)
+                                    .orElseThrow(() -> new WebApplicationException(
+                                                Status.NOT_FOUND)));
+            } catch (InterruptedException e) {
+                  throw new WebApplicationException(e);
+            }
+      }
+
+      /**
+       * Add current blacklist data to model.
+       *
+       * @param board
+       *            Which board's blacklist data to add.
+       * @param model
+       *            The model to add it to.
+       */
+      private void addBlacklistData(BoardState board, ModelMap model) {
+            var bldata = new BlacklistData();
+            bldata.setBoardId(board.id);
+            var bl = machineController.readBlacklistFromDB(board);
+            bldata.setPresent(bl.isPresent());
+            bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
+            bldata.setSynched(machineController.isBlacklistSynched(board));
+
+            addBlacklist(model, bldata);
+            addUrl(model, BLACKLIST_URI,
+                        uri(admin().blacklistFetch(board.id, board.bmpId)));
+      }
+
+      /**
+       * Copy settings from the record out of the DB.
+       *
+       * @param br
+       *            Where the values are copied to. A partial state.
+       * @param bs
+       *            Where the values are copied from. A complete state from the
+       *            DB.
+       */
+      private void inflateBoardRecord(BoardRecord br, BoardState bs) {
+            // Inflate the coordinates
+            br.setId(bs.id);
+            br.setBmpId(bs.bmpId);
+            br.setX(bs.x);
+            br.setY(bs.y);
+            br.setZ(bs.z);
+            br.setCabinet(bs.cabinet);
+            br.setFrame(bs.frame);
+            br.setBoard(bs.board);
+            br.setIpAddress(bs.address);
+            br.setMachineName(bs.machineName);
+
+            // Inflate the other properties
+            br.setPowered(bs.getPower());
+            br.setLastPowerOff(bs.getPowerOffTime().orElse(null));
+            br.setLastPowerOn(bs.getPowerOnTime().orElse(null));
+            br.setJobId(bs.getAllocatedJob().orElse(null));
+            br.setReports(bs.getReports());
+      }
+
+      /**
+       * {@inheritDoc}
+       * <p>
+       * <strong>Implementation note:</strong> This is the baseline information
+       * that {@code admin/machine.jsp} needs.
+       */
+      @Override
+      @Action("getting a machine's configuration")
+      public ModelAndView machineManagement(ModelMap ignored) {
+            var mav = MACHINE_VIEW.view();
+            addMachineList(mav, getMachineNames(true));
+            var tagging = machineController.getMachineTagging();
+            tagging.forEach(
+                        t -> t.setUrl(uri(system().getMachineInfo(t.getName()))));
+            addMachineTagging(mav, tagging);
+            addMachineReports(mav, machineController.getMachineReports());
+            return addStandardContext(mav);
+      }
+
+      @Override
+      @Action("retagging a machine")
+      public ModelAndView retagMachine(String machineName, String newTags) {
+            var tags =
+                        stream(newTags.split(",")).map(String::strip).collect(toSet());
+            machineController.updateTags(machineName, tags);
+            log.info("retagged {} to have tags {}", machineName, tags);
+            return machineManagement(NULL_MAP);
+      }
+
+      @Override
+      @Action("disabling a machine")
+      public ModelAndView disableMachine(String machineName) {
+            machineController.setMachineState(machineName, false);
+            log.info("marked {} as out of service", machineName);
+            return machineManagement(NULL_MAP);
+      }
+
+      @Override
+      @Action("enabling a machine")
+      public ModelAndView enableMachine(String machineName) {
+            machineController.setMachineState(machineName, true);
+            log.info("marked {} as in service", machineName);
+            return machineManagement(NULL_MAP);
+      }
+
+      @Override
+      @Action("defining a machine")
+      public ModelAndView defineMachine(MultipartFile file) {
+            var machines = extractMachineDefinitions(file);
+            for (var m : machines) {
+                  machineDefiner.loadMachineDefinition(m);
+                  log.info("defined machine {}", m.getName());
+            }
+            var mav = machineManagement(NULL_MAP);
+            // Tailor with extra objects here
+            mav.addObject(DEFINED_MACHINES_OBJ, machines);
+            return mav;
+      }
+
+      private List<Machine> extractMachineDefinitions(MultipartFile file) {
+            try (var input = buffer(file.getInputStream())) {
+                  return machineDefiner.readMachineDefinitions(input);
+            } catch (IOException e) {
+                  throw new AdminException(
+                              "problem with processing file: " + e.getMessage());
+            }
+      }
 }

@@ -33,42 +33,42 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * parses the result.
  */
 public class GetFPGAResetStatus
-		extends BMPRequest<GetFPGAResetStatus.Response> {
+        extends BMPRequest<GetFPGAResetStatus.Response> {
 
-	/**
-	 * Constructs a message to get the reset status.
-	 *
-	 * @param board
-	 *            Which board to get the FPGA reset status of.
-	 */
-	public GetFPGAResetStatus(BMPBoard board) {
-		super(board, CMD_READ, IO_PORT_CONTROL_WORD, WORD_SIZE, WORD.value);
-	}
+    /**
+     * Constructs a message to get the reset status.
+     *
+     * @param board
+     *            Which board to get the FPGA reset status of.
+     */
+    public GetFPGAResetStatus(BMPBoard board) {
+        super(board, CMD_READ, IO_PORT_CONTROL_WORD, WORD_SIZE, WORD.value);
+    }
 
-	private static final int IO_PORT_CONTROL_WORD = 0x2009c034;
+    private static final int IO_PORT_CONTROL_WORD = 0x2009c034;
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	private static final int XIL_RST_BIT = 14;
+    private static final int XIL_RST_BIT = 14;
 
-	/** The response to a request to get the FPGA reset status of a board. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<Boolean> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read XIL_RST", CMD_READ, buffer);
-		}
+    /** The response to a request to get the FPGA reset status of a board. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<Boolean> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read XIL_RST", CMD_READ, buffer);
+        }
 
-		/**
-		 * {@return The reset status of the FPGA}
-		 */
-		@Override
-		protected Boolean parse(ByteBuffer buffer) {
-			int ioPortControlWord = buffer.order(LITTLE_ENDIAN).getInt();
-			return ((ioPortControlWord >> XIL_RST_BIT) & 1) != 0;
-		}
-	}
+        /**
+         * {@return The reset status of the FPGA}
+         */
+        @Override
+        protected Boolean parse(ByteBuffer buffer) {
+            int ioPortControlWord = buffer.order(LITTLE_ENDIAN).getInt();
+            return ((ioPortControlWord >> XIL_RST_BIT) & 1) != 0;
+        }
+    }
 }

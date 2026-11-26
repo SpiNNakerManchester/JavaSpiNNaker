@@ -18,6 +18,6 @@ limitations under the License.
     "-//Checkstyle//DTD SuppressionFilter Configuration 1.1//EN"
     "https://checkstyle.org/dtds/suppressions_1_1.dtd">
 <suppressions>
-	<!-- suppress files="[\/]TransceiverInterface.java" checks="FileLength" /-->
-	<suppress files="src/test" checks=".*" />
+    <!-- suppress files="[\/]TransceiverInterface.java" checks="FileLength" /-->
+    <suppress files="src/test" checks=".*" />
 </suppressions>
