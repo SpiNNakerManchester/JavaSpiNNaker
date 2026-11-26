@@ -38,98 +38,98 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * Do not use as a hash key.
  */
 public final class RecordingRegion {
-	/**
-	 * Size of the channel data on the machine.
-	 * <p>
-	 * 4 for {@code space}, 4 for {@code missing_flag + size}, 4 for
-	 * {@code data}
-	 */
-	public static final int SIZE = 12;
+    /**
+     * Size of the channel data on the machine.
+     * <p>
+     * 4 for {@code space}, 4 for {@code missing_flag + size}, 4 for
+     * {@code data}
+     */
+    public static final int SIZE = 12;
 
-	/**
-	 * Mask to get flag to indicate missing data.
-	 */
-	private static final long MISSING_MASK = 0x80000000L;
+    /**
+     * Mask to get flag to indicate missing data.
+     */
+    private static final long MISSING_MASK = 0x80000000L;
 
-	/**
-	 * Mask to get size.
-	 */
-	private static final long SIZE_MASK = 0x7FFFFFFFL;
+    /**
+     * Mask to get size.
+     */
+    private static final long SIZE_MASK = 0x7FFFFFFFL;
 
-	/**
-	 * The size of the space available. (32-bits; unsigned)
-	 * <p>
-	 * Not currently used significantly by the Java code
-	 */
-	public final long space;
+    /**
+     * The size of the space available. (32-bits; unsigned)
+     * <p>
+     * Not currently used significantly by the Java code
+     */
+    public final long space;
 
-	/**
-	 * If there is any missing information. (1-bit)
-	 */
-	public final boolean missing;
+    /**
+     * If there is any missing information. (1-bit)
+     */
+    public final boolean missing;
 
-	/**
-	 * The size of the recording in bytes. (31-bits; unsigned)
-	 */
-	public final long size;
+    /**
+     * The size of the recording in bytes. (31-bits; unsigned)
+     */
+    public final long size;
 
-	/**
-	 * The data memory address. (32-bits; unsigned)
-	 */
-	public final MemoryLocation data;
+    /**
+     * The data memory address. (32-bits; unsigned)
+     */
+    public final MemoryLocation data;
 
-	private RecordingRegion(ByteBuffer buffer) {
-		space = toUnsignedLong(buffer.getInt());
-		long missingAndSize = toUnsignedLong(buffer.getInt());
-		missing = (missingAndSize & MISSING_MASK) != 0;
-		size = missingAndSize & SIZE_MASK;
-		data = new MemoryLocation(buffer.getInt());
-	}
+    private RecordingRegion(ByteBuffer buffer) {
+        space = toUnsignedLong(buffer.getInt());
+        long missingAndSize = toUnsignedLong(buffer.getInt());
+        missing = (missingAndSize & MISSING_MASK) != 0;
+        size = missingAndSize & SIZE_MASK;
+        data = new MemoryLocation(buffer.getInt());
+    }
 
-	@Override
-	public String toString() {
-		var sb = new StringBuilder("Recording Channel:{")
-				.append("space:").append(space).append(",size:").append(size)
-				.append(",data:").append(data);
-		if (missing) {
-			sb.append(",missing");
-		}
-		return sb.append("}").toString();
-	}
+    @Override
+    public String toString() {
+        var sb = new StringBuilder("Recording Channel:{")
+                .append("space:").append(space).append(",size:").append(size)
+                .append(",data:").append(data);
+        if (missing) {
+            sb.append(",missing");
+        }
+        return sb.append("}").toString();
+    }
 
-	/**
-	 * Reads the recording regions from the machine.
-	 *
-	 * @param txrx
-	 *            Transceiver to read with
-	 * @param placement
-	 *            The core to read the data from
-	 * @return A list of recording region descriptors read from the machine, one
-	 *         per channel that the recording subsystem there knows about.
-	 * @throws IOException
-	 *             If the reading goes wrong
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If the data in the read goes wrong
-	 */
-	public static List<RecordingRegion> getRecordingRegionDescriptors(
-			TransceiverInterface txrx, Placement placement)
-			throws IOException, ProcessException, InterruptedException {
-		var recordingDataAddress = placement.getVertex().getBase();
-		// Get the size of the list of recordings
-		int nRegions = txrx.readMemory(placement.getScampCore(),
-				recordingDataAddress, WORD_SIZE).getInt();
+    /**
+     * Reads the recording regions from the machine.
+     *
+     * @param txrx
+     *            Transceiver to read with
+     * @param placement
+     *            The core to read the data from
+     * @return A list of recording region descriptors read from the machine, one
+     *         per channel that the recording subsystem there knows about.
+     * @throws IOException
+     *             If the reading goes wrong
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If the data in the read goes wrong
+     */
+    public static List<RecordingRegion> getRecordingRegionDescriptors(
+            TransceiverInterface txrx, Placement placement)
+            throws IOException, ProcessException, InterruptedException {
+        var recordingDataAddress = placement.getVertex().getBase();
+        // Get the size of the list of recordings
+        int nRegions = txrx.readMemory(placement.getScampCore(),
+                recordingDataAddress, WORD_SIZE).getInt();
 
-		// Read all the channels' metadata
-		var channelData = txrx.readMemory(placement.getScampCore(),
-				recordingDataAddress.add(WORD_SIZE), SIZE * nRegions);
+        // Read all the channels' metadata
+        var channelData = txrx.readMemory(placement.getScampCore(),
+                recordingDataAddress.add(WORD_SIZE), SIZE * nRegions);
 
-		// Parse the data
-		var regions = new ArrayList<RecordingRegion>(nRegions);
-		for (int i = 0; i < nRegions; i++) {
-			regions.add(new RecordingRegion(channelData));
-		}
-		return unmodifiableList(regions);
-	}
+        // Parse the data
+        var regions = new ArrayList<RecordingRegion>(nRegions);
+        for (int i = 0; i < nRegions; i++) {
+            regions.add(new RecordingRegion(channelData));
+        }
+        return unmodifiableList(regions);
+    }
 }

@@ -26,25 +26,25 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 
 public class TestPlacements {
 
-	@Test
-	public void testVertexJson() throws IOException {
-		var url = TestPlacements.class.getResource("/vertex.json");
-		var fromJson = createMapper().readValue(url, Vertex.class);
-		assertEquals(1612972372, fromJson.getBaseAddress());
-	}
+    @Test
+    public void testVertexJson() throws IOException {
+        var url = TestPlacements.class.getResource("/vertex.json");
+        var fromJson = createMapper().readValue(url, Vertex.class);
+        assertEquals(1612972372, fromJson.getBaseAddress());
+    }
 
-	@Test
-	public void testPlacementJson() throws IOException {
-		var url = TestPlacements.class.getResource("/placement.json");
-		var fromJson = createMapper().readValue(url, Placement.class);
-		assertEquals(2, fromJson.getY());
-	}
+    @Test
+    public void testPlacementJson() throws IOException {
+        var url = TestPlacements.class.getResource("/placement.json");
+        var fromJson = createMapper().readValue(url, Placement.class);
+        assertEquals(2, fromJson.getY());
+    }
 
-	@Test
-	public void testSimpleJson() throws IOException {
-		var url = TestPlacements.class.getResource("/simple.json");
-		var fromJson = createMapper().readValue(url, Placement.LIST);
-		assertEquals(2, fromJson.size());
-	}
+    @Test
+    public void testSimpleJson() throws IOException {
+        var url = TestPlacements.class.getResource("/simple.json");
+        var fromJson = createMapper().readValue(url, Placement.LIST);
+        assertEquals(2, fromJson.size());
+    }
 
 }
