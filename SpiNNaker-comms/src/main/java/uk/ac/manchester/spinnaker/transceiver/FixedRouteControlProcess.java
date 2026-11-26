@@ -29,100 +29,100 @@ import uk.ac.manchester.spinnaker.messages.scp.FixedRouteRead;
 
 /** Load a fixed route routing entry onto a chip, and read it back again. */
 class FixedRouteControlProcess extends TxrxProcess {
-	/**
-	 * Construct a process for loading fixed routes.
-	 *
-	 * @param connectionSelector
-	 *            How to select how to communicate.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	FixedRouteControlProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
-			RetryTracker retryTracker) {
-		super(connectionSelector, retryTracker);
-	}
+    /**
+     * Construct a process for loading fixed routes.
+     *
+     * @param connectionSelector
+     *            How to select how to communicate.
+     * @param retryTracker
+     *            Object used to track how many retries were used in an
+     *            operation. May be {@code null} if no suck tracking is
+     *            required.
+     */
+    FixedRouteControlProcess(
+            ConnectionSelector<? extends SCPConnection> connectionSelector,
+            RetryTracker retryTracker) {
+        super(connectionSelector, retryTracker);
+    }
 
-	/**
-	 * Load a fixed route routing entry onto a chip with a default application
-	 * ID.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip.
-	 * @param fixedRoute
-	 *            the fixed route entry
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
-			throws IOException, ProcessException, InterruptedException {
-		loadFixedRoute(chip, fixedRoute, DEFAULT);
-	}
+    /**
+     * Load a fixed route routing entry onto a chip with a default application
+     * ID.
+     *
+     * @param chip
+     *            The coordinates of the chip.
+     * @param fixedRoute
+     *            the fixed route entry
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the message.
+     */
+    void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
+            throws IOException, ProcessException, InterruptedException {
+        loadFixedRoute(chip, fixedRoute, DEFAULT);
+    }
 
-	/**
-	 * Load a fixed route routing entry onto a chip.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip.
-	 * @param fixedRoute
-	 *            the fixed route entry
-	 * @param appID
-	 *            The ID of the application with which to associate the routes.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
-			AppID appID)
-			throws IOException, ProcessException, InterruptedException {
-		int entry = fixedRoute.encode();
-		call(new FixedRouteInitialise(chip, entry, appID));
-	}
+    /**
+     * Load a fixed route routing entry onto a chip.
+     *
+     * @param chip
+     *            The coordinates of the chip.
+     * @param fixedRoute
+     *            the fixed route entry
+     * @param appID
+     *            The ID of the application with which to associate the routes.
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the message.
+     */
+    void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute,
+            AppID appID)
+            throws IOException, ProcessException, InterruptedException {
+        int entry = fixedRoute.encode();
+        call(new FixedRouteInitialise(chip, entry, appID));
+    }
 
-	/**
-	 * Read the current fixed route from a chip.
-	 *
-	 * @param chip
-	 *            The chip to read from
-	 * @return The route.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	RoutingEntry readFixedRoute(HasChipLocation chip)
-			throws IOException, ProcessException, InterruptedException {
-		return readFixedRoute(chip, DEFAULT);
-	}
+    /**
+     * Read the current fixed route from a chip.
+     *
+     * @param chip
+     *            The chip to read from
+     * @return The route.
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the message.
+     */
+    RoutingEntry readFixedRoute(HasChipLocation chip)
+            throws IOException, ProcessException, InterruptedException {
+        return readFixedRoute(chip, DEFAULT);
+    }
 
-	/**
-	 * Read the current fixed route from a chip.
-	 *
-	 * @param chip
-	 *            The chip to read from
-	 * @param appID
-	 *            The application ID associated with the route.
-	 * @return The route.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
-			throws IOException, ProcessException, InterruptedException {
-		return retrieve(new FixedRouteRead(chip, appID));
-	}
+    /**
+     * Read the current fixed route from a chip.
+     *
+     * @param chip
+     *            The chip to read from
+     * @param appID
+     *            The application ID associated with the route.
+     * @return The route.
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the message.
+     */
+    RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
+            throws IOException, ProcessException, InterruptedException {
+        return retrieve(new FixedRouteRead(chip, appID));
+    }
 }

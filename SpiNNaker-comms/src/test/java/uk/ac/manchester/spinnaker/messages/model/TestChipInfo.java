@@ -22,13 +22,13 @@ import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Test;
 
 class TestChipInfo {
-	private static final int SIZE = 256;
+    private static final int SIZE = 256;
 
-	@Test
-	void testCreateWithBlankBuffer() {
-		var b = ByteBuffer.allocate(SIZE);
-		var c = new ChipInfo(b);
-		assertEquals(0, c.getSDRAMClock());
-	}
+    @Test
+    void testCreateWithBlankBuffer() {
+        var b = ByteBuffer.allocate(SIZE);
+        var c = new ChipInfo(b);
+        assertEquals(0, c.getSDRAMClock());
+    }
 
 }

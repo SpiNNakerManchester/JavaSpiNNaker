@@ -20,32 +20,32 @@ import com.google.errorprone.annotations.Immutable;
 /** Information about a tag pool on an Ethernet-connected chip. */
 @Immutable
 public final class TagInfo {
-	/**
-	 * The timeout for transient IP tags (i.e., responses to SCP commands).
-	 */
-	public final IPTagTimeOutWaitTime transientTimeout;
+    /**
+     * The timeout for transient IP tags (i.e., responses to SCP commands).
+     */
+    public final IPTagTimeOutWaitTime transientTimeout;
 
-	/** The count of the IP tag pool size. */
-	public final int poolSize;
+    /** The count of the IP tag pool size. */
+    public final int poolSize;
 
-	/** The count of the number of fixed IP tag entries. */
-	public final int fixedSize;
+    /** The count of the number of fixed IP tag entries. */
+    public final int fixedSize;
 
-	/**
-	 * Constructs the Information about a tag pool.
-	 *
-	 * @param transientTimeout
-	 *            The timeout for transient IP tags (i.e., responses to SCP
-	 *            commands).
-	 * @param poolSize
-	 *            The count of the IP tag pool size.
-	 * @param fixedSize
-	 *            The count of the number of fixed IP tag entries.
-	 */
-	public TagInfo(IPTagTimeOutWaitTime transientTimeout, int poolSize,
-			int fixedSize) {
-		this.transientTimeout = transientTimeout;
-		this.poolSize = poolSize;
-		this.fixedSize = fixedSize;
-	}
+    /**
+     * Constructs the Information about a tag pool.
+     *
+     * @param transientTimeout
+     *            The timeout for transient IP tags (i.e., responses to SCP
+     *            commands).
+     * @param poolSize
+     *            The count of the IP tag pool size.
+     * @param fixedSize
+     *            The count of the number of fixed IP tag entries.
+     */
+    public TagInfo(IPTagTimeOutWaitTime transientTimeout, int poolSize,
+            int fixedSize) {
+        this.transientTimeout = transientTimeout;
+        this.poolSize = poolSize;
+        this.fixedSize = fixedSize;
+    }
 }

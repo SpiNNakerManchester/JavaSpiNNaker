@@ -34,67 +34,67 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code sark_cmd_read()} in {@code sark_base.c}.
  */
 public class ReadMemory extends SCPRequest<ReadMemory.Response> {
-	private static int validate(int size) {
-		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
-			throw new IllegalArgumentException(
-					"size must be in range 1 to 256");
-		}
-		return size;
-	}
+    private static int validate(int size) {
+        if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
+            throw new IllegalArgumentException(
+                    "size must be in range 1 to 256");
+        }
+        return size;
+    }
 
-	/**
-	 * Constructs a read request using this core.
-	 *
-	 * @param core
-	 *            the core to read via
-	 * @param address
-	 *            The positive base address to start the read from
-	 * @param size
-	 *            The number of bytes to read, between 1 and 256
-	 */
-	public ReadMemory(HasCoreLocation core, MemoryLocation address, int size) {
-		super(core, CMD_READ, address.address, validate(size),
-				efficientTransferUnit(address, size).value);
-	}
+    /**
+     * Constructs a read request using this core.
+     *
+     * @param core
+     *            the core to read via
+     * @param address
+     *            The positive base address to start the read from
+     * @param size
+     *            The number of bytes to read, between 1 and 256
+     */
+    public ReadMemory(HasCoreLocation core, MemoryLocation address, int size) {
+        super(core, CMD_READ, address.address, validate(size),
+                efficientTransferUnit(address, size).value);
+    }
 
-	/**
-	 * Constructs a read request using the scamp core on this chip.
-	 *
-	 * @param chip
-	 *            the chip to read via
-	 * @param address
-	 *            The positive base address to start the read from
-	 * @param size
-	 *            The number of bytes to read, between 1 and 256
-	 */
-	public ReadMemory(HasChipLocation chip, MemoryLocation address, int size) {
-		super(chip.getScampCore(), CMD_READ, address.address, validate(size),
-				efficientTransferUnit(address, size).value);
-	}
+    /**
+     * Constructs a read request using the scamp core on this chip.
+     *
+     * @param chip
+     *            the chip to read via
+     * @param address
+     *            The positive base address to start the read from
+     * @param size
+     *            The number of bytes to read, between 1 and 256
+     */
+    public ReadMemory(HasChipLocation chip, MemoryLocation address, int size) {
+        super(chip.getScampCore(), CMD_READ, address.address, validate(size),
+                efficientTransferUnit(address, size).value);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new Response(buffer);
+    }
 
-	/**
-	 * An SCP response to a request to read a region of memory on a chip. Note
-	 * that it is up to the caller to manage the buffer position of the returned
-	 * response if it is to be read from multiple times.
-	 */
-	protected final class Response
-			extends PayloadedResponse<ByteBuffer, RuntimeException> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read", CMD_READ, buffer);
-		}
+    /**
+     * An SCP response to a request to read a region of memory on a chip. Note
+     * that it is up to the caller to manage the buffer position of the returned
+     * response if it is to be read from multiple times.
+     */
+    protected final class Response
+            extends PayloadedResponse<ByteBuffer, RuntimeException> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+            super("Read", CMD_READ, buffer);
+        }
 
-		/**
-		 * {@return The data read, in a little-endian read-only buffer}
-		 */
-		@Override
-		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-		}
-	}
+        /**
+         * {@return The data read, in a little-endian read-only buffer}
+         */
+        @Override
+        protected ByteBuffer parse(ByteBuffer buffer) {
+            return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+        }
+    }
 }

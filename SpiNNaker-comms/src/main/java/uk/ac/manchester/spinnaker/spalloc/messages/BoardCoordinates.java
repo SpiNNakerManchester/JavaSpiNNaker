@@ -34,98 +34,98 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
  * it has a different serialization form for backward-compatibility.
  */
 @JsonPropertyOrder({
-	"x", "y", "z"
+    "x", "y", "z"
 })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 @Immutable
 public final class BoardCoordinates {
-	@ValidTriadX
-	private final int x;
+    @ValidTriadX
+    private final int x;
 
-	@ValidTriadY
-	private final int y;
+    @ValidTriadY
+    private final int y;
 
-	@ValidTriadZ
-	private final int z;
+    @ValidTriadZ
+    private final int z;
 
-	/**
-	 * Create with given coordinates.
-	 *
-	 * @param x
-	 *            the X coordinate
-	 * @param y
-	 *            the Y coordinate
-	 * @param z
-	 *            the Z coordinate
-	 */
-	public BoardCoordinates(
-			@JsonProperty(value = "x", defaultValue = "0") int x,
-			@JsonProperty(value = "y", defaultValue = "0") int y,
-			@JsonProperty(value = "z", defaultValue = "0") int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
+    /**
+     * Create with given coordinates.
+     *
+     * @param x
+     *            the X coordinate
+     * @param y
+     *            the Y coordinate
+     * @param z
+     *            the Z coordinate
+     */
+    public BoardCoordinates(
+            @JsonProperty(value = "x", defaultValue = "0") int x,
+            @JsonProperty(value = "y", defaultValue = "0") int y,
+            @JsonProperty(value = "z", defaultValue = "0") int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 
-	/**
-	 * Create with given coordinates.
-	 *
-	 * @param triad
-	 *            the coordinates in standard form
-	 */
-	public BoardCoordinates(TriadCoords triad) {
-		this.x = triad.x;
-		this.y = triad.y;
-		this.z = triad.z;
-	}
+    /**
+     * Create with given coordinates.
+     *
+     * @param triad
+     *            the coordinates in standard form
+     */
+    public BoardCoordinates(TriadCoords triad) {
+        this.x = triad.x;
+        this.y = triad.y;
+        this.z = triad.z;
+    }
 
-	/**
-	 * {@return the X coordinate}
-	 */
-	public int getX() {
-		return x;
-	}
+    /**
+     * {@return the X coordinate}
+     */
+    public int getX() {
+        return x;
+    }
 
-	/**
-	 * {@return the Y coordinate}
-	 */
-	public int getY() {
-		return y;
-	}
+    /**
+     * {@return the Y coordinate}
+     */
+    public int getY() {
+        return y;
+    }
 
-	/**
-	 * {@return the Z coordinate}
-	 */
-	public int getZ() {
-		return z;
-	}
+    /**
+     * {@return the Z coordinate}
+     */
+    public int getZ() {
+        return z;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof BoardCoordinates) {
-			var other = (BoardCoordinates) o;
-			return x == other.x && y == other.y && z == other.z;
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof BoardCoordinates) {
+            var other = (BoardCoordinates) o;
+            return x == other.x && y == other.y && z == other.z;
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return x * 1234567 + y * 56789 + z;
-	}
+    @Override
+    public int hashCode() {
+        return x * 1234567 + y * 56789 + z;
+    }
 
-	@Override
-	public String toString() {
-		return "Board@(" + x + "," + y + "," + z + ")";
-	}
+    @Override
+    public String toString() {
+        return "Board@(" + x + "," + y + "," + z + ")";
+    }
 
-	/**
-	 * Convert to the standard coordinate scheme.
-	 *
-	 * @return the coordinates
-	 */
-	public TriadCoords toStandardCoords() {
-		return new TriadCoords(x, y, z);
-	}
+    /**
+     * Convert to the standard coordinate scheme.
+     *
+     * @return the coordinates
+     */
+    public TriadCoords toStandardCoords() {
+        return new TriadCoords(x, y, z);
+    }
 }

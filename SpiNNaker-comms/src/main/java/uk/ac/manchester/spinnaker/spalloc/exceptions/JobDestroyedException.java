@@ -17,15 +17,15 @@ package uk.ac.manchester.spinnaker.spalloc.exceptions;
 
 /** Thrown when the job was destroyed while waiting for it to become ready. */
 public class JobDestroyedException extends Exception {
-	private static final long serialVersionUID = 6082560756316191208L;
+    private static final long serialVersionUID = 6082560756316191208L;
 
-	/**
-	 * Constructs ah  exception that was the job was destoryed and why.
-	 *
-	 * @param destroyReason
-	 *            The reason why the job was destroyed.
-	 */
-	public JobDestroyedException(String destroyReason) {
-		super(destroyReason);
-	}
+    /**
+     * Constructs ah  exception that was the job was destoryed and why.
+     *
+     * @param destroyReason
+     *            The reason why the job was destroyed.
+     */
+    public JobDestroyedException(String destroyReason) {
+        super(destroyReason);
+    }
 }

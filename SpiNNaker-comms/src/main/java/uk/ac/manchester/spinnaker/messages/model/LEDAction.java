@@ -17,19 +17,19 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 /** The SCP LED actions. */
 public enum LEDAction {
-	/** Do nothing. */
-	NO_CHANGE(0),
-	/** Toggle the LED status. */
-	TOGGLE(1),
-	/** Turn the LED off. */
-	OFF(2),
-	/** Turn the LED on. */
-	ON(3);
+    /** Do nothing. */
+    NO_CHANGE(0),
+    /** Toggle the LED status. */
+    TOGGLE(1),
+    /** Turn the LED off. */
+    OFF(2),
+    /** Turn the LED on. */
+    ON(3);
 
-	/** The SCAMP-encoded value. */
-	public final byte value;
+    /** The SCAMP-encoded value. */
+    public final byte value;
 
-	LEDAction(int value) {
-		this.value = (byte) value;
-	}
+    LEDAction(int value) {
+        this.value = (byte) value;
+    }
 }

@@ -25,97 +25,97 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
  * An EIEIO message containing a command.
  */
 public class EIEIOCommandMessage
-		implements EIEIOMessage<EIEIOCommandMessage.Header> {
-	// Must be power of 2 (minus 1)
-	private static final int MAX_COMMAND = 0x3FFF;
+        implements EIEIOMessage<EIEIOCommandMessage.Header> {
+    // Must be power of 2 (minus 1)
+    private static final int MAX_COMMAND = 0x3FFF;
 
-	private static final int FLAG1_BIT = 15;
+    private static final int FLAG1_BIT = 15;
 
-	private static final int FLAG2_BIT = 14;
+    private static final int FLAG2_BIT = 14;
 
-	/** The header of the message. */
-	private final Header header;
+    /** The header of the message. */
+    private final Header header;
 
-	/**
-	 * Constructor used when deserializing.
-	 *
-	 * @param buffer
-	 *            Where to deserialize the message from.
-	 */
-	EIEIOCommandMessage(ByteBuffer buffer) {
-		this.header = new Header(buffer);
-	}
+    /**
+     * Constructor used when deserializing.
+     *
+     * @param buffer
+     *            Where to deserialize the message from.
+     */
+    EIEIOCommandMessage(ByteBuffer buffer) {
+        this.header = new Header(buffer);
+    }
 
-	/**
-	 * Constructs an EIEIO message containing a command.
-	 *
-	 * @param command
-	 *            The command in the message.
-	 */
-	public EIEIOCommandMessage(EIEIOCommand command) {
-		this.header = new Header(command);
-	}
+    /**
+     * Constructs an EIEIO message containing a command.
+     *
+     * @param command
+     *            The command in the message.
+     */
+    public EIEIOCommandMessage(EIEIOCommand command) {
+        this.header = new Header(command);
+    }
 
-	static EIEIOCommand peekCommand(ByteBuffer buffer) {
-		return EIEIOCommandID.get(buffer.getShort(0) & MAX_COMMAND);
-	}
+    static EIEIOCommand peekCommand(ByteBuffer buffer) {
+        return EIEIOCommandID.get(buffer.getShort(0) & MAX_COMMAND);
+    }
 
-	@Override
-	@OverridingMethodsMustInvokeSuper
-	public void addToBuffer(ByteBuffer buffer) {
-		header.addToBuffer(buffer);
-	}
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public void addToBuffer(ByteBuffer buffer) {
+        header.addToBuffer(buffer);
+    }
 
-	@Override
-	public int minPacketLength() {
-		return 2;
-	}
+    @Override
+    public int minPacketLength() {
+        return 2;
+    }
 
-	@Override
-	public Header getHeader() {
-		return header;
-	}
+    @Override
+    public Header getHeader() {
+        return header;
+    }
 
-	/** EIEIO header for command packets. */
-	public static class Header implements EIEIOHeader {
-		/** The command ID in this header. */
-		public final EIEIOCommand command;
+    /** EIEIO header for command packets. */
+    public static class Header implements EIEIOHeader {
+        /** The command ID in this header. */
+        public final EIEIOCommand command;
 
-		/**
-		 * Create a new command header.
-		 *
-		 * @param command
-		 *            The command.
-		 */
-		public Header(EIEIOCommand command) {
-			this.command = requireNonNull(command, "must supply a command");
-		}
+        /**
+         * Create a new command header.
+         *
+         * @param command
+         *            The command.
+         */
+        public Header(EIEIOCommand command) {
+            this.command = requireNonNull(command, "must supply a command");
+        }
 
-		/**
-		 * Create a new command header.
-		 *
-		 * @param command
-		 *            The encoded command.
-		 */
-		public Header(int command) {
-			this.command = EIEIOCommandID.get(command);
-		}
+        /**
+         * Create a new command header.
+         *
+         * @param command
+         *            The encoded command.
+         */
+        public Header(int command) {
+            this.command = EIEIOCommandID.get(command);
+        }
 
-		/**
-		 * Read an EIEIO command header from a buffer.
-		 *
-		 * @param buffer
-		 *            The buffer to read the data from
-		 */
-		private Header(ByteBuffer buffer) {
-			command = EIEIOCommandID.get(buffer.getShort() & MAX_COMMAND);
-		}
+        /**
+         * Read an EIEIO command header from a buffer.
+         *
+         * @param buffer
+         *            The buffer to read the data from
+         */
+        private Header(ByteBuffer buffer) {
+            command = EIEIOCommandID.get(buffer.getShort() & MAX_COMMAND);
+        }
 
-		@Override
-		public void addToBuffer(ByteBuffer buffer) {
-			short value = (short) (0 << FLAG1_BIT | 1 << FLAG2_BIT
-					| command.getValue());
-			buffer.putShort(value);
-		}
-	}
+        @Override
+        public void addToBuffer(ByteBuffer buffer) {
+            short value = (short) (0 << FLAG1_BIT | 1 << FLAG2_BIT
+                    | command.getValue());
+            buffer.putShort(value);
+        }
+    }
 }

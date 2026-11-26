@@ -30,19 +30,19 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ClearReinjectionQueue extends ReinjectorRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to clear reinjection queue.
-	 *
-	 * @param core
-	 *            The coordinates of the monitor core.
-	 */
-	public ClearReinjectionQueue(HasCoreLocation core) {
-		super(core, CLEAR);
-	}
+    /**
+     * Constructs a request to clear reinjection queue.
+     *
+     * @param core
+     *            The coordinates of the monitor core.
+     */
+    public ClearReinjectionQueue(HasCoreLocation core) {
+        super(core, CLEAR);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Clear reinjection queue", CLEAR, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Clear reinjection queue", CLEAR, buffer);
+    }
 }

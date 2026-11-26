@@ -23,42 +23,42 @@ package uk.ac.manchester.spinnaker.messages.model;
  * FPGA SATA Links</a> datasheet.
  */
 public enum FPGA {
-	/** The first FPGA. Handles east and south. */
-	FPGA_E_S("0", 0, 1),
-	/** The second FPGA. Handles south-west and west. */
-	FPGA_SW_W("1", 1, 2),
-	/** The third FPGA. Handles north and north-east. */
-	FPGA_N_NE("2", 2, 4),
-	/**
-	 * All three FPGAs. Note that only a subset of APIs that handle FPGAs will
-	 * accept this.
-	 */
-	FPGA_ALL("0-2", 3, 7);
+    /** The first FPGA. Handles east and south. */
+    FPGA_E_S("0", 0, 1),
+    /** The second FPGA. Handles south-west and west. */
+    FPGA_SW_W("1", 1, 2),
+    /** The third FPGA. Handles north and north-east. */
+    FPGA_N_NE("2", 2, 4),
+    /**
+     * All three FPGAs. Note that only a subset of APIs that handle FPGAs will
+     * accept this.
+     */
+    FPGA_ALL("0-2", 3, 7);
 
-	/** The "name" of the FPGA. */
-	public final String name;
+    /** The "name" of the FPGA. */
+    public final String name;
 
-	/** The FPGA identifier in protocol terms. */
-	public final int value;
+    /** The FPGA identifier in protocol terms. */
+    public final int value;
 
-	/** The bit encoding for read and write requests. */
-	public final int bits;
+    /** The bit encoding for read and write requests. */
+    public final int bits;
 
-	FPGA(String name, int value, int bits) {
-		this.name = name;
-		this.value = value;
-		this.bits = bits;
-	}
+    FPGA(String name, int value, int bits) {
+        this.name = name;
+        this.value = value;
+        this.bits = bits;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Override
+    public String toString() {
+        return name;
+    }
 
-	/**
-	 * {@return Whether this identifies a single FPGA}
-	 */
-	public boolean isSingleFPGA() {
-		return this != FPGA_ALL;
-	}
+    /**
+     * {@return Whether this identifies a single FPGA}
+     */
+    public boolean isSingleFPGA() {
+        return this != FPGA_ALL;
+    }
 }

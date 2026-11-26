@@ -27,96 +27,96 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 abstract class SupportUtils {
-	private SupportUtils() {
-	}
+    private SupportUtils() {
+    }
 
-	private static final long MIN_TIMEOUT = 100;
+    private static final long MIN_TIMEOUT = 100;
 
-	private static final long MAX_TIMEOUT = 400;
+    private static final long MAX_TIMEOUT = 400;
 
-	static final void assertTimeout(long before, long after) {
-		long delta = after - before;
-		assertTrue(delta > MIN_TIMEOUT && delta < MAX_TIMEOUT,
-				"measured timeout must be between 0.1s and 0.4s (measured "
-						+ delta + "ms)");
-	}
+    static final void assertTimeout(long before, long after) {
+        long delta = after - before;
+        assertTrue(delta > MIN_TIMEOUT && delta < MAX_TIMEOUT,
+                "measured timeout must be between 0.1s and 0.4s (measured "
+                        + delta + "ms)");
+    }
 
-	/** Overall test timeout. */
-	static final Duration OVERALL_TEST_TIMEOUT = Duration.ofSeconds(10);
+    /** Overall test timeout. */
+    static final Duration OVERALL_TEST_TIMEOUT = Duration.ofSeconds(10);
 
-	/** Requested timeout. */
-	static final int TIMEOUT = 101;
+    /** Requested timeout. */
+    static final int TIMEOUT = 101;
 
-	interface IConnection extends Closeable {
-		default void send(String jsonString) {
-			send(new JSONObject(jsonString));
-		}
+    interface IConnection extends Closeable {
+        default void send(String jsonString) {
+            send(new JSONObject(jsonString));
+        }
 
-		void send(JSONObject json);
+        void send(JSONObject json);
 
-		JSONObject recv() throws JSONException, IOException;
-	}
+        JSONObject recv() throws JSONException, IOException;
+    }
 
-	interface IServer extends AutoCloseable {
-		void advancedEmulationMode(BlockingDeque<String> send,
-				BlockingDeque<JSONObject> received,
-				BlockingDeque<JSONObject> keepalives,
-				MockServer.Joinable bgAccept) throws InterruptedException;
+    interface IServer extends AutoCloseable {
+        void advancedEmulationMode(BlockingDeque<String> send,
+                BlockingDeque<JSONObject> received,
+                BlockingDeque<JSONObject> keepalives,
+                MockServer.Joinable bgAccept) throws InterruptedException;
 
-		int getPort();
-	}
+        int getPort();
+    }
 
-	interface WithConn {
-		void act(IServer s, SpallocClient c, MockServer.Joinable bgAccept)
-				throws Exception;
-	}
+    interface WithConn {
+        void act(IServer s, SpallocClient c, MockServer.Joinable bgAccept)
+                throws Exception;
+    }
 
-	static void withConnection(WithConn op) throws Exception {
-		try (var s = new MockServer();
-				var c = new SpallocClient("localhost", s.getPort(), null)) {
-			var bgAccept = s.backgroundAccept(true);
-			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-				op.act(s, c, bgAccept);
-			});
-			bgAccept.flushjoin();
-		}
-	}
+    static void withConnection(WithConn op) throws Exception {
+        try (var s = new MockServer();
+                var c = new SpallocClient("localhost", s.getPort(), null)) {
+            var bgAccept = s.backgroundAccept(true);
+            assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
+                op.act(s, c, bgAccept);
+            });
+            bgAccept.flushjoin();
+        }
+    }
 
-	interface WithConnConn {
-		void act(SpallocClient client, IConnection serviceSideConnection)
-				throws Exception;
-	}
+    interface WithConnConn {
+        void act(SpallocClient client, IConnection serviceSideConnection)
+                throws Exception;
+    }
 
-	static void withConnectedConnection(WithConnConn op) throws Exception {
-		try (var s = new MockServer();
-				var c = new SpallocClient("localhost", s.getPort(), null)) {
-			var bgAccept = s.backgroundAccept(true);
-			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-				c.connect();
-				try (var sc = bgAccept.join()) {
-					op.act(c, sc);
-				}
-			});
-			bgAccept.flushjoin();
-		}
-	}
+    static void withConnectedConnection(WithConnConn op) throws Exception {
+        try (var s = new MockServer();
+                var c = new SpallocClient("localhost", s.getPort(), null)) {
+            var bgAccept = s.backgroundAccept(true);
+            assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
+                c.connect();
+                try (var sc = bgAccept.join()) {
+                    op.act(c, sc);
+                }
+            });
+            bgAccept.flushjoin();
+        }
+    }
 
-	interface WithAdvancedConn {
-		void act(SpallocClient c) throws Exception;
-	}
+    interface WithAdvancedConn {
+        void act(SpallocClient c) throws Exception;
+    }
 
-	static void withAdvancedConnection(BlockingDeque<String> send,
-			BlockingDeque<JSONObject> received,
-			BlockingDeque<JSONObject> keepalives, WithAdvancedConn op)
-			throws Exception {
-		try (var s = new MockServer();
-				var c = new SpallocClient("localhost", s.getPort(), null)) {
-			var bgAccept = s.backgroundAccept(false);
-			s.advancedEmulationMode(send, received, keepalives, bgAccept);
-			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-				op.act(c);
-			});
-			bgAccept.flushjoin();
-		}
-	}
+    static void withAdvancedConnection(BlockingDeque<String> send,
+            BlockingDeque<JSONObject> received,
+            BlockingDeque<JSONObject> keepalives, WithAdvancedConn op)
+            throws Exception {
+        try (var s = new MockServer();
+                var c = new SpallocClient("localhost", s.getPort(), null)) {
+            var bgAccept = s.backgroundAccept(false);
+            s.advancedEmulationMode(send, received, keepalives, bgAccept);
+            assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
+                op.act(c);
+            });
+            bgAccept.flushjoin();
+        }
+    }
 }

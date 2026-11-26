@@ -29,20 +29,20 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  * @see WhereIs The basic result type associated with the request
  */
 public class WhereIsMachineBoardLogicalCommand extends Command<Integer> {
-	/**
-	 * Create a request to locate a board on a machine.
-	 *
-	 * @param machine
-	 *            The machine to request about.
-	 * @param coords
-	 *            The logical coordinates of the board to ask about.
-	 */
-	public WhereIsMachineBoardLogicalCommand(@NotBlank String machine,
-			@Valid TriadCoords coords) {
-		super("where_is");
-		addKwArg("machine", machine);
-		addKwArg("x", coords.x);
-		addKwArg("y", coords.y);
-		addKwArg("z", coords.z);
-	}
+    /**
+     * Create a request to locate a board on a machine.
+     *
+     * @param machine
+     *            The machine to request about.
+     * @param coords
+     *            The logical coordinates of the board to ask about.
+     */
+    public WhereIsMachineBoardLogicalCommand(@NotBlank String machine,
+            @Valid TriadCoords coords) {
+        super("where_is");
+        addKwArg("machine", machine);
+        addKwArg("x", coords.x);
+        addKwArg("y", coords.y);
+        addKwArg("z", coords.z);
+    }
 }

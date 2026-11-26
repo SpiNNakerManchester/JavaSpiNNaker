@@ -33,48 +33,48 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
  */
 //TODO Seal in 17
 public abstract class RouterTableRequest extends SCPRequest<EmptyResponse> {
-	private final RouterTableCommand cmd;
+    private final RouterTableCommand cmd;
 
-	/**
-	 * Construct a command message to an extra monitor control core
-	 * to manipulate the router table.
-	 *
-	 * @param core
-	 *            Where to send the request.
-	 * @param command
-	 *            What command we are invoking.
-	 */
-	RouterTableRequest(HasCoreLocation core, RouterTableCommand command) {
-		super(header(core), command, 0, 0, 0, NO_DATA);
-		cmd = command;
-	}
+    /**
+     * Construct a command message to an extra monitor control core
+     * to manipulate the router table.
+     *
+     * @param core
+     *            Where to send the request.
+     * @param command
+     *            What command we are invoking.
+     */
+    RouterTableRequest(HasCoreLocation core, RouterTableCommand command) {
+        super(header(core), command, 0, 0, 0, NO_DATA);
+        cmd = command;
+    }
 
-	/**
-	 * Describe the requested operation.
-	 *
-	 * @return A human-readable description of the operation, for failure
-	 *         reporting.
-	 */
-	@ForOverride
-	abstract String describe();
+    /**
+     * Describe the requested operation.
+     *
+     * @return A human-readable description of the operation, for failure
+     *         reporting.
+     */
+    @ForOverride
+    abstract String describe();
 
-	@Override
-	public final EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse(describe(), cmd, buffer);
-	}
+    @Override
+    public final EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse(describe(), cmd, buffer);
+    }
 
-	/**
-	 * Make a variant of SDP that talks to the packet reinjector for doing
-	 * saving and loading of multicast router tables.
-	 *
-	 * @param core
-	 *            The SpiNNaker core that we want to talk to. Should be running
-	 *            the extra monitor core.
-	 * @return The SDP header.
-	 */
-	static final SDPHeader header(HasCoreLocation core) {
-		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core),
-				GATHERER_DATA_SPEED_UP);
-	}
+    /**
+     * Make a variant of SDP that talks to the packet reinjector for doing
+     * saving and loading of multicast router tables.
+     *
+     * @param core
+     *            The SpiNNaker core that we want to talk to. Should be running
+     *            the extra monitor core.
+     * @return The SDP header.
+     */
+    static final SDPHeader header(HasCoreLocation core) {
+        return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core),
+                GATHERER_DATA_SPEED_UP);
+    }
 }

@@ -24,17 +24,17 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(SCPCommand.class)
 enum SerialFlashOp {
-	/** Read from the Serial Flash. */
-	READ(0),
-	/** write to the Serial Flash. */
-	WRITE(1),
-	/** Get the CRC of Serial Flash. */
-	CRC(2);
+    /** Read from the Serial Flash. */
+    READ(0),
+    /** write to the Serial Flash. */
+    WRITE(1),
+    /** Get the CRC of Serial Flash. */
+    CRC(2);
 
-	/** The raw BMP value. */
-	public final byte value;
+    /** The raw BMP value. */
+    public final byte value;
 
-	SerialFlashOp(int value) {
-		this.value = (byte) value;
-	}
+    SerialFlashOp(int value) {
+        this.value = (byte) value;
+    }
 }

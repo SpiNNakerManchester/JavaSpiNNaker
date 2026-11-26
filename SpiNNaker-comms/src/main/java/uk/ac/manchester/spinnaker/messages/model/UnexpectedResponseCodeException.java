@@ -24,46 +24,46 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
  * current operation.
  */
 public class UnexpectedResponseCodeException extends Exception {
-	private static final long serialVersionUID = 7864690081287752744L;
+    private static final long serialVersionUID = 7864690081287752744L;
 
-	/** The response that cause this exception to be thrown, if known. */
-	public final SCPResult response;
+    /** The response that cause this exception to be thrown, if known. */
+    public final SCPResult response;
 
-	/**
-	 * Special constructor for one-way operations.
-	 *
-	 * @param operation
-	 *            The operation being performed
-	 * @param command
-	 *            The command being executed
-	 * @param response
-	 *            The response received in error
-	 * @param ignored
-	 *            Ignored
-	 */
-	public UnexpectedResponseCodeException(String operation, Enum<?> command,
-			SCPResult response, Object ignored) {
-		super(format("Unexpected response %s while performing one-way "
-				+ "operation %s using command %s", response, operation,
-				command));
-		this.response = response;
-	}
+    /**
+     * Special constructor for one-way operations.
+     *
+     * @param operation
+     *            The operation being performed
+     * @param command
+     *            The command being executed
+     * @param response
+     *            The response received in error
+     * @param ignored
+     *            Ignored
+     */
+    public UnexpectedResponseCodeException(String operation, Enum<?> command,
+            SCPResult response, Object ignored) {
+        super(format("Unexpected response %s while performing one-way "
+                + "operation %s using command %s", response, operation,
+                command));
+        this.response = response;
+    }
 
-	/**
-	 * Constructs exception for an unexpected response.
-	 *
-	 * @param operation
-	 *            The operation being performed
-	 * @param command
-	 *            The command being executed
-	 * @param response
-	 *            The response received in error
-	 */
-	public UnexpectedResponseCodeException(String operation, Enum<?> command,
-			SCPResult response) {
-		super(format("Unexpected response %s while performing operation %s "
-				+ "using command %s", response.name(), operation,
-				command.name()));
-		this.response = response;
-	}
+    /**
+     * Constructs exception for an unexpected response.
+     *
+     * @param operation
+     *            The operation being performed
+     * @param command
+     *            The command being executed
+     * @param response
+     *            The response received in error
+     */
+    public UnexpectedResponseCodeException(String operation, Enum<?> command,
+            SCPResult response) {
+        super(format("Unexpected response %s while performing operation %s "
+                + "using command %s", response.name(), operation,
+                command.name()));
+        this.response = response;
+    }
 }

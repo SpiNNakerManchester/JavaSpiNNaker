@@ -35,52 +35,52 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code cmd_rtr()} in {@code scamp-cmd.c}).
  */
 public class RouterInit extends SCPRequest<EmptyResponse> {
-	/** One reserved for SCAMP. */
-	private static final int MAX_ENTRIES = 1023;
+    /** One reserved for SCAMP. */
+    private static final int MAX_ENTRIES = 1023;
 
-	/**
-	 * Construct a request to initialise the router.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip to clear the router of
-	 * @param numEntries
-	 *            The number of entries in the table (more than 0)
-	 * @param tableAddress
-	 *            The allocated address containing the data to init the router
-	 *            from.
-	 * @param baseIndex
-	 *            The base index in the router table where the entries are to be
-	 *            placed.
-	 * @param appID
-	 *            The ID of the application with which to associate the routes.
-	 * @throws IllegalArgumentException
-	 *             If a bad address or entry count is given
-	 */
-	public RouterInit(HasChipLocation chip, int numEntries,
-			MemoryLocation tableAddress, int baseIndex, AppID appID) {
-		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
-				tableAddress.address, baseIndex);
-		if (baseIndex < 0) {
-			throw new IllegalArgumentException(
-					"baseIndex must not be negative");
-		}
-	}
+    /**
+     * Construct a request to initialise the router.
+     *
+     * @param chip
+     *            The coordinates of the chip to clear the router of
+     * @param numEntries
+     *            The number of entries in the table (more than 0)
+     * @param tableAddress
+     *            The allocated address containing the data to init the router
+     *            from.
+     * @param baseIndex
+     *            The base index in the router table where the entries are to be
+     *            placed.
+     * @param appID
+     *            The ID of the application with which to associate the routes.
+     * @throws IllegalArgumentException
+     *             If a bad address or entry count is given
+     */
+    public RouterInit(HasChipLocation chip, int numEntries,
+            MemoryLocation tableAddress, int baseIndex, AppID appID) {
+        super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
+                tableAddress.address, baseIndex);
+        if (baseIndex < 0) {
+            throw new IllegalArgumentException(
+                    "baseIndex must not be negative");
+        }
+    }
 
-	private static int argument1(int numEntries, AppID appID) {
-		if (numEntries < 1) {
-			throw new IllegalArgumentException(
-					"numEntries must be more than 0");
-		} else if (numEntries > MAX_ENTRIES) {
-			throw new IllegalArgumentException(
-					"numEntries must be no more than " + MAX_ENTRIES);
-		}
-		return (numEntries << HALF1) | (appID.appID << BYTE1)
-				| (LOAD.value << BYTE0);
-	}
+    private static int argument1(int numEntries, AppID appID) {
+        if (numEntries < 1) {
+            throw new IllegalArgumentException(
+                    "numEntries must be more than 0");
+        } else if (numEntries > MAX_ENTRIES) {
+            throw new IllegalArgumentException(
+                    "numEntries must be no more than " + MAX_ENTRIES);
+        }
+        return (numEntries << HALF1) | (appID.appID << BYTE1)
+                | (LOAD.value << BYTE0);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Router Init", CMD_RTR, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Router Init", CMD_RTR, buffer);
+    }
 }

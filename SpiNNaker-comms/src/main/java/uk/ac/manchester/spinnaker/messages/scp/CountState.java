@@ -38,61 +38,61 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * point-to-point signals (and the only one exposed to users).
  */
 public class CountState extends SCPRequest<CountState.Response> {
-	/* enum send_reg_ctrl */
-	private static final int APP_STAT = 1;
+    /* enum send_reg_ctrl */
+    private static final int APP_STAT = 1;
 
-	/* enum state_coalesce_mode */
-	private static final int MODE_SUM = 2;
+    /* enum state_coalesce_mode */
+    private static final int MODE_SUM = 2;
 
-	private static final int OP_SHIFT = 22;
+    private static final int OP_SHIFT = 22;
 
-	private static final int MODE_SHIFT = 20;
+    private static final int MODE_SHIFT = 20;
 
-	/**
-	 * Constructs a request to get a count of the cores in a particular state.
-	 *
-	 * @param appID
-	 *            The ID of the application to count states of
-	 * @param state
-	 *            The state to count
-	 */
-	public CountState(AppID appID, CPUState state) {
-		super(BOOT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
-				data(appID, state), ALL_CORE_SIGNAL_MASK);
-	}
+    /**
+     * Constructs a request to get a count of the cores in a particular state.
+     *
+     * @param appID
+     *            The ID of the application to count states of
+     * @param state
+     *            The state to count
+     */
+    public CountState(AppID appID, CPUState state) {
+        super(BOOT_MONITOR_CORE, CMD_SIG, POINT_TO_POINT.value,
+                data(appID, state), ALL_CORE_SIGNAL_MASK);
+    }
 
-	// @formatter:off
-	/*
-	 * [  31-28 | 27-26 |  25-24 | 23-22 | 21-20 | 19-16 |     15-8 |    7-0 ]
-	 * [ unused | level | unused |    op |  mode | state | app_mask | app_id ]
-	 */
-	// @formatter:on
-	private static int data(AppID appId, CPUState state) {
-		int data = (APP_MASK << BYTE1) | (appId.appID << BYTE0);
-		data |= APP_STAT << OP_SHIFT;
-		data |= MODE_SUM << MODE_SHIFT;
-		data |= state.value << BYTE2;
-		return data;
-	}
+    // @formatter:off
+    /*
+     * [  31-28 | 27-26 |  25-24 | 23-22 | 21-20 | 19-16 |     15-8 |    7-0 ]
+     * [ unused | level | unused |    op |  mode | state | app_mask | app_id ]
+     */
+    // @formatter:on
+    private static int data(AppID appId, CPUState state) {
+        int data = (APP_MASK << BYTE1) | (appId.appID << BYTE0);
+        data |= APP_STAT << OP_SHIFT;
+        data |= MODE_SUM << MODE_SHIFT;
+        data |= state.value << BYTE2;
+        return data;
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new Response(buffer);
+    }
 
-	/**
-	 * An SCP response to a request for the number of cores in a given state.
-	 */
-	protected static final class Response
-			extends PayloadedResponse<Integer, RuntimeException> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("CountState", CMD_SIG, buffer);
-		}
+    /**
+     * An SCP response to a request for the number of cores in a given state.
+     */
+    protected static final class Response
+            extends PayloadedResponse<Integer, RuntimeException> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+            super("CountState", CMD_SIG, buffer);
+        }
 
-		@Override
-		protected Integer parse(ByteBuffer buffer) {
-			return buffer.getInt();
-		}
-	}
+        @Override
+        protected Integer parse(ByteBuffer buffer) {
+            return buffer.getInt();
+        }
+    }
 }

@@ -30,20 +30,20 @@ import uk.ac.manchester.spinnaker.machine.board.PhysicalCoords;
  * @see WhereIs The basic result type associated with the request
  */
 public class WhereIsMachineBoardPhysicalCommand extends Command<Integer> {
-	/**
-	 * Create a request to locate a board on a machine.
-	 *
-	 * @param machine
-	 *            The machine to request about.
-	 * @param coords
-	 *            The physical coordinates of the board to ask about.
-	 */
-	public WhereIsMachineBoardPhysicalCommand(@NotBlank String machine,
-			@Valid @NotNull PhysicalCoords coords) {
-		super("where_is");
-		addKwArg("machine", machine);
-		addKwArg("cabinet", coords.c);
-		addKwArg("frame", coords.f);
-		addKwArg("board", coords.b);
-	}
+    /**
+     * Create a request to locate a board on a machine.
+     *
+     * @param machine
+     *            The machine to request about.
+     * @param coords
+     *            The physical coordinates of the board to ask about.
+     */
+    public WhereIsMachineBoardPhysicalCommand(@NotBlank String machine,
+            @Valid @NotNull PhysicalCoords coords) {
+        super("where_is");
+        addKwArg("machine", machine);
+        addKwArg("cabinet", coords.c);
+        addKwArg("frame", coords.f);
+        addKwArg("board", coords.b);
+    }
 }

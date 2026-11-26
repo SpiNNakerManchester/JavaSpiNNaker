@@ -30,31 +30,31 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * Calls {@code sf_write()} in {@code bmp_ssp.c}.
  */
 public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
-	/** The size of chunk that will be transferred. Fixed. */
-	public static final int FLASH_CHUNK_SIZE = 256;
+    /** The size of chunk that will be transferred. Fixed. */
+    public static final int FLASH_CHUNK_SIZE = 256;
 
-	/**
-	 * Construct a request to write to serial flash on a BMP.
-	 *
-	 * @param board
-	 *            the board with the BMP to write the flash of
-	 * @param baseAddress
-	 *            The positive base address where the chunk is located
-	 * @param data
-	 *            The data to transfer; up to {@link #FLASH_CHUNK_SIZE} bytes.
-	 *            The position and limit of the buffer will not be updated by
-	 *            this constructor.
-	 */
-	public WriteSerialFlash(BMPBoard board, MemoryLocation baseAddress,
-			ByteBuffer data) {
-		super(board, CMD_BMP_SF, baseAddress.address, FLASH_CHUNK_SIZE,
-				WRITE.value, limitSlice(data, FLASH_CHUNK_SIZE));
-	}
+    /**
+     * Construct a request to write to serial flash on a BMP.
+     *
+     * @param board
+     *            the board with the BMP to write the flash of
+     * @param baseAddress
+     *            The positive base address where the chunk is located
+     * @param data
+     *            The data to transfer; up to {@link #FLASH_CHUNK_SIZE} bytes.
+     *            The position and limit of the buffer will not be updated by
+     *            this constructor.
+     */
+    public WriteSerialFlash(BMPBoard board, MemoryLocation baseAddress,
+            ByteBuffer data) {
+        super(board, CMD_BMP_SF, baseAddress.address, FLASH_CHUNK_SIZE,
+                WRITE.value, limitSlice(data, FLASH_CHUNK_SIZE));
+    }
 
-	@Override
-	public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPRequest.BMPResponse("Transfer chunk to flash",
-				CMD_BMP_SF, buffer);
-	}
+    @Override
+    public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
+            throws Exception {
+        return new BMPRequest.BMPResponse("Transfer chunk to flash",
+                CMD_BMP_SF, buffer);
+    }
 }

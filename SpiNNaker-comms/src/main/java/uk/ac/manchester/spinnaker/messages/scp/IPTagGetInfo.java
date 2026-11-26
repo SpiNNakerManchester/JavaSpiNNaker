@@ -37,39 +37,39 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * @see IPTagGet
  */
 public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
-	private static final int IPTAG_MAX = 255;
+    private static final int IPTAG_MAX = 255;
 
-	/**
-	 * A request information about IP tags for this Chip.
-	 *
-	 * @param chip
-	 *            The chip to query for information.
-	 */
-	public IPTagGetInfo(HasChipLocation chip) {
-		super(chip.getScampCore(), CMD_IPTAG, TTO.value << COMMAND_FIELD,
-				IPTAG_MAX);
-	}
+    /**
+     * A request information about IP tags for this Chip.
+     *
+     * @param chip
+     *            The chip to query for information.
+     */
+    public IPTagGetInfo(HasChipLocation chip) {
+        super(chip.getScampCore(), CMD_IPTAG, TTO.value << COMMAND_FIELD,
+                IPTAG_MAX);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new IPTagGetInfo.Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new IPTagGetInfo.Response(buffer);
+    }
 
-	/** An SCP response to a request for information about IP tags. */
-	protected final class Response
-			extends PayloadedResponse<TagInfo, RuntimeException> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Get IP Tag Table Info", CMD_IPTAG, buffer);
-		}
+    /** An SCP response to a request for information about IP tags. */
+    protected final class Response
+            extends PayloadedResponse<TagInfo, RuntimeException> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+            super("Get IP Tag Table Info", CMD_IPTAG, buffer);
+        }
 
-		@Override
-		protected TagInfo parse(ByteBuffer buffer) {
-			var transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
-			buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
-			var poolSize = toUnsignedInt(buffer.get());
-			var fixedSize = toUnsignedInt(buffer.get());
-			return new TagInfo(transientTimeout, poolSize, fixedSize);
-		}
-	}
+        @Override
+        protected TagInfo parse(ByteBuffer buffer) {
+            var transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
+            buffer.get(); // skip 1 (sizeof(iptag_t) isn't relevant to us)
+            var poolSize = toUnsignedInt(buffer.get());
+            var fixedSize = toUnsignedInt(buffer.get());
+            return new TagInfo(transientTimeout, poolSize, fixedSize);
+        }
+    }
 }

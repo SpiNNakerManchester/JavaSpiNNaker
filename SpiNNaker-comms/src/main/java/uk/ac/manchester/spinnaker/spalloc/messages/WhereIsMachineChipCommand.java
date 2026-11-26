@@ -26,18 +26,18 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * @see WhereIs The basic result type associated with the request
  */
 public class WhereIsMachineChipCommand extends Command<Integer> {
-	/**
-	 * Create a request to locate a chip on a machine.
-	 *
-	 * @param machine
-	 *            The machine to request about.
-	 * @param chip
-	 *            The coordinates of the chip to ask about.
-	 */
-	public WhereIsMachineChipCommand(String machine, HasChipLocation chip) {
-		super("where_is");
-		addKwArg("machine", machine);
-		addKwArg("chip_x", chip.getX());
-		addKwArg("chip_y", chip.getY());
-	}
+    /**
+     * Create a request to locate a chip on a machine.
+     *
+     * @param machine
+     *            The machine to request about.
+     * @param chip
+     *            The coordinates of the chip to ask about.
+     */
+    public WhereIsMachineChipCommand(String machine, HasChipLocation chip) {
+        super("where_is");
+        addKwArg("machine", machine);
+        addKwArg("chip_x", chip.getX());
+        addKwArg("chip_y", chip.getY());
+    }
 }

@@ -24,15 +24,15 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  *            The type of header on this message.
  */
 public interface EIEIOMessage<Header extends EIEIOHeader>
-		extends SerializableMessage {
+        extends SerializableMessage {
 
-	/**
-	 * {@return the header of this message}
-	 */
-	Header getHeader();
+    /**
+     * {@return the header of this message}
+     */
+    Header getHeader();
 
-	/**
-	 * {@return the minimum length of a message instance in bytes}
-	 */
-	int minPacketLength();
+    /**
+     * {@return the minimum length of a message instance in bytes}
+     */
+    int minPacketLength();
 }

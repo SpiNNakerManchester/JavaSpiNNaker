@@ -45,586 +45,586 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * A request to create a job.
  */
 public final class CreateJob {
-	/** The default keep-alive interval. */
-	public static final Duration DEFAULT_KEEPALIVE = Duration.ofMinutes(1);
+    /** The default keep-alive interval. */
+    public static final Duration DEFAULT_KEEPALIVE = Duration.ofMinutes(1);
 
-	private Duration keepaliveInterval = DEFAULT_KEEPALIVE;
+    private Duration keepaliveInterval = DEFAULT_KEEPALIVE;
 
-	@Positive
-	private Integer numBoards;
-
-	@Valid
-	private Dimensions dimensions;
-
-	@Valid
-	private SpecificBoard board;
-
-	private String machineName;
-
-	private List<String> tags;
-
-	@PositiveOrZero
-	private Integer maxDeadBoards;
-
-	private String owner;
-
-	private String group;
-
-	private String nmpiCollab;
-
-	@Positive
-	private Integer nmpiJobId;
-
-	/**
-	 * Used when asking for a rectangle of boards.
-	 */
-	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
-	public static final class Dimensions {
-		@ValidTriadWidth
-		private int width;
-
-		@ValidTriadHeight
-		private int height;
-
-		/**
-		 * Constructs a description of a rectangle.
-		 *
-		 * @param width
-		 *            The width of rectangle to ask for, in triads.
-		 * @param height
-		 *            The height of rectangle to ask for, in triads.
-		 */
-		public Dimensions(int width, int height) {
-			this.width = width;
-			this.height = height;
-		}
-
-		/**
-		 * {@return The width of the allocation, in triads}
-		 */
-		public int getWidth() {
-			return width;
-		}
-
-		void setWidth(int width) {
-			this.width = width;
-		}
-
-		/**
-		 * {@return The height of the allocation, in triads}
-		 */
-		public int getHeight() {
-			return height;
-		}
-
-		void setHeight(int height) {
-			this.height = height;
-		}
-	}
-
-	/**
-	 * Used when asking for a specific board.
-	 */
-	public static final class SpecificBoard {
-		@ValidTriadX
-		private Integer x;
-
-		@ValidTriadY
-		private Integer y;
-
-		@ValidTriadZ
-		private Integer z;
-
-		@ValidCabinetNumber
-		private Integer cabinet;
-
-		@ValidFrameNumber
-		private Integer frame;
-
-		@ValidBoardNumber
-		private Integer board;
-
-		@IPAddress(nullOK = true)
-		private String address;
-
-		/**
-		 * Make an untargeted instance. You must set either the triad triple (x,
-		 * y, z), the physical triple (cabinet, frame, board) or the IP address
-		 * to use this object.
-		 */
-		public SpecificBoard() {
-		}
-
-		private SpecificBoard(boolean type, int a, int b, int c) {
-			if (type) {
-				x = a;
-				y = b;
-				z = c;
-			} else {
-				cabinet = a;
-				frame = b;
-				board = c;
-			}
-		}
-
-		private SpecificBoard(String addr) {
-			address = addr;
-		}
-
-		/**
-		 * {@return The triad X coordinate}
-		 */
-		public Integer getX() {
-			return x;
-		}
-
-		/**
-		 * Sets the triad x coordinate.
-		 *
-		 * @param x
-		 *            The triad X coordinate.
-		 */
-		public void setX(Integer x) {
-			this.x = x;
-		}
-
-		/**
-		 * {@return The triad y coordinate}
-		 */
-		public Integer getY() {
-			return y;
-		}
-
-		/**
-		 * Sets the triad Y coordinate.
-		 *
-		 * @param y
-		 *            The triad Y coordinate.
-		 */
-		public void setY(Integer y) {
-			this.y = y;
-		}
-
-		/**
-		 * {@return The triad Z coordinate}
-		 */
-		public Integer getZ() {
-			return z;
-		}
-
-		/**
-		 * Sets the triad z coordinate.
-		 *
-		 * @param z
-		 *            The triad Z coordinate.
-		 */
-		public void setZ(Integer z) {
-			this.z = z;
-		}
-
-		/**
-		 * {@return The cabinet number}
-		 */
-		public Integer getCabinet() {
-			return cabinet;
-		}
-
-		/**
-		 * Sets the cabinet number.
-		 *
-		 * @param cabinet
-		 *            The cabinet number.
-		 */
-		public void setCabinet(Integer cabinet) {
-			this.cabinet = cabinet;
-		}
-
-		/**
-		 * {@return The frame number}
-		 */
-		public Integer getFrame() {
-			return frame;
-		}
-
-		/**
-		 * Sets the frame number.
-		 *
-		 * @param frame
-		 *            The frame number.
-		 */
-		public void setFrame(Integer frame) {
-			this.frame = frame;
-		}
-
-		/**
-		 * {@return The board number}
-		 */
-		public Integer getBoard() {
-			return board;
-		}
-
-		/**
-		 * Sets the board number.
-		 *
-		 * @param board
-		 *            The board number.
-		 */
-		public void setBoard(Integer board) {
-			this.board = board;
-		}
-
-		/**
-		 * {@return The board IP address}
-		 */
-		public String getAddress() {
-			return address;
-		}
-
-		/**
-		 * Sets the boards IP address.
-		 *
-		 * @param address
-		 *            The board IP address.
-		 */
-		public void setAddress(String address) {
-			this.address = address;
-		}
-	}
-
-	// TODO Support a request for dimensions rooted at a board
-
-	/**
-	 * Create a request to run on a single board using the default machine
-	 * operated by the Spalloc service.
-	 * <p>
-	 * Note that you can configure this request further.
-	 */
-	public CreateJob() {
-		numBoards = 1;
-		tags = List.of("default");
-	}
-
-	/**
-	 * Create a request to run on a number of boards using the default machine
-	 * operated by the Spalloc service.
-	 * <p>
-	 * Note that you can configure this request further.
-	 *
-	 * @param numBoards
-	 *            The number of boards to ask for.
-	 * @throws IllegalArgumentException
-	 *             If the number of boards is less than 1
-	 */
-	public CreateJob(int numBoards) {
-		if (numBoards <= 0) {
-			throw new IllegalArgumentException(
-					"number of boards must be positive");
-		}
-		this.numBoards = numBoards;
-		tags = List.of("default");
-	}
-
-	/**
-	 * Create a request to run on rectangle of triads of boards using the
-	 * default machine operated by the Spalloc service.
-	 * <p>
-	 * Note that you can configure this request further.
-	 *
-	 * @param width
-	 *            The width of the rectangle, in triads
-	 * @param height
-	 *            The height of the rectangle, in triads
-	 * @throws IllegalArgumentException
-	 *             If either of the dimensions is less than 1
-	 */
-	public CreateJob(int width, int height) {
-		if (width <= 0 || height <= 0) {
-			throw new IllegalArgumentException(
-					"dimensions must be positive");
-		}
-		dimensions = new Dimensions(width, height);
-		tags = List.of("default");
-	}
-
-	/**
-	 * Create a request to run on a specific board of a specific machine
-	 * operated by the Spalloc service.
-	 * <p>
-	 * Note that you can configure this request further.
-	 *
-	 * @param machine
-	 *            Which machine of the service to use?
-	 * @param triad
-	 *            Which board of the machine to request? This is the logical
-	 *            coordinates.
-	 */
-	public CreateJob(String machine, TriadCoords triad) {
-		board = new SpecificBoard(true, triad.x, triad.y, triad.z);
-		machineName = machine;
-	}
-
-	/**
-	 * Create a request to run on a specific board of a specific machine
-	 * operated by the Spalloc service.
-	 * <p>
-	 * Note that you can configure this request further.
-	 *
-	 * @param machine
-	 *            Which machine of the service to use?
-	 * @param coords
-	 *            The physical coordinates of the board to request.
-	 */
-	public CreateJob(String machine, PhysicalCoords coords) {
-		this.board = new SpecificBoard(false, coords.c, coords.f, coords.b);
-		machineName = machine;
-	}
-
-	/**
-	 * Create a request to run on a specific board of a specific machine
-	 * operated by the Spalloc service.
-	 * <p>
-	 * Note that you can configure this request further.
-	 *
-	 * @param machine
-	 *            Which machine of the service to use?
-	 * @param ipAddress
-	 *            The IP address of the board of the machine to request
-	 */
-	public CreateJob(String machine, String ipAddress) {
-		board = new SpecificBoard(ipAddress);
-		machineName = machine;
-	}
-
-	/**
-	 * How long after a keepalive message will the job be auto-deleted?
-	 *
-	 * <em>Required.</em> Must be between 30 and 300 seconds.
-	 *
-	 * @return How long after a keepalive message will the job be auto-deleted?
-	 */
-	public Duration getKeepaliveInterval() {
-		return keepaliveInterval;
-	}
-
-	/**
-	 * Sets the interval between keep alive messages.
-	 *
-	 * @param keepaliveInterval
-	 *            How long after a keepalive message will the job be
-	 *            auto-deleted? <em>Required.</em> Must be between 30 and 300
-	 *            seconds.
-	 */
-	public void setKeepaliveInterval(Duration keepaliveInterval) {
-		this.keepaliveInterval = keepaliveInterval;
-	}
-
-	/**
-	 * The number of boards to request.
-	 *
-	 * May be {@code null} if a different type of request is made.
-	 *
-	 * @return The number of boards to request
-	 */
-	public Integer getNumBoards() {
-		return numBoards;
-	}
-
-	/**
-	 * Sets the number of board to request.
-	 *
-	 * @param numBoards
-	 *            The number of boards to request.
-	 */
-	public void setNumBoards(Integer numBoards) {
-		this.numBoards = numBoards;
-	}
-
-	/**
-	 * {@return The size of rectangle of boards to request}
-	 */
-	public Dimensions getDimensions() {
-		return dimensions;
-	}
-
-	/**
-	 * Sets the size to request.
-	 *
-	 * @param dimensions
-	 *            The size of rectangle of boards to request.
-	 */
-	public void setDimensions(Dimensions dimensions) {
-		this.dimensions = dimensions;
-	}
-
-	/**
-	 * {@return The address of the specific board to request}
-	 */
-	public SpecificBoard getBoard() {
-		return board;
-	}
-
-	/**
-	 * Sets the address of the board.
-	 *
-	 * @param board
-	 *            The address of the specific board to request.
-	 */
-	public void setBoard(SpecificBoard board) {
-		this.board = board;
-	}
-
-	/**
-	 * Which machine to allocate on.
-	 *
-	 * This and {@code tags} are mutually exclusive,
-	 * but at least one must be given.
-	 *
-	 * @return Which machine to allocate on
-	 */
-	public String getMachineName() {
-		return machineName;
-	}
-
-	/**
-	 * Sets the machine name.
-	 *
-	 * @param machineName
-	 *            Which machine to allocate on. This and {@code tags} are
-	 *            mutually exclusive, but at least one must be given.
-	 */
-	public void setMachineName(String machineName) {
-		this.machineName = machineName;
-		this.tags = null;
-	}
-
-	/**
-	 * The tags to select which machine to allocate on.
-	 *
-	 * This and {@code machineName} are mutually exclusive,
-	 * but at least one must be given.
-	 *
-	 * @return The tags to select which machine to allocate on.
-	 */
-	public List<String> getTags() {
-		return tags;
-	}
-
-	/**
-	 * Sets the tags.
-	 *
-	 * @param tags
-	 *            The tags to select which machine to allocate on. This and
-	 *            {@code machineName} are mutually exclusive, but at least one
-	 *            must be given.
-	 */
-	public void setTags(List<String> tags) {
-		this.tags = tags;
-		this.machineName = null;
-	}
-
-	@Keep
-	@AssertTrue(message = "either machineName or tags must be given")
-	private boolean isTargetted() {
-		return nonNull(machineName) || (nonNull(tags) && !tags.isEmpty());
-	}
-
-	/**
-	 * The maximum number of dead boards allowed in a rectangular allocation.
-	 *
-	 * Note that the allocation engine might increase this
-	 * if it decides to overallocate.
-	 *
-	 * @return The maximum number of dead boards allowed in a rectangular
-	 *         allocation.
-	 */
-	public Integer getMaxDeadBoards() {
-		return maxDeadBoards;
-	}
-
-	/**
-	 * Sets the number of dead boards.
-	 *
-	 * @param maxDeadBoards
-	 *            The maximum number of dead boards allowed in a rectangular
-	 *            allocation. Note that the allocation engine might increase
-	 *            this if it decides to overallocate.
-	 */
-	public void setMaxDeadBoards(Integer maxDeadBoards) {
-		this.maxDeadBoards = maxDeadBoards;
-	}
-
-	/**
-	 * The owner.
-	 *
-	 * Only works when the user is admin or NMPI.
-	 *
-	 * @return The owner.
-	 */
-	public String getOwner() {
-		return owner;
-	}
-
-	/**
-	 * Set the owner of the job to something other than the user requesting.
-	 * Only works when the user has this permission.
-	 *
-	 * @param owner
-	 *            The new owner.
-	 */
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-
-	/**
-	 * {@return The group the quota for the job should be allocated against}
-	 */
-	public String getGroup() {
-		return group;
-	}
-
-	/**
-	 * Sets the group.
-	 *
-	 * @param group
-	 *            The group the quota for the job should be allocated against.
-	 */
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
-	/**
-	 * {@return The collaboratory that the quota
-	 *     for the job should be allocated against}
-	 */
-	public String getNmpiCollab() {
-		return nmpiCollab;
-	}
-
-	/**
-	 * Sets the collaboratory.
-	 *
-	 * @param nmpiCollab
-	 *            The collaboratory that the quota for the job should be
-	 *            allocated against.
-	 */
-	public void setNmpiCollab(String nmpiCollab) {
-		this.nmpiCollab = nmpiCollab;
-	}
-
-	/**
-	 * {@return The NMPI job that the quota should be allocated against}
-	 */
-	public Integer getNmpiJobId() {
-		return nmpiJobId;
-	}
-
-	/**
-	 * Set the NMPI job.
-	 *
-	 * @param nmpiJobId
-	 *            The NMPI job that the quota should be allocated against.
-	 */
-	public void setNmpiJobId(Integer nmpiJobId) {
-		this.nmpiJobId = nmpiJobId;
-	}
+    @Positive
+    private Integer numBoards;
+
+    @Valid
+    private Dimensions dimensions;
+
+    @Valid
+    private SpecificBoard board;
+
+    private String machineName;
+
+    private List<String> tags;
+
+    @PositiveOrZero
+    private Integer maxDeadBoards;
+
+    private String owner;
+
+    private String group;
+
+    private String nmpiCollab;
+
+    @Positive
+    private Integer nmpiJobId;
+
+    /**
+     * Used when asking for a rectangle of boards.
+     */
+    @JsonAutoDetect(setterVisibility = NON_PRIVATE)
+    public static final class Dimensions {
+        @ValidTriadWidth
+        private int width;
+
+        @ValidTriadHeight
+        private int height;
+
+        /**
+         * Constructs a description of a rectangle.
+         *
+         * @param width
+         *            The width of rectangle to ask for, in triads.
+         * @param height
+         *            The height of rectangle to ask for, in triads.
+         */
+        public Dimensions(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        /**
+         * {@return The width of the allocation, in triads}
+         */
+        public int getWidth() {
+            return width;
+        }
+
+        void setWidth(int width) {
+            this.width = width;
+        }
+
+        /**
+         * {@return The height of the allocation, in triads}
+         */
+        public int getHeight() {
+            return height;
+        }
+
+        void setHeight(int height) {
+            this.height = height;
+        }
+    }
+
+    /**
+     * Used when asking for a specific board.
+     */
+    public static final class SpecificBoard {
+        @ValidTriadX
+        private Integer x;
+
+        @ValidTriadY
+        private Integer y;
+
+        @ValidTriadZ
+        private Integer z;
+
+        @ValidCabinetNumber
+        private Integer cabinet;
+
+        @ValidFrameNumber
+        private Integer frame;
+
+        @ValidBoardNumber
+        private Integer board;
+
+        @IPAddress(nullOK = true)
+        private String address;
+
+        /**
+         * Make an untargeted instance. You must set either the triad triple (x,
+         * y, z), the physical triple (cabinet, frame, board) or the IP address
+         * to use this object.
+         */
+        public SpecificBoard() {
+        }
+
+        private SpecificBoard(boolean type, int a, int b, int c) {
+            if (type) {
+                x = a;
+                y = b;
+                z = c;
+            } else {
+                cabinet = a;
+                frame = b;
+                board = c;
+            }
+        }
+
+        private SpecificBoard(String addr) {
+            address = addr;
+        }
+
+        /**
+         * {@return The triad X coordinate}
+         */
+        public Integer getX() {
+            return x;
+        }
+
+        /**
+         * Sets the triad x coordinate.
+         *
+         * @param x
+         *            The triad X coordinate.
+         */
+        public void setX(Integer x) {
+            this.x = x;
+        }
+
+        /**
+         * {@return The triad y coordinate}
+         */
+        public Integer getY() {
+            return y;
+        }
+
+        /**
+         * Sets the triad Y coordinate.
+         *
+         * @param y
+         *            The triad Y coordinate.
+         */
+        public void setY(Integer y) {
+            this.y = y;
+        }
+
+        /**
+         * {@return The triad Z coordinate}
+         */
+        public Integer getZ() {
+            return z;
+        }
+
+        /**
+         * Sets the triad z coordinate.
+         *
+         * @param z
+         *            The triad Z coordinate.
+         */
+        public void setZ(Integer z) {
+            this.z = z;
+        }
+
+        /**
+         * {@return The cabinet number}
+         */
+        public Integer getCabinet() {
+            return cabinet;
+        }
+
+        /**
+         * Sets the cabinet number.
+         *
+         * @param cabinet
+         *            The cabinet number.
+         */
+        public void setCabinet(Integer cabinet) {
+            this.cabinet = cabinet;
+        }
+
+        /**
+         * {@return The frame number}
+         */
+        public Integer getFrame() {
+            return frame;
+        }
+
+        /**
+         * Sets the frame number.
+         *
+         * @param frame
+         *            The frame number.
+         */
+        public void setFrame(Integer frame) {
+            this.frame = frame;
+        }
+
+        /**
+         * {@return The board number}
+         */
+        public Integer getBoard() {
+            return board;
+        }
+
+        /**
+         * Sets the board number.
+         *
+         * @param board
+         *            The board number.
+         */
+        public void setBoard(Integer board) {
+            this.board = board;
+        }
+
+        /**
+         * {@return The board IP address}
+         */
+        public String getAddress() {
+            return address;
+        }
+
+        /**
+         * Sets the boards IP address.
+         *
+         * @param address
+         *            The board IP address.
+         */
+        public void setAddress(String address) {
+            this.address = address;
+        }
+    }
+
+    // TODO Support a request for dimensions rooted at a board
+
+    /**
+     * Create a request to run on a single board using the default machine
+     * operated by the Spalloc service.
+     * <p>
+     * Note that you can configure this request further.
+     */
+    public CreateJob() {
+        numBoards = 1;
+        tags = List.of("default");
+    }
+
+    /**
+     * Create a request to run on a number of boards using the default machine
+     * operated by the Spalloc service.
+     * <p>
+     * Note that you can configure this request further.
+     *
+     * @param numBoards
+     *            The number of boards to ask for.
+     * @throws IllegalArgumentException
+     *             If the number of boards is less than 1
+     */
+    public CreateJob(int numBoards) {
+        if (numBoards <= 0) {
+            throw new IllegalArgumentException(
+                    "number of boards must be positive");
+        }
+        this.numBoards = numBoards;
+        tags = List.of("default");
+    }
+
+    /**
+     * Create a request to run on rectangle of triads of boards using the
+     * default machine operated by the Spalloc service.
+     * <p>
+     * Note that you can configure this request further.
+     *
+     * @param width
+     *            The width of the rectangle, in triads
+     * @param height
+     *            The height of the rectangle, in triads
+     * @throws IllegalArgumentException
+     *             If either of the dimensions is less than 1
+     */
+    public CreateJob(int width, int height) {
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException(
+                    "dimensions must be positive");
+        }
+        dimensions = new Dimensions(width, height);
+        tags = List.of("default");
+    }
+
+    /**
+     * Create a request to run on a specific board of a specific machine
+     * operated by the Spalloc service.
+     * <p>
+     * Note that you can configure this request further.
+     *
+     * @param machine
+     *            Which machine of the service to use?
+     * @param triad
+     *            Which board of the machine to request? This is the logical
+     *            coordinates.
+     */
+    public CreateJob(String machine, TriadCoords triad) {
+        board = new SpecificBoard(true, triad.x, triad.y, triad.z);
+        machineName = machine;
+    }
+
+    /**
+     * Create a request to run on a specific board of a specific machine
+     * operated by the Spalloc service.
+     * <p>
+     * Note that you can configure this request further.
+     *
+     * @param machine
+     *            Which machine of the service to use?
+     * @param coords
+     *            The physical coordinates of the board to request.
+     */
+    public CreateJob(String machine, PhysicalCoords coords) {
+        this.board = new SpecificBoard(false, coords.c, coords.f, coords.b);
+        machineName = machine;
+    }
+
+    /**
+     * Create a request to run on a specific board of a specific machine
+     * operated by the Spalloc service.
+     * <p>
+     * Note that you can configure this request further.
+     *
+     * @param machine
+     *            Which machine of the service to use?
+     * @param ipAddress
+     *            The IP address of the board of the machine to request
+     */
+    public CreateJob(String machine, String ipAddress) {
+        board = new SpecificBoard(ipAddress);
+        machineName = machine;
+    }
+
+    /**
+     * How long after a keepalive message will the job be auto-deleted?
+     *
+     * <em>Required.</em> Must be between 30 and 300 seconds.
+     *
+     * @return How long after a keepalive message will the job be auto-deleted?
+     */
+    public Duration getKeepaliveInterval() {
+        return keepaliveInterval;
+    }
+
+    /**
+     * Sets the interval between keep alive messages.
+     *
+     * @param keepaliveInterval
+     *            How long after a keepalive message will the job be
+     *            auto-deleted? <em>Required.</em> Must be between 30 and 300
+     *            seconds.
+     */
+    public void setKeepaliveInterval(Duration keepaliveInterval) {
+        this.keepaliveInterval = keepaliveInterval;
+    }
+
+    /**
+     * The number of boards to request.
+     *
+     * May be {@code null} if a different type of request is made.
+     *
+     * @return The number of boards to request
+     */
+    public Integer getNumBoards() {
+        return numBoards;
+    }
+
+    /**
+     * Sets the number of board to request.
+     *
+     * @param numBoards
+     *            The number of boards to request.
+     */
+    public void setNumBoards(Integer numBoards) {
+        this.numBoards = numBoards;
+    }
+
+    /**
+     * {@return The size of rectangle of boards to request}
+     */
+    public Dimensions getDimensions() {
+        return dimensions;
+    }
+
+    /**
+     * Sets the size to request.
+     *
+     * @param dimensions
+     *            The size of rectangle of boards to request.
+     */
+    public void setDimensions(Dimensions dimensions) {
+        this.dimensions = dimensions;
+    }
+
+    /**
+     * {@return The address of the specific board to request}
+     */
+    public SpecificBoard getBoard() {
+        return board;
+    }
+
+    /**
+     * Sets the address of the board.
+     *
+     * @param board
+     *            The address of the specific board to request.
+     */
+    public void setBoard(SpecificBoard board) {
+        this.board = board;
+    }
+
+    /**
+     * Which machine to allocate on.
+     *
+     * This and {@code tags} are mutually exclusive,
+     * but at least one must be given.
+     *
+     * @return Which machine to allocate on
+     */
+    public String getMachineName() {
+        return machineName;
+    }
+
+    /**
+     * Sets the machine name.
+     *
+     * @param machineName
+     *            Which machine to allocate on. This and {@code tags} are
+     *            mutually exclusive, but at least one must be given.
+     */
+    public void setMachineName(String machineName) {
+        this.machineName = machineName;
+        this.tags = null;
+    }
+
+    /**
+     * The tags to select which machine to allocate on.
+     *
+     * This and {@code machineName} are mutually exclusive,
+     * but at least one must be given.
+     *
+     * @return The tags to select which machine to allocate on.
+     */
+    public List<String> getTags() {
+        return tags;
+    }
+
+    /**
+     * Sets the tags.
+     *
+     * @param tags
+     *            The tags to select which machine to allocate on. This and
+     *            {@code machineName} are mutually exclusive, but at least one
+     *            must be given.
+     */
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+        this.machineName = null;
+    }
+
+    @Keep
+    @AssertTrue(message = "either machineName or tags must be given")
+    private boolean isTargetted() {
+        return nonNull(machineName) || (nonNull(tags) && !tags.isEmpty());
+    }
+
+    /**
+     * The maximum number of dead boards allowed in a rectangular allocation.
+     *
+     * Note that the allocation engine might increase this
+     * if it decides to overallocate.
+     *
+     * @return The maximum number of dead boards allowed in a rectangular
+     *         allocation.
+     */
+    public Integer getMaxDeadBoards() {
+        return maxDeadBoards;
+    }
+
+    /**
+     * Sets the number of dead boards.
+     *
+     * @param maxDeadBoards
+     *            The maximum number of dead boards allowed in a rectangular
+     *            allocation. Note that the allocation engine might increase
+     *            this if it decides to overallocate.
+     */
+    public void setMaxDeadBoards(Integer maxDeadBoards) {
+        this.maxDeadBoards = maxDeadBoards;
+    }
+
+    /**
+     * The owner.
+     *
+     * Only works when the user is admin or NMPI.
+     *
+     * @return The owner.
+     */
+    public String getOwner() {
+        return owner;
+    }
+
+    /**
+     * Set the owner of the job to something other than the user requesting.
+     * Only works when the user has this permission.
+     *
+     * @param owner
+     *            The new owner.
+     */
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * {@return The group the quota for the job should be allocated against}
+     */
+    public String getGroup() {
+        return group;
+    }
+
+    /**
+     * Sets the group.
+     *
+     * @param group
+     *            The group the quota for the job should be allocated against.
+     */
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    /**
+     * {@return The collaboratory that the quota
+     *     for the job should be allocated against}
+     */
+    public String getNmpiCollab() {
+        return nmpiCollab;
+    }
+
+    /**
+     * Sets the collaboratory.
+     *
+     * @param nmpiCollab
+     *            The collaboratory that the quota for the job should be
+     *            allocated against.
+     */
+    public void setNmpiCollab(String nmpiCollab) {
+        this.nmpiCollab = nmpiCollab;
+    }
+
+    /**
+     * {@return The NMPI job that the quota should be allocated against}
+     */
+    public Integer getNmpiJobId() {
+        return nmpiJobId;
+    }
+
+    /**
+     * Set the NMPI job.
+     *
+     * @param nmpiJobId
+     *            The NMPI job that the quota should be allocated against.
+     */
+    public void setNmpiJobId(Integer nmpiJobId) {
+        this.nmpiJobId = nmpiJobId;
+    }
 }

@@ -24,16 +24,16 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class ExceptionResponse implements Response {
-	private String exception;
+    private String exception;
 
-	/**
-	 * {@return The exception message. Should not include a stack trace}
-	 */
-	public String getException() {
-		return exception;
-	}
+    /**
+     * {@return The exception message. Should not include a stack trace}
+     */
+    public String getException() {
+        return exception;
+    }
 
-	void setException(String exception) {
-		this.exception = exception == null ? "" : exception.toString();
-	}
+    void setException(String exception) {
+        this.exception = exception == null ? "" : exception.toString();
+    }
 }

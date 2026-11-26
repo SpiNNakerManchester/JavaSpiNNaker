@@ -28,14 +28,14 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  * Indicates that message sending to a BMP failed for various reasons.
  */
 public final class BMPSendFailedException extends IOException {
-	private static final long serialVersionUID = -7806549580351626377L;
+    private static final long serialVersionUID = -7806549580351626377L;
 
-	BMPSendFailedException(SCPRequest<?> req, HasBMPLocation bmp,
-			List<String> retryReason) {
-		super(format(
-				"Errors sending request %s (%s) to %d,%d,%d over %d retries:"
-				+ " %s",
-				req.scpRequestHeader.command, req, bmp.getCabinet(),
-				bmp.getFrame(), bmp.getBoard(), BMP_RETRIES, retryReason));
-	}
+    BMPSendFailedException(SCPRequest<?> req, HasBMPLocation bmp,
+            List<String> retryReason) {
+        super(format(
+                "Errors sending request %s (%s) to %d,%d,%d over %d retries:"
+                + " %s",
+                req.scpRequestHeader.command, req, bmp.getCabinet(),
+                bmp.getFrame(), bmp.getBoard(), BMP_RETRIES, retryReason));
+    }
 }

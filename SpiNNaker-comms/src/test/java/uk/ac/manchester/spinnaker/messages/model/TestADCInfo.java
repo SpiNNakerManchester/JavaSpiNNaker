@@ -29,27 +29,27 @@ import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("ClassCanBeStatic")
 class TestADCInfo {
-	@Test
-	void zeroSer() throws IOException, ClassNotFoundException {
-		var bytes = new byte[SIZE];
-		Arrays.fill(bytes, (byte) 23); // Anything non-zero
-		var adcIn = new ADCInfo(wrap(bytes).order(LITTLE_ENDIAN));
-		var serialForm = serialize(adcIn);
+    @Test
+    void zeroSer() throws IOException, ClassNotFoundException {
+        var bytes = new byte[SIZE];
+        Arrays.fill(bytes, (byte) 23); // Anything non-zero
+        var adcIn = new ADCInfo(wrap(bytes).order(LITTLE_ENDIAN));
+        var serialForm = serialize(adcIn);
 
-		var adcOut = deserialize(serialForm, ADCInfo.class);
+        var adcOut = deserialize(serialForm, ADCInfo.class);
 
-		// No overall equality op; by field comparison
-		assertEquals(adcIn.fan0, adcOut.fan0);
-		assertEquals(adcIn.fan1, adcOut.fan1);
-		assertEquals(adcIn.tempBottom, adcOut.tempBottom);
-		assertEquals(adcIn.tempTop, adcOut.tempTop);
-		assertEquals(adcIn.tempExt0, adcOut.tempExt0);
-		assertEquals(adcIn.tempExt1, adcOut.tempExt1);
-		assertEquals(adcIn.voltage12a, adcOut.voltage12a);
-		assertEquals(adcIn.voltage12b, adcOut.voltage12b);
-		assertEquals(adcIn.voltage12c, adcOut.voltage12c);
-		assertEquals(adcIn.voltage18, adcOut.voltage18);
-		assertEquals(adcIn.voltage33, adcOut.voltage33);
-		assertEquals(adcIn.voltageSupply, adcOut.voltageSupply);
-	}
+        // No overall equality op; by field comparison
+        assertEquals(adcIn.fan0, adcOut.fan0);
+        assertEquals(adcIn.fan1, adcOut.fan1);
+        assertEquals(adcIn.tempBottom, adcOut.tempBottom);
+        assertEquals(adcIn.tempTop, adcOut.tempTop);
+        assertEquals(adcIn.tempExt0, adcOut.tempExt0);
+        assertEquals(adcIn.tempExt1, adcOut.tempExt1);
+        assertEquals(adcIn.voltage12a, adcOut.voltage12a);
+        assertEquals(adcIn.voltage12b, adcOut.voltage12b);
+        assertEquals(adcIn.voltage12c, adcOut.voltage12c);
+        assertEquals(adcIn.voltage18, adcOut.voltage18);
+        assertEquals(adcIn.voltage33, adcOut.voltage33);
+        assertEquals(adcIn.voltageSupply, adcOut.voltageSupply);
+    }
 }

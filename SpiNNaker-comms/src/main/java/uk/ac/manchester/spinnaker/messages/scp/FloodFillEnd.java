@@ -39,79 +39,79 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled ultimately by {@code nn_cmd_ffe()} in {@code scamp-nn.c}.
  */
 public final class FloodFillEnd extends SCPRequest<EmptyResponse> {
-	// Send on all links, std inter-message delay, no message resends
-	private static final int NNP_FORWARD_RETRY =
-			(FORWARD_LINKS << BYTE1) | (DELAY << BYTE0);
+    // Send on all links, std inter-message delay, no message resends
+    private static final int NNP_FORWARD_RETRY =
+            (FORWARD_LINKS << BYTE1) | (DELAY << BYTE0);
 
-	// See nn_rcv_pkt()
-	private static final int NN_CMD_FFE = 15;
+    // See nn_rcv_pkt()
+    private static final int NN_CMD_FFE = 15;
 
-	private static final int WAIT_BIT = 18;
+    private static final int WAIT_BIT = 18;
 
-	/**
-	 * Constructs a flood fill request based only the neighbour.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the packet, between 0 and 127
-	 */
-	public FloodFillEnd(byte nearestNeighbourID) {
-		this(nearestNeighbourID, DEFAULT, List.of(), false);
-	}
+    /**
+     * Constructs a flood fill request based only the neighbour.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the packet, between 0 and 127
+     */
+    public FloodFillEnd(byte nearestNeighbourID) {
+        this(nearestNeighbourID, DEFAULT, List.of(), false);
+    }
 
-	/**
-	 * Constructs a flood fill request based on all the paramaters.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the packet, between 0 and 127
-	 * @param appID
-	 *            The application ID to start using the data
-	 * @param processors
-	 *            A list of processors on which to start the application, each
-	 *            between 1 and 17. If not specified, no application is started.
-	 * @param wait
-	 *            True if the binary should go into a "wait" state before
-	 *            executing
-	 */
-	public FloodFillEnd(byte nearestNeighbourID, AppID appID,
-			Iterable<@ValidP Integer> processors, boolean wait) {
-		super(BOOT_MONITOR_CORE, CMD_NNP, key(nearestNeighbourID),
-				data(appID, processors, wait), NNP_FORWARD_RETRY);
-	}
+    /**
+     * Constructs a flood fill request based on all the paramaters.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the packet, between 0 and 127
+     * @param appID
+     *            The application ID to start using the data
+     * @param processors
+     *            A list of processors on which to start the application, each
+     *            between 1 and 17. If not specified, no application is started.
+     * @param wait
+     *            True if the binary should go into a "wait" state before
+     *            executing
+     */
+    public FloodFillEnd(byte nearestNeighbourID, AppID appID,
+            Iterable<@ValidP Integer> processors, boolean wait) {
+        super(BOOT_MONITOR_CORE, CMD_NNP, key(nearestNeighbourID),
+                data(appID, processors, wait), NNP_FORWARD_RETRY);
+    }
 
-	private static int key(byte nearestNeighbourID) {
-		return (NN_CMD_FFE << BYTE3) | toUnsignedInt(nearestNeighbourID);
-	}
+    private static int key(byte nearestNeighbourID) {
+        return (NN_CMD_FFE << BYTE3) | toUnsignedInt(nearestNeighbourID);
+    }
 
-	/**
-	 * The value to pass to {@code proc_start_app()} to say what cores to start
-	 * on and what app ID to use.
-	 *
-	 * @param appID
-	 *            The application ID.
-	 * @param processors
-	 *            What to launch on.
-	 * @param wait
-	 *            Whether to start in the {@code wait} state.
-	 * @return The packed word.
-	 */
-	private static int data(AppID appID, Iterable<Integer> processors,
-			boolean wait) {
-		int processorMask = 0;
-		for (int p : processors) {
-			if (p >= 1 && p < MAX_NUM_CORES) {
-				processorMask |= 1 << p;
-			}
-		}
-		processorMask |= appID.appID << BYTE3;
-		if (wait) {
-			processorMask |= 1 << WAIT_BIT;
-		}
-		return processorMask;
-	}
+    /**
+     * The value to pass to {@code proc_start_app()} to say what cores to start
+     * on and what app ID to use.
+     *
+     * @param appID
+     *            The application ID.
+     * @param processors
+     *            What to launch on.
+     * @param wait
+     *            Whether to start in the {@code wait} state.
+     * @return The packed word.
+     */
+    private static int data(AppID appID, Iterable<Integer> processors,
+            boolean wait) {
+        int processorMask = 0;
+        for (int p : processors) {
+            if (p >= 1 && p < MAX_NUM_CORES) {
+                processorMask |= 1 << p;
+            }
+        }
+        processorMask |= appID.appID << BYTE3;
+        if (wait) {
+            processorMask |= 1 << WAIT_BIT;
+        }
+        return processorMask;
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Flood Fill", CMD_NNP, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Flood Fill", CMD_NNP, buffer);
+    }
 }

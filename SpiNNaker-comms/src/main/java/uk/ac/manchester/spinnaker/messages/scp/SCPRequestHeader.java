@@ -30,69 +30,69 @@ import uk.ac.manchester.spinnaker.messages.SerializableMessage;
  */
 public final class SCPRequestHeader implements SerializableMessage {
 
-	private static final int SHORT_MASK = 0xFFFF;
+    private static final int SHORT_MASK = 0xFFFF;
 
-	/** The command of the SCP packet. */
-	public final CommandCode command;
+    /** The command of the SCP packet. */
+    public final CommandCode command;
 
-	/** The sequence number of the packet, between 0 and 65535. */
-	private int sequence;
+    /** The sequence number of the packet, between 0 and 65535. */
+    private int sequence;
 
-	private boolean sequenceSet;
+    private boolean sequenceSet;
 
-	/**
-	 * Create an instance that doesn't yet have a sequence number set.
-	 *
-	 * @param command
-	 *            The command to perform.
-	 * @see #issueSequenceNumber(Set)
-	 */
-	SCPRequestHeader(CommandCode command) {
-		this.command = command;
-	}
+    /**
+     * Create an instance that doesn't yet have a sequence number set.
+     *
+     * @param command
+     *            The command to perform.
+     * @see #issueSequenceNumber(Set)
+     */
+    SCPRequestHeader(CommandCode command) {
+        this.command = command;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * This must not be called until after a
-	 * {@linkplain #issueSequenceNumber(Set) sequence number is set}.
-	 */
-	@Override
-	public void addToBuffer(ByteBuffer buffer) {
-		buffer.putShort(command.getValue());
-		if (!sequenceSet) {
-			throw new IllegalStateException("sequence number not set");
-		}
-		buffer.putShort((short) (sequence & SHORT_MASK));
-	}
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This must not be called until after a
+     * {@linkplain #issueSequenceNumber(Set) sequence number is set}.
+     */
+    @Override
+    public void addToBuffer(ByteBuffer buffer) {
+        buffer.putShort(command.getValue());
+        if (!sequenceSet) {
+            throw new IllegalStateException("sequence number not set");
+        }
+        buffer.putShort((short) (sequence & SHORT_MASK));
+    }
 
-	/**
-	 * Set the sequence number of this request to the next available number.
-	 * This can only ever be called once per request.
-	 *
-	 * @param inFlight
-	 *            What sequence numbers are current in use and shouldn't be
-	 *            used.
-	 * @return The number that was issued.
-	 * @throws IllegalStateException
-	 *             If an attempt is made to set a sequence number a second time
-	 */
-	public int issueSequenceNumber(Set<Integer> inFlight) {
-		if (sequenceSet) {
-			throw new IllegalStateException(
-					"a message can only have its sequence number set once");
-		}
-		do {
-			sequence = getNextSequenceNumber();
-		} while (inFlight.contains(sequence));
-		sequenceSet = true;
-		return sequence;
-	}
+    /**
+     * Set the sequence number of this request to the next available number.
+     * This can only ever be called once per request.
+     *
+     * @param inFlight
+     *            What sequence numbers are current in use and shouldn't be
+     *            used.
+     * @return The number that was issued.
+     * @throws IllegalStateException
+     *             If an attempt is made to set a sequence number a second time
+     */
+    public int issueSequenceNumber(Set<Integer> inFlight) {
+        if (sequenceSet) {
+            throw new IllegalStateException(
+                    "a message can only have its sequence number set once");
+        }
+        do {
+            sequence = getNextSequenceNumber();
+        } while (inFlight.contains(sequence));
+        sequenceSet = true;
+        return sequence;
+    }
 
-	/**
-	 * {@return The message's sequence number}
-	 */
-	public int getSequence() {
-		return sequence;
-	}
+    /**
+     * {@return The message's sequence number}
+     */
+    public int getSequence() {
+        return sequence;
+    }
 }

@@ -21,32 +21,32 @@ import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
  * Handles a message received from an EIEIO connection.
  */
 public interface EIEIOMessageHandler
-		extends MessageHandler<EIEIOMessage<? extends EIEIOHeader>> {
-	@Override
-	default void handle(EIEIOMessage<? extends EIEIOHeader> message) {
-		if (message instanceof EIEIOCommandMessage) {
-			handleCommand((EIEIOCommandMessage) message);
-		} else if (message instanceof EIEIODataMessage) {
-			handleData((EIEIODataMessage) message);
-		} else {
-			throw new IllegalArgumentException(
-					"unsupported message type: " + message.getClass());
-		}
-	}
+        extends MessageHandler<EIEIOMessage<? extends EIEIOHeader>> {
+    @Override
+    default void handle(EIEIOMessage<? extends EIEIOHeader> message) {
+        if (message instanceof EIEIOCommandMessage) {
+            handleCommand((EIEIOCommandMessage) message);
+        } else if (message instanceof EIEIODataMessage) {
+            handleData((EIEIODataMessage) message);
+        } else {
+            throw new IllegalArgumentException(
+                    "unsupported message type: " + message.getClass());
+        }
+    }
 
-	/**
-	 * Handle an EIEIO command message.
-	 *
-	 * @param message
-	 *            The message that was received.
-	 */
-	void handleCommand(EIEIOCommandMessage message);
+    /**
+     * Handle an EIEIO command message.
+     *
+     * @param message
+     *            The message that was received.
+     */
+    void handleCommand(EIEIOCommandMessage message);
 
-	/**
-	 * Handle an EIEIO data message.
-	 *
-	 * @param message
-	 *            The message that was received.
-	 */
-	void handleData(EIEIODataMessage message);
+    /**
+     * Handle an EIEIO data message.
+     *
+     * @param message
+     *            The message that was received.
+     */
+    void handleData(EIEIODataMessage message);
 }

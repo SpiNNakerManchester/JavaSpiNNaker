@@ -26,175 +26,175 @@ import java.util.concurrent.Callable;
  * client.
  */
 interface Session {
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param forStateChange
-	 *            If {@code true}, the connection will be configured so that it
-	 *            includes a relevant CSRF token.
-	 * @return the partially-configured connection;
-	 *         {@link HttpURLConnection#setRequestMethod(String)},
-	 *         {@link URLConnection#doOutput(boolean)} and
-	 *         {@link URLConnection#setRequestProperty(String,String)} may still
-	 *         need to be called.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	HttpURLConnection connection(URI url, boolean forStateChange)
-			throws IOException;
+    /**
+     * Create a connection that's part of the session.
+     *
+     * @param url
+     *            The URL (relative or absolute) for where to access.
+     * @param forStateChange
+     *            If {@code true}, the connection will be configured so that it
+     *            includes a relevant CSRF token.
+     * @return the partially-configured connection;
+     *         {@link HttpURLConnection#setRequestMethod(String)},
+     *         {@link URLConnection#doOutput(boolean)} and
+     *         {@link URLConnection#setRequestProperty(String,String)} may still
+     *         need to be called.
+     * @throws IOException
+     *             If things go wrong
+     */
+    HttpURLConnection connection(URI url, boolean forStateChange)
+            throws IOException;
 
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param url2
-	 *            Secondary URL, often a path tail and/or query suffix.
-	 * @param forStateChange
-	 *            If {@code true}, the connection will be configured so that it
-	 *            includes a relevant CSRF token.
-	 * @return the partially-configured connection;
-	 *         {@link HttpURLConnection#setRequestMethod(String)},
-	 *         {@link URLConnection#doOutput(boolean)} and
-	 *         {@link URLConnection#setRequestProperty(String,String)} may still
-	 *         need to be called.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	HttpURLConnection connection(URI url, String url2, boolean forStateChange)
-			throws IOException;
+    /**
+     * Create a connection that's part of the session.
+     *
+     * @param url
+     *            The URL (relative or absolute) for where to access.
+     * @param url2
+     *            Secondary URL, often a path tail and/or query suffix.
+     * @param forStateChange
+     *            If {@code true}, the connection will be configured so that it
+     *            includes a relevant CSRF token.
+     * @return the partially-configured connection;
+     *         {@link HttpURLConnection#setRequestMethod(String)},
+     *         {@link URLConnection#doOutput(boolean)} and
+     *         {@link URLConnection#setRequestProperty(String,String)} may still
+     *         need to be called.
+     * @throws IOException
+     *             If things go wrong
+     */
+    HttpURLConnection connection(URI url, String url2, boolean forStateChange)
+            throws IOException;
 
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param url2
-	 *            Secondary URL, often a path tail and/or query suffix.
-	 * @param forStateChange
-	 *            If {@code true}, the connection will be configured so that it
-	 *            includes a relevant CSRF token.
-	 * @return the partially-configured connection;
-	 *         {@link HttpURLConnection#setRequestMethod(String)},
-	 *         {@link URLConnection#doOutput(boolean)} and
-	 *         {@link URLConnection#setRequestProperty(String,String)} may still
-	 *         need to be called.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	HttpURLConnection connection(URI url, URI url2, boolean forStateChange)
-			throws IOException;
+    /**
+     * Create a connection that's part of the session.
+     *
+     * @param url
+     *            The URL (relative or absolute) for where to access.
+     * @param url2
+     *            Secondary URL, often a path tail and/or query suffix.
+     * @param forStateChange
+     *            If {@code true}, the connection will be configured so that it
+     *            includes a relevant CSRF token.
+     * @return the partially-configured connection;
+     *         {@link HttpURLConnection#setRequestMethod(String)},
+     *         {@link URLConnection#doOutput(boolean)} and
+     *         {@link URLConnection#setRequestProperty(String,String)} may still
+     *         need to be called.
+     * @throws IOException
+     *             If things go wrong
+     */
+    HttpURLConnection connection(URI url, URI url2, boolean forStateChange)
+            throws IOException;
 
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param url2
-	 *            Secondary URL, often a path tail and/or query suffix.
-	 * @return the connection, which should not be used to change the service
-	 *         state.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	default HttpURLConnection connection(URI url, URI url2) throws IOException {
-		return connection(url, url2, false);
-	}
+    /**
+     * Create a connection that's part of the session.
+     *
+     * @param url
+     *            The URL (relative or absolute) for where to access.
+     * @param url2
+     *            Secondary URL, often a path tail and/or query suffix.
+     * @return the connection, which should not be used to change the service
+     *         state.
+     * @throws IOException
+     *             If things go wrong
+     */
+    default HttpURLConnection connection(URI url, URI url2) throws IOException {
+        return connection(url, url2, false);
+    }
 
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @return the connection, which should not be used to change the service
-	 *         state.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	default HttpURLConnection connection(URI url) throws IOException {
-		return connection(url, false);
-	}
+    /**
+     * Create a connection that's part of the session.
+     *
+     * @param url
+     *            The URL (relative or absolute) for where to access.
+     * @return the connection, which should not be used to change the service
+     *         state.
+     * @throws IOException
+     *             If things go wrong
+     */
+    default HttpURLConnection connection(URI url) throws IOException {
+        return connection(url, false);
+    }
 
-	/**
-	 * Check for and handle any session cookie changes.
-	 * <p>
-	 * Assumes that the session key is in the {@code JSESSIONID} cookie.
-	 *
-	 * @param conn
-	 *            Connection that's had a transaction processed.
-	 * @return Whether the session cookie was set. Normally uninteresting.
-	 */
-	boolean trackCookie(HttpURLConnection conn);
+    /**
+     * Check for and handle any session cookie changes.
+     * <p>
+     * Assumes that the session key is in the {@code JSESSIONID} cookie.
+     *
+     * @param conn
+     *            Connection that's had a transaction processed.
+     * @return Whether the session cookie was set. Normally uninteresting.
+     */
+    boolean trackCookie(HttpURLConnection conn);
 
-	/**
-	 * An action used by {@link ClientSession#withRenewal(Action)
-	 * withRenewal()}. The action will be performed once, and if it fails with a
-	 * permission fault, the session will be renewed and the action performed
-	 * exactly once more.
-	 *
-	 * @param <T>
-	 *            The type of the result of the action.
-	 * @param <Exn>
-	 *            The extra exceptions that may be thrown by the action.
-	 */
-	@FunctionalInterface
-	interface Action<T, Exn extends Exception> extends Callable<T> {
-		/**
-		 * Perform the action.
-		 *
-		 * @return The result of the action.
-		 * @throws Exn
-		 *             If another failure happens.
-		 * @throws IOException
-		 *             If network I/O fails.
-		 */
-		@Override
-		T call() throws Exn, IOException;
-	}
+    /**
+     * An action used by {@link ClientSession#withRenewal(Action)
+     * withRenewal()}. The action will be performed once, and if it fails with a
+     * permission fault, the session will be renewed and the action performed
+     * exactly once more.
+     *
+     * @param <T>
+     *            The type of the result of the action.
+     * @param <Exn>
+     *            The extra exceptions that may be thrown by the action.
+     */
+    @FunctionalInterface
+    interface Action<T, Exn extends Exception> extends Callable<T> {
+        /**
+         * Perform the action.
+         *
+         * @return The result of the action.
+         * @throws Exn
+         *             If another failure happens.
+         * @throws IOException
+         *             If network I/O fails.
+         */
+        @Override
+        T call() throws Exn, IOException;
+    }
 
-	/**
-	 * Carry out an action, applying session renewal <em>once</em> if needed.
-	 *
-	 * @param <T>
-	 *            The type of the return value.
-	 * @param <Exn>
-	 *            The extra exceptions that may be thrown by the action.
-	 * @param action
-	 *            The action to be repeated if it fails due to session expiry.
-	 * @return The result of the action
-	 * @throws Exn
-	 *             If another kind of failure happens.
-	 * @throws IOException
-	 *             If things go wrong.
-	 */
-	<T, Exn extends Exception> T withRenewal(Action<T, Exn> action)
-			throws Exn, IOException;
+    /**
+     * Carry out an action, applying session renewal <em>once</em> if needed.
+     *
+     * @param <T>
+     *            The type of the return value.
+     * @param <Exn>
+     *            The extra exceptions that may be thrown by the action.
+     * @param action
+     *            The action to be repeated if it fails due to session expiry.
+     * @return The result of the action
+     * @throws Exn
+     *             If another kind of failure happens.
+     * @throws IOException
+     *             If things go wrong.
+     */
+    <T, Exn extends Exception> T withRenewal(Action<T, Exn> action)
+            throws Exn, IOException;
 
-	/**
-	 * Discovers the root of a Spalloc service. Also sets up the true CSRF token
-	 * handling.
-	 *
-	 * @return The service root information.
-	 * @throws IOException
-	 *             If access fails.
-	 */
-	RootInfo discoverRoot() throws IOException;
+    /**
+     * Discovers the root of a Spalloc service. Also sets up the true CSRF token
+     * handling.
+     *
+     * @return The service root information.
+     * @throws IOException
+     *             If access fails.
+     */
+    RootInfo discoverRoot() throws IOException;
 
-	/**
-	 * Connect a Spalloc proxy protocol websocket to the given URL.
-	 *
-	 * @param url
-	 *            Where the websocket connects.
-	 * @return The connected websocket.
-	 * @throws IOException
-	 *             If there are network problems
-	 * @throws InterruptedException
-	 *             If interrupted during connection
-	 * @throws RuntimeException
-	 *             For various reasons
-	 */
-	ProxyProtocolClient websocket(URI url)
-			throws InterruptedException, IOException;
+    /**
+     * Connect a Spalloc proxy protocol websocket to the given URL.
+     *
+     * @param url
+     *            Where the websocket connects.
+     * @return The connected websocket.
+     * @throws IOException
+     *             If there are network problems
+     * @throws InterruptedException
+     *             If interrupted during connection
+     * @throws RuntimeException
+     *             For various reasons
+     */
+    ProxyProtocolClient websocket(URI url)
+            throws InterruptedException, IOException;
 }

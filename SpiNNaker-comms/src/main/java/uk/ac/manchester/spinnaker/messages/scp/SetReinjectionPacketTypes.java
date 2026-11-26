@@ -31,43 +31,43 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code extra_monitor_support.c}.
  */
 public class SetReinjectionPacketTypes
-		extends ReinjectorRequest<EmptyResponse> {
+        extends ReinjectorRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to set the dropped packet reinjected packet types.
-	 *
-	 * @param core
-	 *            The coordinates of the monitor core.
-	 * @param multicast
-	 *            If multicast should be set
-	 * @param pointToPoint
-	 *            If point-to-point should be set
-	 * @param fixedRoute
-	 *            If fixed-route should be set
-	 * @param nearestNeighbour
-	 *            If nearest-neighbour should be set
-	 */
-	public SetReinjectionPacketTypes(HasCoreLocation core, boolean multicast,
-			boolean pointToPoint, boolean fixedRoute,
-			boolean nearestNeighbour) {
-		super(core, SET_PACKET_TYPES, encode(multicast), encode(pointToPoint),
-				encode(fixedRoute), encodeAsBA(nearestNeighbour));
-	}
+    /**
+     * Constructs a request to set the dropped packet reinjected packet types.
+     *
+     * @param core
+     *            The coordinates of the monitor core.
+     * @param multicast
+     *            If multicast should be set
+     * @param pointToPoint
+     *            If point-to-point should be set
+     * @param fixedRoute
+     *            If fixed-route should be set
+     * @param nearestNeighbour
+     *            If nearest-neighbour should be set
+     */
+    public SetReinjectionPacketTypes(HasCoreLocation core, boolean multicast,
+            boolean pointToPoint, boolean fixedRoute,
+            boolean nearestNeighbour) {
+        super(core, SET_PACKET_TYPES, encode(multicast), encode(pointToPoint),
+                encode(fixedRoute), encodeAsBA(nearestNeighbour));
+    }
 
-	private static ByteBuffer encodeAsBA(boolean flag) {
-		var b = allocate(1);
-		b.put(encode(flag));
-		return b.flip();
-	}
+    private static ByteBuffer encodeAsBA(boolean flag) {
+        var b = allocate(1);
+        b.put(encode(flag));
+        return b.flip();
+    }
 
-	private static byte encode(boolean flag) {
-		return (byte) (flag ? 1 : 0);
-	}
+    private static byte encode(boolean flag) {
+        return (byte) (flag ? 1 : 0);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Set reinjected packet types",
-				SET_PACKET_TYPES, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Set reinjected packet types",
+                SET_PACKET_TYPES, buffer);
+    }
 }

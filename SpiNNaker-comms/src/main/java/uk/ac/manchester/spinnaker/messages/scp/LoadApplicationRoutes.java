@@ -28,18 +28,18 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 public final class LoadApplicationRoutes extends RouterTableRequest {
 
-	/**
-	 * Constructs a load request for this core.
-	 *
-	 * @param core
-	 *            The coordinates of the monitor core.
-	 */
-	public LoadApplicationRoutes(HasCoreLocation core) {
-		super(core, LOAD_APPLICATION_ROUTES);
-	}
+    /**
+     * Constructs a load request for this core.
+     *
+     * @param core
+     *            The coordinates of the monitor core.
+     */
+    public LoadApplicationRoutes(HasCoreLocation core) {
+        super(core, LOAD_APPLICATION_ROUTES);
+    }
 
-	@Override
-	String describe() {
-		return "Load application multicast routes";
-	}
+    @Override
+    String describe() {
+        return "Load application multicast routes";
+    }
 }

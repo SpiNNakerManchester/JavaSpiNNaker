@@ -23,67 +23,67 @@ import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
  * A base class for concrete notification messages.
  */
 public abstract class AbstractNotificationMessage
-		implements NotificationMessage {
-	// Must be power of 2 (minus 1)
-	private static final int MAX_COMMAND = 0x3FFF;
+        implements NotificationMessage {
+    // Must be power of 2 (minus 1)
+    private static final int MAX_COMMAND = 0x3FFF;
 
-	private static final int FLAG1_BIT = 15;
+    private static final int FLAG1_BIT = 15;
 
-	private static final int FLAG2_BIT = 14;
+    private static final int FLAG2_BIT = 14;
 
-	/** The command code of the message. */
-	private final NotificationMessageCode command;
+    /** The command code of the message. */
+    private final NotificationMessageCode command;
 
-	/**
-	 * Create an instance based on a buffer to read.
-	 *
-	 * @param buffer
-	 *            Where to read the command code from. The command code will be
-	 *            in the first two bytes; this constructor advances the buffer
-	 *            position.
-	 */
-	protected AbstractNotificationMessage(ByteBuffer buffer) {
-		command = NotificationMessageCode.get(buffer.getShort() & MAX_COMMAND);
-	}
+    /**
+     * Create an instance based on a buffer to read.
+     *
+     * @param buffer
+     *            Where to read the command code from. The command code will be
+     *            in the first two bytes; this constructor advances the buffer
+     *            position.
+     */
+    protected AbstractNotificationMessage(ByteBuffer buffer) {
+        command = NotificationMessageCode.get(buffer.getShort() & MAX_COMMAND);
+    }
 
-	/**
-	 * Create an instance based on a command.
-	 *
-	 * @param command
-	 *            The command code of the message.
-	 */
-	public AbstractNotificationMessage(NotificationMessageCode command) {
-		this.command = command;
-	}
+    /**
+     * Create an instance based on a command.
+     *
+     * @param command
+     *            The command code of the message.
+     */
+    public AbstractNotificationMessage(NotificationMessageCode command) {
+        this.command = command;
+    }
 
-	@Override
-	@OverridingMethodsMustInvokeSuper
-	public void addToBuffer(ByteBuffer buffer) {
-		short value = (short) (0 << FLAG1_BIT | 1 << FLAG2_BIT
-				| command.getValue());
-		buffer.putShort(value);
-	}
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public void addToBuffer(ByteBuffer buffer) {
+        short value = (short) (0 << FLAG1_BIT | 1 << FLAG2_BIT
+                | command.getValue());
+        buffer.putShort(value);
+    }
 
-	/**
-	 * Create a notification message instance from a buffer holding a received
-	 * message.
-	 *
-	 * @param buffer
-	 *            The received message data buffer.
-	 * @return The parsed message.
-	 * @throws UnsupportedOperationException
-	 *             If the message is not understood.
-	 */
-	public static NotificationMessage build(ByteBuffer buffer) {
-		switch (NotificationMessageCode.get(buffer.getShort(0) & MAX_COMMAND)) {
-		case DATABASE_CONFIRMATION:
-			return new DatabaseConfirmation(buffer);
-		case START_RESUME_NOTIFICATION:
-			return new StartResume(buffer);
-		case STOP_PAUSE_NOTIFICATION:
-			return new PauseStop(buffer);
-		default:
-			throw new UnsupportedOperationException();
-		}
-	}
+    /**
+     * Create a notification message instance from a buffer holding a received
+     * message.
+     *
+     * @param buffer
+     *            The received message data buffer.
+     * @return The parsed message.
+     * @throws UnsupportedOperationException
+     *             If the message is not understood.
+     */
+    public static NotificationMessage build(ByteBuffer buffer) {
+        switch (NotificationMessageCode.get(buffer.getShort(0) & MAX_COMMAND)) {
+        case DATABASE_CONFIRMATION:
+            return new DatabaseConfirmation(buffer);
+        case START_RESUME_NOTIFICATION:
+            return new StartResume(buffer);
+        case STOP_PAUSE_NOTIFICATION:
+            return new PauseStop(buffer);
+        default:
+            throw new UnsupportedOperationException();
+        }
+    }
 }

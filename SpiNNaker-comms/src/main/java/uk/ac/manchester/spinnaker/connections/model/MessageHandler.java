@@ -22,11 +22,11 @@ package uk.ac.manchester.spinnaker.connections.model;
  *            the type of message handled.
  */
 public interface MessageHandler<MessageType> {
-	/**
-	 * The callback for handling the message.
-	 *
-	 * @param message
-	 *            The message that was received.
-	 */
-	void handle(MessageType message);
+    /**
+     * The callback for handling the message.
+     *
+     * @param message
+     *            The message that was received.
+     */
+    void handle(MessageType message);
 }

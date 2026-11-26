@@ -25,19 +25,19 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
 public class TestBoardPhysicalCoordinates {
 
-	@Test
-	void testFromJson() throws IOException {
-		var json = "[2, 4, 6]";
-		var mapper = SpallocClient.createMapper();
-		var fromJson = mapper.readValue(json, BoardPhysicalCoordinates.class);
-		assertEquals(2, fromJson.getCabinet());
-		assertEquals(4, fromJson.getFrame());
-		assertEquals(6, fromJson.getBoard());
+    @Test
+    void testFromJson() throws IOException {
+        var json = "[2, 4, 6]";
+        var mapper = SpallocClient.createMapper();
+        var fromJson = mapper.readValue(json, BoardPhysicalCoordinates.class);
+        assertEquals(2, fromJson.getCabinet());
+        assertEquals(4, fromJson.getFrame());
+        assertEquals(6, fromJson.getBoard());
 
-		var direct = new BoardPhysicalCoordinates(2, 4, 6);
-		assertEquals(direct, fromJson);
-		assertEquals(direct.hashCode(), fromJson.hashCode());
-		assertEquals(direct.toString(), fromJson.toString());
-	}
+        var direct = new BoardPhysicalCoordinates(2, 4, 6);
+        assertEquals(direct, fromJson);
+        assertEquals(direct.hashCode(), fromJson.hashCode());
+        assertEquals(direct.toString(), fromJson.toString());
+    }
 
 }

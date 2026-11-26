@@ -31,43 +31,43 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code sf_crc32()} in {@code bmp_ssp.c}.
  */
 public class ReadSerialFlashCRC
-		extends BMPRequest<ReadSerialFlashCRC.Response> {
+        extends BMPRequest<ReadSerialFlashCRC.Response> {
 
-	/**
-	 * Constructs a request to get the CRC of serial flash memory.
-	 *
-	 * @param board
-	 *            which board's BMP's serial flash should be checked
-	 * @param baseAddress
-	 *            The positive base address to start the check from
-	 * @param size
-	 *            The number of bytes to check
-	 */
-	public ReadSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
-			int size) {
-		super(board, CMD_BMP_SF, baseAddress.address, size, CRC.value);
-	}
+    /**
+     * Constructs a request to get the CRC of serial flash memory.
+     *
+     * @param board
+     *            which board's BMP's serial flash should be checked
+     * @param baseAddress
+     *            The positive base address to start the check from
+     * @param size
+     *            The number of bytes to check
+     */
+    public ReadSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
+            int size) {
+        super(board, CMD_BMP_SF, baseAddress.address, size, CRC.value);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/**
-	 * An SCP response to a request to get the CRC of serial flash.
-	 */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<Integer> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read Serial Flash CRC", CMD_BMP_SF, buffer);
-		}
+    /**
+     * An SCP response to a request to get the CRC of serial flash.
+     */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<Integer> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+            super("Read Serial Flash CRC", CMD_BMP_SF, buffer);
+        }
 
-		/**
-		 * {@return The CRC}
-		 */
-		@Override
-		protected Integer parse(ByteBuffer buffer) {
-			return buffer.getInt();
-		}
-	}
+        /**
+         * {@return The CRC}
+         */
+        @Override
+        protected Integer parse(ByteBuffer buffer) {
+            return buffer.getInt();
+        }
+    }
 }

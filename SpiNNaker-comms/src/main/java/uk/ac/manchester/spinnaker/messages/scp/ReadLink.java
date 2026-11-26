@@ -35,73 +35,73 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code cmd_link_read()} in {@code scamp-cmd.c}.
  */
 public class ReadLink extends SCPRequest<ReadLink.Response> {
-	private static int validate(int size) {
-		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
-			throw new IllegalArgumentException(
-					"size must be in range 1 to 256");
-		}
-		return size;
-	}
+    private static int validate(int size) {
+        if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
+            throw new IllegalArgumentException(
+                    "size must be in range 1 to 256");
+        }
+        return size;
+    }
 
-	/**
-	 * Constructs a read request on the core.
-	 *
-	 * @param core
-	 *            the core to read via
-	 * @param link
-	 *            The direction of the link down which to send the query
-	 * @param baseAddress
-	 *            The positive base address to start the read from
-	 * @param size
-	 *            The number of bytes to read, between 1 and 256
-	 */
-	public ReadLink(HasCoreLocation core, Direction link,
-			MemoryLocation baseAddress, int size) {
-		super(core, CMD_LINK_READ, baseAddress.address, validate(size),
-				link.id);
-	}
+    /**
+     * Constructs a read request on the core.
+     *
+     * @param core
+     *            the core to read via
+     * @param link
+     *            The direction of the link down which to send the query
+     * @param baseAddress
+     *            The positive base address to start the read from
+     * @param size
+     *            The number of bytes to read, between 1 and 256
+     */
+    public ReadLink(HasCoreLocation core, Direction link,
+            MemoryLocation baseAddress, int size) {
+        super(core, CMD_LINK_READ, baseAddress.address, validate(size),
+                link.id);
+    }
 
-	/**
-	 * Constructs a read request on the scamp core of this chip.
-	 *
-	 * @param chip
-	 *            the chip to read via
-	 * @param link
-	 *            The direction of the link down which to send the query
-	 * @param baseAddress
-	 *            The positive base address to start the read from
-	 * @param size
-	 *            The number of bytes to read, between 1 and 256
-	 */
-	public ReadLink(HasChipLocation chip, Direction link,
-			MemoryLocation baseAddress, int size) {
-		super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address,
-				validate(size), link.id);
-	}
+    /**
+     * Constructs a read request on the scamp core of this chip.
+     *
+     * @param chip
+     *            the chip to read via
+     * @param link
+     *            The direction of the link down which to send the query
+     * @param baseAddress
+     *            The positive base address to start the read from
+     * @param size
+     *            The number of bytes to read, between 1 and 256
+     */
+    public ReadLink(HasChipLocation chip, Direction link,
+            MemoryLocation baseAddress, int size) {
+        super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address,
+                validate(size), link.id);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new Response(buffer);
+    }
 
-	/**
-	 * An SCP response to a request to read a region of memory via a link on a
-	 * chip. Note that it is up to the caller to manage the buffer position of
-	 * the returned response if it is to be read from multiple times.
-	 */
-	protected final class Response
-			extends PayloadedResponse<ByteBuffer, RuntimeException> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read Link", CMD_LINK_READ, buffer);
-		}
+    /**
+     * An SCP response to a request to read a region of memory via a link on a
+     * chip. Note that it is up to the caller to manage the buffer position of
+     * the returned response if it is to be read from multiple times.
+     */
+    protected final class Response
+            extends PayloadedResponse<ByteBuffer, RuntimeException> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
+            super("Read Link", CMD_LINK_READ, buffer);
+        }
 
-		/**
-		 * {@return The data read, as a read-only little-endian buffer}
-		 */
-		@Override
-		protected ByteBuffer parse(ByteBuffer buffer) {
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-		}
-	}
+        /**
+         * {@return The data read, as a read-only little-endian buffer}
+         */
+        @Override
+        protected ByteBuffer parse(ByteBuffer buffer) {
+            return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+        }
+    }
 }

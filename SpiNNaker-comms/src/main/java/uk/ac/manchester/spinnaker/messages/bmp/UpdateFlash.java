@@ -30,27 +30,27 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * This calls {@code flash_copy()} in {@code bmp_boot.c}.
  */
 public final class UpdateFlash extends BMPRequest<BMPRequest.BMPResponse> {
-	private static final int REAL_FLASH_ADDRESS = 0x10000;
+    private static final int REAL_FLASH_ADDRESS = 0x10000;
 
-	/**
-	 * Construct a request to update flash memory on a BMP.
-	 *
-	 * @param board
-	 *            the board with the BMP to write the flash of
-	 * @param baseAddress
-	 *            The positive base address to start the update at
-	 * @param size
-	 *            The number of bytes to copy
-	 */
-	public UpdateFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
-		super(board, CMD_FLASH_COPY, REAL_FLASH_ADDRESS, baseAddress.address,
-				size);
-	}
+    /**
+     * Construct a request to update flash memory on a BMP.
+     *
+     * @param board
+     *            the board with the BMP to write the flash of
+     * @param baseAddress
+     *            The positive base address to start the update at
+     * @param size
+     *            The number of bytes to copy
+     */
+    public UpdateFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
+        super(board, CMD_FLASH_COPY, REAL_FLASH_ADDRESS, baseAddress.address,
+                size);
+    }
 
-	@Override
-	public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
-			throws Exception {
-		return new BMPRequest.BMPResponse("Update flash", CMD_FLASH_COPY,
-				buffer);
-	}
+    @Override
+    public BMPRequest.BMPResponse getSCPResponse(ByteBuffer buffer)
+            throws Exception {
+        return new BMPRequest.BMPResponse("Update flash", CMD_FLASH_COPY,
+                buffer);
+    }
 }

@@ -26,21 +26,21 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly({ FPGAResetType.class, SCPCommand.class })
 enum XilinxCommand {
-	/** Load block of data. */
-	LoadData(0),
-	/** Start initialisation. */
-	Init(1),
-	/**
-	 * Reset.
-	 *
-	 * @see FPGAResetType
-	 */
-	Reset(2);
+    /** Load block of data. */
+    LoadData(0),
+    /** Start initialisation. */
+    Init(1),
+    /**
+     * Reset.
+     *
+     * @see FPGAResetType
+     */
+    Reset(2);
 
-	/** The command code to use in the message. */
-	public final int code;
+    /** The command code to use in the message. */
+    public final int code;
 
-	XilinxCommand(int code) {
-		this.code = code;
-	}
+    XilinxCommand(int code) {
+        this.code = code;
+    }
 }

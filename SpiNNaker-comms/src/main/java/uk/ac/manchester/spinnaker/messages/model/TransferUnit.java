@@ -21,51 +21,51 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** What to move data in units of. */
 public enum TransferUnit {
-	/** A byte. */
-	BYTE(0),
-	/** Two bytes. */
-	HALF_WORD(1),
-	/** Four bytes. */
-	WORD(2);
+    /** A byte. */
+    BYTE(0),
+    /** Two bytes. */
+    HALF_WORD(1),
+    /** Four bytes. */
+    WORD(2);
 
-	/**
-	 * The encoded transfer unit.
-	 */
-	public final int value;
+    /**
+     * The encoded transfer unit.
+     */
+    public final int value;
 
-	TransferUnit(int value) {
-		this.value = value;
-	}
+    TransferUnit(int value) {
+        this.value = value;
+    }
 
-	/**
-	 * Is a value an odd number.
-	 *
-	 * @param value
-	 *            The value to test
-	 * @return True exactly when the value is odd.
-	 */
-	private static boolean odd(int value) {
-		return (value & 1) == 1;
-	}
+    /**
+     * Is a value an odd number.
+     *
+     * @param value
+     *            The value to test
+     * @return True exactly when the value is odd.
+     */
+    private static boolean odd(int value) {
+        return (value & 1) == 1;
+    }
 
-	/**
-	 * What is an efficient transfer unit to use, given a starting address and a
-	 * size of data to move.
-	 *
-	 * @param address
-	 *            The address.
-	 * @param size
-	 *            The data size.
-	 * @return The preferred transfer unit.
-	 */
-	public static TransferUnit efficientTransferUnit(MemoryLocation address,
-			int size) {
-		if (address.isAligned() && size % WORD_SIZE == 0) {
-			return WORD;
-		} else if (odd(address.address) || odd(size)) {
-			return BYTE;
-		} else {
-			return HALF_WORD;
-		}
-	}
+    /**
+     * What is an efficient transfer unit to use, given a starting address and a
+     * size of data to move.
+     *
+     * @param address
+     *            The address.
+     * @param size
+     *            The data size.
+     * @return The preferred transfer unit.
+     */
+    public static TransferUnit efficientTransferUnit(MemoryLocation address,
+            int size) {
+        if (address.isAligned() && size % WORD_SIZE == 0) {
+            return WORD;
+        } else if (odd(address.address) || odd(size)) {
+            return BYTE;
+        } else {
+            return HALF_WORD;
+        }
+    }
 }

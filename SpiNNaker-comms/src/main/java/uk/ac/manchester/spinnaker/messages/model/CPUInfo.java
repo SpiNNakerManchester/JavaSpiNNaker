@@ -37,329 +37,329 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 /** Represents information about the state of a CPU. */
 @SARKStruct("vcpu")
 public class CPUInfo implements HasCoreLocation {
-	private final CoreLocation core;
+    private final CoreLocation core;
 
-	@SARKField("r")
-	private final int[] registers;
+    @SARKField("r")
+    private final int[] registers;
 
-	@SARKField("psr")
-	private final int processorStateRegister;
+    @SARKField("psr")
+    private final int processorStateRegister;
 
-	@SARKField("sp")
-	private final int stackPointer;
+    @SARKField("sp")
+    private final int stackPointer;
 
-	@SARKField("lr")
-	private final int linkRegister;
+    @SARKField("lr")
+    private final int linkRegister;
 
-	@SARKField("rt_code")
-	private final RunTimeError runTimeError;
+    @SARKField("rt_code")
+    private final RunTimeError runTimeError;
 
-	@SARKField("phys_cpu")
-	private final byte physicalCPUID;
+    @SARKField("phys_cpu")
+    private final byte physicalCPUID;
 
-	@SARKField("cpu_state")
-	private final CPUState state;
+    @SARKField("cpu_state")
+    private final CPUState state;
 
-	@SARKField("app_id")
-	private final int applicationID;
+    @SARKField("app_id")
+    private final int applicationID;
 
-	@SARKField("mbox_ap_msg")
-	private final int applicationMailboxDataAddress;
+    @SARKField("mbox_ap_msg")
+    private final int applicationMailboxDataAddress;
 
-	@SARKField("mbox_mp_msg")
-	private final int monitorMailboxDataAddress;
+    @SARKField("mbox_mp_msg")
+    private final int monitorMailboxDataAddress;
 
-	@SARKField("mbox_ap_cmd")
-	private final MailboxCommand applicationMailboxCommand;
+    @SARKField("mbox_ap_cmd")
+    private final MailboxCommand applicationMailboxCommand;
 
-	@SARKField("mbox_mp_cmd")
-	private final MailboxCommand monitorMailboxCommand;
+    @SARKField("mbox_mp_cmd")
+    private final MailboxCommand monitorMailboxCommand;
 
-	@SARKField("sw_count")
-	private final short softwareErrorCount;
+    @SARKField("sw_count")
+    private final short softwareErrorCount;
 
-	@SARKField("sw_file")
-	private final int softwareSourceFilenameAddress;
+    @SARKField("sw_file")
+    private final int softwareSourceFilenameAddress;
 
-	@SARKField("sw_line")
-	private final int softwareSourceLineNumber;
+    @SARKField("sw_line")
+    private final int softwareSourceLineNumber;
 
-	@SARKField("time")
-	private final int time;
+    @SARKField("time")
+    private final int time;
 
-	@SARKField("app_name")
-	private final String applicationName;
+    @SARKField("app_name")
+    private final String applicationName;
 
-	@SARKField("iobuf")
-	private final int iobufAddress;
+    @SARKField("iobuf")
+    private final int iobufAddress;
 
-	@SARKField("sw_ver")
-	private final int softwareVersion;
+    @SARKField("sw_ver")
+    private final int softwareVersion;
 
-	@SARKField("user0...user3")
-	private final int[] user;
+    @SARKField("user0...user3")
+    private final int[] user;
 
-	private static final int NUM_REGISTERS = 8;
+    private static final int NUM_REGISTERS = 8;
 
-	private static final int APP_NAME_WIDTH = 16;
+    private static final int APP_NAME_WIDTH = 16;
 
-	private static final int SKIP_BYTES = 16;
+    private static final int SKIP_BYTES = 16;
 
-	private static final int NUM_USER_VALUES = 4;
+    private static final int NUM_USER_VALUES = 4;
 
-	private static int[] getInts(ByteBuffer buffer, int fieldLength) {
-		var data = new int[fieldLength];
-		buffer.asIntBuffer().get(data);
-		buffer.position(buffer.position() + fieldLength * WORD_SIZE);
-		return data;
-	}
+    private static int[] getInts(ByteBuffer buffer, int fieldLength) {
+        var data = new int[fieldLength];
+        buffer.asIntBuffer().get(data);
+        buffer.position(buffer.position() + fieldLength * WORD_SIZE);
+        return data;
+    }
 
-	private static String getStr(ByteBuffer buffer, int fieldLength) {
-		var data = new byte[fieldLength];
-		buffer.get(data);
-		int len = 0;
-		// Trim from first trailing NUL
-		for (byte b : data) {
-			if (b == 0) {
-				break;
-			}
-			len++;
-		}
-		return new String(data, 0, len, US_ASCII);
-	}
+    private static String getStr(ByteBuffer buffer, int fieldLength) {
+        var data = new byte[fieldLength];
+        buffer.get(data);
+        int len = 0;
+        // Trim from first trailing NUL
+        for (byte b : data) {
+            if (b == 0) {
+                break;
+            }
+            len++;
+        }
+        return new String(data, 0, len, US_ASCII);
+    }
 
-	/**
-	 * Constructs a holder of information about the state of a CPU.
-	 *
-	 * @param location
-	 *            Which core was queried for the information.
-	 * @param buffer
-	 *            The data received from SDRAM on the board, in a little-endian
-	 *            buffer.
-	 */
-	public CPUInfo(HasCoreLocation location, ByteBuffer buffer) {
-		core = location.asCoreLocation();
-		registers = getInts(buffer, NUM_REGISTERS);
-		processorStateRegister = buffer.getInt();
-		stackPointer = buffer.getInt();
-		linkRegister = buffer.getInt();
-		runTimeError = RunTimeError.get(toUnsignedInt(buffer.get()));
-		physicalCPUID = buffer.get();
-		state = CPUState.get(buffer.get());
-		applicationID = toUnsignedInt(buffer.get());
-		applicationMailboxDataAddress = buffer.getInt();
-		monitorMailboxDataAddress = buffer.getInt();
-		applicationMailboxCommand = MailboxCommand.get(buffer.get());
-		monitorMailboxCommand = MailboxCommand.get(buffer.get());
-		softwareErrorCount = buffer.getShort();
-		softwareSourceFilenameAddress = buffer.getInt();
-		softwareSourceLineNumber = buffer.getInt();
-		time = buffer.getInt();
-		applicationName = getStr(buffer, APP_NAME_WIDTH);
-		iobufAddress = buffer.getInt();
-		softwareVersion = buffer.getInt();
-		buffer.position(buffer.position() + SKIP_BYTES);
-		user = getInts(buffer, NUM_USER_VALUES);
-	}
+    /**
+     * Constructs a holder of information about the state of a CPU.
+     *
+     * @param location
+     *            Which core was queried for the information.
+     * @param buffer
+     *            The data received from SDRAM on the board, in a little-endian
+     *            buffer.
+     */
+    public CPUInfo(HasCoreLocation location, ByteBuffer buffer) {
+        core = location.asCoreLocation();
+        registers = getInts(buffer, NUM_REGISTERS);
+        processorStateRegister = buffer.getInt();
+        stackPointer = buffer.getInt();
+        linkRegister = buffer.getInt();
+        runTimeError = RunTimeError.get(toUnsignedInt(buffer.get()));
+        physicalCPUID = buffer.get();
+        state = CPUState.get(buffer.get());
+        applicationID = toUnsignedInt(buffer.get());
+        applicationMailboxDataAddress = buffer.getInt();
+        monitorMailboxDataAddress = buffer.getInt();
+        applicationMailboxCommand = MailboxCommand.get(buffer.get());
+        monitorMailboxCommand = MailboxCommand.get(buffer.get());
+        softwareErrorCount = buffer.getShort();
+        softwareSourceFilenameAddress = buffer.getInt();
+        softwareSourceLineNumber = buffer.getInt();
+        time = buffer.getInt();
+        applicationName = getStr(buffer, APP_NAME_WIDTH);
+        iobufAddress = buffer.getInt();
+        softwareVersion = buffer.getInt();
+        buffer.position(buffer.position() + SKIP_BYTES);
+        user = getInts(buffer, NUM_USER_VALUES);
+    }
 
-	@Override
-	public int getX() {
-		return core.getX();
-	}
+    @Override
+    public int getX() {
+        return core.getX();
+    }
 
-	@Override
-	public int getY() {
-		return core.getY();
-	}
+    @Override
+    public int getY() {
+        return core.getY();
+    }
 
-	@Override
-	public int getP() {
-		return core.getP();
-	}
+    @Override
+    public int getP() {
+        return core.getP();
+    }
 
-	/**
-	 * {@return The current register values (r0&hellip;r7)}
-	 */
-	public int[] getRegisters() {
-		return registers;
-	}
+    /**
+     * {@return The current register values (r0&hellip;r7)}
+     */
+    public int[] getRegisters() {
+        return registers;
+    }
 
-	/**
-	 * {@return The value in the processor state register (PSR)}
-	 */
-	public int getProcessorStateRegister() {
-		return processorStateRegister;
-	}
+    /**
+     * {@return The value in the processor state register (PSR)}
+     */
+    public int getProcessorStateRegister() {
+        return processorStateRegister;
+    }
 
-	/**
-	 * {@return The current stack pointer value (SP)}
-	 */
-	public int getStackPointer() {
-		return stackPointer;
-	}
+    /**
+     * {@return The current stack pointer value (SP)}
+     */
+    public int getStackPointer() {
+        return stackPointer;
+    }
 
-	/**
-	 * {@return The current link register value (LR)}
-	 */
-	public int getLinkRegister() {
-		return linkRegister;
-	}
+    /**
+     * {@return The current link register value (LR)}
+     */
+    public int getLinkRegister() {
+        return linkRegister;
+    }
 
-	/**
-	 * {@return The reason for a run time error}
-	 */
-	public RunTimeError getRunTimeError() {
-		return runTimeError;
-	}
+    /**
+     * {@return The reason for a run time error}
+     */
+    public RunTimeError getRunTimeError() {
+        return runTimeError;
+    }
 
-	/**
-	 * {@return The physical ID of this processor}
-	 */
-	public byte getPhysicalCPUID() {
-		return physicalCPUID;
-	}
+    /**
+     * {@return The physical ID of this processor}
+     */
+    public byte getPhysicalCPUID() {
+        return physicalCPUID;
+    }
 
-	/**
-	 * {@return The current state of the core}
-	 */
-	public CPUState getState() {
-		return state;
-	}
+    /**
+     * {@return The current state of the core}
+     */
+    public CPUState getState() {
+        return state;
+    }
 
-	/**
-	 * {@return The ID of the application running on the core}
-	 */
-	public int getApplicationID() {
-		return applicationID;
-	}
+    /**
+     * {@return The ID of the application running on the core}
+     */
+    public int getApplicationID() {
+        return applicationID;
+    }
 
-	/**
-	 * {@return The address of the data in SDRAM for the application mailbox}
-	 */
-	public int getApplicationMailboxDataAddress() {
-		return applicationMailboxDataAddress;
-	}
+    /**
+     * {@return The address of the data in SDRAM for the application mailbox}
+     */
+    public int getApplicationMailboxDataAddress() {
+        return applicationMailboxDataAddress;
+    }
 
-	/**
-	 * {@return The address of the data in SDRAM of the monitor mailbox}
-	 */
-	public int getMonitorMailboxDataAddress() {
-		return monitorMailboxDataAddress;
-	}
+    /**
+     * {@return The address of the data in SDRAM of the monitor mailbox}
+     */
+    public int getMonitorMailboxDataAddress() {
+        return monitorMailboxDataAddress;
+    }
 
-	/**
-	 * {@return The command currently in the mailbox being sent from the monitor
-	 *         processor to the application}
-	 */
-	public MailboxCommand getApplicationMailboxCommand() {
-		return applicationMailboxCommand;
-	}
+    /**
+     * {@return The command currently in the mailbox being sent from the monitor
+     *         processor to the application}
+     */
+    public MailboxCommand getApplicationMailboxCommand() {
+        return applicationMailboxCommand;
+    }
 
-	/**
-	 * {@return The command currently in the mailbox being sent from the
-	 *         application to the monitor processor}
-	 */
-	public MailboxCommand getMonitorMailboxCommand() {
-		return monitorMailboxCommand;
-	}
+    /**
+     * {@return The command currently in the mailbox being sent from the
+     *         application to the monitor processor}
+     */
+    public MailboxCommand getMonitorMailboxCommand() {
+        return monitorMailboxCommand;
+    }
 
-	/**
-	 * {@return The number of software errors counted}
-	 */
-	public short getSoftwareErrorCount() {
-		return softwareErrorCount;
-	}
+    /**
+     * {@return The number of software errors counted}
+     */
+    public short getSoftwareErrorCount() {
+        return softwareErrorCount;
+    }
 
-	/**
-	 * {@return The address of the filename of the software source}
-	 */
-	public int getSoftwareSourceFilenameAddress() {
-		return softwareSourceFilenameAddress;
-	}
+    /**
+     * {@return The address of the filename of the software source}
+     */
+    public int getSoftwareSourceFilenameAddress() {
+        return softwareSourceFilenameAddress;
+    }
 
-	/**
-	 * {@return The line number of the software source}
-	 */
-	public int getSoftwareSourceLineNumber() {
-		return softwareSourceLineNumber;
-	}
+    /**
+     * {@return The line number of the software source}
+     */
+    public int getSoftwareSourceLineNumber() {
+        return softwareSourceLineNumber;
+    }
 
-	/**
-	 * {@return The time at which the application started, in seconds since
-	 *         00:00:00 GMT on 1 January 1970}
-	 */
-	public int getTime() {
-		return time;
-	}
+    /**
+     * {@return The time at which the application started, in seconds since
+     *         00:00:00 GMT on 1 January 1970}
+     */
+    public int getTime() {
+        return time;
+    }
 
-	/**
-	 * {@return The name of the application running on the core}
-	 */
-	public String getApplicationName() {
-		return applicationName;
-	}
+    /**
+     * {@return The name of the application running on the core}
+     */
+    public String getApplicationName() {
+        return applicationName;
+    }
 
-	/**
-	 * {@return The address of the IOBUF buffer in SDRAM}
-	 */
-	public int getIobufAddress() {
-		return iobufAddress;
-	}
+    /**
+     * {@return The address of the IOBUF buffer in SDRAM}
+     */
+    public int getIobufAddress() {
+        return iobufAddress;
+    }
 
-	/**
-	 * {@return The software version}
-	 */
-	public int getSoftwareVersion() {
-		return softwareVersion;
-	}
+    /**
+     * {@return The software version}
+     */
+    public int getSoftwareVersion() {
+        return softwareVersion;
+    }
 
-	/**
-	 * {@return The current user values
-	 *         (user<sub>0</sub>&hellip;user<sub>3</sub>)}
-	 */
-	public int[] getUser() {
-		return user;
-	}
+    /**
+     * {@return The current user values
+     *         (user<sub>0</sub>&hellip;user<sub>3</sub>)}
+     */
+    public int[] getUser() {
+        return user;
+    }
 
-	/**
-	 * Get the current user value.
-	 *
-	 * @param index
-	 *            Which index in the user array to read. Must be in range 0 to 3
-	 *            (inclusive).
-	 * @return The current user value (user<sub>index</sub>).
-	 */
-	public int getUser(int index) {
-		return user[index];
-	}
+    /**
+     * Get the current user value.
+     *
+     * @param index
+     *            Which index in the user array to read. Must be in range 0 to 3
+     *            (inclusive).
+     * @return The current user value (user<sub>index</sub>).
+     */
+    public int getUser(int index) {
+        return user[index];
+    }
 
-	/**
-	 * {@return A string representation of this CPU info}
-	 */
-	@Override
-	public String toString() {
-		return getStatusDescription();
-	}
+    /**
+     * {@return A string representation of this CPU info}
+     */
+    @Override
+    public String toString() {
+        return getStatusDescription();
+    }
 
-	/**
-	 * {@return A description of the state}
-	 */
-	public String getStatusDescription() {
-		if (state != RUN_TIME_EXCEPTION) {
-			return format("    %d:%d:%d in state %s", core.getX(), core.getY(),
-					core.getP(), state);
-		}
-		var sb = new StringBuilder();
-		sb.append(format("    %d:%d:%d in state %s:%s\n", core.getX(),
-				core.getY(), core.getP(), state, runTimeError));
-		sb.append(format("        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n",
-				r0.get(registers), r1.get(registers), r2.get(registers),
-				r3.get(registers)));
-		sb.append(format("        r4=%08x, r5=%08x, r6=%08x, r7=%08x\n",
-				r4.get(registers), r5.get(registers), r6.get(registers),
-				r7.get(registers)));
-		sb.append(format("        PSR=%08x, SP=%08x, LR=%08x",
-				processorStateRegister, stackPointer, linkRegister));
-		return sb.toString();
-	}
+    /**
+     * {@return A description of the state}
+     */
+    public String getStatusDescription() {
+        if (state != RUN_TIME_EXCEPTION) {
+            return format("    %d:%d:%d in state %s", core.getX(), core.getY(),
+                    core.getP(), state);
+        }
+        var sb = new StringBuilder();
+        sb.append(format("    %d:%d:%d in state %s:%s\n", core.getX(),
+                core.getY(), core.getP(), state, runTimeError));
+        sb.append(format("        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n",
+                r0.get(registers), r1.get(registers), r2.get(registers),
+                r3.get(registers)));
+        sb.append(format("        r4=%08x, r5=%08x, r6=%08x, r7=%08x\n",
+                r4.get(registers), r5.get(registers), r6.get(registers),
+                r7.get(registers)));
+        sb.append(format("        PSR=%08x, SP=%08x, LR=%08x",
+                processorStateRegister, stackPointer, linkRegister));
+        return sb.toString();
+    }
 }

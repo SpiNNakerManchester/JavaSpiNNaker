@@ -33,94 +33,94 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /** An SCP connection that routes messages across the proxy. */
 final class ProxiedSCPConnection extends SCPConnection {
-	/** The port of the connection. */
-	private static final int SCP_SCAMP_PORT = 17893;
+    /** The port of the connection. */
+    private static final int SCP_SCAMP_PORT = 17893;
 
-	private final ProxyProtocolClient.ConnectedChannel channel;
+    private final ProxyProtocolClient.ConnectedChannel channel;
 
-	private final BlockingQueue<ByteBuffer> receiveQueue;
+    private final BlockingQueue<ByteBuffer> receiveQueue;
 
-	private ProxyProtocolClient ws;
+    private ProxyProtocolClient ws;
 
-	/**
-	 * Construct a SCP connection based on the proxy.
-	 *
-	 * @param chip
-	 *            Which ethernet chip in the job are we talking to?
-	 * @param ws
-	 *            The proxy handle.
-	 * @param remoteAddr
-	 *            The remote address of the chip on the machine.
-	 * @throws IOException
-	 *             If we couldn't finish setting up our networking.
-	 * @throws InterruptedException
-	 *             If interrupted while things were setting up.
-	 */
-	ProxiedSCPConnection(ChipLocation chip, ProxyProtocolClient ws,
-			InetAddress remoteAddr)
-			throws IOException, InterruptedException {
-		super(chip, remoteAddr);
-		this.ws = ws;
-		receiveQueue = new LinkedBlockingQueue<>();
-		channel = ws.openChannel(chip, SCP_SCAMP_PORT, receiveQueue);
-	}
+    /**
+     * Construct a SCP connection based on the proxy.
+     *
+     * @param chip
+     *            Which ethernet chip in the job are we talking to?
+     * @param ws
+     *            The proxy handle.
+     * @param remoteAddr
+     *            The remote address of the chip on the machine.
+     * @throws IOException
+     *             If we couldn't finish setting up our networking.
+     * @throws InterruptedException
+     *             If interrupted while things were setting up.
+     */
+    ProxiedSCPConnection(ChipLocation chip, ProxyProtocolClient ws,
+            InetAddress remoteAddr)
+            throws IOException, InterruptedException {
+        super(chip, remoteAddr);
+        this.ws = ws;
+        receiveQueue = new LinkedBlockingQueue<>();
+        channel = ws.openChannel(chip, SCP_SCAMP_PORT, receiveQueue);
+    }
 
-	@Override
-	@SuppressWarnings("MissingSuperCall")
-	public void close() throws IOException {
-		channel.close();
-		ws = null;
-	}
+    @Override
+    @SuppressWarnings("MissingSuperCall")
+    public void close() throws IOException {
+        channel.close();
+        ws = null;
+    }
 
-	@Override
-	public boolean isClosed() {
-		return isNull(ws) || !ws.isOpen();
-	}
+    @Override
+    public boolean isClosed() {
+        return isNull(ws) || !ws.isOpen();
+    }
 
-	@Override
-	public boolean isConnected() {
-		return !isClosed();
-	}
+    @Override
+    public boolean isConnected() {
+        return !isClosed();
+    }
 
-	@Override
-	protected void doSend(ByteBuffer buffer) throws IOException {
-		channel.send(buffer);
-	}
+    @Override
+    protected void doSend(ByteBuffer buffer) throws IOException {
+        channel.send(buffer);
+    }
 
-	@Override
-	@DoNotCall
-	protected void doSendTo(ByteBuffer buffer, InetAddress addr, int port)
-			throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    @DoNotCall
+    protected void doSendTo(ByteBuffer buffer, InetAddress addr, int port)
+            throws IOException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	protected ByteBuffer doReceive(int timeout)
-			throws IOException, InterruptedException {
-		if (isClosed() && receiveQueue.isEmpty()) {
-			throw new EOFException("connection closed");
-		}
-		return ClientUtils.receiveHelper(receiveQueue, timeout);
-	}
+    @Override
+    protected ByteBuffer doReceive(int timeout)
+            throws IOException, InterruptedException {
+        if (isClosed() && receiveQueue.isEmpty()) {
+            throw new EOFException("connection closed");
+        }
+        return ClientUtils.receiveHelper(receiveQueue, timeout);
+    }
 
-	@Override
-	@DoNotCall
-	protected UDPPacket doReceiveWithAddress(int timeout) {
-		throw new UnsupportedOperationException(
-				"receiveWithAddress() not supported by this connection type");
-	}
+    @Override
+    @DoNotCall
+    protected UDPPacket doReceiveWithAddress(int timeout) {
+        throw new UnsupportedOperationException(
+                "receiveWithAddress() not supported by this connection type");
+    }
 
-	/**
-	 * Close this connection eventually. Actually processes it immediately
-	 * because the other end of the proxy makes it eventual.
-	 */
-	@Override
-	public void closeEventually() {
-		closeAndLogNoExcept();
-	}
+    /**
+     * Close this connection eventually. Actually processes it immediately
+     * because the other end of the proxy makes it eventual.
+     */
+    @Override
+    public void closeEventually() {
+        closeAndLogNoExcept();
+    }
 
-	@Override
-	public String toString() {
-		return format("%s via Proxy %s", super.toString(), channel);
-	}
+    @Override
+    public String toString() {
+        return format("%s via Proxy %s", super.toString(), channel);
+    }
 }

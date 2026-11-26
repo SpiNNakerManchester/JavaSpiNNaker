@@ -20,22 +20,22 @@ package uk.ac.manchester.spinnaker.messages.scp;
  * {@code scamp-cmd.c}.
  */
 enum RouterCommand {
-	/** Initialise. */
-	INIT,
-	/** Clear (entry=arg2, count). */
-	CLEAR,
-	/** Load (addr=arg2, count, offset=arg3, app_id). */
-	LOAD,
-	/**
-	 * Set/get Fixed Route register (arg2 = route). if bit 31 of arg1 set then
-	 * return FR reg else set it
-	 */
-	FIXED;
+    /** Initialise. */
+    INIT,
+    /** Clear (entry=arg2, count). */
+    CLEAR,
+    /** Load (addr=arg2, count, offset=arg3, app_id). */
+    LOAD,
+    /**
+     * Set/get Fixed Route register (arg2 = route). if bit 31 of arg1 set then
+     * return FR reg else set it
+     */
+    FIXED;
 
-	/** The SCAMP-encoded value. */
-	public final byte value;
+    /** The SCAMP-encoded value. */
+    public final byte value;
 
-	RouterCommand() {
-		value = (byte) ordinal();
-	}
+    RouterCommand() {
+        value = (byte) ordinal();
+    }
 }

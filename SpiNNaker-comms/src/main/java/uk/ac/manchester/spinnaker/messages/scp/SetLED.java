@@ -31,29 +31,29 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class SetLED extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to change this cores LED state as specified.
-	 *
-	 * @param core
-	 *            The SpiNNaker core that will set the BMPSetLED
-	 * @param ledStates
-	 *            A mapping of BMPSetLED index to operation to apply.
-	 */
-	public SetLED(HasCoreLocation core, Map<Integer, LEDAction> ledStates) {
-		super(core, CMD_LED, leds(ledStates));
-	}
+    /**
+     * Constructs a request to change this cores LED state as specified.
+     *
+     * @param core
+     *            The SpiNNaker core that will set the BMPSetLED
+     * @param ledStates
+     *            A mapping of BMPSetLED index to operation to apply.
+     */
+    public SetLED(HasCoreLocation core, Map<Integer, LEDAction> ledStates) {
+        super(core, CMD_LED, leds(ledStates));
+    }
 
-	private static Integer leds(Map<Integer, LEDAction> ledStates) {
-		int encoded = 0;
-		for (var e : ledStates.entrySet()) {
-			encoded |= e.getValue().value << (2 * e.getKey());
-		}
-		return encoded;
-	}
+    private static Integer leds(Map<Integer, LEDAction> ledStates) {
+        int encoded = 0;
+        for (var e : ledStates.entrySet()) {
+            encoded |= e.getValue().value << (2 * e.getKey());
+        }
+        return encoded;
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Set LED", CMD_LED, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Set LED", CMD_LED, buffer);
+    }
 }

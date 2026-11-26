@@ -27,54 +27,54 @@ import java.nio.ByteBuffer;
  * future use.
  */
 public class HostSendSequencedData extends EIEIOCommandMessage {
-	/** What region will be moved. */
-	public final int regionID;
+    /** What region will be moved. */
+    public final int regionID;
 
-	/** The message sequence number. */
-	public final int sequenceNum;
+    /** The message sequence number. */
+    public final int sequenceNum;
 
-	/** The data. */
-	public final EIEIODataMessage eieioDataMessage;
+    /** The data. */
+    public final EIEIODataMessage eieioDataMessage;
 
-	/** The length of the payload of the message. */
-	private static final int PAYLOAD_LENGTH = 2;
+    /** The length of the payload of the message. */
+    private static final int PAYLOAD_LENGTH = 2;
 
-	/**
-	 * Create a message.
-	 *
-	 * @param regionID
-	 *            The region ID
-	 * @param sequenceNum
-	 *            The sequence number
-	 * @param eieioDataMessage
-	 *            The payload data.
-	 */
-	public HostSendSequencedData(byte regionID, byte sequenceNum,
-			EIEIODataMessage eieioDataMessage) {
-		super(HOST_SEND_SEQUENCED_DATA);
-		this.regionID = regionID;
-		this.sequenceNum = sequenceNum;
-		this.eieioDataMessage = eieioDataMessage;
-	}
+    /**
+     * Create a message.
+     *
+     * @param regionID
+     *            The region ID
+     * @param sequenceNum
+     *            The sequence number
+     * @param eieioDataMessage
+     *            The payload data.
+     */
+    public HostSendSequencedData(byte regionID, byte sequenceNum,
+            EIEIODataMessage eieioDataMessage) {
+        super(HOST_SEND_SEQUENCED_DATA);
+        this.regionID = regionID;
+        this.sequenceNum = sequenceNum;
+        this.eieioDataMessage = eieioDataMessage;
+    }
 
-	HostSendSequencedData(ByteBuffer data) {
-		super(data);
+    HostSendSequencedData(ByteBuffer data) {
+        super(data);
 
-		regionID = toUnsignedInt(data.get());
-		sequenceNum = toUnsignedInt(data.get());
-		eieioDataMessage = readDataMessage(data);
-	}
+        regionID = toUnsignedInt(data.get());
+        sequenceNum = toUnsignedInt(data.get());
+        eieioDataMessage = readDataMessage(data);
+    }
 
-	@Override
-	public int minPacketLength() {
-		return super.minPacketLength() + PAYLOAD_LENGTH;
-	}
+    @Override
+    public int minPacketLength() {
+        return super.minPacketLength() + PAYLOAD_LENGTH;
+    }
 
-	@Override
-	public void addToBuffer(ByteBuffer buffer) {
-		super.addToBuffer(buffer);
-		buffer.put((byte) regionID);
-		buffer.put((byte) sequenceNum);
-		eieioDataMessage.addToBuffer(buffer);
-	}
+    @Override
+    public void addToBuffer(ByteBuffer buffer) {
+        super.addToBuffer(buffer);
+        buffer.put((byte) regionID);
+        buffer.put((byte) sequenceNum);
+        eieioDataMessage.addToBuffer(buffer);
+    }
 }

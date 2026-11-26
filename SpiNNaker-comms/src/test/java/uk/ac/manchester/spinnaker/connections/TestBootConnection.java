@@ -23,11 +23,11 @@ import org.junit.jupiter.api.Test;
 
 class TestBootConnection {
 
-	@Test
-	void testCreateConnection() throws IOException {
-		var udpConnect = new BootConnection(null, null, null, null);
-		// this is a very stupid test!
-		assertNotNull(udpConnect);
-	}
+    @Test
+    void testCreateConnection() throws IOException {
+        var udpConnect = new BootConnection(null, null, null, null);
+        // this is a very stupid test!
+        assertNotNull(udpConnect);
+    }
 
 }

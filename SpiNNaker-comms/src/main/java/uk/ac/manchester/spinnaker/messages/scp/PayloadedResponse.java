@@ -31,30 +31,30 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  *            The type of exception thrown by the payload parser.
  */
 public abstract class PayloadedResponse<T, E extends Exception>
-		extends CheckOKResponse implements Supplier<T> {
-	private final T value;
+        extends CheckOKResponse implements Supplier<T> {
+    private final T value;
 
-	PayloadedResponse(String operation, Enum<?> command, ByteBuffer buffer)
-			throws UnexpectedResponseCodeException, E {
-		super(operation, command, buffer);
-		value = parse(buffer);
-	}
+    PayloadedResponse(String operation, Enum<?> command, ByteBuffer buffer)
+            throws UnexpectedResponseCodeException, E {
+        super(operation, command, buffer);
+        value = parse(buffer);
+    }
 
-	@Override
-	public final T get() {
-		return value;
-	}
+    @Override
+    public final T get() {
+        return value;
+    }
 
-	/**
-	 * Parse the payload of a response. The buffer will be positioned after the
-	 * checked header.
-	 *
-	 * @param buffer
-	 *            The buffer to parse. Little-endian.
-	 * @return The parsed value.
-	 * @throws E
-	 *             If parsing fails.
-	 */
-	@ForOverride
-	protected abstract T parse(ByteBuffer buffer) throws E;
+    /**
+     * Parse the payload of a response. The buffer will be positioned after the
+     * checked header.
+     *
+     * @param buffer
+     *            The buffer to parse. Little-endian.
+     * @return The parsed value.
+     * @throws E
+     *             If parsing fails.
+     */
+    @ForOverride
+    protected abstract T parse(ByteBuffer buffer) throws E;
 }

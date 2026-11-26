@@ -31,35 +31,35 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  */
 public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
 
-	/**
-	 * Construct a request to upload a chunk of byte data.
-	 *
-	 * @param board
-	 *            Which board to upload the FPGA data to.
-	 * @param data
-	 *            What data to upload.
-	 */
-	public WriteFPGAData(BMPBoard board, byte[] data) {
-		super(board, CMD_XILINX, LoadData.code, data.length, 0,
-				ByteBuffer.wrap(data));
-	}
+    /**
+     * Construct a request to upload a chunk of byte data.
+     *
+     * @param board
+     *            Which board to upload the FPGA data to.
+     * @param data
+     *            What data to upload.
+     */
+    public WriteFPGAData(BMPBoard board, byte[] data) {
+        super(board, CMD_XILINX, LoadData.code, data.length, 0,
+                ByteBuffer.wrap(data));
+    }
 
-	/**
-	 * Construct a request to upload a chunk of buffer data.
-	 *
-	 * @param board
-	 *            Which board to upload the FPGA data to.
-	 * @param data
-	 *            What data to upload. The position and limit of the buffer will
-	 *            not be updated by this method.
-	 */
-	public WriteFPGAData(BMPBoard board, ByteBuffer data) {
-		super(board, CMD_XILINX, LoadData.code, data.remaining(), 0, data);
-	}
+    /**
+     * Construct a request to upload a chunk of buffer data.
+     *
+     * @param board
+     *            Which board to upload the FPGA data to.
+     * @param data
+     *            What data to upload. The position and limit of the buffer will
+     *            not be updated by this method.
+     */
+    public WriteFPGAData(BMPBoard board, ByteBuffer data) {
+        super(board, CMD_XILINX, LoadData.code, data.remaining(), 0, data);
+    }
 
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Load data into XILINX buffer", CMD_XILINX,
-				buffer);
-	}
+    @Override
+    public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new BMPResponse("Load data into XILINX buffer", CMD_XILINX,
+                buffer);
+    }
 }

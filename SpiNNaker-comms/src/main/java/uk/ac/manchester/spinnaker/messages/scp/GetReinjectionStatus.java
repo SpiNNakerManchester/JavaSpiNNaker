@@ -31,40 +31,40 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code extra_monitor_support.c}.
  */
 public class GetReinjectionStatus
-		extends ReinjectorRequest<GetReinjectionStatus.Response> {
+        extends ReinjectorRequest<GetReinjectionStatus.Response> {
 
-	/**
-	 * Constructs a request to get the dropped packet reinjection status.
-	 *
-	 * @param core
-	 *            the monitor core to read from
-	 */
-	public GetReinjectionStatus(HasCoreLocation core) {
-		super(core, GET_STATUS);
-	}
+    /**
+     * Constructs a request to get the dropped packet reinjection status.
+     *
+     * @param core
+     *            the monitor core to read from
+     */
+    public GetReinjectionStatus(HasCoreLocation core) {
+        super(core, GET_STATUS);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new Response(buffer);
+    }
 
-	/**
-	 * An SCP response to a request for the dropped packet reinjection status.
-	 */
-	protected final class Response
-			extends PayloadedResponse<ReinjectionStatus, RuntimeException> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Get packet reinjection status", GET_STATUS, buffer);
-		}
+    /**
+     * An SCP response to a request for the dropped packet reinjection status.
+     */
+    protected final class Response
+            extends PayloadedResponse<ReinjectionStatus, RuntimeException> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Get packet reinjection status", GET_STATUS, buffer);
+        }
 
-		/**
-		 * {@return The chip information received}
-		 */
-		@Override
-		protected ReinjectionStatus parse(ByteBuffer buffer) {
-			return new ReinjectionStatus(buffer);
-		}
-	}
+        /**
+         * {@return The chip information received}
+         */
+        @Override
+        protected ReinjectionStatus parse(ByteBuffer buffer) {
+            return new ReinjectionStatus(buffer);
+        }
+    }
 }

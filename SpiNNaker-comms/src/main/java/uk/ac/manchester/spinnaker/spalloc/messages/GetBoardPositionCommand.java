@@ -30,20 +30,20 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
  *      request
  */
 public class GetBoardPositionCommand extends Command<Integer> {
-	/**
-	 * Create a request.
-	 *
-	 * @param machine
-	 *            The machine to ask about.
-	 * @param coords
-	 *            The logical coordinates of the board.
-	 */
-	public GetBoardPositionCommand(@NotBlank String machine,
-			@Valid TriadCoords coords) {
-		super("get_board_position");
-		addKwArg("machine_name", machine);
-		addKwArg("x", coords.x);
-		addKwArg("y", coords.y);
-		addKwArg("z", coords.z);
-	}
+    /**
+     * Create a request.
+     *
+     * @param machine
+     *            The machine to ask about.
+     * @param coords
+     *            The logical coordinates of the board.
+     */
+    public GetBoardPositionCommand(@NotBlank String machine,
+            @Valid TriadCoords coords) {
+        super("get_board_position");
+        addKwArg("machine_name", machine);
+        addKwArg("x", coords.x);
+        addKwArg("y", coords.y);
+        addKwArg("z", coords.z);
+    }
 }
