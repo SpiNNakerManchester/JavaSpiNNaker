@@ -93,7 +93,7 @@ public final class WhereIs {
      *
      * {@code null} if none.
      *
-        * @return The location of more information about the job allocated to the
+     * @return The location of more information about the job allocated to the
      *         board with the chip.
      */
     public URI getJobRef() {
