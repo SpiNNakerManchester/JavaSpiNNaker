@@ -61,7 +61,7 @@ limitations under the License.
 	</module>
 
 	<!-- Whitespace Checks -->
-	<!-- module name="FileTabCharacter"/ TODO -->
+	<module name="FileTabCharacter"/>
 
 	<module name="SuppressionFilter">
 		<property name="file" value="${checkstyle.config.path}/suppressions.xml" />
