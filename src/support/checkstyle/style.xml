@@ -35,7 +35,7 @@ limitations under the License.
 
 	<!-- Miscellaneous Checks -->
 	<module name="LineEnding"/>
-	<!-- module name="OrderedProperties"/ TODO -->
+	<module name="OrderedProperties"/>
 	<module name="NewlineAtEndOfFile"/>
 	<module name="Translation"/>
 	<module name="UniqueProperties"/>
