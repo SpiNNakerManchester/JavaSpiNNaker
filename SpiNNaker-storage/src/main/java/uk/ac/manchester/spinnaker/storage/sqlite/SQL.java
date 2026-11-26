@@ -216,7 +216,7 @@ abstract class SQL {
     @ResultColumn("content")
     @ResultColumn("pointer")
     static final String GET_REGION_POINTER_AND_CONTEXT =
-       "SELECT region_num, content, pointer "
+        "SELECT region_num, content, pointer "
            + "FROM pointer_content_view "
            + "WHERE x = ? AND y = ? AND p = ? "
            + "ORDER BY region_num";
