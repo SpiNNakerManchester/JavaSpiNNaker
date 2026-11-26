@@ -48,107 +48,107 @@ import java.util.NoSuchElementException;
  * sure close is called is with a {@code try}-with-resources statement.
  */
 public class ReaderLineIterable implements MappableIterable<String>, Closeable {
-	private final BufferedReader r;
+    private final BufferedReader r;
 
-	private boolean closed = false;
+    private boolean closed = false;
 
-	private boolean used = false;
+    private boolean used = false;
 
-	private IOException caught;
+    private IOException caught;
 
-	/**
-	 * Create a new <i>one-shot</i> iterable.
-	 *
-	 * @param inputStream
-	 *            The input stream to read from, using UTF-8 as the encoding.
-	 */
-	public ReaderLineIterable(InputStream inputStream) {
-		this(new InputStreamReader(inputStream, UTF_8));
-	}
+    /**
+     * Create a new <i>one-shot</i> iterable.
+     *
+     * @param inputStream
+     *            The input stream to read from, using UTF-8 as the encoding.
+     */
+    public ReaderLineIterable(InputStream inputStream) {
+        this(new InputStreamReader(inputStream, UTF_8));
+    }
 
-	/**
-	 * Create a new <i>one-shot</i> iterable.
-	 *
-	 * @param reader
-	 *            The reader to read from.
-	 */
-	public ReaderLineIterable(Reader reader) {
-		this.r = new BufferedReader(reader);
-	}
+    /**
+     * Create a new <i>one-shot</i> iterable.
+     *
+     * @param reader
+     *            The reader to read from.
+     */
+    public ReaderLineIterable(Reader reader) {
+        this.r = new BufferedReader(reader);
+    }
 
-	/**
-	 * {@return An iterator over the lines of the underlying reader}
-	 */
-	@Override
-	public Iterator<String> iterator() {
-		if (used) {
-			throw new IllegalStateException(
-					"This Iterator can only be used once.");
-		}
-		used = true;
-		if (closed) {
-			throw new IllegalStateException(
-					"This Iterator can not be used as it is already closed.");
-		}
-		return new Iterator<String>() {
-			private String s;
+    /**
+     * {@return An iterator over the lines of the underlying reader}
+     */
+    @Override
+    public Iterator<String> iterator() {
+        if (used) {
+            throw new IllegalStateException(
+                    "This Iterator can only be used once.");
+        }
+        used = true;
+        if (closed) {
+            throw new IllegalStateException(
+                    "This Iterator can not be used as it is already closed.");
+        }
+        return new Iterator<String>() {
+            private String s;
 
-			@Override
-			public boolean hasNext() {
-				if (s == null) {
-					try {
-						s = r.readLine();
-						if (s == null) {
-							silentClose();
-						}
-					} catch (IOException ex) {
-						// Ignore an error because this closed the stream
-						if (!closed) {
-							if (caught == null) {
-								caught = ex;
-							}
-						}
-						silentClose();
-						return false;
-					}
-				}
-				return s != null;
-			}
+            @Override
+            public boolean hasNext() {
+                if (s == null) {
+                    try {
+                        s = r.readLine();
+                        if (s == null) {
+                            silentClose();
+                        }
+                    } catch (IOException ex) {
+                        // Ignore an error because this closed the stream
+                        if (!closed) {
+                            if (caught == null) {
+                                caught = ex;
+                            }
+                        }
+                        silentClose();
+                        return false;
+                    }
+                }
+                return s != null;
+            }
 
-			@Override
-			public String next() {
-				if (s == null) {
-					boolean boolResult = hasNext();
-					if (!boolResult) {
-						throw new NoSuchElementException("No lines left.");
-					}
-				}
-				var temp = s;
-				s = null;
-				return temp;
-			}
-		};
-	}
+            @Override
+            public String next() {
+                if (s == null) {
+                    boolean boolResult = hasNext();
+                    if (!boolResult) {
+                        throw new NoSuchElementException("No lines left.");
+                    }
+                }
+                var temp = s;
+                s = null;
+                return temp;
+            }
+        };
+    }
 
-	private void silentClose() {
-		try {
-			r.close();
-		} catch (IOException ex) {
-			if (caught == null) {
-				caught = ex;
-			}
-		} finally {
-			closed = true;
-		}
-	}
+    private void silentClose() {
+        try {
+            r.close();
+        } catch (IOException ex) {
+            if (caught == null) {
+                caught = ex;
+            }
+        } finally {
+            closed = true;
+        }
+    }
 
-	@Override
-	public void close() throws IOException {
-		silentClose();
-		if (caught != null) {
-			var temp = caught;
-			caught = null;
-			throw temp;
-		}
-	}
+    @Override
+    public void close() throws IOException {
+        silentClose();
+        if (caught != null) {
+            var temp = caught;
+            caught = null;
+            throw temp;
+        }
+    }
 }

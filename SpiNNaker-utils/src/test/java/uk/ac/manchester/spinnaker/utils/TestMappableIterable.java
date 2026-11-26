@@ -23,99 +23,99 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
 public class TestMappableIterable {
-	private final List<Integer> values = List.of(1, 2, 3, 4, 5);
+    private final List<Integer> values = List.of(1, 2, 3, 4, 5);
 
-	private final List<Integer> values2 = List.of(1, 2, 3, 2, 1);
+    private final List<Integer> values2 = List.of(1, 2, 3, 2, 1);
 
-	private final List<Integer> values3 = List.of(5, 6, 7, 8, 9);
+    private final List<Integer> values3 = List.of(5, 6, 7, 8, 9);
 
-	private final List<Integer> empty = List.of();
+    private final List<Integer> empty = List.of();
 
-	private static void assertUnreachable() {
-		assertTrue(false, "unreachable code reached");
-	}
+    private static void assertUnreachable() {
+        assertTrue(false, "unreachable code reached");
+    }
 
-	@Test
-	public void testMap() {
-		MappableIterable<Integer> mi = values::iterator;
+    @Test
+    public void testMap() {
+        MappableIterable<Integer> mi = values::iterator;
 
-		int i = 3;
-		for (Integer value : mi.map(x -> x * 3)) {
-			assertEquals(i, value);
-			i += 3;
-		}
-		assertEquals(18, i);
+        int i = 3;
+        for (Integer value : mi.map(x -> x * 3)) {
+            assertEquals(i, value);
+            i += 3;
+        }
+        assertEquals(18, i);
 
-		assertEquals(List.of('A', 'B', 'C', 'D', 'E'),
-				mi.map(x -> (char) (x + 64)).toList());
+        assertEquals(List.of('A', 'B', 'C', 'D', 'E'),
+                mi.map(x -> (char) (x + 64)).toList());
 
-		mi = () -> empty.iterator();
-		i = 0;
-		for (Integer value : mi.map(x -> 1 << x)) {
-			i += value;
-		}
-		assertEquals(i, 0);
-	}
+        mi = () -> empty.iterator();
+        i = 0;
+        for (Integer value : mi.map(x -> 1 << x)) {
+            i += value;
+        }
+        assertEquals(i, 0);
+    }
 
-	@Test
-	public void testToListAndSet() {
-		MappableIterable<Integer> mi = values2::iterator;
+    @Test
+    public void testToListAndSet() {
+        MappableIterable<Integer> mi = values2::iterator;
 
-		assertEquals(values2, mi.toList());
-		assertEquals(List.of(1, 2, 3), List.copyOf(mi.toSet()));
-	}
+        assertEquals(values2, mi.toList());
+        assertEquals(List.of(1, 2, 3), List.copyOf(mi.toSet()));
+    }
 
-	@Test
-	public void testFilter() {
-		MappableIterable<Integer> mi = values::iterator;
+    @Test
+    public void testFilter() {
+        MappableIterable<Integer> mi = values::iterator;
 
-		int i = 1;
-		for (Integer value : mi.filter(x -> (x & 1) > 0)) {
-			assertEquals(i, value);
-			i += 2;
-		}
-		assertEquals(i, 7);
+        int i = 1;
+        for (Integer value : mi.filter(x -> (x & 1) > 0)) {
+            assertEquals(i, value);
+            i += 2;
+        }
+        assertEquals(i, 7);
 
-		i = 2;
-		for (Integer value : mi.filter(x -> (x & 1) == 0)) {
-			assertEquals(i, value);
-			i += 2;
-		}
-		assertEquals(i, 6);
+        i = 2;
+        for (Integer value : mi.filter(x -> (x & 1) == 0)) {
+            assertEquals(i, value);
+            i += 2;
+        }
+        assertEquals(i, 6);
 
-		for (Integer value : mi.filter(x -> x < 1)) {
-			assertUnreachable();
-		}
+        for (Integer value : mi.filter(x -> x < 1)) {
+            assertUnreachable();
+        }
 
-		mi = () -> empty.iterator();
-		for (Integer value : mi.filter(x -> {
-			assertUnreachable();
-			return true;
-		})) {
-			assertUnreachable();
-		}
-	}
+        mi = () -> empty.iterator();
+        for (Integer value : mi.filter(x -> {
+            assertUnreachable();
+            return true;
+        })) {
+            assertUnreachable();
+        }
+    }
 
-	@Test
-	public void testFirst() {
-		MappableIterable<Integer> mi = values::iterator;
+    @Test
+    public void testFirst() {
+        MappableIterable<Integer> mi = values::iterator;
 
-		var first = mi.first();
-		assertTrue(first.isPresent());
-		assertEquals(1, first.orElseThrow());
+        var first = mi.first();
+        assertTrue(first.isPresent());
+        assertEquals(1, first.orElseThrow());
 
-		var first3 = mi.first(3).toList();
-		assertEquals(List.of(1, 2, 3), first3);
+        var first3 = mi.first(3).toList();
+        assertEquals(List.of(1, 2, 3), first3);
 
-		mi = () -> empty.iterator();
-		assertFalse(mi.first().isPresent());
-	}
+        mi = () -> empty.iterator();
+        assertFalse(mi.first().isPresent());
+    }
 
-	@Test
-	public void testNth() {
-		MappableIterable<Integer> mi = values3::iterator;
+    @Test
+    public void testNth() {
+        MappableIterable<Integer> mi = values3::iterator;
 
-		assertEquals(7, mi.nth(2).orElseThrow());
-		assertFalse(mi.nth(7).isPresent());
-	}
+        assertEquals(7, mi.nth(2).orElseThrow());
+        assertFalse(mi.nth(7).isPresent());
+    }
 }

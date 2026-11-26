@@ -29,71 +29,71 @@ import java.util.NoSuchElementException;
  *            Class of the Object to be supplied by the final Iterator.
  */
 final class DoubleMapIterator<V> implements Iterator<V> {
-	private final Iterator<? extends Map<?, V>> outer;
+    private final Iterator<? extends Map<?, V>> outer;
 
-	private Iterator<V> inner;
+    private Iterator<V> inner;
 
-	/**
-	 * Creates an Iterator given a Map of Maps.
-	 *
-	 * @param outermap
-	 *            A double map with any type(s) as the keys.
-	 */
-	DoubleMapIterator(Map<?, ? extends Map<?, V>> outermap) {
-		this(outermap.values().iterator());
-	}
+    /**
+     * Creates an Iterator given a Map of Maps.
+     *
+     * @param outermap
+     *            A double map with any type(s) as the keys.
+     */
+    DoubleMapIterator(Map<?, ? extends Map<?, V>> outermap) {
+        this(outermap.values().iterator());
+    }
 
-	/**
-	 * Creates an Iterator given a Collection/Iterable of Maps.
-	 *
-	 * @param outerIterable
-	 *            A double map with any type(s) as the keys.
-	 */
-	DoubleMapIterator(Iterable<? extends Map<?, V>> outerIterable) {
-		this(outerIterable.iterator());
-	}
+    /**
+     * Creates an Iterator given a Collection/Iterable of Maps.
+     *
+     * @param outerIterable
+     *            A double map with any type(s) as the keys.
+     */
+    DoubleMapIterator(Iterable<? extends Map<?, V>> outerIterable) {
+        this(outerIterable.iterator());
+    }
 
-	/**
-	 * Create an Iterator give a Iterator of Maps.
-	 *
-	 * @param outer
-	 *            An iterator of Maps.
-	 */
-	DoubleMapIterator(Iterator<? extends Map<?, V>> outer) {
-		this.outer = outer;
-		if (outer.hasNext()) {
-			inner = outer.next().values().iterator();
-			checkInner();
-		} else {
-			inner = null;
-		}
-	}
+    /**
+     * Create an Iterator give a Iterator of Maps.
+     *
+     * @param outer
+     *            An iterator of Maps.
+     */
+    DoubleMapIterator(Iterator<? extends Map<?, V>> outer) {
+        this.outer = outer;
+        if (outer.hasNext()) {
+            inner = outer.next().values().iterator();
+            checkInner();
+        } else {
+            inner = null;
+        }
+    }
 
-	@Override
-	public boolean hasNext() {
-		return inner != null;
-	}
+    @Override
+    public boolean hasNext() {
+        return inner != null;
+    }
 
-	@Override
-	public V next() {
-		if (inner == null) {
-			throw new NoSuchElementException("no more elements available");
-		}
-		var result = inner.next();
-		checkInner();
-		return result;
-	}
+    @Override
+    public V next() {
+        if (inner == null) {
+            throw new NoSuchElementException("no more elements available");
+        }
+        var result = inner.next();
+        checkInner();
+        return result;
+    }
 
-	private void checkInner() {
-		while (inner != null) {
-			if (inner.hasNext()) {
-				return;
-			}
-			if (outer.hasNext()) {
-				inner = outer.next().values().iterator();
-			} else {
-				inner = null;
-			}
-		}
-	}
+    private void checkInner() {
+        while (inner != null) {
+            if (inner.hasNext()) {
+                return;
+            }
+            if (outer.hasNext()) {
+                inner = outer.next().values().iterator();
+            } else {
+                inner = null;
+            }
+        }
+    }
 }

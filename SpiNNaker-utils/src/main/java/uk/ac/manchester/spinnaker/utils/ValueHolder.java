@@ -25,56 +25,56 @@ import java.util.function.Function;
  *            The type of value to hold.
  */
 public class ValueHolder<T> {
-	private T value;
+    private T value;
 
-	/**
-	 * Create an instance. The initial value held is {@code null}.
-	 */
-	public ValueHolder() {
-	}
+    /**
+     * Create an instance. The initial value held is {@code null}.
+     */
+    public ValueHolder() {
+    }
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param value
-	 *            The initial value to hold.
-	 */
-	public ValueHolder(T value) {
-		this.value = value;
-	}
+    /**
+     * Create an instance.
+     *
+     * @param value
+     *            The initial value to hold.
+     */
+    public ValueHolder(T value) {
+        this.value = value;
+    }
 
-	/**
-	 * Get the value held.
-	 *
-	 * @return The value held.
-	 */
-	public T getValue() {
-		return value;
-	}
+    /**
+     * Get the value held.
+     *
+     * @return The value held.
+     */
+    public T getValue() {
+        return value;
+    }
 
-	/**
-	 * Set the value to hold.
-	 *
-	 * @param value
-	 *            The new value to hold.
-	 */
-	public void setValue(T value) {
-		this.value = value;
-	}
+    /**
+     * Set the value to hold.
+     *
+     * @param value
+     *            The new value to hold.
+     */
+    public void setValue(T value) {
+        this.value = value;
+    }
 
-	/**
-	 * Applies a function to update the value of this instance, returning the
-	 * old value.
-	 *
-	 * @param function
-	 *            The operation to apply.
-	 * @return The <em>old</em> value.
-	 */
-	public T update(Function<T, T> function) {
-		try {
-			return value;
-		} finally {
-			value = function.apply(value);
-		}
-	}
+    /**
+     * Applies a function to update the value of this instance, returning the
+     * old value.
+     *
+     * @param function
+     *            The operation to apply.
+     * @return The <em>old</em> value.
+     */
+    public T update(Function<T, T> function) {
+        try {
+            return value;
+        } finally {
+            value = function.apply(value);
+        }
+    }
 }
