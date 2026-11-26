@@ -20,9 +20,9 @@ package uk.ac.manchester.spinnaker.nmpiexec.job_parameters;
  */
 public class UnsupportedJobException extends Exception {
 
-	/**
-	 * Serial Version UID.
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 1L;
 
 }

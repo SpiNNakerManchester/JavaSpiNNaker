@@ -29,56 +29,56 @@ import uk.ac.manchester.spinnaker.nmpi.model.machine.SpinnakerMachine;
  *            The type of the parameters
  */
 public interface JobProcess<P extends JobParameters> {
-	/**
-	 * Executes the job.
-	 *
-	 * @param machineUrl
-	 *            The URL to request a machine using (or {@code null} if
-	 *            machine is given)
-	 * @param machine
-	 *            The machine to execute the job on (or {@code null} if a URL
-	 *            is given)
-	 * @param parameters
-	 *            The parameters of the job
-	 * @param logWriter
-	 *            Somewhere to write logs to
-	 */
-	void execute(String machineUrl, SpinnakerMachine machine, P parameters,
-			LogWriter logWriter);
+    /**
+     * Executes the job.
+     *
+     * @param machineUrl
+     *            The URL to request a machine using (or {@code null} if
+     *            machine is given)
+     * @param machine
+     *            The machine to execute the job on (or {@code null} if a URL
+     *            is given)
+     * @param parameters
+     *            The parameters of the job
+     * @param logWriter
+     *            Somewhere to write logs to
+     */
+    void execute(String machineUrl, SpinnakerMachine machine, P parameters,
+            LogWriter logWriter);
 
-	/**
-	 * Gets the status of the job.
-	 *
-	 * @return The status
-	 */
-	Status getStatus();
+    /**
+     * Gets the status of the job.
+     *
+     * @return The status
+     */
+    Status getStatus();
 
-	/**
-	 * Gets any errors returned by the job. If the status is not Error, this
-	 * should return {@code null}
-	 *
-	 * @return An error, or {@code null} if no error
-	 */
-	Throwable getError();
+    /**
+     * Gets any errors returned by the job. If the status is not Error, this
+     * should return {@code null}
+     *
+     * @return An error, or {@code null} if no error
+     */
+    Throwable getError();
 
-	/**
-	 * Gets any outputs from the job. Should always return a list, but this list
-	 * can be empty if there are no outputs.
-	 *
-	 * @return A list of output files.
-	 */
-	List<File> getOutputs();
+    /**
+     * Gets any outputs from the job. Should always return a list, but this list
+     * can be empty if there are no outputs.
+     *
+     * @return A list of output files.
+     */
+    List<File> getOutputs();
 
-	/**
-	 * Gets any provenance data from the job. Should always return a list, but
-	 * this map can be empty if there is no provenance.
-	 *
-	 * @return A list of provenance items to add
-	 */
-	List<ProvenanceItem> getProvenance();
+    /**
+     * Gets any provenance data from the job. Should always return a list, but
+     * this map can be empty if there is no provenance.
+     *
+     * @return A list of provenance items to add
+     */
+    List<ProvenanceItem> getProvenance();
 
-	/**
-	 * Cleans up the job, removing any associated files.
-	 */
-	void cleanup();
+    /**
+     * Cleans up the job, removing any associated files.
+     */
+    void cleanup();
 }

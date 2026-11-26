@@ -19,11 +19,11 @@ package uk.ac.manchester.spinnaker.nmpiexec.jobprocess;
  * Something that logs can be written to.
  */
 public interface LogWriter {
-	/**
-	 * Appends a line to a log.
-	 *
-	 * @param log
-	 *            The line to append. Should include the terminating newline.
-	 */
-	void append(String log);
+    /**
+     * Appends a line to a log.
+     *
+     * @param log
+     *            The line to append. Should include the terminating newline.
+     */
+    void append(String log);
 }

@@ -37,86 +37,86 @@ import uk.ac.manchester.spinnaker.nmpi.model.job.pynn.PyNNJobParameters;
  * present in the URL.
  */
 class ZipPyNNJobParametersFactory extends JobParametersFactory {
-	@Override
-	public JobParameters getJobParameters(final Job job,
-			final File workingDirectory, final String setupScript)
-			throws UnsupportedJobException, JobParametersFactoryException {
-		// Test that there is a URL
-		final var jobCodeLocation = job.getCode().trim();
-		if (!jobCodeLocation.startsWith("http://")
-				&& !jobCodeLocation.startsWith("https://")) {
-			throw new UnsupportedJobException();
-		}
+    @Override
+    public JobParameters getJobParameters(final Job job,
+            final File workingDirectory, final String setupScript)
+            throws UnsupportedJobException, JobParametersFactoryException {
+        // Test that there is a URL
+        final var jobCodeLocation = job.getCode().trim();
+        if (!jobCodeLocation.startsWith("http://")
+                && !jobCodeLocation.startsWith("https://")) {
+            throw new UnsupportedJobException();
+        }
 
-		// Test that the URL is well formed
-		URL url;
-		try {
-			url = new URL(jobCodeLocation);
-		} catch (final MalformedURLException e) {
-			throw new JobParametersFactoryException("The URL is malformed", e);
-		}
+        // Test that the URL is well formed
+        URL url;
+        try {
+            url = new URL(jobCodeLocation);
+        } catch (final MalformedURLException e) {
+            throw new JobParametersFactoryException("The URL is malformed", e);
+        }
 
-		// Try to get the file and extract it
-		try {
-			return constructParameters(job, workingDirectory, url, setupScript);
-		} catch (final Throwable e) {
-			log(e);
-			throw new JobParametersFactoryException(
-					"Error with zip extraction", e);
-		}
-	}
+        // Try to get the file and extract it
+        try {
+            return constructParameters(job, workingDirectory, url, setupScript);
+        } catch (final Throwable e) {
+            log(e);
+            throw new JobParametersFactoryException(
+                    "Error with zip extraction", e);
+        }
+    }
 
-	/**
-	 * Extract an archive using auto-detection for the format.
-	 *
-	 * @param output
-	 *            The archive to extract
-	 * @param workingDirectory
-	 *            The directory to extract into
-	 * @return True if extracted, False if failed
-	 * @throws ArchiveException
-	 *             If the archive cannot be read for other reasons
-	 * @throws IOException
-	 *             If there is a general error in extraction
-	 */
-	private void extractAutodetectedArchive(final File output,
-			final File workingDirectory) throws IOException, ArchiveException {
-		new Expander().expand(output, workingDirectory);
-	}
+    /**
+     * Extract an archive using auto-detection for the format.
+     *
+     * @param output
+     *            The archive to extract
+     * @param workingDirectory
+     *            The directory to extract into
+     * @return True if extracted, False if failed
+     * @throws ArchiveException
+     *             If the archive cannot be read for other reasons
+     * @throws IOException
+     *             If there is a general error in extraction
+     */
+    private void extractAutodetectedArchive(final File output,
+            final File workingDirectory) throws IOException, ArchiveException {
+        new Expander().expand(output, workingDirectory);
+    }
 
-	/**
-	 * Build the job parameters.
-	 *
-	 * @param job
-	 *            The job to build the parameters for
-	 * @param workingDirectory
-	 *            The directory where the job should be run
-	 * @param url
-	 *            The URL of the archive to use
-	 * @param setupScript
-	 *            The setup script
-	 * @return The constructed parameters
-	 * @throws ArchiveException
-	 *            If there is an error with the archive
-	 * @throws IOException
-	 *             If there is an error with the file
-	 */
-	private JobParameters constructParameters(final Job job,
-			final File workingDirectory, final URL url,
-			final String setupScript)
-			throws IOException, ArchiveException {
-		final var output = downloadFile(url, workingDirectory, null);
+    /**
+     * Build the job parameters.
+     *
+     * @param job
+     *            The job to build the parameters for
+     * @param workingDirectory
+     *            The directory where the job should be run
+     * @param url
+     *            The URL of the archive to use
+     * @param setupScript
+     *            The setup script
+     * @return The constructed parameters
+     * @throws ArchiveException
+     *            If there is an error with the archive
+     * @throws IOException
+     *             If there is an error with the file
+     */
+    private JobParameters constructParameters(final Job job,
+            final File workingDirectory, final URL url,
+            final String setupScript)
+            throws IOException, ArchiveException {
+        final var output = downloadFile(url, workingDirectory, null);
 
-		/* Test if there is a recognised archive */
-		extractAutodetectedArchive(output, workingDirectory);
+        /* Test if there is a recognised archive */
+        extractAutodetectedArchive(output, workingDirectory);
 
-		var script = DEFAULT_SCRIPT_NAME + SYSTEM_ARG;
-		final var command = job.getCommand();
-		if (nonNull(command) && !command.isEmpty()) {
-			script = command;
-		}
+        var script = DEFAULT_SCRIPT_NAME + SYSTEM_ARG;
+        final var command = job.getCommand();
+        if (nonNull(command) && !command.isEmpty()) {
+            script = command;
+        }
 
-		return new PyNNJobParameters(workingDirectory.getAbsolutePath(),
-				setupScript, script, job.getHardwareConfig());
-	}
+        return new PyNNJobParameters(workingDirectory.getAbsolutePath(),
+                setupScript, script, job.getHardwareConfig());
+    }
 }
