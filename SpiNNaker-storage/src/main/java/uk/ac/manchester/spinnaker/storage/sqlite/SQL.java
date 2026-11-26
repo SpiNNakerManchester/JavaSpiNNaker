@@ -102,10 +102,10 @@ abstract class SQL {
     @Parameter("content_len")
     @ResultColumn("recording_data_id")
     static final String ADD_RECORDING_DATA =
-            "INSERT INTO recording_data(recording_region_id, extraction_id, "
-                    + " content, content_len, missing_data) "
-                    + "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
-                    + "RETURNING recording_data_id";
+        "INSERT INTO recording_data(recording_region_id, extraction_id, "
+            + " content, content_len, missing_data) "
+            + "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+            + "RETURNING recording_data_id";
 
     /** Create a recoding data record. */
     @Parameter("download_region_id")
@@ -114,27 +114,27 @@ abstract class SQL {
     @Parameter("content_len")
     @ResultColumn("download_data_id")
     static final String ADD_DOWNLOAD_DATA =
-            "INSERT INTO download_data(download_region_id, extraction_id, "
-                    + " content, content_len, missing_data) "
-                    + "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
-                    + "RETURNING download_data_id";
+        "INSERT INTO download_data(download_region_id, extraction_id, "
+            + " content, content_len, missing_data) "
+            + "VALUES (?, ?, CAST(? AS BLOB), ?, 0) "
+            + "RETURNING download_data_id";
 
     /** Fetch the current variable state of a region record. */
     @Parameter("recording_region_id")
     @ResultColumn("content")
     @ResultColumn("missing_data")
     static final String GET_RECORDING =
-            "SELECT content, missing_data FROM recording_data "
-                    + "WHERE recording_region_id = ? ORDER BY extraction_id ASC";
+        "SELECT content, missing_data FROM recording_data "
+            + "WHERE recording_region_id = ? ORDER BY extraction_id ASC";
 
     /** Fetch the current variable state of a region record. */
     @Parameter("download_region_id")
     @ResultColumn("content")
     @ResultColumn("missing_data")
     static final String GET_DOWNLOAD =
-            "SELECT content, missing_data FROM download_data "
-                    + "WHERE download_region_id = ? ORDER BY extraction_id DESC "
-                    + "LIMIT 1";
+        "SELECT content, missing_data FROM download_data "
+            + "WHERE download_region_id = ? ORDER BY extraction_id DESC "
+            + "LIMIT 1";
 
     /** List the cores with storage. */
     @Parameters({})
@@ -142,10 +142,10 @@ abstract class SQL {
     @ResultColumn("y")
     @ResultColumn("processor")
     static final String GET_CORES_WITH_STORAGE =
-            "SELECT DISTINCT x, y, processor FROM recording_data_view "
-                    + "UNION "
-                    + "SELECT DISTINCT x, y, processor FROM download_data_view "
-                    + "ORDER BY x, y, processor;";
+        "SELECT DISTINCT x, y, processor FROM recording_data_view "
+            + "UNION "
+            + "SELECT DISTINCT x, y, processor FROM download_data_view "
+            + "ORDER BY x, y, processor;";
 
     /** List the regions of a core with storage. */
     @Parameter("x")
@@ -153,16 +153,16 @@ abstract class SQL {
     @Parameter("processor")
     @ResultColumn("local_region_index")
     static final String GET_REGIONS_WITH_STORAGE =
-            "SELECT DISTINCT local_region_index FROM "
-                    + "("
-                    + "SELECT local_region_index, x, y, processor "
-                    + "FROM recording_region_view "
-                    + "UNION "
-                    + "SELECT local_region_index, x, y, processor "
-                    + "FROM download_region_view "
-                    + ") "
-                    + "WHERE x = ? AND y = ? AND processor = ? "
-                    + "ORDER BY local_region_index";
+        "SELECT DISTINCT local_region_index FROM "
+            + "("
+            + "SELECT local_region_index, x, y, processor "
+            + "FROM recording_region_view "
+            + "UNION "
+            + "SELECT local_region_index, x, y, processor "
+            + "FROM download_region_view "
+            + ") "
+            + "WHERE x = ? AND y = ? AND processor = ? "
+            + "ORDER BY local_region_index";
 
     // -----------------------------------------------------------------
     // Data loading ----------------------------------------------------
@@ -177,8 +177,8 @@ abstract class SQL {
     @ResultColumn("ethernet_y")
     @ResultColumn("ip_address")
     static final String LIST_ETHERNETS =
-            "SELECT DISTINCT ethernet_x, ethernet_y, ip_address"
-                    + " FROM core_view";
+        "SELECT DISTINCT ethernet_x, ethernet_y, ip_address"
+            + " FROM core_view";
 
     /**
      * List the cores of a board (by its Ethernet-enabled chip location) with
@@ -191,10 +191,10 @@ abstract class SQL {
     @ResultColumn("y")
     @ResultColumn("p")
     static final String LIST_CORES_TO_LOAD =
-            "SELECT x, y, p "
-                    + "FROM core_view "
-                    + "WHERE ethernet_x = ? AND ethernet_y = ? "
-                    + "AND is_system = ? ";
+        "SELECT x, y, p "
+            + "FROM core_view "
+            + "WHERE ethernet_x = ? AND ethernet_y = ? "
+            + "AND is_system = ? ";
 
     /** List the regions and sizes of a chip with data to load. */
     @Parameter("x")
@@ -203,10 +203,10 @@ abstract class SQL {
     @ResultColumn("region_num")
     @ResultColumn("size")
     static final String GET_REGION_SIZES =
-            "SELECT region_num, size "
-                    + "FROM region "
-                    + "WHERE x = ? AND y = ? AND p = ? "
-                    + "ORDER BY region_num";
+        "SELECT region_num, size "
+        + "FROM region "
+        + "WHERE x = ? AND y = ? AND p = ? "
+        + "ORDER BY region_num";
 
     /** Get the data to load for a particular core. */
     @Parameter("x")
@@ -216,10 +216,10 @@ abstract class SQL {
     @ResultColumn("content")
     @ResultColumn("pointer")
     static final String GET_REGION_POINTER_AND_CONTEXT =
-            "SELECT region_num, content, pointer "
-                    + "FROM pointer_content_view "
-                    + "WHERE x = ? AND y = ? AND p = ? "
-                    + "ORDER BY region_num";
+       "SELECT region_num, content, pointer "
+           + "FROM pointer_content_view "
+           + "WHERE x = ? AND y = ? AND p = ? "
+           + "ORDER BY region_num";
 
     /**
      * Store the start_address for the core.
@@ -229,8 +229,8 @@ abstract class SQL {
     @Parameter("y")
     @Parameter("p")
     static final String SET_START_ADDRESS = "UPDATE core "
-            + "SET start_address = ? "
-            + "WHERE x = ? AND y = ? AND p = ?";
+        + "SET start_address = ? "
+        + "WHERE x = ? AND y = ? AND p = ?";
 
     /** Get the start address for this core. */
     @Parameter("x")
@@ -238,9 +238,9 @@ abstract class SQL {
     @Parameter("p")
     @ResultColumn("start_address")
     static final String GET_START_ADDRESS =
-            "SELECT start_address "
-                    + "FROM core "
-                    + "WHERE x = ? AND y = ? AND p = ? ";
+        "SELECT start_address "
+            + "FROM core "
+            + "WHERE x = ? AND y = ? AND p = ? ";
 
     /**
      * Store the pointer for this reason.
@@ -251,19 +251,19 @@ abstract class SQL {
     @Parameter("p")
     @Parameter("region_num")
     static final String SET_REGION_POINTER = "UPDATE region "
-            + "SET pointer = ?"
-            + "WHERE x = ? AND y = ? and p = ? and region_num = ?";
+        + "SET pointer = ?"
+        + "WHERE x = ? AND y = ? and p = ? and region_num = ?";
 
     /** Get the app_id. */
     @ResultColumn("app_id")
     static final String GET_APP_ID =
-            "SELECT app_id FROM info";
+        "SELECT app_id FROM info";
 
     /** Get the machine dimensions. */
     @ResultColumn("width")
     @ResultColumn("height")
     static final String GET_MACHINE_DIMENSIONS =
-            "SELECT width, height FROM info";
+        "SELECT width, height FROM info";
 
     /**
      * The name of the result containing the spalloc URI.
@@ -294,8 +294,8 @@ abstract class SQL {
      * Get information about the proxy.
      */
     static final String GET_PROXY_INFORMATION =
-            "SELECT kind, name, value FROM proxy_configuration WHERE "
-                    + "((kind = '" + SPALLOC + "' AND name = '" + PROXY_URI + "') OR"
-                    + " (kind = '" + HEADER +  "') OR (kind = '" + COOKIE + "') OR"
-                    + " (kind = '" + SPALLOC + "' AND name = '" + SPALLOC_URI + "'))";
+        "SELECT kind, name, value FROM proxy_configuration WHERE "
+            + "((kind = '" + SPALLOC + "' AND name = '" + PROXY_URI + "') OR"
+            + " (kind = '" + HEADER +  "') OR (kind = '" + COOKIE + "') OR"
+            + " (kind = '" + SPALLOC + "' AND name = '" + SPALLOC_URI + "'))";
 }
