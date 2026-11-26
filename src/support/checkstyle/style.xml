@@ -61,7 +61,7 @@ limitations under the License.
 	</module>
 
 	<!-- Whitespace Checks -->
-	<!-- module name="FileTabCharacter"/ TODO -->
+	<module name="FileTabCharacter"/>
 
 	<module name="SuppressionFilter">
 		<property name="file" value="${checkstyle.config.path}/suppressions.xml" />
@@ -339,11 +339,7 @@ limitations under the License.
 		<!-- module name="RegexpMultiline" Directly under checker -->
 		<!-- module name="RegexpOnFilename"/ Directly under checker -->
 		<!-- module name="RegexpSingleline" / Directly under checker -->
-		<module name="RegexpSinglelineJava">
-			<property name="format" value="^\t* "/>
-			<property name="message" value="Indent must use tab characters"/>
-			<property name="ignoreComments" value="true"/>
-		</module>
+		<!-- module name="RegexpSinglelineJava" default check does nothing -->
 
 		<!-- Size Violations Checks -->
 		<!-- module name="AnonInnerLength"/ -->
