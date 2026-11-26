@@ -42,75 +42,75 @@ import com.google.errorprone.annotations.MustBeClosed;
  *            work with the database this class makes connections to.
  */
 public abstract class DatabaseEngine<APIType extends DatabaseAPI>
-		implements ConnectionProvider<APIType> {
-	private static final Logger log = getLogger(DatabaseEngine.class);
+        implements ConnectionProvider<APIType> {
+    private static final Logger log = getLogger(DatabaseEngine.class);
 
-	/** Busy timeout for SQLite, in milliseconds. */
-	private static final int BUSY_TIMEOUT = 500;
+    /** Busy timeout for SQLite, in milliseconds. */
+    private static final int BUSY_TIMEOUT = 500;
 
-	private String dbConnectionUrl;
+    private String dbConnectionUrl;
 
-	/**
-	 * Create an engine interface for an in-memory database.
-	 */
-	protected DatabaseEngine() {
-		this.dbConnectionUrl = "jdbc:sqlite::memory:";
-		log.info("will manage database in memory");
-	}
+    /**
+     * Create an engine interface for an in-memory database.
+     */
+    protected DatabaseEngine() {
+        this.dbConnectionUrl = "jdbc:sqlite::memory:";
+        log.info("will manage database in memory");
+    }
 
-	/**
-	 * Create an engine interface for a particular database.
-	 *
-	 * @param dbFile
-	 *            The file containing the database.
-	 */
-	protected DatabaseEngine(File dbFile) {
-		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
-		log.info("will manage database at {}", dbFile.getAbsolutePath());
-	}
+    /**
+     * Create an engine interface for a particular database.
+     *
+     * @param dbFile
+     *            The file containing the database.
+     */
+    protected DatabaseEngine(File dbFile) {
+        this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+        log.info("will manage database at {}", dbFile.getAbsolutePath());
+    }
 
-	/**
-	 * Create an engine interface for a particular database.
-	 *
-	 * @param dbUri
-	 *            The <em>absolute</em> URI to the file containing the database.
-	 *            May contain query parameters
-	 *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
-	 * @throws IllegalArgumentException
-	 *             If the URI is of an unsupported type.
-	 */
-	protected DatabaseEngine(URI dbUri) {
-		if (!dbUri.getScheme().equals("file")) {
-			throw new IllegalArgumentException(
-					"only file: URIs are supported, not " + dbUri);
-		} else if (!dbUri.getPath().startsWith("/")) {
-			throw new IllegalArgumentException(
-					"file: URIs must be absolute, not " + dbUri);
-		}
-		this.dbConnectionUrl = "jdbc:sqlite:" + dbUri.toASCIIString();
-		log.info("will manage database at {}", dbUri);
-	}
+    /**
+     * Create an engine interface for a particular database.
+     *
+     * @param dbUri
+     *            The <em>absolute</em> URI to the file containing the database.
+     *            May contain query parameters
+     *            <a href="https://www.sqlite.org/uri.html">as documented</a>.
+     * @throws IllegalArgumentException
+     *             If the URI is of an unsupported type.
+     */
+    protected DatabaseEngine(URI dbUri) {
+        if (!dbUri.getScheme().equals("file")) {
+            throw new IllegalArgumentException(
+                    "only file: URIs are supported, not " + dbUri);
+        } else if (!dbUri.getPath().startsWith("/")) {
+            throw new IllegalArgumentException(
+                    "file: URIs must be absolute, not " + dbUri);
+        }
+        this.dbConnectionUrl = "jdbc:sqlite:" + dbUri.toASCIIString();
+        log.info("will manage database at {}", dbUri);
+    }
 
-	@Override
-	@MustBeClosed
-	public Connection getConnection() throws SQLException {
-		if (log.isDebugEnabled()) {
-			log.debug("opening database connection {}", dbConnectionUrl);
-		}
-		var config = new SQLiteConfig();
-		config.enforceForeignKeys(true);
-		config.setSynchronous(OFF);
-		config.setBusyTimeout(BUSY_TIMEOUT);
-		config.setTransactionMode(IMMEDIATE);
-		var conn = config.createConnection(dbConnectionUrl);
-		try (var statement = conn.createStatement()) {
-			statement.executeUpdate(getDDL());
-		}
-		return conn;
-	}
+    @Override
+    @MustBeClosed
+    public Connection getConnection() throws SQLException {
+        if (log.isDebugEnabled()) {
+            log.debug("opening database connection {}", dbConnectionUrl);
+        }
+        var config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        config.setSynchronous(OFF);
+        config.setBusyTimeout(BUSY_TIMEOUT);
+        config.setTransactionMode(IMMEDIATE);
+        var conn = config.createConnection(dbConnectionUrl);
+        try (var statement = conn.createStatement()) {
+            statement.executeUpdate(getDDL());
+        }
+        return conn;
+    }
 
-	/**
-	 * {@return The DDL for initialising this kind of database}
-	 */
-	public abstract String getDDL();
+    /**
+     * {@return The DDL for initialising this kind of database}
+     */
+    public abstract String getDDL();
 }

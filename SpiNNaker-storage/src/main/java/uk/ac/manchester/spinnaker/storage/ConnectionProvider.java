@@ -27,19 +27,19 @@ import java.sql.SQLException;
  *            work with the database this class makes connections to.
  */
 public interface ConnectionProvider<APIType extends DatabaseAPI> {
-	/**
-	 * Get a connection to a database, creating it if needed.
-	 *
-	 * @return The configured connection to the database. The database will have
-	 *         been seeded with DDL if necessary.
-	 * @throws SQLException
-	 *             If anything goes wrong.
-	 */
-	Connection getConnection() throws SQLException;
+    /**
+     * Get a connection to a database, creating it if needed.
+     *
+     * @return The configured connection to the database. The database will have
+     *         been seeded with DDL if necessary.
+     * @throws SQLException
+     *             If anything goes wrong.
+     */
+    Connection getConnection() throws SQLException;
 
-	/**
-	 * {@return a storage interface that is suitable for providing support for a
-	 *         particular API}
-	 */
-	APIType getStorageInterface();
+    /**
+     * {@return a storage interface that is suitable for providing support for a
+     *         particular API}
+     */
+    APIType getStorageInterface();
 }

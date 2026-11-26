@@ -17,21 +17,21 @@ package uk.ac.manchester.spinnaker.storage.sqlite;
 
 /** Ordinal numbers. Used for positional parameters in SQL statements. */
 interface Ordinals {
-	/** First. */
-	int FIRST = 1;
+    /** First. */
+    int FIRST = 1;
 
-	/** Second. */
-	int SECOND = 2;
+    /** Second. */
+    int SECOND = 2;
 
-	/** Third. */
-	int THIRD = 3;
+    /** Third. */
+    int THIRD = 3;
 
-	/** Fourth. */
-	int FOURTH = 4;
+    /** Fourth. */
+    int FOURTH = 4;
 
-	/** Fifth. */
-	int FIFTH = 5;
+    /** Fifth. */
+    int FIFTH = 5;
 
-	/** Sixth. */
-	int SIXTH = 6;
+    /** Sixth. */
+    int SIXTH = 6;
 }

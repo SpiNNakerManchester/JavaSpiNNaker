@@ -25,36 +25,36 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  */
 public class RegionInfo {
 
-	/**
-	 * The core location of the region.
-	 */
-	public final CoreLocation core;
+    /**
+     * The core location of the region.
+     */
+    public final CoreLocation core;
 
-	/**
-	 * The address where the region will be start.
- 	 */
-	public final MemoryLocation pointer;
+    /**
+     * The address where the region will be start.
+      */
+    public final MemoryLocation pointer;
 
-	/**
-	 * The content of the region. May be null
-	 */
-	public final ByteBuffer  content;
+    /**
+     * The content of the region. May be null
+     */
+    public final ByteBuffer  content;
 
-	/**
-	 * Creates the Info combining the provided core content and address.
-	 *
-	 * @param core
-	 *          The core location of the region
-	 * @param content
-	 *           The metadata to be written to the region or null
-	 * @param pointer
-	 *           The address the region metadata starts at
-	 */
-	public RegionInfo(CoreLocation core, ByteBuffer content,
-			MemoryLocation pointer) {
-		this.core = core;
-		this.content =  content;
-		this.pointer = pointer;
-	}
+    /**
+     * Creates the Info combining the provided core content and address.
+     *
+     * @param core
+     *          The core location of the region
+     * @param content
+     *           The metadata to be written to the region or null
+     * @param pointer
+     *           The address the region metadata starts at
+     */
+    public RegionInfo(CoreLocation core, ByteBuffer content,
+            MemoryLocation pointer) {
+        this.core = core;
+        this.content =  content;
+        this.pointer = pointer;
+    }
 
 }
