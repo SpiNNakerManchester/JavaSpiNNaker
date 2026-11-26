@@ -26,24 +26,24 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * code.
  */
 public final class MapperFactory {
-	/**
-	 * No Reason to instantiate.
-	 */
-	private MapperFactory() {
-	}
+    /**
+     * No Reason to instantiate.
+     */
+    private MapperFactory() {
+    }
 
-	/**
-	 * Static method to create the object mapper.
-	 * <p>
-	 * This method makes sure that all JSON unmarshallers use the same mapper
-	 * set up the exact same way.
-	 *
-	 * @return The Object Mapper used by the Spalloc client,
-	 */
-	public static ObjectMapper createMapper() {
-		return new ObjectMapper().registerModule(new SimpleModule())
-				.setPropertyNamingStrategy(LOWER_CAMEL_CASE)
-				.configure(FAIL_ON_UNKNOWN_PROPERTIES, true)
-				.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-	}
+    /**
+     * Static method to create the object mapper.
+     * <p>
+     * This method makes sure that all JSON unmarshallers use the same mapper
+     * set up the exact same way.
+     *
+     * @return The Object Mapper used by the Spalloc client,
+     */
+    public static ObjectMapper createMapper() {
+        return new ObjectMapper().registerModule(new SimpleModule())
+                .setPropertyNamingStrategy(LOWER_CAMEL_CASE)
+                .configure(FAIL_ON_UNKNOWN_PROPERTIES, true)
+                .configure(ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+    }
 }

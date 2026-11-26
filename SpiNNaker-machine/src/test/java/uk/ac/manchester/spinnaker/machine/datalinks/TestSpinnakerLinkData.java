@@ -26,65 +26,65 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 public class TestSpinnakerLinkData {
 
-	private static final ChipLocation CHIP00 = new ChipLocation(0, 0);
+    private static final ChipLocation CHIP00 = new ChipLocation(0, 0);
 
-	private static final ChipLocation CHIP01 = new ChipLocation(0, 1);
+    private static final ChipLocation CHIP01 = new ChipLocation(0, 1);
 
-	private static InetAddress localhost() throws UnknownHostException {
-		byte[] bytes = {127, 0, 0, 1};
-		return InetAddress.getByAddress(bytes);
-	}
+    private static InetAddress localhost() throws UnknownHostException {
+        byte[] bytes = {127, 0, 0, 1};
+        return InetAddress.getByAddress(bytes);
+    }
 
-	private void checkDifferent(SpinnakerLinkData link1,
-			SpinnakerLinkData link2) {
-		assertNotEquals(link1, link2);
-		assertNotEquals(link1.hashCode(), link2.hashCode());
-		assertNotEquals(link1.toString(), link2.toString());
-	}
+    private void checkDifferent(SpinnakerLinkData link1,
+            SpinnakerLinkData link2) {
+        assertNotEquals(link1, link2);
+        assertNotEquals(link1.hashCode(), link2.hashCode());
+        assertNotEquals(link1.toString(), link2.toString());
+    }
 
-	private void checkSame(SpinnakerLinkData link1, SpinnakerLinkData link2) {
-		assertEquals(link1, link2);
-		assertEquals(link1.hashCode(), link2.hashCode());
-		assertEquals(link1.toString(), link2.toString());
-	}
+    private void checkSame(SpinnakerLinkData link1, SpinnakerLinkData link2) {
+        assertEquals(link1, link2);
+        assertEquals(link1.hashCode(), link2.hashCode());
+        assertEquals(link1.toString(), link2.toString());
+    }
 
-	@Test
-	public void testEquals() throws UnknownHostException {
-		var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
-		var link2 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
-		assertTrue(link1.sameAs(link2));
-		checkSame(link1, link2);
-		assertEquals(link1, link1);
-	}
+    @Test
+    public void testEquals() throws UnknownHostException {
+        var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
+        var link2 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
+        assertTrue(link1.sameAs(link2));
+        checkSame(link1, link2);
+        assertEquals(link1, link1);
+    }
 
-	@Test
-	public void testDifferent() throws UnknownHostException {
-		var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
-		var link2 = new SpinnakerLinkData(33, CHIP00, NORTHEAST, localhost());
-		var link3 = new SpinnakerLinkData(34, CHIP01, NORTHEAST, localhost());
-		var link4 = new SpinnakerLinkData(34, CHIP00, NORTH, localhost());
-		byte[] bytes = {127, 0, 0, 2};
-		var address2 = InetAddress.getByAddress(bytes);
-		var link5 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, address2);
+    @Test
+    public void testDifferent() throws UnknownHostException {
+        var link1 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, localhost());
+        var link2 = new SpinnakerLinkData(33, CHIP00, NORTHEAST, localhost());
+        var link3 = new SpinnakerLinkData(34, CHIP01, NORTHEAST, localhost());
+        var link4 = new SpinnakerLinkData(34, CHIP00, NORTH, localhost());
+        byte[] bytes = {127, 0, 0, 2};
+        var address2 = InetAddress.getByAddress(bytes);
+        var link5 = new SpinnakerLinkData(34, CHIP00, NORTHEAST, address2);
 
-		checkDifferent(link1, link2);
-		checkDifferent(link1, link3);
-		checkDifferent(link1, link4);
-		checkDifferent(link1, link5);
+        checkDifferent(link1, link2);
+        checkDifferent(link1, link3);
+        checkDifferent(link1, link4);
+        checkDifferent(link1, link5);
 
-		assertNotEquals(link1, null);
-		assertNotEquals(link1, "link1");
+        assertNotEquals(link1, null);
+        assertNotEquals(link1, "link1");
 
-	}
+    }
 
-	@Test
-	public void testBad() {
-		assertThrows(IllegalArgumentException.class, () -> {
-			new SpinnakerLinkData(34, null, NORTHEAST, localhost());
-		});
-		assertThrows(IllegalArgumentException.class, () -> {
-			new SpinnakerLinkData(34, CHIP00, null, localhost());
-		});
-		assertNotNull(new SpinnakerLinkData(34, CHIP00, NORTHEAST, null));
-	}
+    @Test
+    public void testBad() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new SpinnakerLinkData(34, null, NORTHEAST, localhost());
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            new SpinnakerLinkData(34, CHIP00, null, localhost());
+        });
+        assertNotNull(new SpinnakerLinkData(34, CHIP00, NORTHEAST, null));
+    }
 }

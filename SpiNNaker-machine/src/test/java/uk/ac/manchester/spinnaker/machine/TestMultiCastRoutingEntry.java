@@ -25,27 +25,27 @@ import java.util.List;
 
 public class TestMultiCastRoutingEntry {
 
-	public TestMultiCastRoutingEntry() {
-	}
+    public TestMultiCastRoutingEntry() {
+    }
 
-	@Test
-	public void testBasic() {
-		var directions = List.of(Direction.NORTH, Direction.SOUTH);
-		var ids = List.of(4, 6, 8);
-		int key = 100;
-		int mask = 200;
-		var instance =
-				new MulticastRoutingEntry(key, mask, ids, directions, true);
+    @Test
+    public void testBasic() {
+        var directions = List.of(Direction.NORTH, Direction.SOUTH);
+        var ids = List.of(4, 6, 8);
+        int key = 100;
+        int mask = 200;
+        var instance =
+                new MulticastRoutingEntry(key, mask, ids, directions, true);
 
-		assertEquals(key, instance.getKey());
-		assertEquals(mask, instance.getMask());
-		assertTrue(instance.isDefaultable());
+        assertEquals(key, instance.getKey());
+        assertEquals(mask, instance.getMask());
+        assertTrue(instance.isDefaultable());
 
-		var decode =
-				new MulticastRoutingEntry(key, mask, instance.encode(), true);
+        var decode =
+                new MulticastRoutingEntry(key, mask, instance.encode(), true);
 
-		assertThat(decode.getLinkIDs(), contains(directions.toArray()));
-		assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
-	}
+        assertThat(decode.getLinkIDs(), contains(directions.toArray()));
+        assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
+    }
 
 }

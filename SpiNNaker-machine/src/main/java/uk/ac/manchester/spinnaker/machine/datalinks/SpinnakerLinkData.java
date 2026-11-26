@@ -29,45 +29,45 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 @Immutable
 public final class SpinnakerLinkData extends AbstractDataLink {
 
-	/** The link ID from the SpiNNaker perspective. */
-	public final int spinnakerLinkId;
+    /** The link ID from the SpiNNaker perspective. */
+    public final int spinnakerLinkId;
 
-	/**
-	 * Build an instance.
-	 *
-	 * @param spinnakerLinkId
-	 *            The link ID from the SpiNNaker perspective.
-	 * @param location
-	 *            The location/chip being linked to
-	 * @param linkId
-	 *            The ID/direction coming out of the chip
-	 * @param boardAddress
-	 *            IP address of the data link on the board.
-	 */
-	public SpinnakerLinkData(int spinnakerLinkId, HasChipLocation location,
-			Direction linkId, InetAddress boardAddress) {
-		super(location, linkId, boardAddress);
-		this.spinnakerLinkId = spinnakerLinkId;
-	}
+    /**
+     * Build an instance.
+     *
+     * @param spinnakerLinkId
+     *            The link ID from the SpiNNaker perspective.
+     * @param location
+     *            The location/chip being linked to
+     * @param linkId
+     *            The ID/direction coming out of the chip
+     * @param boardAddress
+     *            IP address of the data link on the board.
+     */
+    public SpinnakerLinkData(int spinnakerLinkId, HasChipLocation location,
+            Direction linkId, InetAddress boardAddress) {
+        super(location, linkId, boardAddress);
+        this.spinnakerLinkId = spinnakerLinkId;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(location, boardAddress, direction, spinnakerLinkId);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(location, boardAddress, direction, spinnakerLinkId);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SpinnakerLinkData) {
-			var other = (SpinnakerLinkData) obj;
-			return sameAs(other) && (spinnakerLinkId == other.spinnakerLinkId);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SpinnakerLinkData) {
+            var other = (SpinnakerLinkData) obj;
+            return sameAs(other) && (spinnakerLinkId == other.spinnakerLinkId);
+        }
+        return false;
+    }
 
-	@Override
-	public String toString() {
-		return "SpinnakerLinkData {" + "X:" + getX() + " Y:" + getY()
-				+ ", boardAddress=" + boardAddress + ", linkId=" + direction
-				+ ", SpinnakerLinkId=" + spinnakerLinkId + "}";
-	}
+    @Override
+    public String toString() {
+        return "SpinnakerLinkData {" + "X:" + getX() + " Y:" + getY()
+                + ", boardAddress=" + boardAddress + ", linkId=" + direction
+                + ", SpinnakerLinkId=" + spinnakerLinkId + "}";
+    }
 }

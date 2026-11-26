@@ -42,27 +42,27 @@ import jakarta.validation.constraints.PositiveOrZero;
 @Constraint(validatedBy = {})
 @ReportAsSingleViolation
 public @interface ValidTriadZ {
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() default "Z coordinate (${validatedValue}) "
-			+ "must be 0, 1, or 2";
+    /**
+     * Message on constraint violated.
+     *
+     * @return Message
+     */
+    String message() default "Z coordinate (${validatedValue}) "
+            + "must be 0, 1, or 2";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 * @hidden
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Group of constraints. Required by validation spec.
+     *
+     * @return Constraint groups, if any
+     * @hidden
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 * @hidden
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload info. Required by validation spec.
+     *
+     * @return Payloads, if any.
+     * @hidden
+     */
+    Class<? extends Payload>[] payload() default {};
 }

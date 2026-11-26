@@ -25,26 +25,26 @@ import org.junit.jupiter.api.Test;
 
 public class TestMachineDefaults {
 
-	// _4_chip_down_links = {
-	//     (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
-	//     (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
-	// }
+        // _4_chip_down_links = {
+        //     (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
+        //     (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
+        // }
 
-	@Test
-	public void testFourChipDownLinks() {
-		// Misuses of CoreLocation!
-		var fromPython = List.of(//
-				new CoreLocation(0, 0, 3), new CoreLocation(0, 0, 4),
-				new CoreLocation(0, 1, 3), new CoreLocation(0, 1, 4),
-				new CoreLocation(1, 0, 0), new CoreLocation(1, 0, 1),
-				new CoreLocation(1, 1, 0), new CoreLocation(1, 1, 1));
+        @Test
+        public void testFourChipDownLinks() {
+                // Misuses of CoreLocation!
+                var fromPython = List.of(//
+                                new CoreLocation(0, 0, 3), new CoreLocation(0, 0, 4),
+                                new CoreLocation(0, 1, 3), new CoreLocation(0, 1, 4),
+                                new CoreLocation(1, 0, 0), new CoreLocation(1, 0, 1),
+                                new CoreLocation(1, 1, 0), new CoreLocation(1, 1, 1));
 
-		var fromDefaults = new ArrayList<CoreLocation>();
-		MachineDefaults.FOUR_CHIP_DOWN_LINKS.forEach((chip, dirs) -> {
-			assertNotNull(chip);
-			dirs.stream().map(direction -> new CoreLocation(chip, direction.id))
-					.forEach(fromDefaults::add);
-		});
-		assertThat(fromDefaults, containsInAnyOrder(fromPython.toArray()));
-	}
+                var fromDefaults = new ArrayList<CoreLocation>();
+                MachineDefaults.FOUR_CHIP_DOWN_LINKS.forEach((chip, dirs) -> {
+                        assertNotNull(chip);
+                        dirs.stream().map(direction -> new CoreLocation(chip, direction.id))
+                                        .forEach(fromDefaults::add);
+                });
+                assertThat(fromDefaults, containsInAnyOrder(fromPython.toArray()));
+        }
 }

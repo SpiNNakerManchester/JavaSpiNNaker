@@ -43,27 +43,27 @@ import jakarta.validation.constraints.PositiveOrZero;
 @Constraint(validatedBy = {})
 @ReportAsSingleViolation
 public @interface ValidFrameNumber {
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() default "frame number (${validatedValue}) "
-			+ "must be in range 0-31";
+    /**
+     * Message on constraint violated.
+     *
+     * @return Message
+     */
+    String message() default "frame number (${validatedValue}) "
+            + "must be in range 0-31";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 * @hidden
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Group of constraints. Required by validation spec.
+     *
+     * @return Constraint groups, if any
+     * @hidden
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 * @hidden
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload info. Required by validation spec.
+     *
+     * @return Payloads, if any.
+     * @hidden
+     */
+    Class<? extends Payload>[] payload() default {};
 }

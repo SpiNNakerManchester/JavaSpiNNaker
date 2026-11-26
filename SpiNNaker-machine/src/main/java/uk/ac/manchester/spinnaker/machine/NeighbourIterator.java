@@ -21,35 +21,35 @@ import java.util.Iterator;
  * Iterates over the coordinates of the neighbours of a chip.
  */
 class NeighbourIterator implements Iterator<ChipLocation> {
-	private Iterator<Link> linksIter;
+    private Iterator<Link> linksIter;
 
-	/**
-	 * Create an iterator over neighbours.
-	 *
-	 * @param linksIter
-	 *            The links from the chip.
-	 */
-	NeighbourIterator(Iterator<Link> linksIter) {
-		this.linksIter = linksIter;
-	}
+    /**
+     * Create an iterator over neighbours.
+     *
+     * @param linksIter
+     *            The links from the chip.
+     */
+    NeighbourIterator(Iterator<Link> linksIter) {
+        this.linksIter = linksIter;
+    }
 
-	/**
-	 * Create an iterator over neighbours.
-	 *
-	 * @param linksIterable
-	 *            The links from the chip.
-	 */
-	NeighbourIterator(Iterable<Link> linksIterable) {
-		this.linksIter = linksIterable.iterator();
-	}
+    /**
+     * Create an iterator over neighbours.
+     *
+     * @param linksIterable
+     *            The links from the chip.
+     */
+    NeighbourIterator(Iterable<Link> linksIterable) {
+        this.linksIter = linksIterable.iterator();
+    }
 
-	@Override
-	public boolean hasNext() {
-		return linksIter.hasNext();
-	}
+    @Override
+    public boolean hasNext() {
+        return linksIter.hasNext();
+    }
 
-	@Override
-	public ChipLocation next() {
-		return linksIter.next().destination;
-	}
+    @Override
+    public ChipLocation next() {
+        return linksIter.next().destination;
+    }
 }
