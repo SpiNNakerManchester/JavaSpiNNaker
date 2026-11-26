@@ -33,77 +33,77 @@ import jakarta.ws.rs.core.Response;
 @Path("/output")
 public interface OutputManager {
 
-	/**
-	 * Gets a results file.
-	 *
-	 * @param projectId
-	 *            The id of the project which owns the file.
-	 * @param id
-	 *            The id of the job which produced the file.
-	 * @param filename
-	 *            The name of the file.
-	 * @param download
-	 *            Whether to mark the retrieval as a download to the browser.
-	 * @return A response containing the file, or a "NOT FOUND" response if the
-	 *         file does not exist.
-	 */
-	// TODO: Enable authentication based on collab id
-	// @PreAuthorize("@collabSecurityService.canRead(#projectId)")
-	@GET
-	@Path("{projectId}/{id}/{filename:.*}")
-	@Produces(MEDIA_TYPE_WILDCARD)
-	Response getResultFile(@PathParam("projectId") String projectId,
-			@PathParam("id") int id, @PathParam("filename") String filename,
-			@QueryParam("download") @DefaultValue("true") boolean download);
+    /**
+     * Gets a results file.
+     *
+     * @param projectId
+     *            The id of the project which owns the file.
+     * @param id
+     *            The id of the job which produced the file.
+     * @param filename
+     *            The name of the file.
+     * @param download
+     *            Whether to mark the retrieval as a download to the browser.
+     * @return A response containing the file, or a "NOT FOUND" response if the
+     *         file does not exist.
+     */
+    // TODO: Enable authentication based on collab id
+    // @PreAuthorize("@collabSecurityService.canRead(#projectId)")
+    @GET
+    @Path("{projectId}/{id}/{filename:.*}")
+    @Produces(MEDIA_TYPE_WILDCARD)
+    Response getResultFile(@PathParam("projectId") String projectId,
+            @PathParam("id") int id, @PathParam("filename") String filename,
+            @QueryParam("download") @DefaultValue("true") boolean download);
 
-	/**
-	 * Gets a results file.
-	 *
-	 * @param id
-	 *            The id of the job which produced the file.
-	 * @param filename
-	 *            The name of the file.
-	 * @param download
-	 *            Whether to mark the retrieval as a download to the browser.
-	 * @return A response containing the file, or a "NOT FOUND" response if the
-	 *         file does not exist.
-	 */
-	@GET
-	@Path("{id}/{filename:.*}")
-	@Produces(MEDIA_TYPE_WILDCARD)
-	Response getResultFile(@PathParam("id") int id,
-			@PathParam("filename") String filename,
-			@QueryParam("download") @DefaultValue("true") boolean download);
+    /**
+     * Gets a results file.
+     *
+     * @param id
+     *            The id of the job which produced the file.
+     * @param filename
+     *            The name of the file.
+     * @param download
+     *            Whether to mark the retrieval as a download to the browser.
+     * @return A response containing the file, or a "NOT FOUND" response if the
+     *         file does not exist.
+     */
+    @GET
+    @Path("{id}/{filename:.*}")
+    @Produces(MEDIA_TYPE_WILDCARD)
+    Response getResultFile(@PathParam("id") int id,
+            @PathParam("filename") String filename,
+            @QueryParam("download") @DefaultValue("true") boolean download);
 
-	/**
-	 * Upload a file to the HPC store.
-	 *
-	 * @param projectId
-	 *            The project ID
-	 * @param id
-	 *            The job ID
-	 * @param serverUrl
-	 *            The HPC storage service
-	 * @param storageId
-	 *            The ID for the storage on the HPC service
-	 * @param filePath
-	 *            The path within the storage
-	 * @param userId
-	 *            The HPC user ID
-	 * @param token
-	 *            The auth token
-	 * @return Description of whether the upload was successful.
-	 */
-	@POST
-	@Produces(TEXT_PLAIN)
-	@Path("{projectId}/{id}/uploadToHPC")
-	// TODO: Enable authentication based on collab id
-	// @PreAuthorize("@collabSecurityService.canWrite(#projectId)")
-	Response uploadResultsToHPCServer(@PathParam("projectId") String projectId,
-			@PathParam("id") int id, @QueryParam("url") String serverUrl,
-			@QueryParam("storageId") String storageId,
-			@QueryParam("filePath") String filePath,
-			@QueryParam("userId") String userId,
-			@QueryParam("token") String token);
-	// What is body of the POST? What is the type of the response?
+    /**
+     * Upload a file to the HPC store.
+     *
+     * @param projectId
+     *            The project ID
+     * @param id
+     *            The job ID
+     * @param serverUrl
+     *            The HPC storage service
+     * @param storageId
+     *            The ID for the storage on the HPC service
+     * @param filePath
+     *            The path within the storage
+     * @param userId
+     *            The HPC user ID
+     * @param token
+     *            The auth token
+     * @return Description of whether the upload was successful.
+     */
+    @POST
+    @Produces(TEXT_PLAIN)
+    @Path("{projectId}/{id}/uploadToHPC")
+    // TODO: Enable authentication based on collab id
+    // @PreAuthorize("@collabSecurityService.canWrite(#projectId)")
+    Response uploadResultsToHPCServer(@PathParam("projectId") String projectId,
+            @PathParam("id") int id, @QueryParam("url") String serverUrl,
+            @QueryParam("storageId") String storageId,
+            @QueryParam("filePath") String filePath,
+            @QueryParam("userId") String userId,
+            @QueryParam("token") String token);
+    // What is body of the POST? What is the type of the response?
 }

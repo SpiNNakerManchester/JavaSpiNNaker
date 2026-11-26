@@ -26,25 +26,25 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @JsonFormat(shape = ARRAY)
 public class ListMachinesResponse {
-	/** The list of machines. */
-	private List<Machine> machines;
+    /** The list of machines. */
+    private List<Machine> machines;
 
-	/**
-	 * Get the list of machines.
-	 *
-	 * @return The list of machines
-	 */
-	public List<Machine> getMachines() {
-		return machines;
-	}
+    /**
+     * Get the list of machines.
+     *
+     * @return The list of machines
+     */
+    public List<Machine> getMachines() {
+        return machines;
+    }
 
-	/**
-	 * Set the list of machines.
-	 *
-	 * @param machines
-	 *            The list of machines to set
-	 */
-	public void setMachines(final List<Machine> machines) {
-		this.machines = machines;
-	}
+    /**
+     * Set the list of machines.
+     *
+     * @param machines
+     *            The list of machines to set
+     */
+    public void setMachines(final List<Machine> machines) {
+        this.machines = machines;
+    }
 }

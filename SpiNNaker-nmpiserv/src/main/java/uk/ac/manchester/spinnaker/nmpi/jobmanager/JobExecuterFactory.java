@@ -25,17 +25,17 @@ import java.net.URL;
  * @see XenVMExecuterFactory
  */
 public interface JobExecuterFactory {
-	/**
-	 * Creates a new {@link JobExecuter}.
-	 *
-	 * @param manager
-	 *            The manager requesting the creation
-	 * @param baseUrl
-	 *            The URL of the manager
-	 * @return The new executer
-	 * @throws IOException
-	 *             If there is an error creating the executer
-	 */
-	JobExecuter createJobExecuter(JobManager manager, URL baseUrl)
-			throws IOException;
+    /**
+     * Creates a new {@link JobExecuter}.
+     *
+     * @param manager
+     *            The manager requesting the creation
+     * @param baseUrl
+     *            The URL of the manager
+     * @return The new executer
+     * @throws IOException
+     *             If there is an error creating the executer
+     */
+    JobExecuter createJobExecuter(JobManager manager, URL baseUrl)
+            throws IOException;
 }

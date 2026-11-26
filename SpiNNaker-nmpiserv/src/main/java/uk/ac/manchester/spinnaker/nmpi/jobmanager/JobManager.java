@@ -83,230 +83,230 @@ import uk.ac.manchester.spinnaker.nmpi.status.StatusMonitorManager;
 @Service("service")
 // TODO needs security; Role = JobEngine
 public class JobManager implements NMPIQueueListener, JobManagerInterface {
-	/** Assumed number of chips on a board. */
-	private static final double CHIPS_PER_BOARD = 48.0;
+    /** Assumed number of chips on a board. */
+    private static final double CHIPS_PER_BOARD = 48.0;
 
-	/** Assumed number of cores usable per chip. */
-	private static final double CORES_PER_CHIP = 15.0;
+    /** Assumed number of cores usable per chip. */
+    private static final double CORES_PER_CHIP = 15.0;
 
-	/** Default number of boards to request. */
-	private static final int DEFAULT_N_BOARDS = 3;
+    /** Default number of boards to request. */
+    private static final int DEFAULT_N_BOARDS = 3;
 
-	/** Number of milliseconds per second. */
-	private static final double MILLISECONDS_PER_SECOND = 1000.0;
+    /** Number of milliseconds per second. */
+    private static final double MILLISECONDS_PER_SECOND = 1000.0;
 
-	/** Threshold before the number of boards is scaled up. */
-	private static final double SCALE_UP_THRESHOLD = 0.1;
+    /** Threshold before the number of boards is scaled up. */
+    private static final double SCALE_UP_THRESHOLD = 0.1;
 
-	/** Seconds between status updates. */
-	public static final int STATUS_UPDATE_PERIOD = 10;
+    /** Seconds between status updates. */
+    public static final int STATUS_UPDATE_PERIOD = 10;
 
-	/** The machine manager. */
-	@Autowired
-	private MachineManager machineManager;
+    /** The machine manager. */
+    @Autowired
+    private MachineManager machineManager;
 
-	/** The NMPI queue manager. */
-	@Autowired
-	private NMPIQueueManager queueManager;
+    /** The NMPI queue manager. */
+    @Autowired
+    private NMPIQueueManager queueManager;
 
-	/** The output manager. */
-	@Autowired
-	private OutputManagerImpl outputManager;
+    /** The output manager. */
+    @Autowired
+    private OutputManagerImpl outputManager;
 
-	/** The status updater. */
-	@Autowired
-	private StatusMonitorManager statusMonitorManager;
+    /** The status updater. */
+    @Autowired
+    private StatusMonitorManager statusMonitorManager;
 
-	/** The base URL of the REST service. */
-	private final URL baseUrl;
+    /** The base URL of the REST service. */
+    private final URL baseUrl;
 
-	/** The Job Execution factory. */
-	@Autowired
-	private JobExecuterFactory jobExecuterFactory;
+    /** The Job Execution factory. */
+    @Autowired
+    private JobExecuterFactory jobExecuterFactory;
 
-	/** True if jobs should be restarted on failure. */
-	@Value("${restartJobExecutorOnFailure}")
-	private boolean restartJobExecuterOnFailure;
+    /** True if jobs should be restarted on failure. */
+    @Value("${restartJobExecutorOnFailure}")
+    private boolean restartJobExecuterOnFailure;
 
-	/** The name of the setup script. */
-	@Value("${setupScript}")
-	private Resource setupScript;
+    /** The name of the setup script. */
+    @Value("${setupScript}")
+    private Resource setupScript;
 
-	/** Logging. */
-	private static final Logger logger = getLogger(JobManager.class);
+    /** Logging. */
+    private static final Logger logger = getLogger(JobManager.class);
 
-	/** Job ID &rarr; Machine(s) allocated. */
-	private final Map<Integer, List<SpinnakerMachine>> allocatedMachines =
-			new HashMap<>();
+    /** Job ID &rarr; Machine(s) allocated. */
+    private final Map<Integer, List<SpinnakerMachine>> allocatedMachines =
+            new HashMap<>();
 
-	/** Executor ID &rarr; Executor. */
-	private final Map<String, JobExecuter> jobExecuters = new HashMap<>();
+    /** Executor ID &rarr; Executor. */
+    private final Map<String, JobExecuter> jobExecuters = new HashMap<>();
 
-	/** Executor ID &rarr; Job ID. */
-	private final Map<String, Job> executorJobId = new HashMap<>();
+    /** Executor ID &rarr; Job ID. */
+    private final Map<String, Job> executorJobId = new HashMap<>();
 
-	/** Job ID &rarr; Directory of temporary output files. */
-	private final Map<Integer, File> jobOutputTempFiles = new HashMap<>();
+    /** Job ID &rarr; Directory of temporary output files. */
+    private final Map<Integer, File> jobOutputTempFiles = new HashMap<>();
 
-	/** Job ID &rarr; Job Provenance data. */
-	private final Map<Integer, ObjectNode> jobProvenance = new HashMap<>();
+    /** Job ID &rarr; Job Provenance data. */
+    private final Map<Integer, ObjectNode> jobProvenance = new HashMap<>();
 
-	/** Job ID &rarr; Job owner. */
-	private final Map<Integer, String> jobOwner = new HashMap<>();
+    /** Job ID &rarr; Job owner. */
+    private final Map<Integer, String> jobOwner = new HashMap<>();
 
-	/** Thread group for the executor. */
-	private ThreadGroup threadGroup;
+    /** Thread group for the executor. */
+    private ThreadGroup threadGroup;
 
-	/**
-	 * Calls {@link #updateStatus()} every {@link #STATUS_UPDATE_PERIOD}
-	 * seconds.
-	 */
-	private final ScheduledExecutorService scheduler =
-			newScheduledThreadPool(1);
+    /**
+     * Calls {@link #updateStatus()} every {@link #STATUS_UPDATE_PERIOD}
+     * seconds.
+     */
+    private final ScheduledExecutorService scheduler =
+            newScheduledThreadPool(1);
 
-	/**
-	 * Create a job manager.
-	 *
-	 * @param baseUrl
-	 *            The URL of the REST service of the manager.
-	 */
-	public JobManager(final URL baseUrl) {
-		this.baseUrl = requireNonNull(baseUrl);
-		logger.info("Base URL is {}", baseUrl);
-	}
+    /**
+     * Create a job manager.
+     *
+     * @param baseUrl
+     *            The URL of the REST service of the manager.
+     */
+    public JobManager(final URL baseUrl) {
+        this.baseUrl = requireNonNull(baseUrl);
+        logger.info("Base URL is {}", baseUrl);
+    }
 
-	/**
-	 * Start the manager's worker threads.
-	 *
-	 * @throws IOException
-	 *             If we get an error starting a job.
-	 */
-	@PostConstruct
-	private void startManager() throws IOException {
-		threadGroup = new ThreadGroup("NMPI");
+    /**
+     * Start the manager's worker threads.
+     *
+     * @throws IOException
+     *             If we get an error starting a job.
+     */
+    @PostConstruct
+    private void startManager() throws IOException {
+        threadGroup = new ThreadGroup("NMPI");
 
-		// Start looking for jobs after the startup of the services
-		scheduler.schedule(() -> startJobs(), STATUS_UPDATE_PERIOD,
-				TimeUnit.SECONDS);
-	}
+        // Start looking for jobs after the startup of the services
+        scheduler.schedule(() -> startJobs(), STATUS_UPDATE_PERIOD,
+                TimeUnit.SECONDS);
+    }
 
-	private void startJobs() {
-		// Get all jobs that are supposedly running or waiting and start them
-		// again
-		for (var job : queueManager.getJobs()) {
-			try {
-				addJob((Job) job);
-			} catch (IOException e) {
-				logger.error("Error adding job at startup", e);
-			}
-		}
+    private void startJobs() {
+        // Get all jobs that are supposedly running or waiting and start them
+        // again
+        for (var job : queueManager.getJobs()) {
+            try {
+                addJob((Job) job);
+            } catch (IOException e) {
+                logger.error("Error adding job at startup", e);
+            }
+        }
 
-		// Start the queue manager
-		queueManager.addListener(this);
-		new Thread(threadGroup, queueManager::processResponsesFromQueue,
-				"QueueManager").start();
-		scheduler.scheduleAtFixedRate(this::updateStatus,
-				0, STATUS_UPDATE_PERIOD, TimeUnit.SECONDS);
-	}
+        // Start the queue manager
+        queueManager.addListener(this);
+        new Thread(threadGroup, queueManager::processResponsesFromQueue,
+                "QueueManager").start();
+        scheduler.scheduleAtFixedRate(this::updateStatus,
+                0, STATUS_UPDATE_PERIOD, TimeUnit.SECONDS);
+    }
 
-	/**
-	 * Stop the manager's worker threads.
-	 */
-	@PreDestroy
-	private void stopManager() {
-		scheduler.shutdown();
-		queueManager.close(); // Stops the queue manager thread eventually
-	}
+    /**
+     * Stop the manager's worker threads.
+     */
+    @PreDestroy
+    private void stopManager() {
+        scheduler.shutdown();
+        queueManager.close(); // Stops the queue manager thread eventually
+    }
 
-	@Override
-	public void addJob(final Job job) throws IOException {
-		requireNonNull(job);
-		logger.info("New job {}", job.getId());
-		jobOwner.put(job.getId(), job.getUserId());
+    @Override
+    public void addJob(final Job job) throws IOException {
+        requireNonNull(job);
+        logger.info("New job {}", job.getId());
+        jobOwner.put(job.getId(), job.getUserId());
 
-		// Start an executer for the job
-		launchExecuter(job);
-	}
+        // Start an executer for the job
+        launchExecuter(job);
+    }
 
-	/**
-	 * You need to hold the lock on {@link #jobExecuters} when running this
-	 * method.
-	 *
-	 * @param job
-	 *            The job to execute
-	 * @throws IOException
-	 *             If there is an error starting the job
-	 */
-	private void launchExecuter(final Job job) throws IOException {
-		final var executer =
-				jobExecuterFactory.createJobExecuter(this, baseUrl);
-		synchronized (jobExecuters) {
-			var executerId = executer.getExecuterId();
-			jobExecuters.put(executerId, executer);
-			executorJobId.put(executerId, job);
-			jobExecuters.notifyAll();
-		}
-		executer.startExecuter();
-	}
+    /**
+     * You need to hold the lock on {@link #jobExecuters} when running this
+     * method.
+     *
+     * @param job
+     *            The job to execute
+     * @throws IOException
+     *             If there is an error starting the job
+     */
+    private void launchExecuter(final Job job) throws IOException {
+        final var executer =
+                jobExecuterFactory.createJobExecuter(this, baseUrl);
+        synchronized (jobExecuters) {
+            var executerId = executer.getExecuterId();
+            jobExecuters.put(executerId, executer);
+            executorJobId.put(executerId, job);
+            jobExecuters.notifyAll();
+        }
+        executer.startExecuter();
+    }
 
-	@Override
-	public Job getNextJob(final String executerId) {
-		requireNonNull(executerId);
-		Job job = null;
-		synchronized (jobExecuters) {
-			job = executorJobId.get(executerId);
-			while (isNull(job)) {
-				waitfor(jobExecuters);
-				job = executorJobId.get(executerId);
-			}
-		}
-		logger.info("Executer {} is running {}", executerId, job.getId());
-		queueManager.setJobRunning(job.getId());
-		return job;
-	}
+    @Override
+    public Job getNextJob(final String executerId) {
+        requireNonNull(executerId);
+        Job job = null;
+        synchronized (jobExecuters) {
+            job = executorJobId.get(executerId);
+            while (isNull(job)) {
+                waitfor(jobExecuters);
+                job = executorJobId.get(executerId);
+            }
+        }
+        logger.info("Executer {} is running {}", executerId, job.getId());
+        queueManager.setJobRunning(job.getId());
+        return job;
+    }
 
-	@Override
-	public SpinnakerMachine getLargestJobMachine(final int id,
-			final double runTime) {
-		// TODO Check quota to get the largest machine within the quota
-		try {
-			return machineManager.getMachines().stream()
-					.max(comparing(SpinnakerMachine::getArea))
-					.orElse(null);
-		} catch (IOException e) {
-			throw new InternalServerErrorException(e);
-		}
-	}
+    @Override
+    public SpinnakerMachine getLargestJobMachine(final int id,
+            final double runTime) {
+        // TODO Check quota to get the largest machine within the quota
+        try {
+            return machineManager.getMachines().stream()
+                    .max(comparing(SpinnakerMachine::getArea))
+                    .orElse(null);
+        } catch (IOException e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
 
-	@Override
-	public SpinnakerMachine getJobMachine(final int id, final int nCores,
-			final int nChips, final int nBoards, final double runTime) {
+    @Override
+    public SpinnakerMachine getJobMachine(final int id, final int nCores,
+            final int nChips, final int nBoards, final double runTime) {
 
-		logger.info(
-				"Request for {} cores or {} chips or {} boards for {} seconds",
-				nCores, nChips, nBoards, runTime / MILLISECONDS_PER_SECOND);
+        logger.info(
+                "Request for {} cores or {} chips or {} boards for {} seconds",
+                nCores, nChips, nBoards, runTime / MILLISECONDS_PER_SECOND);
 
-		int nBoardsToRequest = nBoards;
+        int nBoardsToRequest = nBoards;
 
-		// If nothing specified, use 3 boards
-		if ((nBoards <= 0) && (nChips <= 0) && (nCores <= 0)) {
-			nBoardsToRequest = DEFAULT_N_BOARDS;
-		}
+        // If nothing specified, use 3 boards
+        if ((nBoards <= 0) && (nChips <= 0) && (nCores <= 0)) {
+            nBoardsToRequest = DEFAULT_N_BOARDS;
+        }
 
-		// If boards not specified, use cores or chips
-		if (nBoardsToRequest <= 0) {
-			double nChipsExact = nChips;
+        // If boards not specified, use cores or chips
+        if (nBoardsToRequest <= 0) {
+            double nChipsExact = nChips;
 
-			// If chips not specified, use cores
-			if (nChipsExact <= 0) {
-				nChipsExact = nCores / CORES_PER_CHIP;
-			}
+            // If chips not specified, use cores
+            if (nChipsExact <= 0) {
+                nChipsExact = nCores / CORES_PER_CHIP;
+            }
 
-			double nBoardsExact = nChips / CHIPS_PER_BOARD;
+            double nBoardsExact = nChips / CHIPS_PER_BOARD;
 
-			if ((ceil(nBoardsExact) - nBoardsExact) < SCALE_UP_THRESHOLD) {
-				nBoardsExact += 1.0;
-			}
+            if ((ceil(nBoardsExact) - nBoardsExact) < SCALE_UP_THRESHOLD) {
+                nBoardsExact += 1.0;
+    		}
 			if (nBoardsExact < 1.0) {
 				nBoardsExact = 1.0;
 			}

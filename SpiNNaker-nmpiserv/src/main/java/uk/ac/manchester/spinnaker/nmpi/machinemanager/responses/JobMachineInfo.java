@@ -22,91 +22,91 @@ import java.util.List;
  * connections and its name.
  */
 public class JobMachineInfo {
-	/** The width of the machine. */
-	private int width;
+    /** The width of the machine. */
+    private int width;
 
-	/** The height of the machine. */
-	private int height;
+    /** The height of the machine. */
+    private int height;
 
-	/** The connections to the machine. */
-	private List<Connection> connections;
+    /** The connections to the machine. */
+    private List<Connection> connections;
 
-	/** The name of the machine. */
-	private String machineName;
+    /** The name of the machine. */
+    private String machineName;
 
-	/**
-	 * Get the width of the machine.
-	 *
-	 * @return The width in chips
-	 */
-	public int getWidth() {
-		return width;
-	}
+    /**
+     * Get the width of the machine.
+     *
+     * @return The width in chips
+     */
+    public int getWidth() {
+        return width;
+    }
 
-	/**
-	 * Set the width of the machine.
-	 *
-	 * @param width
-	 *            The width in chips
-	 */
-	public void setWidth(final int width) {
-		this.width = width;
-	}
+    /**
+     * Set the width of the machine.
+     *
+     * @param width
+     *            The width in chips
+     */
+    public void setWidth(final int width) {
+        this.width = width;
+    }
 
-	/**
-	 * Get the height of the machine.
-	 *
-	 * @return The height in chips
-	 */
-	public int getHeight() {
-		return height;
-	}
+    /**
+     * Get the height of the machine.
+     *
+     * @return The height in chips
+     */
+    public int getHeight() {
+        return height;
+    }
 
-	/**
-	 * Set the height of the machine.
-	 *
-	 * @param height
-	 *            The height in chips
-	 */
-	public void setHeight(final int height) {
-		this.height = height;
-	}
+    /**
+     * Set the height of the machine.
+     *
+     * @param height
+     *            The height in chips
+     */
+    public void setHeight(final int height) {
+        this.height = height;
+    }
 
-	/**
-	 * Get the connections to the machine.
-	 *
-	 * @return The connections
-	 */
-	public List<Connection> getConnections() {
-		return connections;
-	}
+    /**
+     * Get the connections to the machine.
+     *
+     * @return The connections
+     */
+    public List<Connection> getConnections() {
+        return connections;
+    }
 
-	/**
-	 * Set the connection to the machine.
-	 *
-	 * @param connections
-	 *            The connections to set
-	 */
-	public void setConnections(final List<Connection> connections) {
-		this.connections = connections;
-	}
+    /**
+     * Set the connection to the machine.
+     *
+     * @param connections
+     *            The connections to set
+     */
+    public void setConnections(final List<Connection> connections) {
+        this.connections = connections;
+    }
 
-	/**
-	 * Get the name of the machine.
-	 *
-	 * @return The name
-	 */
-	public String getMachineName() {
-		return machineName;
-	}
+    /**
+     * Get the name of the machine.
+     *
+     * @return The name
+     */
+    public String getMachineName() {
+        return machineName;
+    }
 
-	/**
-	 * Set the name of the machine.
-	 *
-	 * @param machineName
-	 *            The name to set
-	 */
-	public void setMachineName(final String machineName) {
-		this.machineName = machineName;
-	}
+    /**
+     * Set the name of the machine.
+     *
+     * @param machineName
+     *            The name to set
+     */
+    public void setMachineName(final String machineName) {
+        this.machineName = machineName;
+    }
 }

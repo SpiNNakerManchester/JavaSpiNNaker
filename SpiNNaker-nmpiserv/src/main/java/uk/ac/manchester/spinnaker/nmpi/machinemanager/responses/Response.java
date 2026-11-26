@@ -19,5 +19,5 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.responses;
  * An (abstract) response from the machine manager. Responses are all POJOs.
  */
 public interface Response {
-	// Does Nothing
+    // Does Nothing
 }

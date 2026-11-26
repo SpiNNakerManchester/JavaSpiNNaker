@@ -29,8 +29,8 @@
  * </ul>
  */
 @UsedInJavadocOnly({
-	Job.class, JobExecuter.class, JobExecuterFactory.class,
-	MachineManager.class, NMPIQueueManager.class
+    Job.class, JobExecuter.class, JobExecuterFactory.class,
+    MachineManager.class, NMPIQueueManager.class
 })
 package uk.ac.manchester.spinnaker.nmpi;
 

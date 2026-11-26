@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 if [ -f "already_run" ]; then
-	echo "Not running again"
-	while :
-	do
-		sleep 3600
-	done
+    echo "Not running again"
+    while :
+    do
+        sleep 3600
+    done
 fi
 
 echo "run" >> already_run
@@ -27,11 +27,11 @@ echo "URL is $url"
 
 if [ $url ]
 then
-	echo "Starting NMPI Client from $url"
-	cd $HOME
-	/usr/bin/wget $url
-	$HOME/run_executor.sh $@
-	echo "Simulation Complete - exiting"
+    echo "Starting NMPI Client from $url"
+    cd $HOME
+    /usr/bin/wget $url
+    $HOME/run_executor.sh $@
+    echo "Simulation Complete - exiting"
 else
-	echo "NMPI URL missing - not starting"
+    echo "NMPI URL missing - not starting"
 fi

@@ -27,74 +27,74 @@ import java.util.Map;
  *            The type of arguments.
  */
 public abstract class Command<A> {
-	/** The name of the command. */
-	private final String command;
+    /** The name of the command. */
+    private final String command;
 
-	/** The positional arguments to the command. */
-	private final List<A> args = new ArrayList<>();
+    /** The positional arguments to the command. */
+    private final List<A> args = new ArrayList<>();
 
-	/** The keyword args to be passed to the command. */
-	private final Map<String, Object> kwargs = new HashMap<>();
+    /** The keyword args to be passed to the command. */
+    private final Map<String, Object> kwargs = new HashMap<>();
 
-	/**
-	 * Add to the keyword arguments part.
-	 *
-	 * @param key
-	 *            The keyword
-	 * @param value
-	 *            The argument value; will be converted to a string
-	 */
-	protected final void addKwArg(final String key, final Object value) {
-		kwargs.put(key, value);
-	}
+    /**
+     * Add to the keyword arguments part.
+     *
+     * @param key
+     *            The keyword
+     * @param value
+     *            The argument value; will be converted to a string
+     */
+    protected final void addKwArg(final String key, final Object value) {
+        kwargs.put(key, value);
+    }
 
-	/**
-	 * Add to the positional arguments part.
-	 *
-	 * @param values
-	 *            The arguments to add.
-	 */
-	@SafeVarargs
-	protected final void addArg(final A... values) {
-		for (final A value : values) {
-			args.add(value);
-		}
-	}
+    /**
+     * Add to the positional arguments part.
+     *
+     * @param values
+     *            The arguments to add.
+     */
+    @SafeVarargs
+    protected final void addArg(final A... values) {
+        for (final A value : values) {
+            args.add(value);
+        }
+    }
 
-	/**
-	 * Create a command.
-	 *
-	 * @param command
-	 *            The command token.
-	 */
-	public Command(final String command) {
-		this.command = command;
-	}
+    /**
+     * Create a command.
+     *
+     * @param command
+     *            The command token.
+     */
+    public Command(final String command) {
+        this.command = command;
+    }
 
-	/**
-	 * Get the command name.
-	 *
-	 * @return The command name
-	 */
-	public String getCommand() {
-		return command;
-	}
+    /**
+     * Get the command name.
+     *
+     * @return The command name
+     */
+    public String getCommand() {
+        return command;
+    }
 
-	/**
-	 * Get the command arguments.
-	 *
-	 * @return The command arguments.
-	 */
-	public List<A> getArgs() {
-		return args;
-	}
+    /**
+     * Get the command arguments.
+     *
+     * @return The command arguments.
+     */
+    public List<A> getArgs() {
+        return args;
+    }
 
-	/**
-	 * Get the command keyword arguments.
-	 *
-	 * @return The command keyword arguments
-	 */
-	public Map<String, Object> getKwargs() {
-		return kwargs;
-	}
+    /**
+     * Get the command keyword arguments.
+     *
+     * @return The command keyword arguments
+     */
+    public Map<String, Object> getKwargs() {
+        return kwargs;
+    }
 }

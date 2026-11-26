@@ -19,34 +19,34 @@ package uk.ac.manchester.spinnaker.nmpi.rest;
  * A Job where only the status is set (to allow status updates).
  */
 public class JobStatusOnly {
-	private String status;
+    private String status;
 
-	/**
-	 * Create a job with only a status.
-	 *
-	 * @param status
-	 *            The status to set.
-	 */
-	public JobStatusOnly(String status) {
-		this.status = status;
-	}
+    /**
+     * Create a job with only a status.
+     *
+     * @param status
+     *            The status to set.
+     */
+    public JobStatusOnly(String status) {
+        this.status = status;
+    }
 
-	/**
-	 * Get the status.
-	 *
-	 * @return The status
-	 */
-	public String getStatus() {
-		return status;
-	}
+    /**
+     * Get the status.
+     *
+     * @return The status
+     */
+    public String getStatus() {
+        return status;
+    }
 
-	/**
-	 * Set the status.
-	 *
-	 * @param status
-	 *            The status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    /**
+     * Set the status.
+     *
+     * @param status
+     *            The status to set
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

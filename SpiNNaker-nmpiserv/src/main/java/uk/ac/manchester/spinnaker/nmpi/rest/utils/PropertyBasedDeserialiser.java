@@ -36,58 +36,58 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  *      The type of values being deserialised.
  */
 public class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The registry of known elements.
-	 */
-	private final Map<String, Class<? extends T>> registry = new HashMap<>();
+    /**
+     * The registry of known elements.
+     */
+    private final Map<String, Class<? extends T>> registry = new HashMap<>();
 
-	/**
-	 * Creates a new deserialiser.
-	 *
-	 * @param type
-	 *          The (super)class of the values that will be produced.
-	 */
-	public PropertyBasedDeserialiser(final Class<T> type) {
-		super(type);
-	}
+    /**
+     * Creates a new deserialiser.
+     *
+     * @param type
+     *          The (super)class of the values that will be produced.
+     */
+    public PropertyBasedDeserialiser(final Class<T> type) {
+        super(type);
+    }
 
-	/**
-	 * Registers a type against a property in the deserialiser.
-	 *
-	 * @param propertyName
-	 *            The name of the unique property that identifies the class.
-	 *            This is the JSON name.
-	 * @param type
-	 *            The class to register against the property.
-	 * @throws IllegalArgumentException
-	 *             if one of the parameters is null.
-	 */
-	public void register(final String propertyName,
-			final Class<? extends T> type) {
-		if (isNull(propertyName)) {
-			throw new IllegalArgumentException("propertyName must be non-null");
-		}
-		if (isNull(type)) {
-			throw new IllegalArgumentException("type must be non-null");
-		}
+    /**
+     * Registers a type against a property in the deserialiser.
+     *
+     * @param propertyName
+     *            The name of the unique property that identifies the class.
+     *            This is the JSON name.
+     * @param type
+     *            The class to register against the property.
+     * @throws IllegalArgumentException
+     *             if one of the parameters is null.
+     */
+    public void register(final String propertyName,
+            final Class<? extends T> type) {
+        if (isNull(propertyName)) {
+            throw new IllegalArgumentException("propertyName must be non-null");
+        }
+        if (isNull(type)) {
+            throw new IllegalArgumentException("type must be non-null");
+        }
 
-		registry.put(propertyName, type);
-	}
+        registry.put(propertyName, type);
+    }
 
-	@Override
-	public T deserialize(final JsonParser parser,
-			final DeserializationContext context)
-			throws IOException, JsonProcessingException {
-		final var root = parser.readValueAsTree();
-		final var elementsIterator = root.fieldNames();
-		while (elementsIterator.hasNext()) {
-			var c = registry.get(elementsIterator.next());
-			if (nonNull(c)) {
-				return parser.getCodec().treeToValue(root, c);
-			}
-		}
-		return null;
-	}
+    @Override
+    public T deserialize(final JsonParser parser,
+            final DeserializationContext context)
+            throws IOException, JsonProcessingException {
+        final var root = parser.readValueAsTree();
+        final var elementsIterator = root.fieldNames();
+        while (elementsIterator.hasNext()) {
+            var c = registry.get(elementsIterator.next());
+            if (nonNull(c)) {
+                return parser.getCodec().treeToValue(root, c);
+            }
+        }
+        return null;
+    }
 }

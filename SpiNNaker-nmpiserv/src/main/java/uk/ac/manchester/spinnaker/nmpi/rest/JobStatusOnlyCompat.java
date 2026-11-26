@@ -19,58 +19,58 @@ package uk.ac.manchester.spinnaker.nmpi.rest;
  * A Job where only the status is set (to allow log updates).
  */
 public class JobStatusOnlyCompat {
-	private int id;
+    private int id;
 
-	private String status;
+    private String status;
 
-	/**
-	 * Create a job with only a status.
-	 *
-	 * @param id
-	 *            The job id.
-	 * @param status
-	 *            The status to set.
-	 */
-	public JobStatusOnlyCompat(int id, String status) {
-		this.id = id;
-		this.status = status;
-	}
+    /**
+     * Create a job with only a status.
+     *
+     * @param id
+     *            The job id.
+     * @param status
+     *            The status to set.
+     */
+    public JobStatusOnlyCompat(int id, String status) {
+        this.id = id;
+        this.status = status;
+    }
 
-	/**
-	 * Get the status.
-	 *
-	 * @return The status
-	 */
-	public String getStatus() {
-		return status;
-	}
+    /**
+     * Get the status.
+     *
+     * @return The status
+     */
+    public String getStatus() {
+        return status;
+    }
 
-	/**
-	 * Set the status.
-	 *
-	 * @param status
-	 *            The status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    /**
+     * Set the status.
+     *
+     * @param status
+     *            The status to set
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	/**
-	 * Get the id.
-	 *
-	 * @return The id
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * Get the id.
+     *
+     * @return The id
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Set the id.
-	 *
-	 * @param id
-	 *            The id
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+    /**
+     * Set the id.
+     *
+     * @param id
+     *            The id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 }

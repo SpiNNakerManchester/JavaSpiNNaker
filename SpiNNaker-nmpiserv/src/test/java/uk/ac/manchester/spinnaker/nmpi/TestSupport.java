@@ -27,17 +27,17 @@ import uk.ac.manchester.spinnaker.nmpi.web.RemoteSpinnakerBeans;
 
 
 @SuppressWarnings({
-	"checkstyle:ParameterNumber", "checkstyle:VisibilityModifier"
+    "checkstyle:ParameterNumber", "checkstyle:VisibilityModifier"
 })
 public abstract class TestSupport {
 
-	@Configuration
-	@TestPropertySource("classpath:nmpi.properties")
-	@ComponentScan(basePackageClasses = RemoteSpinnakerBeans.class)
-	class Config {
+    @Configuration
+    @TestPropertySource("classpath:nmpi.properties")
+    @ComponentScan(basePackageClasses = RemoteSpinnakerBeans.class)
+    class Config {
 
-	}
+    }
 
-	protected static final Logger log = getLogger(TestSupport.class);
+    protected static final Logger log = getLogger(TestSupport.class);
 
 }

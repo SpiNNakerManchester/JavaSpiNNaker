@@ -21,91 +21,91 @@ import java.util.List;
  * Describes a machine by its name, tags, width and height.
  */
 public class Machine {
-	/** The name of the machine. */
-	private String name;
+    /** The name of the machine. */
+    private String name;
 
-	/** The list of tags associated with the machine. */
-	private List<String> tags;
+    /** The list of tags associated with the machine. */
+    private List<String> tags;
 
-	/** The width of the machine. */
-	private int width;
+    /** The width of the machine. */
+    private int width;
 
-	/** The height of the machine. */
-	private int height;
+    /** The height of the machine. */
+    private int height;
 
-	/**
-	 * Get the name of the machine.
-	 *
-	 * @return The name of the machine
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Get the name of the machine.
+     *
+     * @return The name of the machine
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Set the name of the machine.
-	 *
-	 * @param name
-	 *            The name of the machine to set
-	 */
-	public void setName(final String name) {
-		this.name = name;
-	}
+    /**
+     * Set the name of the machine.
+     *
+     * @param name
+     *            The name of the machine to set
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Get the tags associated with the machine.
-	 *
-	 * @return The tags
-	 */
-	public List<String> getTags() {
-		return tags;
-	}
+    /**
+     * Get the tags associated with the machine.
+     *
+     * @return The tags
+     */
+    public List<String> getTags() {
+        return tags;
+    }
 
-	/**
-	 * Set the tags associated with the machine.
-	 *
-	 * @param tags
-	 *            The tags to set
-	 */
-	public void setTags(final List<String> tags) {
-		this.tags = tags;
-	}
+    /**
+     * Set the tags associated with the machine.
+     *
+     * @param tags
+     *            The tags to set
+     */
+    public void setTags(final List<String> tags) {
+        this.tags = tags;
+    }
 
-	/**
-	 * Get the width of the machine.
-	 *
-	 * @return The width in chips
-	 */
-	public int getWidth() {
-		return width;
-	}
+    /**
+     * Get the width of the machine.
+     *
+     * @return The width in chips
+     */
+    public int getWidth() {
+        return width;
+    }
 
-	/**
-	 * Set the width of the machine.
-	 *
-	 * @param width
-	 *            The width in chips
-	 */
-	public void setWidth(final int width) {
-		this.width = width;
-	}
+    /**
+     * Set the width of the machine.
+     *
+     * @param width
+     *            The width in chips
+     */
+    public void setWidth(final int width) {
+        this.width = width;
+    }
 
-	/**
-	 * Get the height of the machine.
-	 *
-	 * @return The height in chips
-	 */
-	public int getHeight() {
-		return height;
-	}
+    /**
+     * Get the height of the machine.
+     *
+     * @return The height in chips
+     */
+    public int getHeight() {
+        return height;
+    }
 
-	/**
-	 * Set the height of the machine.
-	 *
-	 * @param height
-	 *            The height in chips
-	 */
-	public void setHeight(final int height) {
-		this.height = height;
-	}
+    /**
+     * Set the height of the machine.
+     *
+     * @param height
+     *            The height in chips
+     */
+    public void setHeight(final int height) {
+        this.height = height;
+    }
 }

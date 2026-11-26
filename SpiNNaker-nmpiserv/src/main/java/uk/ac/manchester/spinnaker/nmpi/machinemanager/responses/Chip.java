@@ -26,47 +26,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({"x", "y"})
 @JsonFormat(shape = ARRAY)
 public class Chip {
-	/** The x-coordinate of the chip. */
-	private int x;
+    /** The x-coordinate of the chip. */
+    private int x;
 
-	/** The y-coordinate of the chip. */
-	private int y;
+    /** The y-coordinate of the chip. */
+    private int y;
 
-	/**
-	 * Get the x-coordinate of the chip.
-	 *
-	 * @return The x-coordinate of the chip
-	 */
-	public int getX() {
-		return x;
-	}
+    /**
+     * Get the x-coordinate of the chip.
+     *
+     * @return The x-coordinate of the chip
+     */
+    public int getX() {
+        return x;
+    }
 
-	/**
-	 * Set the x-coordinate of the chip.
-	 *
-	 * @param x
-	 *            The x-coordinate of the chip
-	 */
-	public void setX(final int x) {
-		this.x = x;
-	}
+    /**
+     * Set the x-coordinate of the chip.
+     *
+     * @param x
+     *            The x-coordinate of the chip
+     */
+    public void setX(final int x) {
+        this.x = x;
+    }
 
-	/**
-	 * Get the y-coordinate of the chip.
-	 *
-	 * @return The y-coordinate of the chip
-	 */
-	public int getY() {
-		return y;
-	}
+    /**
+     * Get the y-coordinate of the chip.
+     *
+     * @return The y-coordinate of the chip
+     */
+    public int getY() {
+        return y;
+    }
 
-	/**
-	 * Set the y-coordinate of the chip.
-	 *
-	 * @param y
-	 *            The y-coordinate of the chip
-	 */
-	public void setY(final int y) {
-		this.y = y;
-	}
+    /**
+     * Set the y-coordinate of the chip.
+     *
+     * @param y
+     *            The y-coordinate of the chip
+     */
+    public void setY(final int y) {
+        this.y = y;
+    }
 }

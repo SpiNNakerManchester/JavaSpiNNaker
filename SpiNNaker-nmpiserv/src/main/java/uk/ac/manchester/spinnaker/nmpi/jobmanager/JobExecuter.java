@@ -22,16 +22,16 @@ package uk.ac.manchester.spinnaker.nmpi.jobmanager;
  * @see XenVMExecuterFactory.Executer
  */
 public interface JobExecuter {
-	/**
-	 * Gets the id of the executer.
-	 *
-	 * @return The id
-	 */
-	String getExecuterId();
+    /**
+     * Gets the id of the executer.
+     *
+     * @return The id
+     */
+    String getExecuterId();
 
-	/**
-	 * Starts the external job. Expected to launch a thread and/or process
-	 * immediately.
-	 */
-	void startExecuter();
+    /**
+     * Starts the external job. Expected to launch a thread and/or process
+     * immediately.
+     */
+    void startExecuter();
 }

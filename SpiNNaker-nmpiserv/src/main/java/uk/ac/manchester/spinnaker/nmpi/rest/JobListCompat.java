@@ -23,22 +23,22 @@ import uk.ac.manchester.spinnaker.nmpi.model.QueueJobCompat;
  * A list of Jobs.
  */
 public class JobListCompat {
-	private List<QueueJobCompat> objects;
+    private List<QueueJobCompat> objects;
 
-	/**
-	 * {@return the jobs}
-	 */
-	public List<QueueJobCompat> getObjects() {
-		return objects;
-	}
+    /**
+     * {@return the jobs}
+     */
+    public List<QueueJobCompat> getObjects() {
+        return objects;
+    }
 
-	/**
-	 * Set the jobs.
-	 *
-	 * @param objects
-	 *            the jobs to set
-	 */
-	public void setObjects(List<QueueJobCompat> objects) {
-		this.objects = objects;
-	}
+    /**
+     * Set the jobs.
+     *
+     * @param objects
+     *            the jobs to set
+     */
+    public void setObjects(List<QueueJobCompat> objects) {
+        this.objects = objects;
+    }
 }

@@ -37,28 +37,28 @@ import uk.ac.manchester.spinnaker.nmpi.web.WebApplicationConfig;
 @ActiveProfiles("unittest") // Disable booting CXF
 class BootTest extends TestSupport {
 
-	@Autowired
-	private JobManager jobManager;
+    @Autowired
+    private JobManager jobManager;
 
-	@Autowired
-	private MachineManager machineManager;
+    @Autowired
+    private MachineManager machineManager;
 
-	@Autowired
-	private OutputManager outputManager;
+    @Autowired
+    private OutputManager outputManager;
 
-	@Autowired
-	private JobExecuterFactory jobExecuterFactory;
+    @Autowired
+    private JobExecuterFactory jobExecuterFactory;
 
-	@Autowired
-	private NMPIQueueManager nmpiQueueManager;
+    @Autowired
+    private NMPIQueueManager nmpiQueueManager;
 
-	@Test
-	void testContextBoot() throws InterruptedException {
-		// If all these bits are there, we declare the application to be working
-		assertNotNull(jobManager);
-		assertNotNull(machineManager);
-		assertNotNull(outputManager);
-		assertNotNull(jobExecuterFactory);
-		assertNotNull(nmpiQueueManager);
-	}
+    @Test
+    void testContextBoot() throws InterruptedException {
+        // If all these bits are there, we declare the application to be working
+        assertNotNull(jobManager);
+        assertNotNull(machineManager);
+        assertNotNull(outputManager);
+        assertNotNull(jobExecuterFactory);
+        assertNotNull(nmpiQueueManager);
+    }
 }
