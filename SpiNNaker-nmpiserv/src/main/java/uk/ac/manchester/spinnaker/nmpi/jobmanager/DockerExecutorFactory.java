@@ -198,31 +198,31 @@ public class DockerExecutorFactory implements JobExecuterFactory {
                 } catch (InterruptedException e) {
                     return;
                 }
-			} while (res.getState().isRunning() != running);
-		}
+            } while (res.getState().isRunning() != running);
+        }
 
-		/**
-		 * Monitors the status of the docker container.
-		 */
-		protected void waitForExit() {
-			try {
-				waitForRunning(true);
-				waitForRunning(false);
-				logger.info("Finished execution of {}", id);
-				try {
-					manager.setExecutorExited(uuid, DockerAPI.readLog(
-							dockerApi.getLog(id, true, true)));
-				} catch (IOException e) {
-					logger.error("Error reading log", e);
-				}
-				if (deleteOnExit) {
-					logger.info("Deleting {}", id);
-					dockerApi.delete(id);
-				}
-			} finally {
-				executorFinished();
-			}
-		}
-	}
+        /**
+         * Monitors the status of the docker container.
+         */
+        protected void waitForExit() {
+            try {
+                waitForRunning(true);
+                waitForRunning(false);
+                logger.info("Finished execution of {}", id);
+                try {
+                    manager.setExecutorExited(uuid, DockerAPI.readLog(
+                            dockerApi.getLog(id, true, true)));
+                } catch (IOException e) {
+                    logger.error("Error reading log", e);
+                }
+                if (deleteOnExit) {
+                    logger.info("Deleting {}", id);
+                    dockerApi.delete(id);
+                }
+            } finally {
+                executorFinished();
+            }
+        }
+    }
 
 }

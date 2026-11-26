@@ -40,94 +40,94 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * HBP/EBRAINS Keycloak service.
  */
 interface EBRAINSDevCredentials {
-	/** The content type for submitting an HTML form (or equivalent). */
-	String FORM_ENCODED = "application/x-www-form-urlencoded; charset=UTF-8";
+    /** The content type for submitting an HTML form (or equivalent). */
+    String FORM_ENCODED = "application/x-www-form-urlencoded; charset=UTF-8";
 
-	/** Where to get the developer access token from. This is non-standard. */
-	String OIDC_TOKEN_URL = HBP_OPENID_BASE + "realms/" + REALM
-			+ "/protocol/openid-connect/token";
+    /** Where to get the developer access token from. This is non-standard. */
+    String OIDC_TOKEN_URL = HBP_OPENID_BASE + "realms/" + REALM
+            + "/protocol/openid-connect/token";
 
-	/**
-	 * {@return The user that will do the registration. Must not be {@code null}}
-	 */
-	String getUser();
+    /**
+     * {@return The user that will do the registration. Must not be {@code null}}
+     */
+    String getUser();
 
-	/**
-	 * The password for the user that will do the registration.
-	 *
-	 * Must not be {@code null}}
-	 *
-	 * {@return The password.
-	 */
-	String getPass();
+    /**
+     * The password for the user that will do the registration.
+     *
+     * Must not be {@code null}}
+     *
+     * {@return The password.
+     */
+    String getPass();
 
-	/**
-	 * Convert the username and password into an access token.
-	 *
-	 * @return The access token.
-	 * @throws IOException
-	 *             If anything goes wrong. In particular, the user must be known
-	 *             to the Keycloak service and be authorized to publish service
-	 *             descriptions.
-	 */
-	default String getToken() throws IOException {
-		var user = requireNonNull(getUser(), "user must be given");
-		var pass = requireNonNull(getPass(), "password must be given");
-		var mapper = new ObjectMapper();
+    /**
+     * Convert the username and password into an access token.
+     *
+     * @return The access token.
+     * @throws IOException
+     *             If anything goes wrong. In particular, the user must be known
+     *             to the Keycloak service and be authorized to publish service
+     *             descriptions.
+     */
+    default String getToken() throws IOException {
+        var user = requireNonNull(getUser(), "user must be given");
+        var pass = requireNonNull(getPass(), "password must be given");
+        var mapper = new ObjectMapper();
 
-		var url = new URL(OIDC_TOKEN_URL);
-		var http = (HttpURLConnection) url.openConnection();
-		http.setRequestMethod("POST");
-		http.setDoOutput(true);
+        var url = new URL(OIDC_TOKEN_URL);
+        var http = (HttpURLConnection) url.openConnection();
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
 
-		// UGLY!
-		http.setRequestProperty("Authorization", makeBasicAuth("developer:"));
+        // UGLY!
+        http.setRequestProperty("Authorization", makeBasicAuth("developer:"));
 
-		var out = encodeForm(Map.ofEntries(entry("grant_type", "password"),
-				entry("username", user), entry("password", pass)));
-		http.setFixedLengthStreamingMode(out.length);
-		http.setRequestProperty("Content-Type", FORM_ENCODED);
-		try (var os = http.getOutputStream()) {
-			os.write(out);
-		}
-		try (var is = http.getInputStream()) {
-			return mapper.readValue(is, AccessTokenResponse.class).getToken();
-		}
-	}
+        var out = encodeForm(Map.ofEntries(entry("grant_type", "password"),
+                entry("username", user), entry("password", pass)));
+        http.setFixedLengthStreamingMode(out.length);
+        http.setRequestProperty("Content-Type", FORM_ENCODED);
+        try (var os = http.getOutputStream()) {
+            os.write(out);
+        }
+        try (var is = http.getInputStream()) {
+            return mapper.readValue(is, AccessTokenResponse.class).getToken();
+        }
+    }
 }
 
 /** Utilities for {@link EBRAINSDevCredentials}. */
 abstract class EBRAINSDevCredentialsUtils {
-	private EBRAINSDevCredentialsUtils() {
-	}
+    private EBRAINSDevCredentialsUtils() {
+    }
 
-	/**
-	 * Convert a map to HTML form. Technically the target format supports a
-	 * multimap, but we don't need that!
-	 *
-	 * @param arguments
-	 *            The map of arguments.
-	 * @return The encoded form.
-	 */
-	static byte[] encodeForm(Map<String, String> arguments) {
-		var sj = new StringJoiner("&");
-		for (var entry : arguments.entrySet()) {
-			sj.add(encode(entry.getKey(), UTF_8) + "="
-					+ encode(entry.getValue(), UTF_8));
-		}
-		return sj.toString().getBytes(UTF_8);
-	}
+    /**
+     * Convert a map to HTML form. Technically the target format supports a
+     * multimap, but we don't need that!
+     *
+     * @param arguments
+     *            The map of arguments.
+     * @return The encoded form.
+     */
+    static byte[] encodeForm(Map<String, String> arguments) {
+        var sj = new StringJoiner("&");
+        for (var entry : arguments.entrySet()) {
+            sj.add(encode(entry.getKey(), UTF_8) + "="
+                    + encode(entry.getValue(), UTF_8));
+        }
+        return sj.toString().getBytes(UTF_8);
+    }
 
-	/**
-	 * Convert a username/password pair to the contents of an
-	 * {@code Authorization} header.
-	 *
-	 * @param userPass
-	 *            The username and password, separated by a colon.
-	 * @return the header contents
-	 */
-	static String makeBasicAuth(String userPass) {
-		return "Basic " + new String(
-				getEncoder().encode(userPass.getBytes(UTF_8)), UTF_8);
-	}
+    /**
+     * Convert a username/password pair to the contents of an
+     * {@code Authorization} header.
+     *
+     * @param userPass
+     *            The username and password, separated by a colon.
+     * @return the header contents
+     */
+    static String makeBasicAuth(String userPass) {
+        return "Basic " + new String(
+                getEncoder().encode(userPass.getBytes(UTF_8)), UTF_8);
+    }
 }
