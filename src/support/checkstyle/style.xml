@@ -20,6 +20,11 @@ limitations under the License.
 <module name="Checker">
 	<property name="fileExtensions" value="java, properties, xml" />
 
+	<module name="SuppressionSingleFilter">
+		<property name="checks" value="FileTabCharacter"/>
+		<property name="files" files=".*\.java$"/>
+	</module>
+
 	<!-- Headers Checks (ALL) -->
 	<module name="Header">
 		<property name="fileExtensions" value="java" />
@@ -61,10 +66,7 @@ limitations under the License.
 	</module>
 
 	<!-- Whitespace Checks -->
-	<module name="FileTabCharacter"/>
-	<suppressions>
-		<suppress checks="FileTabCharacter" files=".*\.java$"/>
-	</suppressions>
+	<module name="FileTabCharacter"/>  <!-- See suppressions -->
 
 	<module name="SuppressionFilter">
 		<property name="file" value="${checkstyle.config.path}/suppressions.xml" />
