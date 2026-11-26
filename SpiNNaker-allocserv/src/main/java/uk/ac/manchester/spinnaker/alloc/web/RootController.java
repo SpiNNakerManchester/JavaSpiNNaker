@@ -29,14 +29,14 @@ import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 @Controller
 @RequestMapping("/")
 public class RootController {
-	@Autowired
-	private URLPathMaker urlMaker;
+      @Autowired
+      private URLPathMaker urlMaker;
 
-	/**
-	 * {@return redirect to {@link SystemController#index()}}
-	 */
-	@GetMapping(value = "/", produces = "text/html")
-	public String index() {
-		return "redirect:" + urlMaker.systemUrl("");
-	}
+      /**
+       * {@return redirect to {@link SystemController#index()}}
+       */
+      @GetMapping(value = "/", produces = "text/html")
+      public String index() {
+            return "redirect:" + urlMaker.systemUrl("");
+      }
 }

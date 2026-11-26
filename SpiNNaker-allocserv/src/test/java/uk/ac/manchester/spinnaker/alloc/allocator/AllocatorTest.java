@@ -50,420 +50,420 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 @SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
-	// These tests sometimes hold transactions for a long time; this is OK
-	"spalloc.sqlite.lock-note-threshold=2200ms",
-	"spalloc.sqlite.lock-warn-threshold=3s"
+      // These tests sometimes hold transactions for a long time; this is OK
+      "spalloc.sqlite.lock-note-threshold=2200ms",
+      "spalloc.sqlite.lock-warn-threshold=3s"
 })
 @NotThreadSafe
 class AllocatorTest extends TestSupport {
 
-	@Autowired
-	private AllocatorTask alloc;
-
-	private BMPController.TestAPI bmpCtrl;
-
-	@BeforeEach
-	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired TransceiverFactory txrxFactory,
-			@Autowired BMPController bmpCtrl) throws IOException {
-		assumeTrue(db != null, "spring-configured DB engine absent");
-		MockTransceiver.installIntoFactory(txrxFactory);
-		killDB();
-		setupDB3();
-		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare(true);
-		this.bmpCtrl.resetTransceivers();
-		this.bmpCtrl.clearBmpException();
-	}
+      @Autowired
+      private AllocatorTask alloc;
+
+      private BMPController.TestAPI bmpCtrl;
+
+      @BeforeEach
+      @SuppressWarnings("deprecation")
+      void checkSetup(@Autowired TransceiverFactory txrxFactory,
+                  @Autowired BMPController bmpCtrl) throws IOException {
+            assumeTrue(db != null, "spring-configured DB engine absent");
+            MockTransceiver.installIntoFactory(txrxFactory);
+            killDB();
+            setupDB3();
+            this.bmpCtrl = bmpCtrl.getTestAPI();
+            this.bmpCtrl.prepare(true);
+            this.bmpCtrl.resetTransceivers();
+            this.bmpCtrl.clearBmpException();
+      }
 
-	@AfterEach
-	void checkBMPWasFine() {
-		var exn = bmpCtrl.getBmpException();
-		assertDoesNotThrow(() -> {
-			if (exn != null) {
-				throw exn;
-			}
-		}, "BMP controller must not have thrown, but did");
-	}
+      @AfterEach
+      void checkBMPWasFine() {
+            var exn = bmpCtrl.getBmpException();
+            assertDoesNotThrow(() -> {
+                  if (exn != null) {
+                        throw exn;
+                  }
+            }, "BMP controller must not have thrown, but did");
+      }
 
-	private void assertState(int jobId, JobState state, int requestCount,
-			int powerCount) {
-		var expected = List.of(state, "req", requestCount, "power", powerCount);
-		var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
-				"power", getPendingPowerChanges());
-		assertEquals(expected, got);
-	}
+      private void assertState(int jobId, JobState state, int requestCount,
+                  int powerCount) {
+            var expected = List.of(state, "req", requestCount, "power", powerCount);
+            var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
+                        "power", getPendingPowerChanges());
+            assertEquals(expected, got);
+      }
 
-	private void assumeState(int jobId, JobState state, int requestCount,
-			int powerCount) {
-		var expected = List.of(state, "req", requestCount, "power", powerCount);
-		var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
-				"power", getPendingPowerChanges());
-		assumeTrue(expected.equals(got),
-				() -> format("expected %s but got %s", expected, got));
-	}
+      private void assumeState(int jobId, JobState state, int requestCount,
+                  int powerCount) {
+            var expected = List.of(state, "req", requestCount, "power", powerCount);
+            var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
+                        "power", getPendingPowerChanges());
+            assumeTrue(expected.equals(got),
+                        () -> format("expected %s but got %s", expected, got));
+      }
 
-	@SuppressWarnings("deprecation")
-	private TestAPI getAllocTester() {
-		return alloc.getTestAPI(conn);
-	}
+      @SuppressWarnings("deprecation")
+      private TestAPI getAllocTester() {
+            return alloc.getTestAPI(conn);
+      }
 
-	@SuppressWarnings("deprecation")
-	private HistTestAPI getHistAllocTester(Connection histConn) {
-		return alloc.getHistTestAPI(conn, histConn);
-	}
+      @SuppressWarnings("deprecation")
+      private HistTestAPI getHistAllocTester(Connection histConn) {
+            return alloc.getHistTestAPI(conn, histConn);
+      }
 
-	@SuppressWarnings("CompileTimeConstant")
-	private int countJobInTable(Connection c, int job) {
-		// Table names CANNOT be parameters; they're not values
-		return c.query(
-				"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
-				.call1(integer("c"), job).orElseThrow();
-	}
+      @SuppressWarnings("CompileTimeConstant")
+      private int countJobInTable(Connection c, int job) {
+            // Table names CANNOT be parameters; they're not values
+            return c.query(
+                        "SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
+                        .call1(integer("c"), job).orElseThrow();
+      }
 
-	// The actual tests
+      // The actual tests
 
-	@Test
-	public void allocateBySize1board() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(100);
+      @Test
+      public void allocateBySize1board() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(100);
 
-			getAllocTester().allocate();
+                  getAllocTester().allocate();
 
-			assertState(job, QUEUED, 0, 0);
+                  assertState(job, QUEUED, 0, 0);
 
-			makeAllocBySizeRequest(job, 1);
+                  makeAllocBySizeRequest(job, 1);
 
-			assertState(job, QUEUED, 1, 0);
+                  assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().bmps.size() > 0);
+                  assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 1);
+                  assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate().bmps.size() > 0);
+                  assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 1);
+                  assertState(job, POWER, 0, 1);
 
-			getAllocTester().destroyJob(job, "test");
+                  getAllocTester().destroyJob(job, "test");
 
-			// Powere requests are not run so expect 2 (one on, one off)
-			assertState(job, DESTROYED, 0, 2);
-		});
-	}
+                  // Powere requests are not run so expect 2 (one on, one off)
+                  assertState(job, DESTROYED, 0, 2);
+            });
+      }
 
-	@Test
-	public void allocateBySize3boards() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(100);
-			getAllocTester().allocate();
+      @Test
+      public void allocateBySize3boards() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(100);
+                  getAllocTester().allocate();
 
-			assertState(job, QUEUED, 0, 0);
+                  assertState(job, QUEUED, 0, 0);
 
-			makeAllocBySizeRequest(job, 3);
+                  makeAllocBySizeRequest(job, 3);
 
-			assertState(job, QUEUED, 1, 0);
+                  assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().bmps.size() > 0);
+                  assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 3);
+                  assertState(job, POWER, 0, 3);
 
-			assertFalse(getAllocTester().allocate().bmps.size() > 0);
+                  assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 3);
+                  assertState(job, POWER, 0, 3);
 
-			getAllocTester().destroyJob(job, "test");
+                  getAllocTester().destroyJob(job, "test");
 
-			// Power not run so 3 x (on then off) = 6
-			assertState(job, DESTROYED, 0, 6);
-		});
-	}
+                  // Power not run so 3 x (on then off) = 6
+                  assertState(job, DESTROYED, 0, 6);
+            });
+      }
 
-	@Test
-	public void allocateByDimensions1x1x1() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(100);
-			getAllocTester().allocate();
+      @Test
+      public void allocateByDimensions1x1x1() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(100);
+                  getAllocTester().allocate();
 
-			assertState(job, QUEUED, 0, 0);
+                  assertState(job, QUEUED, 0, 0);
 
-			makeAllocByDimensionsRequest(job, 1, 1, 2);
+                  makeAllocByDimensionsRequest(job, 1, 1, 2);
 
-			assertState(job, QUEUED, 1, 0);
+                  assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().bmps.size() > 0);
+                  assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 1);
+                  assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate().bmps.size() > 0);
+                  assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 1);
+                  assertState(job, POWER, 0, 1);
 
-			getAllocTester().destroyJob(job, "test");
+                  getAllocTester().destroyJob(job, "test");
 
-			// Power requests are not run here, so expect 2 (power on then off)
-			assertState(job, DESTROYED, 0, 2);
-		});
-	}
+                  // Power requests are not run here, so expect 2 (power on then off)
+                  assertState(job, DESTROYED, 0, 2);
+            });
+      }
 
-	@Test
-	public void allocateByDimensions1x1x3() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(100);
-			getAllocTester().allocate();
+      @Test
+      public void allocateByDimensions1x1x3() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(100);
+                  getAllocTester().allocate();
 
-			assertState(job, QUEUED, 0, 0);
+                  assertState(job, QUEUED, 0, 0);
 
-			makeAllocByDimensionsRequest(job, 1, 1, 0);
+                  makeAllocByDimensionsRequest(job, 1, 1, 0);
 
-			assertState(job, QUEUED, 1, 0);
+                  assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().bmps.size() > 0);
+                  assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 3);
+                  assertState(job, POWER, 0, 3);
 
-			assertFalse(getAllocTester().allocate().bmps.size() > 0);
+                  assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 3);
+                  assertState(job, POWER, 0, 3);
 
-			getAllocTester().destroyJob(job, "test");
+                  getAllocTester().destroyJob(job, "test");
 
-			// Power requests not run, so expect 2 on/off each = 6
-			assertState(job, DESTROYED, 0, 6);
-		});
-	}
+                  // Power requests not run, so expect 2 on/off each = 6
+                  assertState(job, DESTROYED, 0, 6);
+            });
+      }
 
-	// This is a test with a job that is too large to fit
-	@Test
-	public void allocateByDimensions1x2() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(100);
-			getAllocTester().allocate();
+      // This is a test with a job that is too large to fit
+      @Test
+      public void allocateByDimensions1x2() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(100);
+                  getAllocTester().allocate();
 
-			assertState(job, QUEUED, 0, 0);
+                  assertState(job, QUEUED, 0, 0);
 
-			makeAllocByDimensionsRequest(job, 1, 2, 0);
+                  makeAllocByDimensionsRequest(job, 1, 2, 0);
 
-			assertState(job, QUEUED, 1, 0);
+                  assertState(job, QUEUED, 1, 0);
 
-			var ex = assertThrows(IllegalArgumentException.class,
-					() -> getAllocTester().allocate());
-			assertEquals("that job cannot possibly fit on this machine",
-					ex.getMessage());
+                  var ex = assertThrows(IllegalArgumentException.class,
+                              () -> getAllocTester().allocate());
+                  assertEquals("that job cannot possibly fit on this machine",
+                              ex.getMessage());
 
-			// No change in state
-			assertState(job, QUEUED, 1, 0);
+                  // No change in state
+                  assertState(job, QUEUED, 1, 0);
 
-			getAllocTester().destroyJob(job, "test");
+                  getAllocTester().destroyJob(job, "test");
 
-			assertState(job, DESTROYED, 0, 0);
-		});
-	}
+                  assertState(job, DESTROYED, 0, 0);
+            });
+      }
 
-	@Test
-	public void allocateByBoardId() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(100);
-			getAllocTester().allocate();
+      @Test
+      public void allocateByBoardId() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(100);
+                  getAllocTester().allocate();
 
-			assertState(job, QUEUED, 0, 0);
+                  assertState(job, QUEUED, 0, 0);
 
-			makeAllocByBoardIdRequest(job, BOARD);
+                  makeAllocByBoardIdRequest(job, BOARD);
 
-			assertState(job, QUEUED, 1, 0);
+                  assertState(job, QUEUED, 1, 0);
 
-			assertTrue(getAllocTester().allocate().bmps.size() > 0);
+                  assertTrue(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 1);
+                  assertState(job, POWER, 0, 1);
 
-			assertFalse(getAllocTester().allocate().bmps.size() > 0);
+                  assertFalse(getAllocTester().allocate().bmps.size() > 0);
 
-			assertState(job, POWER, 0, 1);
+                  assertState(job, POWER, 0, 1);
 
-			getAllocTester().destroyJob(job, "test");
+                  getAllocTester().destroyJob(job, "test");
 
-			// Power not run so 2 at end (on then off)
-			assertState(job, DESTROYED, 0, 2);
-		});
-	}
+                  // Power not run so 2 at end (on then off)
+                  assertState(job, DESTROYED, 0, 2);
+            });
+      }
 
-	@Test
-	public void expireInitial() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(1);
-			snooze1s();
-			snooze1s();
+      @Test
+      public void expireInitial() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(1);
+                  snooze1s();
+                  snooze1s();
 
-			assumeState(job, QUEUED, 0, 0);
+                  assumeState(job, QUEUED, 0, 0);
 
-			getAllocTester().expireJobs();
+                  getAllocTester().expireJobs();
 
-			assertState(job, DESTROYED, 0, 0);
-		});
-	}
+                  assertState(job, DESTROYED, 0, 0);
+            });
+      }
 
-	@Test
-	public void expireQueued1() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(1);
-			getAllocTester().allocate();
-			snooze1s();
-			snooze1s();
+      @Test
+      public void expireQueued1() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(1);
+                  getAllocTester().allocate();
+                  snooze1s();
+                  snooze1s();
 
-			assumeState(job, QUEUED, 0, 0);
+                  assumeState(job, QUEUED, 0, 0);
 
-			getAllocTester().expireJobs();
+                  getAllocTester().expireJobs();
 
-			assertState(job, DESTROYED, 0, 0);
-		});
-	}
+                  assertState(job, DESTROYED, 0, 0);
+            });
+      }
 
-	@Test
-	public void expireQueued2() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(1);
-			getAllocTester().allocate();
-			makeAllocBySizeRequest(job, 1);
-			snooze1s();
-			snooze1s();
+      @Test
+      public void expireQueued2() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(1);
+                  getAllocTester().allocate();
+                  makeAllocBySizeRequest(job, 1);
+                  snooze1s();
+                  snooze1s();
 
-			assumeState(job, QUEUED, 1, 0);
+                  assumeState(job, QUEUED, 1, 0);
 
-			getAllocTester().expireJobs();
+                  getAllocTester().expireJobs();
 
-			assertState(job, DESTROYED, 0, 0);
-		});
-	}
+                  assertState(job, DESTROYED, 0, 0);
+            });
+      }
 
-	@Test
-	public void expirePower() {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(1);
-			makeAllocBySizeRequest(job, 1);
-			getAllocTester().allocate();
-			snooze1s();
-			snooze1s();
+      @Test
+      public void expirePower() {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(1);
+                  makeAllocBySizeRequest(job, 1);
+                  getAllocTester().allocate();
+                  snooze1s();
+                  snooze1s();
 
-			assumeState(job, POWER, 0, 1);
+                  assumeState(job, POWER, 0, 1);
 
-			getAllocTester().expireJobs();
+                  getAllocTester().expireJobs();
 
-			// Power requests haven't run so there should now be 2 (on and off)
-			assertState(job, DESTROYED, 0, 2);
-		});
-	}
+                  // Power requests haven't run so there should now be 2 (on and off)
+                  assertState(job, DESTROYED, 0, 2);
+            });
+      }
 
-	@Test
-	public void expireReady() throws Exception {
-		// This is messier; can't have a transaction open and roll it back
-		try (var c = db.getConnection()) {
-			this.conn = c;
-			int job = c.transaction(() -> makeQueuedJob(1));
-			try {
-				makeAllocBySizeRequest(job, 1);
-				var allocations = c.transaction(() -> {
-					return getAllocTester().allocate();
-				});
-				allocations.updateBMPs();
-				snooze1s();
-				snooze1s();
+      @Test
+      public void expireReady() throws Exception {
+            // This is messier; can't have a transaction open and roll it back
+            try (var c = db.getConnection()) {
+                  this.conn = c;
+                  int job = c.transaction(() -> makeQueuedJob(1));
+                  try {
+                        makeAllocBySizeRequest(job, 1);
+                        var allocations = c.transaction(() -> {
+                              return getAllocTester().allocate();
+                        });
+                        allocations.updateBMPs();
+                        snooze1s();
+                        snooze1s();
 
-				assertState(job, READY, 0, 0);
+                        assertState(job, READY, 0, 0);
 
-				allocations = c.transaction(() -> {
-					return getAllocTester().expireJobs();
-				});
-				assertState(job, DESTROYED, 0, 1);
+                        allocations = c.transaction(() -> {
+                              return getAllocTester().expireJobs();
+                        });
+                        assertState(job, DESTROYED, 0, 1);
 
-				allocations.updateBMPs();
+                        allocations.updateBMPs();
 
-				snooze1s();
+                        snooze1s();
 
-				assertState(job, DESTROYED, 0, 0);
-			} finally {
-				c.transaction(() -> {
-					// Reset the state
-					getAllocTester().destroyJob(job, "test");
-					c.update("DELETE FROM job_request").call();
-					c.update("DELETE FROM pending_changes").call();
-					c.update("UPDATE boards SET allocated_job = NULL, "
-							+ "power_on_timestamp = 0, "
-							+ "power_off_timestamp = 0").call();
-				});
-			}
-		}
-	}
+                        assertState(job, DESTROYED, 0, 0);
+                  } finally {
+                        c.transaction(() -> {
+                              // Reset the state
+                              getAllocTester().destroyJob(job, "test");
+                              c.update("DELETE FROM job_request").call();
+                              c.update("DELETE FROM pending_changes").call();
+                              c.update("UPDATE boards SET allocated_job = NULL, "
+                                          + "power_on_timestamp = 0, "
+                                          + "power_off_timestamp = 0").call();
+                        });
+                  }
+            }
+      }
 
-	@Test
-	public void tombstone() throws Exception {
-		doTransactionalTest(() -> {
-			assumeTrue(db.isHistoricalDBAvailable());
+      @Test
+      public void tombstone() throws Exception {
+            doTransactionalTest(() -> {
+                  assumeTrue(db.isHistoricalDBAvailable());
 
-			try (Connection histConn = db.getHistoricalConnection()) {
+                  try (Connection histConn = db.getHistoricalConnection()) {
 
-				int job = makeQueuedJob(1);
-				conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
-				conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
-				int preMain = countJobInTable(conn, job);
-				assertTrue(preMain == 1,
-						() -> "must have created a job we can tombstone");
-				int preTomb = countJobInTable(histConn, job);
+                        int job = makeQueuedJob(1);
+                        conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
+                        conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
+                        int preMain = countJobInTable(conn, job);
+                        assertTrue(preMain == 1,
+                                    () -> "must have created a job we can tombstone");
+                        int preTomb = countJobInTable(histConn, job);
 
-				var moved = getHistAllocTester(histConn).tombstone();
+                        var moved = getHistAllocTester(histConn).tombstone();
 
-				assertEquals(1, moved.numJobs());
-				// No resources were ever allocated, so no moves to do
-				assertEquals(0, moved.numAllocs());
-				assertEquals(preMain - 1, countJobInTable(conn, job));
-				assertEquals(preTomb + 1, countJobInTable(histConn, job));
-			}
-		});
-	}
+                        assertEquals(1, moved.numJobs());
+                        // No resources were ever allocated, so no moves to do
+                        assertEquals(0, moved.numAllocs());
+                        assertEquals(preMain - 1, countJobInTable(conn, job));
+                        assertEquals(preTomb + 1, countJobInTable(histConn, job));
+                  }
+            });
+      }
 
-	@Test
-	public void tombstoneNMPI() throws Exception {
-		doTransactionalTest(() -> {
-			assumeTrue(db.isHistoricalDBAvailable());
+      @Test
+      public void tombstoneNMPI() throws Exception {
+            doTransactionalTest(() -> {
+                  assumeTrue(db.isHistoricalDBAvailable());
 
-			try (Connection histConn = db.getHistoricalConnection()) {
+                  try (Connection histConn = db.getHistoricalConnection()) {
 
-				int job = makeQueuedJob(1);
-				conn.update(SET_JOB_NMPI_JOB).call(job, 1234, "UNITS");
-				conn.update(SET_JOB_SESSION).call(job, 4321, "UNITS");
-				conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
-				conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
-				int preMain = countJobInTable(conn, job);
-				assertTrue(preMain == 1,
-						() -> "must have created a job we can tombstone");
-				int preTomb = countJobInTable(histConn, job);
+                        int job = makeQueuedJob(1);
+                        conn.update(SET_JOB_NMPI_JOB).call(job, 1234, "UNITS");
+                        conn.update(SET_JOB_SESSION).call(job, 4321, "UNITS");
+                        conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
+                        conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
+                        int preMain = countJobInTable(conn, job);
+                        assertTrue(preMain == 1,
+                                    () -> "must have created a job we can tombstone");
+                        int preTomb = countJobInTable(histConn, job);
 
-				var moved = getHistAllocTester(histConn).tombstone();
+                        var moved = getHistAllocTester(histConn).tombstone();
 
-				assertEquals(1, moved.numJobs());
-				// No resources were ever allocated, so no moves to do
-				assertEquals(0, moved.numAllocs());
-				assertEquals(preMain - 1, countJobInTable(conn, job));
-				assertEquals(preTomb + 1, countJobInTable(histConn, job));
-			}
-		});
-	}
+                        assertEquals(1, moved.numJobs());
+                        // No resources were ever allocated, so no moves to do
+                        assertEquals(0, moved.numAllocs());
+                        assertEquals(preMain - 1, countJobInTable(conn, job));
+                        assertEquals(preTomb + 1, countJobInTable(histConn, job));
+                  }
+            });
+      }
 
-	@Test
-	public void emergencyStop() throws Exception {
-		doTransactionalTest(() -> {
-			int job = makeQueuedJob(1);
-			getAllocTester().allocate();
-			makeAllocBySizeRequest(job, 1);
-			snooze1s();
-			snooze1s();
+      @Test
+      public void emergencyStop() throws Exception {
+            doTransactionalTest(() -> {
+                  int job = makeQueuedJob(1);
+                  getAllocTester().allocate();
+                  makeAllocBySizeRequest(job, 1);
+                  snooze1s();
+                  snooze1s();
 
-			assumeState(job, QUEUED, 1, 0);
+                  assumeState(job, QUEUED, 1, 0);
 
-			getAllocTester().emergencyStop();
+                  getAllocTester().emergencyStop();
 
-			assertState(job, DESTROYED, 0, 0);
+                  assertState(job, DESTROYED, 0, 0);
 
-			getAllocTester().restartAfterStop();
-			bmpCtrl.emergencyResume();
-		});
-	}
+                  getAllocTester().restartAfterStop();
+                  bmpCtrl.emergencyResume();
+            });
+      }
 }

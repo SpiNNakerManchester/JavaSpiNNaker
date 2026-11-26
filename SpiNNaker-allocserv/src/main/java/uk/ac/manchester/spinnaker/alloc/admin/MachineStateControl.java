@@ -79,887 +79,887 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  */
 @Service
 public class MachineStateControl extends DatabaseAwareBean {
-	private static final int SHORT_WAIT = 500;
-
-	private static final Logger log = getLogger(MachineStateControl.class);
-
-	@Autowired
-	private Epochs epochs;
-
-	@Autowired
-	private BlacklistStore blacklistStore;
-
-	/** Just for {@link #launchBackground()}. */
-	@Autowired
-	private TaskScheduler executor;
-
-	/** Just for {@link #launchBackground()}. */
-	@Autowired
-	private SpallocProperties properties;
-
-	@Autowired
-	private BMPController bmpController;
-
-	private StateControlProperties props;
-
-	/** Calls {@link #readAllBoardSerialNumbers()} after a delay. */
-	private ScheduledFuture<?> readAllTask;
-
-	@PostConstruct
-	private void launchBackground() {
-		props = properties.getStateControl();
-		// After a minute, start retrieving board serial numbers
-		readAllTask =
-				executor.schedule((Runnable) this::readAllBoardSerialNumbers,
-						Instant.now().plus(props.getBlacklistTimeout()));
-		// Why can't I pass a Duration directly there?
-	}
-
-	@PreDestroy
-	private void stopBackground() {
-		var t = readAllTask;
-		if (t != null) {
-			readAllTask = null;
-			try {
-				t.cancel(true);
-				t.get();
-			} catch (InterruptedException | CancellationException e) {
-				log.trace("stopped background loader", e);
-			} catch (Exception e) {
-				log.info("failure in background board serial number fetch", e);
-			}
-		}
-	}
-
-	/**
-	 * Access to the enablement-state of a board.
-	 */
-	public final class BoardState {
-		// No validity definitions; instances originate in DB
-		/** The name of the containing SpiNNaker machine. */
-		public final String machineName;
-
-		/** The machine ID. Unique. */
-		public final int machineId;
-
-		/** The board ID. Unique. */
-		public final int id;
-
-		/** The X triad coordinate. */
-		public final int x;
-
-		/** The Y triad coordinate. */
-		public final int y;
-
-		/** The Z triad coordinate. */
-		public final int z;
-
-		/** The cabinet number. */
-		public final int cabinet;
-
-		/** The frame number. */
-		public final int frame;
-
-		/** The board number. */
-		public final Integer board;
-
-		/** The IP address managed by the board's root chip. */
-		public final String address;
-
-		/** The BMP serial number, if known. */
-		public final String bmpSerial;
-
-		/** The physical board serial number, if known. */
-		public final String physicalSerial;
-
-		/** The BMP id. */
-		public final int bmpId;
-
-		private BoardState(Row row) {
-			this.id = row.getInt("board_id");
-			this.x = row.getInt("x");
-			this.y = row.getInt("y");
-			this.z = row.getInt("z");
-			this.cabinet = row.getInt("cabinet");
-			this.frame = row.getInt("frame");
-			this.board = row.getInteger("board_num");
-			this.address = row.getString("address");
-			this.machineName = row.getString("machine_name");
-			this.bmpSerial = row.getString("bmp_serial_id");
-			this.physicalSerial = row.getString("physical_serial_id");
-			this.bmpId = row.getInt("bmp_id");
-			this.machineId = row.getInt("machine_id");
-		}
-
-		/**
-		 * The allocatable state of the board.
-		 *
-		 * If a board is not allocatable,
-		 * it will not be handed out in new allocations to jobs,
-		 * but can continue to be used by whatever job
-		 * it is currently allocated to (if any).
-		 *
-		 * @return The allocatable state of the board.
-		 */
-		public boolean getState() {
-			return executeRead(conn -> {
-				try (var q = conn.query(GET_FUNCTIONING_FIELD)) {
-					return q.call1(bool("functioning"), id).orElse(false);
-				}
-			});
-		}
-
-		/**
-		 * Sets the allocatable state to set the board to.
-		 *
-		 * @param newValue
-		 *            The allocatable state to set the board to.
-		 */
-		public void setState(boolean newValue) {
-			execute(conn -> {
-				try (var u = conn.update(SET_FUNCTIONING_FIELD)) {
-					return u.call(newValue, id);
-				}
-			});
-		}
-
-		/**
-		 * {@return What job has been allocated to the board}
-		 */
-		public Optional<Integer> getAllocatedJob() {
-			return executeRead(conn -> {
-				try (var q = conn.query(GET_BOARD_JOB)) {
-					return q.call1(integer("allocated_job"), id);
-				}
-			});
-		}
-
-		/**
-		 * {@return Is the board switched on}
-		 */
-		public boolean getPower() {
-			return executeRead(conn -> {
-				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
-					return q.call1(bool("board_power"), id).orElse(false);
-				}
-			});
-		}
-
-		/**
-		 * {@return When was the board last switched on}
-		 */
-		public Optional<Instant> getPowerOnTime() {
-			return executeRead(conn -> {
-				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
-					return q.call1(instant("power_on_timestamp"), id);
-				}
-			});
-		}
-
-		/**
-		 * {@return When was the board last switched off}
-		 */
-		public Optional<Instant> getPowerOffTime() {
-			return executeRead(conn -> {
-				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
-					return q.call1(instant("power_off_timestamp"), id);
-				}
-			});
-		}
-
-		/**
-		 * {@return What issues have been logged against the board}
-		 */
-		public List<BoardIssueReport> getReports() {
-			return executeRead(conn -> {
-				try (var q = conn.query(GET_BOARD_REPORTS)) {
-					return q.call(BoardIssueReport::new, id);
-				}
-			});
-		}
-
-		@Override
-		public String toString() {
-			return format("(%d,%d,%d)", x, y, z);
-		}
-
-		/**
-		 * Convert this active object to a static record.
-		 *
-		 * @return The static (conceptually serialisable) record object.
-		 */
-		public BoardRecord toBoardRecord() {
-			var br = new BoardRecord();
-			br.setId(id);
-			br.setBmpId(bmpId);
-			br.setMachineName(machineName);
-			br.setX(x);
-			br.setY(y);
-			br.setZ(z);
-			br.setCabinet(cabinet);
-			br.setFrame(frame);
-			br.setBoard(board);
-			br.setIpAddress(address);
-			br.setBmpSerial(bmpSerial);
-			br.setPhysicalSerial(physicalSerial);
-			br.setLastPowerOn(getPowerOnTime().orElse(null));
-			br.setLastPowerOff(getPowerOffTime().orElse(null));
-			br.setPowered(getPower());
-			br.setJobId(getAllocatedJob().orElse(null));
-			br.setReports(getReports());
-			br.setEnabled(getState());
-			return br;
-		}
-	}
-
-	/**
-	 * Look up a board for management.
-	 *
-	 * @param id
-	 *            The unique ID of the board. Because this is fully unique, the
-	 *            machine name is not needed.
-	 * @return Board state manager
-	 */
-	public Optional<BoardState> findId(int id) {
-		return executeRead(conn -> {
-			try (var q = conn.query(FIND_BOARD_BY_ID)) {
-				return q.call1(BoardState::new, id);
-			}
-		});
-	}
-
-	/**
-	 * Look up a board for management.
-	 *
-	 * @param machine
-	 *            The name of the machine.
-	 * @param coords
-	 *            Triad coordinates
-	 * @return Board state manager
-	 */
-	public Optional<BoardState> findTriad(@NotBlank String machine,
-			@Valid @NonNull TriadCoords coords) {
-		return executeRead(conn -> {
-			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
-				return q.call1(BoardState::new, machine, coords.x, coords.y,
-						coords.z);
-			}
-		});
-	}
-
-	/**
-	 * Look up a board for management.
-	 *
-	 * @param machine
-	 *            The name of the machine.
-	 * @param coords
-	 *            Physical coordinates
-	 * @return Board state manager
-	 */
-	public Optional<BoardState> findPhysical(@NotBlank String machine,
-			@Valid @NotNull PhysicalCoords coords) {
-		return executeRead(conn -> {
-			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
-				return q.call1(BoardState::new, machine, coords.c, coords.f,
-						coords.b);
-			}
-		});
-	}
-
-	/**
-	 * Look up a board for management.
-	 *
-	 * @param machine
-	 *            The name of the machine.
-	 * @param address
-	 *            Board IP address
-	 * @return Board state manager
-	 */
-	public Optional<BoardState> findIP(@NotBlank String machine,
-			@IPAddress String address) {
-		return executeRead(conn -> {
-			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
-				return q.call1(BoardState::new, machine, address);
-			}
-		});
-	}
-
-	/**
-	 * {@return The mapping from machine names+IDs to tags}
-	 */
-	public List<MachineTagging> getMachineTagging() {
-		return executeRead(conn -> {
-			try (var getMachines = conn.query(GET_ALL_MACHINES);
-					var getTags = conn.query(GET_TAGS)) {
-				var infos = getMachines.call(MachineTagging::new, true);
-				for (var t : infos) {
-					t.setTags(getTags.call(string("tag"), t.getId()));
-				}
-				return infos;
-			}
-		});
-	}
-
-	private class MachineNameId {
-		private int id;
-
-		private String name;
-
-		MachineNameId(Row row) {
-			id = row.getInt("machine_id");
-			name = row.getString("machine_name");
-		}
-	}
-
-	/**
-	 * {@return The unacknowledged reports about boards with potential problems
-	 *         in existing machines, categorised by machine}
-	 */
-	public Map<String, List<BoardIssueReport>> getMachineReports() {
-		return executeRead(conn -> {
-			try (var getMachines = conn.query(GET_ALL_MACHINES);
-					var getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
-				return Row.stream(getMachines.call(MachineNameId::new, true))
-						.toMap(m -> m.name, m -> getMachineReports.call(
-								BoardIssueReport::new, m.id));
-			}
-		});
-	}
-
-	/**
-	 * Replace the tags on a machine with a given set.
-	 *
-	 * @param machineName
-	 *            The name of the machine to update the tags of.
-	 * @param tags
-	 *            The tags to apply. Existing tags will be removed.
-	 * @throws IllegalArgumentException
-	 *             If the machine with that name doesn't exist.
-	 */
-	public void updateTags(@NotBlank String machineName,
-			Set<@NotBlank String> tags) {
-		execute(conn -> {
-			try (var getMachine = conn.query(GET_NAMED_MACHINE);
-					var deleteTags = conn.update(DELETE_MACHINE_TAGS);
-					var addTag = conn.update(INSERT_TAG)) {
-				int machineId = getMachine.call1(integer("machine_id"),
-						machineName, true).orElseThrow(
-						() -> new IllegalArgumentException("no such machine"));
-				deleteTags.call(machineId);
-				for (var tag : tags) {
-					addTag.call(machineId, tag);
-				}
-				return this; // Unimportant value
-			}
-		});
-	}
-
-	/**
-	 * Sets whether a machine is in service.
-	 *
-	 * @param machineName
-	 *            The name of the machine to control
-	 * @param inService
-	 *            Whether to put the machine in or out of service.
-	 */
-	public void setMachineState(@NotBlank String machineName,
-			boolean inService) {
-		execute(conn -> {
-			try (var setState = conn.update(SET_MACHINE_STATE)) {
-				setState.call(inService, machineName);
-				return this; // Unimportant value
-			}
-		});
-	}
-
-	/**
-	 * Exception thrown when the machine state can't be read from or written to
-	 * a BMP. This includes when a blacklist can't be accessed or when the
-	 * machine state structure can't be read.
-	 */
-	public static final class MachineStateException extends RuntimeException {
-		private static final long serialVersionUID = -6450838951059318431L;
-
-		private MachineStateException(String msg, Exception exn) {
-			super(msg, exn);
-		}
-
-		private MachineStateException(String msg) {
-			super(msg);
-		}
-	}
-
-	/**
-	 * Retrieve the blacklist for the given board from the board and store it in
-	 * the database.
-	 *
-	 * @param boardId
-	 *            The board to get the blacklist of.
-	 * @param bmpId
-	 *            The BMP of the board.
-	 * @return The blacklist that was transferred, if any.
-	 */
-	public Optional<Blacklist> pullBlacklist(int boardId, int bmpId) {
-		try {
-			return readBlacklistFromMachine(boardId, bmpId).map(bl -> {
-				blacklistStore.writeBlacklist(boardId, bl);
-				execute(c -> {
-					// These must be done in ONE transaction
-					changed(c, boardId);
-					synched(c, boardId);
-					return this; // Unimportant result
-				});
-				return bl;
-			});
-		} catch (InterruptedException e) {
-			return Optional.empty();
-		}
-	}
-
-	/**
-	 * Take the blacklist for the given board in the database and write it to
-	 * the board.
-	 *
-	 * @param board
-	 *            The board to set the blacklist of.
-	 * @return The blacklist that was transferred, if any.
-	 */
-	public Optional<Blacklist> pushBlacklist(BoardState board) {
-		return readBlacklistFromDB(board).map(bl -> {
-			try {
-				writeBlacklistToMachine(board.id, board.bmpId, bl);
-				execute(c -> synched(c, board.id)); // Unimportant result
-				return bl;
-			} catch (InterruptedException e) {
-				return null;
-			}
-		});
-	}
-
-	private boolean changed(Connection conn, int boardId) {
-		try (var synched = conn.update(MARK_BOARD_BLACKLIST_CHANGED)) {
-			return synched.call(boardId) > 0;
-		}
-	}
-
-	private boolean synched(Connection conn, int boardId) {
-		try (var synched = conn.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
-			return synched.call(boardId) > 0;
-		}
-	}
-
-	/**
-	 * Ensure that the database has the actual serial numbers of all boards in a
-	 * machine.
-	 *
-	 * @param machineName
-	 *            Which machine to read the serial numbers of.
-	 */
-	public void readAllBoardSerialNumbers(@NotBlank String machineName) {
-		scheduleSerialNumberReads(requireNonNull(machineName));
-	}
-
-	/**
-	 * Ensure that the database has the actual serial numbers of all known
-	 * boards.
-	 */
-	private void readAllBoardSerialNumbers() {
-		scheduleSerialNumberReads(null);
-	}
-
-	/**
-	 * Common core of {@link #readAllBoardSerialNumbers(String)} and
-	 * {@link #readAllBoardSerialNumbers()}.
-	 *
-	 * @param machineName
-	 *            The machine name, or {@code null} for all.
-	 */
-	@SuppressWarnings("MustBeClosed")
-	private void scheduleSerialNumberReads(String machineName) {
-		batchReqs(machineName, "retrieving serial numbers",
-				props.getSerialReadBatchSize(),
-				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
-	}
-
-	private interface InterruptableConsumer<T> {
-		/**
-		 * Performs this operation on the given argument.
-		 *
-		 * @param t
-		 *            the input argument
-		 * @throws InterruptedException
-		 *             if interrupted
-		 */
-		void accept(T t) throws InterruptedException;
-	}
-
-	/**
-	 * Perform an action for all boards in a machine (or all known), batching
-	 * them as necessary. If interrupted, will complete the currently processing
-	 * batch but will not perform further batches.
-	 *
-	 * @param machineName
-	 *            Which machine are we talking about? If {@code null}, all
-	 *            boards of all machines will be processed.
-	 * @param action
-	 *            What are we doing (for log messages)?
-	 * @param batchSize
-	 *            How many requests to handle at once in a batch of requests to
-	 *            the back end engine.
-	 * @param opGenerator
-	 *            How to generate an individual operation to perform.
-	 * @param opResultsHandler
-	 *            How to process the results of an individual operation.
-	 */
-	private void batchReqs(String machineName, String action, int batchSize,
-			Function<Integer, Op> opGenerator,
-			InterruptableConsumer<Op> opResultsHandler) {
-		var boards = executeRead(c -> listAllBoards(c, machineName));
-		for (var batch : batch(batchSize, boards)) {
-			/*
-			 * Theoretically, this could be more efficiently done. Practically,
-			 * a proper multi-op scheme is really complex, even before
-			 * considering how to handle failure modes! This isn't a performance
-			 * sensitive part of the code.
-			 */
-			var ops = lmap(batch, board -> opGenerator.apply(board.boardId));
-			var bmps = new HashSet<>(lmap(batch, board -> board.bmp.bmpId));
-			boolean stop = false;
-			try {
-				bmpController.triggerSearch(bmps);
-				for (var op : ops) {
-					try {
-						opResultsHandler.accept(op);
-					} catch (RuntimeException e) {
-						log.warn("failed while {}", action, e);
-					} catch (InterruptedException e) {
-						log.info("interrupted while {}", action, e);
-						stop = true;
-					}
-				}
-			} finally {
-				ops.forEach(Op::close);
-			}
-			if (stop) {
-				// Mark as interrupted
-				currentThread().interrupt();
-				break;
-			}
-		}
-	}
-
-	/**
-	 * Retrieve all blacklists, parse them, and store them in the DB's model.
-	 *
-	 * @param machineName
-	 *            Which machine to get the blacklists of.
-	 */
-	@SuppressWarnings("MustBeClosed")
-	public void updateAllBlacklists(@NotBlank String machineName) {
-		batchReqs(requireNonNull(machineName), "retrieving blacklists",
-				props.getBlacklistReadBatchSize(),
-				id -> new Op(CREATE_BLACKLIST_READ, id),
-				op -> op.getResult(serial("data", Blacklist.class))
-						.ifPresent(bl -> {
-							blacklistStore.writeBlacklist(op.boardId, bl);
-							execute(c -> {
-								// These must be done in ONE transaction
-								changed(c, op.boardId);
-								synched(c, op.boardId);
-								return this; // Unimportant result
-							});
-						}));
-	}
-
-	private static List<BoardAndBMP> listAllBoards(Connection conn,
-			String machineName) {
-		try (var machines = conn.query(GET_NAMED_MACHINE);
-				var boards = conn.query(GET_ALL_BOARDS);
-				var all = conn.query(GET_ALL_BOARDS_OF_ALL_MACHINES)) {
-			if (machineName == null) {
-				return all.call(BoardAndBMP::new);
-			}
-			return machines.call1(integer("machine_id"), machineName).map(
-					mid -> boards.call(BoardAndBMP::new, mid))
-					.orElse(List.of());
-		}
-	}
-
-	/**
-	 * Given a board, read its blacklist from the database.
-	 *
-	 * @param board
-	 *            Which board to read the blacklist of.
-	 * @return The board's blacklist.
-	 * @throws DataAccessException
-	 *             If access to the DB fails.
-	 */
-	public Optional<Blacklist> readBlacklistFromDB(BoardState board) {
-		return blacklistStore.readBlacklist(board.id);
-	}
-
-	/**
-	 * Given a board, write a blacklist for it to the database. Does
-	 * <em>not</em> push the blacklist to the board.
-	 *
-	 * @param boardId The ID of the board to write.
-	 * @param blacklist
-	 *            The blacklist to write.
-	 * @throws DataAccessException
-	 *             If access to the DB fails.
-	 */
-	public void writeBlacklistToDB(int boardId,
-			@Valid Blacklist blacklist) {
-		blacklistStore.writeBlacklist(boardId, blacklist);
-		execute(c -> changed(c, boardId)); // Unimportant result
-	}
-
-	/**
-	 * Given a board, read its blacklist off the machine.
-	 *
-	 * @param boardId
-	 *            Which board to read the blacklist of.
-	 * @param bmpId
-	 *            The BMP of the board.
-	 * @return The board's blacklist.
-	 * @throws DataAccessException
-	 *             If access to the DB fails.
-	 * @throws InterruptedException
-	 *             If interrupted.
-	 * @throws MachineStateException
-	 *             If the read fails.
-	 */
-	public Optional<Blacklist> readBlacklistFromMachine(int boardId, int bmpId)
-			throws InterruptedException {
-		try (var op = new Op(CREATE_BLACKLIST_READ, boardId)) {
-			bmpController.triggerSearch(List.of(bmpId));
-			return op.getResult(serial("data", Blacklist.class));
-		}
-	}
-
-	/**
-	 * Write a blacklist to a board on the machine.
-	 *
-	 * @param boardId
-	 *            Which board to write the blacklist of.
-	 * @param bmpId
-	 *            Which BMP the board belongs to.
-	 * @param blacklist
-	 *            The blacklist to write.
-	 * @throws DataAccessException
-	 *             If access to the DB fails.
-	 * @throws InterruptedException
-	 *             If interrupted. Note that interrupting the thread does
-	 *             <em>not</em> necessarily halt the write of the blacklist.
-	 * @throws MachineStateException
-	 *             If the write fails.
-	 */
-	public void writeBlacklistToMachine(int boardId, int bmpId,
-			@Valid Blacklist blacklist) throws InterruptedException {
-		try (var op = new Op(CREATE_BLACKLIST_WRITE, boardId, blacklist)) {
-			bmpController.triggerSearch(List.of(bmpId));
-			op.completed();
-		}
-	}
-
-	/**
-	 * Read the serial number off a board.
-	 *
-	 * @param board
-	 *            Which board to get the serial number of.
-	 * @return The serial number.
-	 * @throws DataAccessException
-	 *             If access to the DB fails.
-	 * @throws InterruptedException
-	 *             If interrupted.
-	 * @throws MachineStateException
-	 *             If the write fails.
-	 */
-	public String getSerialNumber(BoardState board)
-			throws InterruptedException {
-		try (var op = new Op(CREATE_SERIAL_READ_REQ, board.id)) {
-			bmpController.triggerSearch(List.of(board.bmpId));
-			op.completed();
-		}
-		// Can now read out of the DB normally
-		return findId(board.id).map(b -> b.bmpSerial).orElse(null);
-	}
-
-	/**
-	 * Given a board, read its temperature data off the machine.
-	 *
-	 * @param boardId
-	 *            Which board to read the temperature data of.
-	 * @param bmpId
-	 *            The BMP that controls the board.
-	 * @return The board's temperature data.
-	 * @throws DataAccessException
-	 *             If access to the DB fails.
-	 * @throws InterruptedException
-	 *             If interrupted.
-	 * @throws MachineStateException
-	 *             If the read fails.
-	 */
-	public Optional<ADCInfo> readTemperatureFromMachine(int boardId, int bmpId)
-			throws InterruptedException {
-		try (var op = new Op(CREATE_TEMP_READ_REQ, boardId)) {
-			bmpController.triggerSearch(List.of(bmpId));
-			return op.getResult(serial("data", ADCInfo.class));
-		}
-	}
-
-	/**
-	 * Test whether a board's blacklist is believed to be synchronised to the
-	 * hardware.
-	 *
-	 * @param board
-	 *            Which board?
-	 * @return True if the synch has happened, i.e., the time the blacklist data
-	 *         was changed is no later than the last time the synch happened.
-	 */
-	public boolean isBlacklistSynched(BoardState board) {
-		return executeRead(conn -> {
-			try (var isCurrent = conn.query(IS_BOARD_BLACKLIST_CURRENT)) {
-				return isCurrent.call1(bool("current"), board.id)
-						.orElse(false);
-			}
-		});
-	}
-
-	/**
-	 * Manages the transactions used to safely talk with the BMP controller.
-	 */
-	private final class Op implements AutoCloseable {
-		private final int op;
-
-		private final Epoch epoch;
-
-		private final int boardId;
-
-		/**
-		 * Constructs the Manager for the transactions used to safely talk
-		 *     with the BMP controller.
-		 *
-		 * @param operation
-		 *            The SQL to create the operation to carry out. Must
-		 *            generate an ID, so presumably is an {@code INSERT}.
-		 * @param args
-		 *            Values to bind to parameters in the SQL. The first
-		 *            parameter <em>must</em> be the board ID! Presumably that
-		 *            will be the board that the operation refers to.
-		 */
-		@MustBeClosed
-		Op(@CompileTimeConstant final String operation, Object... args) {
-			boardId = (Integer) args[0];
-			var e = epochs.getBlacklistEpoch(boardId);
-			op = execute(conn -> {
-				try (var readReq = conn.update(operation)) {
-					return readReq.key(args);
-				}
-			}).orElseThrow(() -> new MachineStateException(
-					"could not create machine state request"));
-			if (!e.isValid()) {
-				log.warn("early board epoch invalidation");
-				e = epochs.getBlacklistEpoch(boardId);
-			}
-			epoch = e;
-		}
-
-		/**
-		 * Wait for the result of the request to be ready.
-		 *
-		 * @param <T>
-		 *            The type of the result value.
-		 * @param retriever
-		 *            How to convert the row containing the result into the
-		 *            actual result of the transaction.
-		 * @return The wrapped result, or empty if the operation times out.
-		 * @throws DataAccessException
-		 *             If there is a problem accessing the database.
-		 * @throws InterruptedException
-		 *             If the thread is interrupted.
-		 * @throws MachineStateException
-		 *             If the BMP throws an exception.
-		 */
-		<T> Optional<T> getResult(RowMapper<T> retriever)
-				throws InterruptedException, MachineStateException,
-				DataAccessException {
-			var end = now().plus(props.getBlacklistTimeout());
-			boolean once = false;
-			while (end.isAfter(now())) {
-				var result = executeRead(conn -> {
-					try (var getResult =
-							conn.query(GET_COMPLETED_BLACKLIST_OP)) {
-						return getResult.call1(row -> retriever.mapRow(
-								throwIfFailed(row)), op);
-					}
-				});
-				if (result.isPresent()) {
-					return result;
-				}
-				if (!epoch.isValid()) {
-					// Things are going wonky; fall back on regular polling
-					if (!once) {
-						log.warn("epoch invalid for board {}?", boardId);
-						once = true;
-					}
-					Thread.sleep(SHORT_WAIT);
-				} else {
-					log.debug("Waiting for blacklist change");
-					epoch.waitForChange(props.getBlacklistPoll());
-				}
-			}
-			return Optional.empty();
-		}
-
-		/**
-		 * Wait for the result of the request to be ready, then discard that
-		 * result. Used instead of {@link #getResult(Function)} when the value
-		 * of the result is not interesting at all.
-		 *
-		 * @throws DataAccessException
-		 *             If there is a problem accessing the database.
-		 * @throws InterruptedException
-		 *             If the thread is interrupted.
-		 * @throws MachineStateException
-		 *             If the BMP throws an exception.
-		 */
-		void completed() throws DataAccessException, MachineStateException,
-				InterruptedException {
-			getResult(__ -> this);
-		}
-
-		/**
-		 * If a row encodes a failure state, unpack the exception from the row
-		 * and throw it as a wrapped exception. Otherwise, just pass on the row.
-		 *
-		 * @param row
-		 *            The row to examine.
-		 * @return The row, which is now guaranteed to not be a failure.
-		 * @throws MachineStateException
-		 *             If the row encodes a failure.
-		 */
-		private Row throwIfFailed(Row row) throws MachineStateException {
-			if (row.getBoolean("failed")) {
-				throw new MachineStateException(
-						"failed to access hardware state",
-						row.getSerial("failure", Exception.class));
-			}
-			return row;
-		}
-
-		/**
-		 * Deletes the temporary operation description row in the DB.
-		 * <p>
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void close() {
-			execute(conn -> {
-				try (var delReq = conn.update(DELETE_BLACKLIST_OP)) {
-					return delReq.call(op);
-				}
-			});
-		}
-	}
+      private static final int SHORT_WAIT = 500;
+
+      private static final Logger log = getLogger(MachineStateControl.class);
+
+      @Autowired
+      private Epochs epochs;
+
+      @Autowired
+      private BlacklistStore blacklistStore;
+
+      /** Just for {@link #launchBackground()}. */
+      @Autowired
+      private TaskScheduler executor;
+
+      /** Just for {@link #launchBackground()}. */
+      @Autowired
+      private SpallocProperties properties;
+
+      @Autowired
+      private BMPController bmpController;
+
+      private StateControlProperties props;
+
+      /** Calls {@link #readAllBoardSerialNumbers()} after a delay. */
+      private ScheduledFuture<?> readAllTask;
+
+      @PostConstruct
+      private void launchBackground() {
+            props = properties.getStateControl();
+            // After a minute, start retrieving board serial numbers
+            readAllTask =
+                        executor.schedule((Runnable) this::readAllBoardSerialNumbers,
+                                    Instant.now().plus(props.getBlacklistTimeout()));
+            // Why can't I pass a Duration directly there?
+      }
+
+      @PreDestroy
+      private void stopBackground() {
+            var t = readAllTask;
+            if (t != null) {
+                  readAllTask = null;
+                  try {
+                        t.cancel(true);
+                        t.get();
+                  } catch (InterruptedException | CancellationException e) {
+                        log.trace("stopped background loader", e);
+                  } catch (Exception e) {
+                        log.info("failure in background board serial number fetch", e);
+                  }
+            }
+      }
+
+      /**
+       * Access to the enablement-state of a board.
+       */
+      public final class BoardState {
+            // No validity definitions; instances originate in DB
+            /** The name of the containing SpiNNaker machine. */
+            public final String machineName;
+
+            /** The machine ID. Unique. */
+            public final int machineId;
+
+            /** The board ID. Unique. */
+            public final int id;
+
+            /** The X triad coordinate. */
+            public final int x;
+
+            /** The Y triad coordinate. */
+            public final int y;
+
+            /** The Z triad coordinate. */
+            public final int z;
+
+            /** The cabinet number. */
+            public final int cabinet;
+
+            /** The frame number. */
+            public final int frame;
+
+            /** The board number. */
+            public final Integer board;
+
+            /** The IP address managed by the board's root chip. */
+            public final String address;
+
+            /** The BMP serial number, if known. */
+            public final String bmpSerial;
+
+            /** The physical board serial number, if known. */
+            public final String physicalSerial;
+
+            /** The BMP id. */
+            public final int bmpId;
+
+            private BoardState(Row row) {
+                  this.id = row.getInt("board_id");
+                  this.x = row.getInt("x");
+                  this.y = row.getInt("y");
+                  this.z = row.getInt("z");
+                  this.cabinet = row.getInt("cabinet");
+                  this.frame = row.getInt("frame");
+                  this.board = row.getInteger("board_num");
+                  this.address = row.getString("address");
+                  this.machineName = row.getString("machine_name");
+                  this.bmpSerial = row.getString("bmp_serial_id");
+                  this.physicalSerial = row.getString("physical_serial_id");
+                  this.bmpId = row.getInt("bmp_id");
+                  this.machineId = row.getInt("machine_id");
+            }
+
+            /**
+             * The allocatable state of the board.
+             *
+             * If a board is not allocatable,
+             * it will not be handed out in new allocations to jobs,
+             * but can continue to be used by whatever job
+             * it is currently allocated to (if any).
+             *
+             * @return The allocatable state of the board.
+             */
+            public boolean getState() {
+                  return executeRead(conn -> {
+                        try (var q = conn.query(GET_FUNCTIONING_FIELD)) {
+                              return q.call1(bool("functioning"), id).orElse(false);
+                        }
+                  });
+            }
+
+            /**
+             * Sets the allocatable state to set the board to.
+             *
+             * @param newValue
+             *            The allocatable state to set the board to.
+             */
+            public void setState(boolean newValue) {
+                  execute(conn -> {
+                        try (var u = conn.update(SET_FUNCTIONING_FIELD)) {
+                              return u.call(newValue, id);
+                        }
+                  });
+            }
+
+            /**
+             * {@return What job has been allocated to the board}
+             */
+            public Optional<Integer> getAllocatedJob() {
+                  return executeRead(conn -> {
+                        try (var q = conn.query(GET_BOARD_JOB)) {
+                              return q.call1(integer("allocated_job"), id);
+                        }
+                  });
+            }
+
+            /**
+             * {@return Is the board switched on}
+             */
+            public boolean getPower() {
+                  return executeRead(conn -> {
+                        try (var q = conn.query(GET_BOARD_POWER_INFO)) {
+                              return q.call1(bool("board_power"), id).orElse(false);
+                        }
+                  });
+            }
+
+            /**
+             * {@return When was the board last switched on}
+             */
+            public Optional<Instant> getPowerOnTime() {
+                  return executeRead(conn -> {
+                        try (var q = conn.query(GET_BOARD_POWER_INFO)) {
+                              return q.call1(instant("power_on_timestamp"), id);
+                        }
+                  });
+            }
+
+            /**
+             * {@return When was the board last switched off}
+             */
+            public Optional<Instant> getPowerOffTime() {
+                  return executeRead(conn -> {
+                        try (var q = conn.query(GET_BOARD_POWER_INFO)) {
+                              return q.call1(instant("power_off_timestamp"), id);
+                        }
+                  });
+            }
+
+            /**
+             * {@return What issues have been logged against the board}
+             */
+            public List<BoardIssueReport> getReports() {
+                  return executeRead(conn -> {
+                        try (var q = conn.query(GET_BOARD_REPORTS)) {
+                              return q.call(BoardIssueReport::new, id);
+                        }
+                  });
+            }
+
+            @Override
+            public String toString() {
+                  return format("(%d,%d,%d)", x, y, z);
+            }
+
+            /**
+             * Convert this active object to a static record.
+             *
+             * @return The static (conceptually serialisable) record object.
+             */
+            public BoardRecord toBoardRecord() {
+                  var br = new BoardRecord();
+                  br.setId(id);
+                  br.setBmpId(bmpId);
+                  br.setMachineName(machineName);
+                  br.setX(x);
+                  br.setY(y);
+                  br.setZ(z);
+                  br.setCabinet(cabinet);
+                  br.setFrame(frame);
+                  br.setBoard(board);
+                  br.setIpAddress(address);
+                  br.setBmpSerial(bmpSerial);
+                  br.setPhysicalSerial(physicalSerial);
+                  br.setLastPowerOn(getPowerOnTime().orElse(null));
+                  br.setLastPowerOff(getPowerOffTime().orElse(null));
+                  br.setPowered(getPower());
+                  br.setJobId(getAllocatedJob().orElse(null));
+                  br.setReports(getReports());
+                  br.setEnabled(getState());
+                  return br;
+            }
+      }
+
+      /**
+       * Look up a board for management.
+       *
+       * @param id
+       *            The unique ID of the board. Because this is fully unique, the
+       *            machine name is not needed.
+       * @return Board state manager
+       */
+      public Optional<BoardState> findId(int id) {
+            return executeRead(conn -> {
+                  try (var q = conn.query(FIND_BOARD_BY_ID)) {
+                        return q.call1(BoardState::new, id);
+                  }
+            });
+      }
+
+      /**
+       * Look up a board for management.
+       *
+       * @param machine
+       *            The name of the machine.
+       * @param coords
+       *            Triad coordinates
+       * @return Board state manager
+       */
+      public Optional<BoardState> findTriad(@NotBlank String machine,
+                  @Valid @NonNull TriadCoords coords) {
+            return executeRead(conn -> {
+                  try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
+                        return q.call1(BoardState::new, machine, coords.x, coords.y,
+                                    coords.z);
+                  }
+            });
+      }
+
+      /**
+       * Look up a board for management.
+       *
+       * @param machine
+       *            The name of the machine.
+       * @param coords
+       *            Physical coordinates
+       * @return Board state manager
+       */
+      public Optional<BoardState> findPhysical(@NotBlank String machine,
+                  @Valid @NotNull PhysicalCoords coords) {
+            return executeRead(conn -> {
+                  try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
+                        return q.call1(BoardState::new, machine, coords.c, coords.f,
+                                    coords.b);
+                  }
+            });
+      }
+
+      /**
+       * Look up a board for management.
+       *
+       * @param machine
+       *            The name of the machine.
+       * @param address
+       *            Board IP address
+       * @return Board state manager
+       */
+      public Optional<BoardState> findIP(@NotBlank String machine,
+                  @IPAddress String address) {
+            return executeRead(conn -> {
+                  try (var q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
+                        return q.call1(BoardState::new, machine, address);
+                  }
+            });
+      }
+
+      /**
+       * {@return The mapping from machine names+IDs to tags}
+       */
+      public List<MachineTagging> getMachineTagging() {
+            return executeRead(conn -> {
+                  try (var getMachines = conn.query(GET_ALL_MACHINES);
+                              var getTags = conn.query(GET_TAGS)) {
+                        var infos = getMachines.call(MachineTagging::new, true);
+                        for (var t : infos) {
+                              t.setTags(getTags.call(string("tag"), t.getId()));
+                        }
+                        return infos;
+                  }
+            });
+      }
+
+      private class MachineNameId {
+            private int id;
+
+            private String name;
+
+            MachineNameId(Row row) {
+                  id = row.getInt("machine_id");
+                  name = row.getString("machine_name");
+            }
+      }
+
+      /**
+       * {@return The unacknowledged reports about boards with potential problems
+       *         in existing machines, categorised by machine}
+       */
+      public Map<String, List<BoardIssueReport>> getMachineReports() {
+            return executeRead(conn -> {
+                  try (var getMachines = conn.query(GET_ALL_MACHINES);
+                              var getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
+                        return Row.stream(getMachines.call(MachineNameId::new, true))
+                                    .toMap(m -> m.name, m -> getMachineReports.call(
+                                                BoardIssueReport::new, m.id));
+                  }
+            });
+      }
+
+      /**
+       * Replace the tags on a machine with a given set.
+       *
+       * @param machineName
+       *            The name of the machine to update the tags of.
+       * @param tags
+       *            The tags to apply. Existing tags will be removed.
+       * @throws IllegalArgumentException
+       *             If the machine with that name doesn't exist.
+       */
+      public void updateTags(@NotBlank String machineName,
+                  Set<@NotBlank String> tags) {
+            execute(conn -> {
+                  try (var getMachine = conn.query(GET_NAMED_MACHINE);
+                              var deleteTags = conn.update(DELETE_MACHINE_TAGS);
+                              var addTag = conn.update(INSERT_TAG)) {
+                        int machineId = getMachine.call1(integer("machine_id"),
+                                    machineName, true).orElseThrow(
+                                    () -> new IllegalArgumentException("no such machine"));
+                        deleteTags.call(machineId);
+                        for (var tag : tags) {
+                              addTag.call(machineId, tag);
+                        }
+                        return this; // Unimportant value
+                  }
+            });
+      }
+
+      /**
+       * Sets whether a machine is in service.
+       *
+       * @param machineName
+       *            The name of the machine to control
+       * @param inService
+       *            Whether to put the machine in or out of service.
+       */
+      public void setMachineState(@NotBlank String machineName,
+                  boolean inService) {
+            execute(conn -> {
+                  try (var setState = conn.update(SET_MACHINE_STATE)) {
+                        setState.call(inService, machineName);
+                        return this; // Unimportant value
+                  }
+            });
+      }
+
+      /**
+       * Exception thrown when the machine state can't be read from or written to
+       * a BMP. This includes when a blacklist can't be accessed or when the
+       * machine state structure can't be read.
+       */
+      public static final class MachineStateException extends RuntimeException {
+            private static final long serialVersionUID = -6450838951059318431L;
+
+            private MachineStateException(String msg, Exception exn) {
+                  super(msg, exn);
+            }
+
+            private MachineStateException(String msg) {
+                  super(msg);
+            }
+      }
+
+      /**
+       * Retrieve the blacklist for the given board from the board and store it in
+       * the database.
+       *
+       * @param boardId
+       *            The board to get the blacklist of.
+       * @param bmpId
+       *            The BMP of the board.
+       * @return The blacklist that was transferred, if any.
+       */
+      public Optional<Blacklist> pullBlacklist(int boardId, int bmpId) {
+            try {
+                  return readBlacklistFromMachine(boardId, bmpId).map(bl -> {
+                        blacklistStore.writeBlacklist(boardId, bl);
+                        execute(c -> {
+                              // These must be done in ONE transaction
+                              changed(c, boardId);
+                              synched(c, boardId);
+                              return this; // Unimportant result
+                        });
+                        return bl;
+                  });
+            } catch (InterruptedException e) {
+                  return Optional.empty();
+            }
+      }
+
+      /**
+       * Take the blacklist for the given board in the database and write it to
+       * the board.
+       *
+       * @param board
+       *            The board to set the blacklist of.
+       * @return The blacklist that was transferred, if any.
+       */
+      public Optional<Blacklist> pushBlacklist(BoardState board) {
+            return readBlacklistFromDB(board).map(bl -> {
+                  try {
+                        writeBlacklistToMachine(board.id, board.bmpId, bl);
+                        execute(c -> synched(c, board.id)); // Unimportant result
+                        return bl;
+                  } catch (InterruptedException e) {
+                        return null;
+                  }
+            });
+      }
+
+      private boolean changed(Connection conn, int boardId) {
+            try (var synched = conn.update(MARK_BOARD_BLACKLIST_CHANGED)) {
+                  return synched.call(boardId) > 0;
+            }
+      }
+
+      private boolean synched(Connection conn, int boardId) {
+            try (var synched = conn.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
+                  return synched.call(boardId) > 0;
+            }
+      }
+
+      /**
+       * Ensure that the database has the actual serial numbers of all boards in a
+       * machine.
+       *
+       * @param machineName
+       *            Which machine to read the serial numbers of.
+       */
+      public void readAllBoardSerialNumbers(@NotBlank String machineName) {
+            scheduleSerialNumberReads(requireNonNull(machineName));
+      }
+
+      /**
+       * Ensure that the database has the actual serial numbers of all known
+       * boards.
+       */
+      private void readAllBoardSerialNumbers() {
+            scheduleSerialNumberReads(null);
+      }
+
+      /**
+       * Common core of {@link #readAllBoardSerialNumbers(String)} and
+       * {@link #readAllBoardSerialNumbers()}.
+       *
+       * @param machineName
+       *            The machine name, or {@code null} for all.
+       */
+      @SuppressWarnings("MustBeClosed")
+      private void scheduleSerialNumberReads(String machineName) {
+            batchReqs(machineName, "retrieving serial numbers",
+                        props.getSerialReadBatchSize(),
+                        id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
+      }
+
+      private interface InterruptableConsumer<T> {
+            /**
+             * Performs this operation on the given argument.
+             *
+             * @param t
+             *            the input argument
+             * @throws InterruptedException
+             *             if interrupted
+             */
+            void accept(T t) throws InterruptedException;
+      }
+
+      /**
+       * Perform an action for all boards in a machine (or all known), batching
+       * them as necessary. If interrupted, will complete the currently processing
+       * batch but will not perform further batches.
+       *
+       * @param machineName
+       *            Which machine are we talking about? If {@code null}, all
+       *            boards of all machines will be processed.
+       * @param action
+       *            What are we doing (for log messages)?
+       * @param batchSize
+       *            How many requests to handle at once in a batch of requests to
+       *            the back end engine.
+       * @param opGenerator
+       *            How to generate an individual operation to perform.
+       * @param opResultsHandler
+       *            How to process the results of an individual operation.
+       */
+      private void batchReqs(String machineName, String action, int batchSize,
+                  Function<Integer, Op> opGenerator,
+                  InterruptableConsumer<Op> opResultsHandler) {
+            var boards = executeRead(c -> listAllBoards(c, machineName));
+            for (var batch : batch(batchSize, boards)) {
+                  /*
+                   * Theoretically, this could be more efficiently done. Practically,
+                   * a proper multi-op scheme is really complex, even before
+                   * considering how to handle failure modes! This isn't a performance
+                   * sensitive part of the code.
+                   */
+                  var ops = lmap(batch, board -> opGenerator.apply(board.boardId));
+                  var bmps = new HashSet<>(lmap(batch, board -> board.bmp.bmpId));
+                  boolean stop = false;
+                  try {
+                        bmpController.triggerSearch(bmps);
+                        for (var op : ops) {
+                              try {
+                                    opResultsHandler.accept(op);
+                              } catch (RuntimeException e) {
+                                    log.warn("failed while {}", action, e);
+                              } catch (InterruptedException e) {
+                                    log.info("interrupted while {}", action, e);
+                                    stop = true;
+                              }
+                        }
+                  } finally {
+                        ops.forEach(Op::close);
+                  }
+                  if (stop) {
+                        // Mark as interrupted
+                        currentThread().interrupt();
+                        break;
+                  }
+            }
+      }
+
+      /**
+       * Retrieve all blacklists, parse them, and store them in the DB's model.
+       *
+       * @param machineName
+       *            Which machine to get the blacklists of.
+       */
+      @SuppressWarnings("MustBeClosed")
+      public void updateAllBlacklists(@NotBlank String machineName) {
+            batchReqs(requireNonNull(machineName), "retrieving blacklists",
+                        props.getBlacklistReadBatchSize(),
+                        id -> new Op(CREATE_BLACKLIST_READ, id),
+                        op -> op.getResult(serial("data", Blacklist.class))
+                                    .ifPresent(bl -> {
+                                          blacklistStore.writeBlacklist(op.boardId, bl);
+                                          execute(c -> {
+                                                // These must be done in ONE transaction
+                                                changed(c, op.boardId);
+                                                synched(c, op.boardId);
+                                                return this; // Unimportant result
+                                          });
+                                    }));
+      }
+
+      private static List<BoardAndBMP> listAllBoards(Connection conn,
+                  String machineName) {
+            try (var machines = conn.query(GET_NAMED_MACHINE);
+                        var boards = conn.query(GET_ALL_BOARDS);
+                        var all = conn.query(GET_ALL_BOARDS_OF_ALL_MACHINES)) {
+                  if (machineName == null) {
+                        return all.call(BoardAndBMP::new);
+                  }
+                  return machines.call1(integer("machine_id"), machineName).map(
+                              mid -> boards.call(BoardAndBMP::new, mid))
+                              .orElse(List.of());
+            }
+      }
+
+      /**
+       * Given a board, read its blacklist from the database.
+       *
+       * @param board
+       *            Which board to read the blacklist of.
+       * @return The board's blacklist.
+       * @throws DataAccessException
+       *             If access to the DB fails.
+       */
+      public Optional<Blacklist> readBlacklistFromDB(BoardState board) {
+            return blacklistStore.readBlacklist(board.id);
+      }
+
+      /**
+       * Given a board, write a blacklist for it to the database. Does
+       * <em>not</em> push the blacklist to the board.
+       *
+       * @param boardId The ID of the board to write.
+       * @param blacklist
+       *            The blacklist to write.
+       * @throws DataAccessException
+       *             If access to the DB fails.
+       */
+      public void writeBlacklistToDB(int boardId,
+                  @Valid Blacklist blacklist) {
+            blacklistStore.writeBlacklist(boardId, blacklist);
+            execute(c -> changed(c, boardId)); // Unimportant result
+      }
+
+      /**
+       * Given a board, read its blacklist off the machine.
+       *
+       * @param boardId
+       *            Which board to read the blacklist of.
+       * @param bmpId
+       *            The BMP of the board.
+       * @return The board's blacklist.
+       * @throws DataAccessException
+       *             If access to the DB fails.
+       * @throws InterruptedException
+       *             If interrupted.
+       * @throws MachineStateException
+       *             If the read fails.
+       */
+      public Optional<Blacklist> readBlacklistFromMachine(int boardId, int bmpId)
+                  throws InterruptedException {
+            try (var op = new Op(CREATE_BLACKLIST_READ, boardId)) {
+                  bmpController.triggerSearch(List.of(bmpId));
+                  return op.getResult(serial("data", Blacklist.class));
+            }
+      }
+
+      /**
+       * Write a blacklist to a board on the machine.
+       *
+       * @param boardId
+       *            Which board to write the blacklist of.
+       * @param bmpId
+       *            Which BMP the board belongs to.
+       * @param blacklist
+       *            The blacklist to write.
+       * @throws DataAccessException
+       *             If access to the DB fails.
+       * @throws InterruptedException
+       *             If interrupted. Note that interrupting the thread does
+       *             <em>not</em> necessarily halt the write of the blacklist.
+       * @throws MachineStateException
+       *             If the write fails.
+       */
+      public void writeBlacklistToMachine(int boardId, int bmpId,
+                  @Valid Blacklist blacklist) throws InterruptedException {
+            try (var op = new Op(CREATE_BLACKLIST_WRITE, boardId, blacklist)) {
+                  bmpController.triggerSearch(List.of(bmpId));
+                  op.completed();
+            }
+      }
+
+      /**
+       * Read the serial number off a board.
+       *
+       * @param board
+       *            Which board to get the serial number of.
+       * @return The serial number.
+       * @throws DataAccessException
+       *             If access to the DB fails.
+       * @throws InterruptedException
+       *             If interrupted.
+       * @throws MachineStateException
+       *             If the write fails.
+       */
+      public String getSerialNumber(BoardState board)
+                  throws InterruptedException {
+            try (var op = new Op(CREATE_SERIAL_READ_REQ, board.id)) {
+                  bmpController.triggerSearch(List.of(board.bmpId));
+                  op.completed();
+            }
+            // Can now read out of the DB normally
+            return findId(board.id).map(b -> b.bmpSerial).orElse(null);
+      }
+
+      /**
+       * Given a board, read its temperature data off the machine.
+       *
+       * @param boardId
+       *            Which board to read the temperature data of.
+       * @param bmpId
+       *            The BMP that controls the board.
+       * @return The board's temperature data.
+       * @throws DataAccessException
+       *             If access to the DB fails.
+       * @throws InterruptedException
+       *             If interrupted.
+       * @throws MachineStateException
+       *             If the read fails.
+       */
+      public Optional<ADCInfo> readTemperatureFromMachine(int boardId, int bmpId)
+                  throws InterruptedException {
+            try (var op = new Op(CREATE_TEMP_READ_REQ, boardId)) {
+                  bmpController.triggerSearch(List.of(bmpId));
+                  return op.getResult(serial("data", ADCInfo.class));
+            }
+      }
+
+      /**
+       * Test whether a board's blacklist is believed to be synchronised to the
+       * hardware.
+       *
+       * @param board
+       *            Which board?
+       * @return True if the synch has happened, i.e., the time the blacklist data
+       *         was changed is no later than the last time the synch happened.
+       */
+      public boolean isBlacklistSynched(BoardState board) {
+            return executeRead(conn -> {
+                  try (var isCurrent = conn.query(IS_BOARD_BLACKLIST_CURRENT)) {
+                        return isCurrent.call1(bool("current"), board.id)
+                                    .orElse(false);
+                  }
+            });
+      }
+
+      /**
+       * Manages the transactions used to safely talk with the BMP controller.
+       */
+      private final class Op implements AutoCloseable {
+            private final int op;
+
+            private final Epoch epoch;
+
+            private final int boardId;
+
+            /**
+             * Constructs the Manager for the transactions used to safely talk
+             *     with the BMP controller.
+             *
+             * @param operation
+             *            The SQL to create the operation to carry out. Must
+             *            generate an ID, so presumably is an {@code INSERT}.
+             * @param args
+             *            Values to bind to parameters in the SQL. The first
+             *            parameter <em>must</em> be the board ID! Presumably that
+             *            will be the board that the operation refers to.
+             */
+            @MustBeClosed
+            Op(@CompileTimeConstant final String operation, Object... args) {
+                  boardId = (Integer) args[0];
+                  var e = epochs.getBlacklistEpoch(boardId);
+                  op = execute(conn -> {
+                        try (var readReq = conn.update(operation)) {
+                              return readReq.key(args);
+                        }
+                  }).orElseThrow(() -> new MachineStateException(
+                              "could not create machine state request"));
+                  if (!e.isValid()) {
+                        log.warn("early board epoch invalidation");
+                        e = epochs.getBlacklistEpoch(boardId);
+                  }
+                  epoch = e;
+            }
+
+            /**
+             * Wait for the result of the request to be ready.
+             *
+             * @param <T>
+             *            The type of the result value.
+             * @param retriever
+             *            How to convert the row containing the result into the
+             *            actual result of the transaction.
+             * @return The wrapped result, or empty if the operation times out.
+             * @throws DataAccessException
+             *             If there is a problem accessing the database.
+             * @throws InterruptedException
+             *             If the thread is interrupted.
+             * @throws MachineStateException
+             *             If the BMP throws an exception.
+             */
+            <T> Optional<T> getResult(RowMapper<T> retriever)
+                        throws InterruptedException, MachineStateException,
+                        DataAccessException {
+                  var end = now().plus(props.getBlacklistTimeout());
+                  boolean once = false;
+                  while (end.isAfter(now())) {
+                        var result = executeRead(conn -> {
+                              try (var getResult =
+                                          conn.query(GET_COMPLETED_BLACKLIST_OP)) {
+                                    return getResult.call1(row -> retriever.mapRow(
+                                                throwIfFailed(row)), op);
+                              }
+                        });
+                        if (result.isPresent()) {
+                              return result;
+                        }
+                        if (!epoch.isValid()) {
+                              // Things are going wonky; fall back on regular polling
+                              if (!once) {
+                                    log.warn("epoch invalid for board {}?", boardId);
+                                    once = true;
+                              }
+                              Thread.sleep(SHORT_WAIT);
+                        } else {
+                              log.debug("Waiting for blacklist change");
+                              epoch.waitForChange(props.getBlacklistPoll());
+                        }
+                  }
+                  return Optional.empty();
+            }
+
+            /**
+             * Wait for the result of the request to be ready, then discard that
+             * result. Used instead of {@link #getResult(Function)} when the value
+             * of the result is not interesting at all.
+             *
+             * @throws DataAccessException
+             *             If there is a problem accessing the database.
+             * @throws InterruptedException
+             *             If the thread is interrupted.
+             * @throws MachineStateException
+             *             If the BMP throws an exception.
+             */
+            void completed() throws DataAccessException, MachineStateException,
+                        InterruptedException {
+                  getResult(__ -> this);
+            }
+
+            /**
+             * If a row encodes a failure state, unpack the exception from the row
+             * and throw it as a wrapped exception. Otherwise, just pass on the row.
+             *
+             * @param row
+             *            The row to examine.
+             * @return The row, which is now guaranteed to not be a failure.
+             * @throws MachineStateException
+             *             If the row encodes a failure.
+             */
+            private Row throwIfFailed(Row row) throws MachineStateException {
+                  if (row.getBoolean("failed")) {
+                        throw new MachineStateException(
+                                    "failed to access hardware state",
+                                    row.getSerial("failure", Exception.class));
+                  }
+                  return row;
+            }
+
+            /**
+             * Deletes the temporary operation description row in the DB.
+             * <p>
+             * {@inheritDoc}
+             */
+            @Override
+            public void close() {
+                  execute(conn -> {
+                        try (var delReq = conn.update(DELETE_BLACKLIST_OP)) {
+                              return delReq.call(op);
+                        }
+                  });
+            }
+      }
 }

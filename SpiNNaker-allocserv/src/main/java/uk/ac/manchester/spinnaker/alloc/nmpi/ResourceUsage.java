@@ -20,51 +20,51 @@ package uk.ac.manchester.spinnaker.alloc.nmpi;
  * An NMPI Resource Usage object.
  */
 public class ResourceUsage {
-	/** The resource usage in board seconds. */
-	public static final String BOARD_SECONDS = "board-seconds";
+      /** The resource usage in board seconds. */
+      public static final String BOARD_SECONDS = "board-seconds";
 
-	/** The resource usage in core hours. */
-	public static final String CORE_HOURS = "core-hours";
+      /** The resource usage in core hours. */
+      public static final String CORE_HOURS = "core-hours";
 
-	private double value;
+      private double value;
 
-	private String units;
+      private String units;
 
-	/**
-	 * Get the value of the usage.
-	 *
-	 * @return The value.
-	 */
-	public double getValue() {
-		return value;
-	}
+      /**
+       * Get the value of the usage.
+       *
+       * @return The value.
+       */
+      public double getValue() {
+            return value;
+      }
 
-	/**
-	 * Set the value of the usage.
-	 *
-	 * @param value
-	 *            The value to set.
-	 */
-	public void setValue(double value) {
-		this.value = value;
-	}
+      /**
+       * Set the value of the usage.
+       *
+       * @param value
+       *            The value to set.
+       */
+      public void setValue(double value) {
+            this.value = value;
+      }
 
-	/**
-	 * Get the units of the usage.
-	 *
-	 * @return The units.
-	 */
-	public String getUnits() {
-		return units;
-	}
+      /**
+       * Get the units of the usage.
+       *
+       * @return The units.
+       */
+      public String getUnits() {
+            return units;
+      }
 
-	/**
-	 * Set the units of the usage.
-	 *
-	 * @param units
-	 *            The units to set.
-	 */
-	public void setUnits(String units) {
-		this.units = units;
-	}
+      /**
+       * Set the units of the usage.
+       *
+       * @param units
+       *            The units to set.
+       */
+      public void setUnits(String units) {
+            this.units = units;
+      }
 }

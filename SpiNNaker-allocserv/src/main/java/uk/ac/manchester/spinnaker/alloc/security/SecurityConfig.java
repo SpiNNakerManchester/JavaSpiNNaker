@@ -96,376 +96,376 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @EnableMethodSecurity(prePostEnabled = true)
 @UsedInJavadocOnly(PreAuthorize.class)
 public class SecurityConfig {
-	private static final Logger log = getLogger(SecurityConfig.class);
+      private static final Logger log = getLogger(SecurityConfig.class);
 
-	/** How to assert that a user must be an admin. */
-	public static final String IS_ADMIN = "hasRole('ADMIN')";
+      /** How to assert that a user must be an admin. */
+      public static final String IS_ADMIN = "hasRole('ADMIN')";
 
-	/** How to assert that a user must be an admin. */
-	public static final String IS_NMPI_EXEC = "hasRole('NMPI_EXEC')";
+      /** How to assert that a user must be an admin. */
+      public static final String IS_NMPI_EXEC = "hasRole('NMPI_EXEC')";
 
-	/** How to assert that a user must be able to read summaries. */
-	public static final String IS_READER = "hasRole('READER')";
+      /** How to assert that a user must be able to read summaries. */
+      public static final String IS_READER = "hasRole('READER')";
 
-	/** How to filter out job details that a given user may see (or not). */
-	public static final String MAY_SEE_JOB_DETAILS = "#permit.admin or "
-			+ " #permit.nmpiexec or "
-			+ " #permit.name == filterObject.owner.orElse(null)";
+      /** How to filter out job details that a given user may see (or not). */
+      public static final String MAY_SEE_JOB_DETAILS = "#permit.admin or "
+                  + " #permit.nmpiexec or "
+                  + " #permit.name == filterObject.owner.orElse(null)";
 
-	private static final ParameterizedTypeReference<
-			Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
-					new ParameterizedTypeReference<>() {
-			};
+      private static final ParameterizedTypeReference<
+                  Map<String, Object>> PARAMETERIZED_RESPONSE_TYPE =
+                              new ParameterizedTypeReference<>() {
+                  };
 
-	/**
-	 * How to assert that a user must be able to make jobs and read job details
-	 * in depth.
-	 */
-	public static final String IS_USER = "hasRole('USER')";
+      /**
+       * How to assert that a user must be able to make jobs and read job details
+       * in depth.
+       */
+      public static final String IS_USER = "hasRole('USER')";
 
-	private static final String SESSION_COOKIE = "JSESSIONID";
+      private static final String SESSION_COOKIE = "JSESSIONID";
 
-	// ------------------------------------------------------------------------
-	// What follows is UGLY stuff to make Java open HTTPS right
-	private static X509TrustManager customTm;
+      // ------------------------------------------------------------------------
+      // What follows is UGLY stuff to make Java open HTTPS right
+      private static X509TrustManager customTm;
 
-	@Autowired(required = false)
-	private InMemoryClientRegistrationRepository oauth2Providers;
+      @Autowired(required = false)
+      private InMemoryClientRegistrationRepository oauth2Providers;
 
-	// Static because it has to be done very early.
-	static {
-		try {
-			installInjectableTrustStoreAsDefault(() -> customTm);
-			log.info("custom SSL trust injection point installed");
-		} catch (Exception e) {
-			throw new RuntimeException("failed to set up SSL trust", e);
-		}
-	}
+      // Static because it has to be done very early.
+      static {
+            try {
+                  installInjectableTrustStoreAsDefault(() -> customTm);
+                  log.info("custom SSL trust injection point installed");
+            } catch (Exception e) {
+                  throw new RuntimeException("failed to set up SSL trust", e);
+            }
+      }
 
-	/**
-	 * Builds a custom trust manager to plug into the Java runtime. This is so
-	 * that we can access resources managed by Keycloak, which is necessary
-	 * because Java doesn't trust its certificate by default (for messy
-	 * reasons).
-	 *
-	 * @param props
-	 *            Configuration properties
-	 * @return the custom trust manager, <em>already injected</em>
-	 * @throws GeneralSecurityException
-	 *             If there is a security problem with the trust store
-	 * @throws IOException
-	 *             If the trust store can't be loaded because of I/O
-	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
-	 *      Overflow</a>
-	 */
-	@Bean
-	@Role(ROLE_SUPPORT)
-	static X509TrustManager customTrustManager(AuthProperties props)
-			throws IOException, GeneralSecurityException {
-		var p = props.getOpenid();
-		var tm = trustManager(loadTrustStore(p));
-		customTm = tm;
-		log.info("set trust store from {}", p.getTruststorePath().getURI());
-		return tm;
-	}
+      /**
+       * Builds a custom trust manager to plug into the Java runtime. This is so
+       * that we can access resources managed by Keycloak, which is necessary
+       * because Java doesn't trust its certificate by default (for messy
+       * reasons).
+       *
+       * @param props
+       *            Configuration properties
+       * @return the custom trust manager, <em>already injected</em>
+       * @throws GeneralSecurityException
+       *             If there is a security problem with the trust store
+       * @throws IOException
+       *             If the trust store can't be loaded because of I/O
+       * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
+       *      Overflow</a>
+       */
+      @Bean
+      @Role(ROLE_SUPPORT)
+      static X509TrustManager customTrustManager(AuthProperties props)
+                  throws IOException, GeneralSecurityException {
+            var p = props.getOpenid();
+            var tm = trustManager(loadTrustStore(p));
+            customTm = tm;
+            log.info("set trust store from {}", p.getTruststorePath().getURI());
+            return tm;
+      }
 
-	// ------------------------------------------------------------------------
+      // ------------------------------------------------------------------------
 
-	@Autowired
-	private BasicAuthEntryPoint authenticationEntryPoint;
+      @Autowired
+      private BasicAuthEntryPoint authenticationEntryPoint;
 
-	@Autowired
-	private LocalAuthenticationProvider<?> localAuthProvider;
+      @Autowired
+      private LocalAuthenticationProvider<?> localAuthProvider;
 
-	@Autowired
-	private AppAuthTransformationFilter authApplicationFilter;
+      @Autowired
+      private AppAuthTransformationFilter authApplicationFilter;
 
-	@Autowired
-	private AuthenticationFailureHandler authenticationFailureHandler;
+      @Autowired
+      private AuthenticationFailureHandler authenticationFailureHandler;
 
-	@Autowired
-	private AuthProperties properties;
+      @Autowired
+      private AuthProperties properties;
 
-	@Autowired
-	private URLPathMaker urlMaker;
+      @Autowired
+      private URLPathMaker urlMaker;
 
-	/**
-	 * Configure things we plug into.
-	 *
-	 * @param auth
-	 *            The authentication manager builder to configure.
-	 */
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) {
-		auth.authenticationProvider(localAuthProvider);
-	}
+      /**
+       * Configure things we plug into.
+       *
+       * @param auth
+       *            The authentication manager builder to configure.
+       */
+      @Autowired
+      public void configureGlobal(AuthenticationManagerBuilder auth) {
+            auth.authenticationProvider(localAuthProvider);
+      }
 
-	private String oidcPath(String suffix) {
-		return urlMaker.systemUrl("perform_oidc/" + suffix);
-	}
+      private String oidcPath(String suffix) {
+            return urlMaker.systemUrl("perform_oidc/" + suffix);
+      }
 
-	/**
-	 * Set up access control policies where they're not done by method security.
-	 * The {@code /info} part reveals admin details; you need {@code ROLE_ADMIN}
-	 * to view it. Everything to do with logging in <strong>must not</strong>
-	 * require being logged in. For anything else, as long as you are
-	 * authenticated we're happy. <em>Some</em> calls have additional
-	 * requirements; those are annotated with {@link PreAuthorize @PreAuthorize}
-	 * and a suitable auth expression.
-	 *
-	 * @param http
-	 *            Where the configuration is applied to.
-	 * @throws Exception
-	 *             If anything goes wrong with setting up.
-	 */
-	private void defineAccessPolicy(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests((authorize) -> authorize
-				// Allow forwarded requests
-				.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-				// Login process and static resources are available to all
-				.requestMatchers(pathPattern(urlMaker.systemUrl("login*")),
-						pathPattern(urlMaker.systemUrl("perform_*")),
-						pathPattern(oidcPath("**")),
-						pathPattern(urlMaker.systemUrl("error")),
-						pathPattern(urlMaker.baseUrl("error")),
-						pathPattern(urlMaker.systemUrl("resources/*")),
-						pathPattern(urlMaker.serviceUrl("openapi.json")),
-						pathPattern(urlMaker.serviceUrl("swagger*")),
-						pathPattern(urlMaker.serviceUrl("index.css")))
-				.permitAll()
-				// Everything else requires post-login
-				.anyRequest().authenticated());
-	}
+      /**
+       * Set up access control policies where they're not done by method security.
+       * The {@code /info} part reveals admin details; you need {@code ROLE_ADMIN}
+       * to view it. Everything to do with logging in <strong>must not</strong>
+       * require being logged in. For anything else, as long as you are
+       * authenticated we're happy. <em>Some</em> calls have additional
+       * requirements; those are annotated with {@link PreAuthorize @PreAuthorize}
+       * and a suitable auth expression.
+       *
+       * @param http
+       *            Where the configuration is applied to.
+       * @throws Exception
+       *             If anything goes wrong with setting up.
+       */
+      private void defineAccessPolicy(HttpSecurity http) throws Exception {
+            http.authorizeHttpRequests((authorize) -> authorize
+                        // Allow forwarded requests
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                        // Login process and static resources are available to all
+                        .requestMatchers(pathPattern(urlMaker.systemUrl("login*")),
+                                    pathPattern(urlMaker.systemUrl("perform_*")),
+                                    pathPattern(oidcPath("**")),
+                                    pathPattern(urlMaker.systemUrl("error")),
+                                    pathPattern(urlMaker.baseUrl("error")),
+                                    pathPattern(urlMaker.systemUrl("resources/*")),
+                                    pathPattern(urlMaker.serviceUrl("openapi.json")),
+                                    pathPattern(urlMaker.serviceUrl("swagger*")),
+                                    pathPattern(urlMaker.serviceUrl("index.css")))
+                        .permitAll()
+                        // Everything else requires post-login
+                        .anyRequest().authenticated());
+      }
 
-	/**
-	 * How we handle the mechanics of login with the REST API.
-	 *
-	 * @param http
-	 *            Where the configuration is applied to.
-	 * @throws Exception
-	 *             If anything goes wrong with setting up. Not expected.
-	 */
-	private void defineAPILoginRules(HttpSecurity http) throws Exception {
-		if (properties.isBasic()) {
-			http.httpBasic((authorize) -> authorize
-					.authenticationEntryPoint(authenticationEntryPoint));
-		}
-		if (properties.getOpenid().isEnable()) {
-			http.oauth2ResourceServer((authorize) -> authorize
-					.authenticationEntryPoint(authenticationEntryPoint)
-					.opaqueToken(oauth2 -> oauth2
-						.introspector(new UserInfoOpaqueTokenIntrospector())));
-		}
-	}
+      /**
+       * How we handle the mechanics of login with the REST API.
+       *
+       * @param http
+       *            Where the configuration is applied to.
+       * @throws Exception
+       *             If anything goes wrong with setting up. Not expected.
+       */
+      private void defineAPILoginRules(HttpSecurity http) throws Exception {
+            if (properties.isBasic()) {
+                  http.httpBasic((authorize) -> authorize
+                              .authenticationEntryPoint(authenticationEntryPoint));
+            }
+            if (properties.getOpenid().isEnable()) {
+                  http.oauth2ResourceServer((authorize) -> authorize
+                              .authenticationEntryPoint(authenticationEntryPoint)
+                              .opaqueToken(oauth2 -> oauth2
+                                    .introspector(new UserInfoOpaqueTokenIntrospector())));
+            }
+      }
 
-	/**
-	 * How we handle the mechanics of login within the web UI.
-	 *
-	 * @param http
-	 *            Where the configuration is applied to.
-	 * @throws Exception
-	 *             If anything goes wrong with setting up. Not expected.
-	 */
-	private void defineWebUILoginRules(HttpSecurity http) throws Exception {
-		var loginUrl = urlMaker.systemUrl("login.html");
-		var rootPage = urlMaker.systemUrl("");
-		if (properties.getOpenid().isEnable()) {
-			/*
-			 * We're both, so we can have logins AND tokens. The logins are for
-			 * using the HTML UI, and the tokens are for using from SpiNNaker
-			 * tools (especially within the collabratory and the Jupyter
-			 * notebook).
-			 */
-			http.oauth2Login(oauth2 -> oauth2.loginPage(loginUrl)
-					.loginProcessingUrl(oidcPath("login/code/*"))
-					.authorizationEndpoint(
-							auth -> auth.baseUri(oidcPath("auth")))
-					.defaultSuccessUrl(rootPage, true)
-					.failureUrl(loginUrl + "?error=true")
-					.userInfoEndpoint(auth -> auth
-						.userAuthoritiesMapper(userAuthoritiesMapper()))
-					.permitAll());
-			http.oauth2Client(Customizer.withDefaults());
-		}
-		if (properties.isLocalForm()) {
-			http.formLogin(auth -> auth.loginPage(loginUrl)
-					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
-					.defaultSuccessUrl(rootPage, true)
-					.failureUrl(loginUrl + "?error=true")
-					.failureHandler(authenticationFailureHandler)
-					.permitAll());
-		}
-	}
+      /**
+       * How we handle the mechanics of login within the web UI.
+       *
+       * @param http
+       *            Where the configuration is applied to.
+       * @throws Exception
+       *             If anything goes wrong with setting up. Not expected.
+       */
+      private void defineWebUILoginRules(HttpSecurity http) throws Exception {
+            var loginUrl = urlMaker.systemUrl("login.html");
+            var rootPage = urlMaker.systemUrl("");
+            if (properties.getOpenid().isEnable()) {
+                  /*
+                   * We're both, so we can have logins AND tokens. The logins are for
+                   * using the HTML UI, and the tokens are for using from SpiNNaker
+                   * tools (especially within the collabratory and the Jupyter
+                   * notebook).
+                   */
+                  http.oauth2Login(oauth2 -> oauth2.loginPage(loginUrl)
+                              .loginProcessingUrl(oidcPath("login/code/*"))
+                              .authorizationEndpoint(
+                                          auth -> auth.baseUri(oidcPath("auth")))
+                              .defaultSuccessUrl(rootPage, true)
+                              .failureUrl(loginUrl + "?error=true")
+                              .userInfoEndpoint(auth -> auth
+                                    .userAuthoritiesMapper(userAuthoritiesMapper()))
+                              .permitAll());
+                  http.oauth2Client(Customizer.withDefaults());
+            }
+            if (properties.isLocalForm()) {
+                  http.formLogin(auth -> auth.loginPage(loginUrl)
+                              .loginProcessingUrl(urlMaker.systemUrl("perform_login"))
+                              .defaultSuccessUrl(rootPage, true)
+                              .failureUrl(loginUrl + "?error=true")
+                              .failureHandler(authenticationFailureHandler)
+                              .permitAll());
+            }
+      }
 
-	/**
-	 * Logging out is common code between the UI and the API, but pretty
-	 * pointless for Basic Auth as browsers will just log straight back in
-	 * again. Still, it is meaningful (it invalidates the session).
-	 *
-	 * @param http
-	 *            Where the configuration is applied to.
-	 * @throws Exception
-	 *             If anything goes wrong with setting up. Not expected.
-	 */
-	private void defineLogoutRules(HttpSecurity http) throws Exception {
-		var loginUrl = urlMaker.systemUrl("login.html");
-		http.logout(cust -> cust.logoutUrl(urlMaker.systemUrl("perform_logout"))
-				.addLogoutHandler((req, resp, auth) -> clearToken(req))
-				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
-				.logoutSuccessUrl(loginUrl));
-	}
+      /**
+       * Logging out is common code between the UI and the API, but pretty
+       * pointless for Basic Auth as browsers will just log straight back in
+       * again. Still, it is meaningful (it invalidates the session).
+       *
+       * @param http
+       *            Where the configuration is applied to.
+       * @throws Exception
+       *             If anything goes wrong with setting up. Not expected.
+       */
+      private void defineLogoutRules(HttpSecurity http) throws Exception {
+            var loginUrl = urlMaker.systemUrl("login.html");
+            http.logout(cust -> cust.logoutUrl(urlMaker.systemUrl("perform_logout"))
+                        .addLogoutHandler((req, resp, auth) -> clearToken(req))
+                        .deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
+                        .logoutSuccessUrl(loginUrl));
+      }
 
-	/**
-	 * Define our main security controls.
-	 *
-	 * @param http
-	 *            Used to build the filter chain.
-	 * @return The filter chain that implements the controls.
-	 * @throws Exception
-	 *             If anything goes wrong with setting up. Not expected.
-	 */
-	@Bean
-	@Role(ROLE_SUPPORT)
-	public SecurityFilterChain securityFilter(HttpSecurity http)
-			throws Exception {
-		http.sessionManagement((session) -> session
-				.sessionCreationPolicy(ALWAYS));
-		http.securityContext((securityContext) ->
-				securityContext.securityContextRepository(
-						authApplicationFilter.securityContextRepository));
-		defineAccessPolicy(http);
-		defineAPILoginRules(http);
-		defineWebUILoginRules(http);
-		defineLogoutRules(http);
-		http.addFilterAfter(authApplicationFilter,
-				BasicAuthenticationFilter.class);
-		return http.build();
-	}
+      /**
+       * Define our main security controls.
+       *
+       * @param http
+       *            Used to build the filter chain.
+       * @return The filter chain that implements the controls.
+       * @throws Exception
+       *             If anything goes wrong with setting up. Not expected.
+       */
+      @Bean
+      @Role(ROLE_SUPPORT)
+      public SecurityFilterChain securityFilter(HttpSecurity http)
+                  throws Exception {
+            http.sessionManagement((session) -> session
+                        .sessionCreationPolicy(ALWAYS));
+            http.securityContext((securityContext) ->
+                        securityContext.securityContextRepository(
+                                    authApplicationFilter.securityContextRepository));
+            defineAccessPolicy(http);
+            defineAPILoginRules(http);
+            defineWebUILoginRules(http);
+            defineLogoutRules(http);
+            http.addFilterAfter(authApplicationFilter,
+                        BasicAuthenticationFilter.class);
+            return http.build();
+      }
 
-	private final class UserInfoOpaqueTokenIntrospector
-			implements OpaqueTokenIntrospector {
+      private final class UserInfoOpaqueTokenIntrospector
+                  implements OpaqueTokenIntrospector {
 
-		@Override
-		public OAuth2AuthenticatedPrincipal introspect(String token) {
-			for (var p : oauth2Providers) {
-				try {
-					return introspect(token, p);
-				} catch (Exception e) {
-					log.warn("Failed to introspect token with provider {}: {}",
-							p.getRegistrationId(), e.getMessage());
-				}
-			}
-			throw new BadOpaqueTokenException(
-					"Token not valid for any provider");
-		}
+            @Override
+            public OAuth2AuthenticatedPrincipal introspect(String token) {
+                  for (var p : oauth2Providers) {
+                        try {
+                              return introspect(token, p);
+                        } catch (Exception e) {
+                              log.warn("Failed to introspect token with provider {}: {}",
+                                          p.getRegistrationId(), e.getMessage());
+                        }
+                  }
+                  throw new BadOpaqueTokenException(
+                              "Token not valid for any provider");
+            }
 
-		private OAuth2AuthenticatedPrincipal introspect(
-				String token, ClientRegistration p) {
-			var props = properties.getOpenid().getIntrospectionUris().get(
-					p.getRegistrationId());
-			log.debug("Introspecting token with provider {}: {}",
-					p.getRegistrationId(), props.getUri());
-			if (props.getType() == IntrospectionType.SPRING) {
-				var delegate = SpringOpaqueTokenIntrospector
-						.withIntrospectionUri(props.getUri())
-						.clientId(p.getClientId())
-						.clientSecret(p.getClientSecret()).build();
-				var authorized = delegate.introspect(token);
-				Instant issuedAt = authorized.getAttribute("issued-at");
-				Instant expiresAt = authorized.getAttribute("expires-at");
-				return userinfoPrincipal(token, p, issuedAt, expiresAt, props);
-			}
+            private OAuth2AuthenticatedPrincipal introspect(
+                        String token, ClientRegistration p) {
+                  var props = properties.getOpenid().getIntrospectionUris().get(
+                              p.getRegistrationId());
+                  log.debug("Introspecting token with provider {}: {}",
+                              p.getRegistrationId(), props.getUri());
+                  if (props.getType() == IntrospectionType.SPRING) {
+                        var delegate = SpringOpaqueTokenIntrospector
+                                    .withIntrospectionUri(props.getUri())
+                                    .clientId(p.getClientId())
+                                    .clientSecret(p.getClientSecret()).build();
+                        var authorized = delegate.introspect(token);
+                        Instant issuedAt = authorized.getAttribute("issued-at");
+                        Instant expiresAt = authorized.getAttribute("expires-at");
+                        return userinfoPrincipal(token, p, issuedAt, expiresAt, props);
+                  }
 
-			if (props.getType() == IntrospectionType.TOKEN) {
-				var restTemplate = new RestTemplate();
-				String request = props.getUri() + "?"
-						+ props.getTokenParameter() + "=" + token;
-				ResponseEntity<Map<String, Object>> response = restTemplate
-						.exchange(request,
-								HttpMethod.GET, null,
-								PARAMETERIZED_RESPONSE_TYPE);
-				var attrbutes = response.getBody();
-				Instant expiresAt = Instant.ofEpochSecond(
-						Long.valueOf(((String) attrbutes.get("exp"))));
-				return userinfoPrincipal(token, p, null, expiresAt, props);
-			}
+                  if (props.getType() == IntrospectionType.TOKEN) {
+                        var restTemplate = new RestTemplate();
+                        String request = props.getUri() + "?"
+                                    + props.getTokenParameter() + "=" + token;
+                        ResponseEntity<Map<String, Object>> response = restTemplate
+                                    .exchange(request,
+                                                HttpMethod.GET, null,
+                                                PARAMETERIZED_RESPONSE_TYPE);
+                        var attrbutes = response.getBody();
+                        Instant expiresAt = Instant.ofEpochSecond(
+                                    Long.valueOf(((String) attrbutes.get("exp"))));
+                        return userinfoPrincipal(token, p, null, expiresAt, props);
+                  }
 
-			throw new IllegalArgumentException(
-					"Unknown introspection type: " + props.getType());
-		}
+                  throw new IllegalArgumentException(
+                              "Unknown introspection type: " + props.getType());
+            }
 
-		private OAuth2AuthenticatedPrincipal userinfoPrincipal(
-				String token, ClientRegistration p, Instant issuedAt,
-				Instant expiresAt, IntrospectionProperties props) {
-			var userAttributes = userinfo(token, p);
-			var authorities = new LinkedHashSet<GrantedAuthority>();
-			var auth = new OidcUserAuthority(
-					new OidcIdToken(token, issuedAt, expiresAt,
-							userAttributes),
-					new OidcUserInfo(userAttributes));
-			localAuthProvider.mapAuthorities(auth, authorities);
-			return new DefaultOAuth2User(authorities, userAttributes,
-					props.getUsernameProperty());
-		}
+            private OAuth2AuthenticatedPrincipal userinfoPrincipal(
+                        String token, ClientRegistration p, Instant issuedAt,
+                        Instant expiresAt, IntrospectionProperties props) {
+                  var userAttributes = userinfo(token, p);
+                  var authorities = new LinkedHashSet<GrantedAuthority>();
+                  var auth = new OidcUserAuthority(
+                              new OidcIdToken(token, issuedAt, expiresAt,
+                                          userAttributes),
+                              new OidcUserInfo(userAttributes));
+                  localAuthProvider.mapAuthorities(auth, authorities);
+                  return new DefaultOAuth2User(authorities, userAttributes,
+                              props.getUsernameProperty());
+            }
 
-		private Map<String, Object> userinfo(
-				String token, ClientRegistration p) {
-			log.debug("Fetching user info from {}",
-					p.getProviderDetails().getUserInfoEndpoint().getUri());
-			var headers = new HttpHeaders();
-			headers.setAccept(List.of(APPLICATION_JSON));
-			headers.setBearerAuth(token);
-			var request = new RequestEntity<>(headers, GET,
-					URI.create(
-						p.getProviderDetails().getUserInfoEndpoint().getUri()));
+            private Map<String, Object> userinfo(
+                        String token, ClientRegistration p) {
+                  log.debug("Fetching user info from {}",
+                              p.getProviderDetails().getUserInfoEndpoint().getUri());
+                  var headers = new HttpHeaders();
+                  headers.setAccept(List.of(APPLICATION_JSON));
+                  headers.setBearerAuth(token);
+                  var request = new RequestEntity<>(headers, GET,
+                              URI.create(
+                                    p.getProviderDetails().getUserInfoEndpoint().getUri()));
 
-			var restTemplate = new RestTemplateBuilder().build();
-			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
-			var response =
-					restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
+                  var restTemplate = new RestTemplateBuilder().build();
+                  restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
+                  var response =
+                              restTemplate.exchange(request, PARAMETERIZED_RESPONSE_TYPE);
 
-			return response.getBody();
-		}
-	}
+                  return response.getBody();
+            }
+      }
 
-	/**
-	 * A converter that handles the initial extraction of collabratories
-	 *     and organisations.
-	 *
-	 * 	Acts on the info we have available when a user logs in
-	 * 	explicitly in the web UI}
-	 *
-	 * @return A converter
-	 * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)
-	 */
-	@Bean("hbp.collab-and-org.user-converter.shim")
-	@Role(ROLE_SUPPORT)
-	GrantedAuthoritiesMapper userAuthoritiesMapper() {
-		var baseMapper = new SimpleAuthorityMapper();
-		return authorities -> {
-			var mappedAuthorities = baseMapper.mapAuthorities(authorities);
-			authorities.forEach(authority -> {
-				/*
-				 * Check for OidcUserAuthority because Spring Security 5.2
-				 * returns each scope as a GrantedAuthority, which we don't care
-				 * about.
-				 */
-				if (authority instanceof OidcUserAuthority) {
-					localAuthProvider.mapAuthorities(
-							(OidcUserAuthority) authority, mappedAuthorities);
-				}
-				mappedAuthorities.add(authority);
-			});
-			return mappedAuthorities;
-		};
-	}
+      /**
+       * A converter that handles the initial extraction of collabratories
+       *     and organisations.
+       *
+       *       Acts on the info we have available when a user logs in
+       *       explicitly in the web UI}
+       *
+       * @return A converter
+       * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)
+       */
+      @Bean("hbp.collab-and-org.user-converter.shim")
+      @Role(ROLE_SUPPORT)
+      GrantedAuthoritiesMapper userAuthoritiesMapper() {
+            var baseMapper = new SimpleAuthorityMapper();
+            return authorities -> {
+                  var mappedAuthorities = baseMapper.mapAuthorities(authorities);
+                  authorities.forEach(authority -> {
+                        /*
+                         * Check for OidcUserAuthority because Spring Security 5.2
+                         * returns each scope as a GrantedAuthority, which we don't care
+                         * about.
+                         */
+                        if (authority instanceof OidcUserAuthority) {
+                              localAuthProvider.mapAuthorities(
+                                          (OidcUserAuthority) authority, mappedAuthorities);
+                        }
+                        mappedAuthorities.add(authority);
+                  });
+                  return mappedAuthorities;
+            };
+      }
 
-	@Bean
-	@Role(ROLE_SUPPORT)
-	LogoutHandler logoutHandler() {
-		var handler = new SecurityContextLogoutHandler();
-		handler.setClearAuthentication(true);
-		handler.setInvalidateHttpSession(true);
-		return handler;
-	}
+      @Bean
+      @Role(ROLE_SUPPORT)
+      LogoutHandler logoutHandler() {
+            var handler = new SecurityContextLogoutHandler();
+            handler.setClearAuthentication(true);
+            handler.setInvalidateHttpSession(true);
+            return handler;
+      }
 }

@@ -36,54 +36,54 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAPI.Connection;
 @ActiveProfiles("unittest")
 class QuotaManagerTest extends TestSupport {
 
-	/** Because the regular scheduled actions are not running. */
-	private QuotaManager.TestAPI qm;
+      /** Because the regular scheduled actions are not running. */
+      private QuotaManager.TestAPI qm;
 
-	@BeforeEach
-	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired QuotaManager qm) throws IOException {
-		assumeTrue(db != null, "spring-configured DB engine absent");
-		killDB();
-		setupDB1();
-		this.qm = qm.getTestAPI();
-	}
+      @BeforeEach
+      @SuppressWarnings("deprecation")
+      void checkSetup(@Autowired QuotaManager qm) throws IOException {
+            assumeTrue(db != null, "spring-configured DB engine absent");
+            killDB();
+            setupDB1();
+            this.qm = qm.getTestAPI();
+      }
 
-	private Long getQuota(Connection c) {
-		try (var q = c.query(TEST_GET_QUOTA)) {
-			return q.call1(int64("quota"), USER).orElse(null);
-		}
-	}
+      private Long getQuota(Connection c) {
+            try (var q = c.query(TEST_GET_QUOTA)) {
+                  return q.call1(int64("quota"), USER).orElse(null);
+            }
+      }
 
-	private void setQuota(Connection c, Integer quota) {
-		try (var u = c.update(TEST_SET_QUOTA)) {
-			u.call(quota, GROUP);
-		}
-	}
+      private void setQuota(Connection c, Integer quota) {
+            try (var u = c.update(TEST_SET_QUOTA)) {
+                  u.call(quota, GROUP);
+            }
+      }
 
-	/** Does a job get consolidated once and only once. */
-	@Test
-	public void consolidate() {
-		checkAndRollback(c -> {
-			int used = 100;
-			makeFinishedJob(c, 1, used);
-			assertEquals(INITIAL_QUOTA, getQuota(c));
-			qm.doConsolidate(c);
-			assertEquals(INITIAL_QUOTA - used, getQuota(c));
-			qm.doConsolidate(c);
-			assertEquals(INITIAL_QUOTA - used, getQuota(c));
-		});
-	}
+      /** Does a job get consolidated once and only once. */
+      @Test
+      public void consolidate() {
+            checkAndRollback(c -> {
+                  int used = 100;
+                  makeFinishedJob(c, 1, used);
+                  assertEquals(INITIAL_QUOTA, getQuota(c));
+                  qm.doConsolidate(c);
+                  assertEquals(INITIAL_QUOTA - used, getQuota(c));
+                  qm.doConsolidate(c);
+                  assertEquals(INITIAL_QUOTA - used, getQuota(c));
+            });
+      }
 
-	/** Does a job <em>not</em> get consolidated if there's no quota. */
-	@Test
-	public void noConsolidate() {
-		checkAndRollback(c -> {
-			// Delete the quota
-			setQuota(c, null);
-			makeFinishedJob(c, 1, 100);
-			assertNull(getQuota(c));
-			qm.doConsolidate(c);
-			assertNull(getQuota(c));
-		});
-	}
+      /** Does a job <em>not</em> get consolidated if there's no quota. */
+      @Test
+      public void noConsolidate() {
+            checkAndRollback(c -> {
+                  // Delete the quota
+                  setQuota(c, null);
+                  makeFinishedJob(c, 1, 100);
+                  assertNull(getQuota(c));
+                  qm.doConsolidate(c);
+                  assertNull(getQuota(c));
+            });
+      }
 }

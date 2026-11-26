@@ -40,37 +40,37 @@ import jakarta.validation.Payload;
 @Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
 @Constraint(validatedBy = IsSaneValidator.class)
 public @interface SaneParameter {
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() default "${validatedValue} is a bad spalloc parameter";
+      /**
+       * Message on constraint violated.
+       *
+       * @return Message
+       */
+      String message() default "${validatedValue} is a bad spalloc parameter";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 * @hidden
-	 */
-	Class<?>[] groups() default {};
+      /**
+       * Group of constraints. Required by validation spec.
+       *
+       * @return Constraint groups, if any
+       * @hidden
+       */
+      Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 * @hidden
-	 */
-	Class<? extends Payload>[] payload() default {};
+      /**
+       * Payload info. Required by validation spec.
+       *
+       * @return Payloads, if any.
+       * @hidden
+       */
+      Class<? extends Payload>[] payload() default {};
 }
 
 class IsSaneValidator implements ConstraintValidator<SaneParameter, Object> {
-	@Override
-	public boolean isValid(Object value, ConstraintValidatorContext context) {
-		if (value instanceof String) {
-			return !((String) value).isBlank();
-		} else {
-			return (value instanceof Boolean) || (value instanceof Number);
-		}
-	}
+      @Override
+      public boolean isValid(Object value, ConstraintValidatorContext context) {
+            if (value instanceof String) {
+                  return !((String) value).isBlank();
+            } else {
+                  return (value instanceof Boolean) || (value instanceof Number);
+            }
+      }
 }

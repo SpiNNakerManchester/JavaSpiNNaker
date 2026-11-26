@@ -58,254 +58,254 @@ import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 @Hidden
 @ManagedResource("Spalloc:type=Admin,name=admin")
 public class AdminImpl implements AdminAPI {
-	private static final Logger log = getLogger(AdminImpl.class);
+      private static final Logger log = getLogger(AdminImpl.class);
 
-	@Autowired
-	private MachineDefinitionLoader loader;
+      @Autowired
+      private MachineDefinitionLoader loader;
 
-	@Autowired
-	private MachineStateControl machineController;
+      @Autowired
+      private MachineStateControl machineController;
 
-	@Autowired
-	private UserControl userManager;
+      @Autowired
+      private UserControl userManager;
 
-	@Override
-	public void importMachinesByContent(
-			MachineDefinitionLoader.Configuration definitions) {
-		log.warn("CALLED importMachinesByContent({})", definitions.getMachines()
-				.stream().map(Machine::getName).collect(toList()));
-		loader.loadMachineDefinitions(definitions);
-	}
+      @Override
+      public void importMachinesByContent(
+                  MachineDefinitionLoader.Configuration definitions) {
+            log.warn("CALLED importMachinesByContent({})", definitions.getMachines()
+                        .stream().map(Machine::getName).collect(toList()));
+            loader.loadMachineDefinitions(definitions);
+      }
 
-	private static final Method DESCRIBE_GROUP;
+      private static final Method DESCRIBE_GROUP;
 
-	private static final Method DESCRIBE_USER;
+      private static final Method DESCRIBE_USER;
 
-	private static final Method DESCRIBE_MEMBER;
+      private static final Method DESCRIBE_MEMBER;
 
-	static {
-		try {
-			DESCRIBE_GROUP = AdminAPI.class.getMethod("describeGroup",
-					int.class, UriInfo.class);
-			DESCRIBE_USER = AdminAPI.class.getMethod("describeUser", int.class,
-					UriInfo.class);
-			DESCRIBE_MEMBER = AdminAPI.class.getMethod("describeMember",
-					int.class, int.class, UriInfo.class);
-		} catch (NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException("failed to discover method signatures",
-					e);
-		}
-	}
+      static {
+            try {
+                  DESCRIBE_GROUP = AdminAPI.class.getMethod("describeGroup",
+                              int.class, UriInfo.class);
+                  DESCRIBE_USER = AdminAPI.class.getMethod("describeUser", int.class,
+                              UriInfo.class);
+                  DESCRIBE_MEMBER = AdminAPI.class.getMethod("describeMember",
+                              int.class, int.class, UriInfo.class);
+            } catch (NoSuchMethodException | SecurityException e) {
+                  throw new RuntimeException("failed to discover method signatures",
+                              e);
+            }
+      }
 
-	private static WebApplicationException noBoard() {
-		return new WebApplicationException("no such board", NOT_FOUND);
-	}
+      private static WebApplicationException noBoard() {
+            return new WebApplicationException("no such board", NOT_FOUND);
+      }
 
-	private static WebApplicationException noUser() {
-		return new WebApplicationException("no such user", NOT_FOUND);
-	}
+      private static WebApplicationException noUser() {
+            return new WebApplicationException("no such user", NOT_FOUND);
+      }
 
-	private static WebApplicationException noGroup() {
-		return new WebApplicationException("no such group", NOT_FOUND);
-	}
+      private static WebApplicationException noGroup() {
+            return new WebApplicationException("no such group", NOT_FOUND);
+      }
 
-	private static WebApplicationException noMember() {
-		return new WebApplicationException("no such membership", NOT_FOUND);
-	}
+      private static WebApplicationException noMember() {
+            return new WebApplicationException("no such membership", NOT_FOUND);
+      }
 
-	@Override
-	public boolean getBoardStateXYZ(String name, int x, int y, int z) {
-		log.info("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
-		var board = machineController.findTriad(name, new TriadCoords(x, y, z))
-				.orElseThrow(AdminImpl::noBoard);
-		return board.getState();
-	}
+      @Override
+      public boolean getBoardStateXYZ(String name, int x, int y, int z) {
+            log.info("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
+            var board = machineController.findTriad(name, new TriadCoords(x, y, z))
+                        .orElseThrow(AdminImpl::noBoard);
+            return board.getState();
+      }
 
-	@Override
-	@ManagedOperation
-	public boolean setBoardStateXYZ(String name, int x, int y, int z,
-			boolean enabled) {
-		log.warn("CALLED boardState({}:XYZ=({},{},{})) := {}", name, x, y, z,
-				enabled);
-		var board = machineController.findTriad(name, new TriadCoords(x, y, z))
-				.orElseThrow(AdminImpl::noBoard);
-		board.setState(enabled);
-		return board.getState();
-	}
+      @Override
+      @ManagedOperation
+      public boolean setBoardStateXYZ(String name, int x, int y, int z,
+                  boolean enabled) {
+            log.warn("CALLED boardState({}:XYZ=({},{},{})) := {}", name, x, y, z,
+                        enabled);
+            var board = machineController.findTriad(name, new TriadCoords(x, y, z))
+                        .orElseThrow(AdminImpl::noBoard);
+            board.setState(enabled);
+            return board.getState();
+      }
 
-	@Override
-	public boolean getBoardStateCFB(String name, int c, int f, int b) {
-		log.info("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
-		var board = machineController
-				.findPhysical(name, new PhysicalCoords(c, f, b))
-				.orElseThrow(AdminImpl::noBoard);
-		return board.getState();
-	}
+      @Override
+      public boolean getBoardStateCFB(String name, int c, int f, int b) {
+            log.info("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
+            var board = machineController
+                        .findPhysical(name, new PhysicalCoords(c, f, b))
+                        .orElseThrow(AdminImpl::noBoard);
+            return board.getState();
+      }
 
-	@Override
-	@ManagedOperation
-	public boolean setBoardStateCFB(String name, int c, int f, int b,
-			boolean enabled) {
-		log.warn("CALLED boardState({}:CFB=({},{},{})) := {}", name, c, f, b,
-				enabled);
-		var board = machineController
-				.findPhysical(name, new PhysicalCoords(c, f, b))
-				.orElseThrow(AdminImpl::noBoard);
-		board.setState(enabled);
-		return board.getState();
-	}
+      @Override
+      @ManagedOperation
+      public boolean setBoardStateCFB(String name, int c, int f, int b,
+                  boolean enabled) {
+            log.warn("CALLED boardState({}:CFB=({},{},{})) := {}", name, c, f, b,
+                        enabled);
+            var board = machineController
+                        .findPhysical(name, new PhysicalCoords(c, f, b))
+                        .orElseThrow(AdminImpl::noBoard);
+            board.setState(enabled);
+            return board.getState();
+      }
 
-	@Override
-	public boolean getBoardStateAddress(String name, String address) {
-		log.info("CALLED boardState({}:IP=({}))", name, address);
-		var board = machineController.findIP(name, address)
-				.orElseThrow(AdminImpl::noBoard);
-		return board.getState();
-	}
+      @Override
+      public boolean getBoardStateAddress(String name, String address) {
+            log.info("CALLED boardState({}:IP=({}))", name, address);
+            var board = machineController.findIP(name, address)
+                        .orElseThrow(AdminImpl::noBoard);
+            return board.getState();
+      }
 
-	@Override
-	@ManagedOperation
-	public boolean setBoardStateAddress(String name, String address,
-			boolean enabled) {
-		log.warn("CALLED boardState({}:IP=({})) := {}", name, address, enabled);
-		var board = machineController.findIP(name, address)
-				.orElseThrow(AdminImpl::noBoard);
-		board.setState(enabled);
-		return board.getState();
-	}
+      @Override
+      @ManagedOperation
+      public boolean setBoardStateAddress(String name, String address,
+                  boolean enabled) {
+            log.warn("CALLED boardState({}:IP=({})) := {}", name, address, enabled);
+            var board = machineController.findIP(name, address)
+                        .orElseThrow(AdminImpl::noBoard);
+            board.setState(enabled);
+            return board.getState();
+      }
 
-	@Override
-	public Map<String, URI> listUsers(UriInfo ui) {
-		log.info("CALLED listUsers()");
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
-		return userManager.listUsers(user -> ub.build(user.getUserId()));
-	}
+      @Override
+      public Map<String, URI> listUsers(UriInfo ui) {
+            log.info("CALLED listUsers()");
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
+            return userManager.listUsers(user -> ub.build(user.getUserId()));
+      }
 
-	@Override
-	public Response createUser(UserRecord providedUser, UriInfo ui) {
-		log.warn("CALLED createUser({})", providedUser.getUserName());
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
-		providedUser.initCreationDefaults();
-		var realUser = userManager.createUser(providedUser,
-				m -> ub.build(m.getUserId()))
-				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
-						"user already exists"));
-		int id = realUser.getUserId();
-		return created(ub.build(id)).type(APPLICATION_JSON)
-				.entity(realUser.sanitise()).build();
-	}
+      @Override
+      public Response createUser(UserRecord providedUser, UriInfo ui) {
+            log.warn("CALLED createUser({})", providedUser.getUserName());
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
+            providedUser.initCreationDefaults();
+            var realUser = userManager.createUser(providedUser,
+                        m -> ub.build(m.getUserId()))
+                        .orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
+                                    "user already exists"));
+            int id = realUser.getUserId();
+            return created(ub.build(id)).type(APPLICATION_JSON)
+                        .entity(realUser.sanitise()).build();
+      }
 
-	@Override
-	public UserRecord describeUser(int id, UriInfo ui) {
-		log.info("CALLED describeUser({})", id);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
-		return userManager.getUser(id, m -> ub.build(m.getGroupId()))
-				.orElseThrow(AdminImpl::noUser).sanitise();
-	}
+      @Override
+      public UserRecord describeUser(int id, UriInfo ui) {
+            log.info("CALLED describeUser({})", id);
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+            return userManager.getUser(id, m -> ub.build(m.getGroupId()))
+                        .orElseThrow(AdminImpl::noUser).sanitise();
+      }
 
-	@Override
-	public UserRecord updateUser(int id, UserRecord providedUser, UriInfo ui,
-			SecurityContext security) {
-		log.warn("CALLED updateUser({})", providedUser.getUserName());
-		var adminUser = security.getUserPrincipal().getName();
-		providedUser.setUserId(null);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
-		return userManager
-				.updateUser(id, providedUser, adminUser,
-						m -> ub.build(m.getUserId()))
-				.orElseThrow(AdminImpl::noUser).sanitise();
-	}
+      @Override
+      public UserRecord updateUser(int id, UserRecord providedUser, UriInfo ui,
+                  SecurityContext security) {
+            log.warn("CALLED updateUser({})", providedUser.getUserName());
+            var adminUser = security.getUserPrincipal().getName();
+            providedUser.setUserId(null);
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
+            return userManager
+                        .updateUser(id, providedUser, adminUser,
+                                    m -> ub.build(m.getUserId()))
+                        .orElseThrow(AdminImpl::noUser).sanitise();
+      }
 
-	@Override
-	public String deleteUser(int id, SecurityContext security) {
-		log.warn("CALLED deleteUser({})", id);
-		var adminUser = security.getUserPrincipal().getName();
-		return "deleted user " + userManager.deleteUser(id, adminUser)
-				.orElseThrow(AdminImpl::noUser);
-	}
+      @Override
+      public String deleteUser(int id, SecurityContext security) {
+            log.warn("CALLED deleteUser({})", id);
+            var adminUser = security.getUserPrincipal().getName();
+            return "deleted user " + userManager.deleteUser(id, adminUser)
+                        .orElseThrow(AdminImpl::noUser);
+      }
 
-	@Override
-	public Map<String, URI> listGroups(UriInfo ui) {
-		log.warn("CALLED listGroups()");
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
-		return userManager.listGroups(g -> ub.build(g.getGroupId()));
-	}
+      @Override
+      public Map<String, URI> listGroups(UriInfo ui) {
+            log.warn("CALLED listGroups()");
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+            return userManager.listGroups(g -> ub.build(g.getGroupId()));
+      }
 
-	@Override
-	public Response createGroup(GroupRecord group, UriInfo ui) {
-		log.warn("CALLED createGroup({})", group.getGroupName());
-		var realGroup = userManager.createGroup(group, group.getType())
-				.orElseThrow(() -> new WebApplicationException(
-						"group already exists", BAD_REQUEST));
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
-		return created(ub.build(realGroup.getGroupId())).type(APPLICATION_JSON)
-				.entity(realGroup).build();
-	}
+      @Override
+      public Response createGroup(GroupRecord group, UriInfo ui) {
+            log.warn("CALLED createGroup({})", group.getGroupName());
+            var realGroup = userManager.createGroup(group, group.getType())
+                        .orElseThrow(() -> new WebApplicationException(
+                                    "group already exists", BAD_REQUEST));
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+            return created(ub.build(realGroup.getGroupId())).type(APPLICATION_JSON)
+                        .entity(realGroup).build();
+      }
 
-	@Override
-	public GroupRecord describeGroup(int groupId, UriInfo ui) {
-		log.warn("CALLED describeGroup({})", groupId);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
-		return userManager.getGroup(groupId, m -> ub.build(groupId, m.getId()))
-				.orElseThrow(AdminImpl::noGroup);
-	}
+      @Override
+      public GroupRecord describeGroup(int groupId, UriInfo ui) {
+            log.warn("CALLED describeGroup({})", groupId);
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
+            return userManager.getGroup(groupId, m -> ub.build(groupId, m.getId()))
+                        .orElseThrow(AdminImpl::noGroup);
+      }
 
-	@Override
-	public GroupRecord updateGroup(int groupId, GroupRecord group, UriInfo ui) {
-		log.warn("CALLED updateGroup({})", groupId);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
-		return userManager
-				.updateGroup(groupId, group,
-						m -> ub.build(group.getGroupId(), m.getId()))
-				.orElseThrow(AdminImpl::noGroup);
-	}
+      @Override
+      public GroupRecord updateGroup(int groupId, GroupRecord group, UriInfo ui) {
+            log.warn("CALLED updateGroup({})", groupId);
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
+            return userManager
+                        .updateGroup(groupId, group,
+                                    m -> ub.build(group.getGroupId(), m.getId()))
+                        .orElseThrow(AdminImpl::noGroup);
+      }
 
-	@Override
-	public String deleteGroup(int groupId) {
-		log.warn("CALLED deleteGroup({})", groupId);
-		return "deleted group " + userManager.deleteGroup(groupId)
-				.orElseThrow(AdminImpl::noGroup);
-	}
+      @Override
+      public String deleteGroup(int groupId) {
+            log.warn("CALLED deleteGroup({})", groupId);
+            return "deleted group " + userManager.deleteGroup(groupId)
+                        .orElseThrow(AdminImpl::noGroup);
+      }
 
-	@Override
-	public Response addMember(int groupId, MemberRecord request, UriInfo ui) {
-		var userName = request.getUserName();
-		log.warn("CALLED addMember({},{})", groupId, userName);
-		var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
-		var group = userManager.getGroup(groupId, null)
-				.orElseThrow(AdminImpl::noGroup);
-		var user = userManager.getUser(userName, null)
-				.orElseThrow(AdminImpl::noUser);
-		return userManager.addUserToGroup(user, group)
-				.map(member -> created(ub.build(member.getId()))
-						.type(APPLICATION_JSON).entity(member))
-				.orElseThrow(() -> new WebApplicationException(
-						"user already a member of group", BAD_REQUEST))
-				.build();
-	}
+      @Override
+      public Response addMember(int groupId, MemberRecord request, UriInfo ui) {
+            var userName = request.getUserName();
+            log.warn("CALLED addMember({},{})", groupId, userName);
+            var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
+            var group = userManager.getGroup(groupId, null)
+                        .orElseThrow(AdminImpl::noGroup);
+            var user = userManager.getUser(userName, null)
+                        .orElseThrow(AdminImpl::noUser);
+            return userManager.addUserToGroup(user, group)
+                        .map(member -> created(ub.build(member.getId()))
+                                    .type(APPLICATION_JSON).entity(member))
+                        .orElseThrow(() -> new WebApplicationException(
+                                    "user already a member of group", BAD_REQUEST))
+                        .build();
+      }
 
-	@Override
-	public MemberRecord describeMember(int groupId, int memberId, UriInfo ui) {
-		log.warn("CALLED describeMember({},{})", groupId, memberId);
-		var ubGroup = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
-		var ubUser = ui.getBaseUriBuilder().path(DESCRIBE_USER);
-		return userManager
-				.describeMembership(memberId,
-						m -> ubGroup.build(m.getGroupId()),
-						m -> ubUser.build(m.getUserId()))
-				.orElseThrow(AdminImpl::noMember);
-	}
+      @Override
+      public MemberRecord describeMember(int groupId, int memberId, UriInfo ui) {
+            log.warn("CALLED describeMember({},{})", groupId, memberId);
+            var ubGroup = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+            var ubUser = ui.getBaseUriBuilder().path(DESCRIBE_USER);
+            return userManager
+                        .describeMembership(memberId,
+                                    m -> ubGroup.build(m.getGroupId()),
+                                    m -> ubUser.build(m.getUserId()))
+                        .orElseThrow(AdminImpl::noMember);
+      }
 
-	@Override
-	public Response removeMember(int groupId, int memberId) {
-		log.warn("CALLED removeMember({groupId},{memberId})");
-		var group = userManager.getGroup(groupId, null)
-				.orElseThrow(AdminImpl::noGroup);
-		var member = userManager.describeMembership(memberId, null, null)
-				.orElseThrow(AdminImpl::noMember);
-		if (!userManager.removeMembershipOfGroup(member, group)) {
-			throw new WebApplicationException("remove failed", BAD_REQUEST);
-		}
-		return noContent().build();
-	}
+      @Override
+      public Response removeMember(int groupId, int memberId) {
+            log.warn("CALLED removeMember({groupId},{memberId})");
+            var group = userManager.getGroup(groupId, null)
+                        .orElseThrow(AdminImpl::noGroup);
+            var member = userManager.describeMembership(memberId, null, null)
+                        .orElseThrow(AdminImpl::noMember);
+            if (!userManager.removeMembershipOfGroup(member, group)) {
+                  throw new WebApplicationException("remove failed", BAD_REQUEST);
+            }
+            return noContent().build();
+      }
 }

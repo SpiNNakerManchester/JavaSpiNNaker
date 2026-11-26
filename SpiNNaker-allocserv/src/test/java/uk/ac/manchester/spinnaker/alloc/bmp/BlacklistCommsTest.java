@@ -50,117 +50,117 @@ import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 @NotThreadSafe
 class BlacklistCommsTest extends TestSupport {
 
-	/** Timeouts on individual tests, in seconds. */
-	private static final int TEST_TIMEOUT = 15;
+      /** Timeouts on individual tests, in seconds. */
+      private static final int TEST_TIMEOUT = 15;
 
-	/** Basic delay in fake BMP thread, in microseconds. */
-	private static final int TEST_DELAY = 750;
+      /** Basic delay in fake BMP thread, in microseconds. */
+      private static final int TEST_DELAY = 750;
 
-	private static final String BMP_DONE_TOKEN = "BMP done";
+      private static final String BMP_DONE_TOKEN = "BMP done";
 
-	private static final Blacklist WRITE_BASELINE =
-			new Blacklist("chip 4 4 core 6,4");
+      private static final Blacklist WRITE_BASELINE =
+                  new Blacklist("chip 4 4 core 6,4");
 
-	@Autowired
-	private MachineStateControl stateCtrl;
+      @Autowired
+      private MachineStateControl stateCtrl;
 
-	private BMPController.TestAPI bmpCtrl;
+      private BMPController.TestAPI bmpCtrl;
 
-	private TransceiverFactory.TestAPI txrxFactory;
+      private TransceiverFactory.TestAPI txrxFactory;
 
-	private ExecutorService exec;
+      private ExecutorService exec;
 
-	@BeforeEach
-	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired BMPController bmpCtrl,
-			@Autowired TransceiverFactory txrxFactory) throws IOException {
-		assumeTrue(db != null, "spring-configured DB engine absent");
-		killDB();
-		setupDB1();
-		// Get the test stuff set up
-		MockTransceiver.installIntoFactory(txrxFactory);
-		this.txrxFactory = txrxFactory.getTestAPI();
-		exec = newSingleThreadExecutor();
-		this.bmpCtrl = bmpCtrl.getTestAPI();
-		this.bmpCtrl.prepare(false);
-		this.bmpCtrl.resetTransceivers();
-		this.bmpCtrl.clearBmpException();
-	}
+      @BeforeEach
+      @SuppressWarnings("deprecation")
+      void checkSetup(@Autowired BMPController bmpCtrl,
+                  @Autowired TransceiverFactory txrxFactory) throws IOException {
+            assumeTrue(db != null, "spring-configured DB engine absent");
+            killDB();
+            setupDB1();
+            // Get the test stuff set up
+            MockTransceiver.installIntoFactory(txrxFactory);
+            this.txrxFactory = txrxFactory.getTestAPI();
+            exec = newSingleThreadExecutor();
+            this.bmpCtrl = bmpCtrl.getTestAPI();
+            this.bmpCtrl.prepare(false);
+            this.bmpCtrl.resetTransceivers();
+            this.bmpCtrl.clearBmpException();
+      }
 
-	@AfterEach
-	void stopExecutor() {
-		exec.shutdown();
-		var exn = bmpCtrl.getBmpException();
-		assertDoesNotThrow(() -> {
-			if (exn != null) {
-				throw new Exception(exn);
-			}
-		}, "BMP controller must not have thrown, but did");
-	}
+      @AfterEach
+      void stopExecutor() {
+            exec.shutdown();
+            var exn = bmpCtrl.getBmpException();
+            assertDoesNotThrow(() -> {
+                  if (exn != null) {
+                        throw new Exception(exn);
+                  }
+            }, "BMP controller must not have thrown, but did");
+      }
 
-	/**
-	 * A faked up running of the BMP worker thread because the main schedule is
-	 * disabled.
-	 *
-	 * @param bmps
-	 *            The IDs of the BMPs to process information for.
-	 * @param count
-	 *            The number of times to run the processing loop.
-	 * @return The future to wait for as part of shutting down. The value is
-	 *         meaningless, but the exceptions potentially thrown are not.
-	 * @throws InterruptedException
-	 *             If interrupted.
-	 */
-	private Future<String> bmpWorker(Collection<Integer> bmps, int count)
-			throws InterruptedException {
-		var ready = new OneShotEvent();
-		var future = exec.submit(() -> {
-			ready.fire();
-			// Time to allow main thread to submit the work we'll carry out
-			Thread.sleep(TEST_DELAY);
-			bmpCtrl.processRequests(TEST_DELAY, bmps);
-			return BMP_DONE_TOKEN;
-		});
-		ready.await();
-		return future;
-	}
+      /**
+       * A faked up running of the BMP worker thread because the main schedule is
+       * disabled.
+       *
+       * @param bmps
+       *            The IDs of the BMPs to process information for.
+       * @param count
+       *            The number of times to run the processing loop.
+       * @return The future to wait for as part of shutting down. The value is
+       *         meaningless, but the exceptions potentially thrown are not.
+       * @throws InterruptedException
+       *             If interrupted.
+       */
+      private Future<String> bmpWorker(Collection<Integer> bmps, int count)
+                  throws InterruptedException {
+            var ready = new OneShotEvent();
+            var future = exec.submit(() -> {
+                  ready.fire();
+                  // Time to allow main thread to submit the work we'll carry out
+                  Thread.sleep(TEST_DELAY);
+                  bmpCtrl.processRequests(TEST_DELAY, bmps);
+                  return BMP_DONE_TOKEN;
+            });
+            ready.await();
+            return future;
+      }
 
-	@Test
-	@Timeout(TEST_TIMEOUT)
-	public void getSerialNumber() throws Exception {
-		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker(Set.of(bs.bmpId), 1);
+      @Test
+      @Timeout(TEST_TIMEOUT)
+      public void getSerialNumber() throws Exception {
+            var bs = stateCtrl.findId(BOARD).orElseThrow();
+            var future = bmpWorker(Set.of(bs.bmpId), 1);
 
-		var serialNumber = stateCtrl.getSerialNumber(bs);
+            var serialNumber = stateCtrl.getSerialNumber(bs);
 
-		assertEquals(BMP_DONE_TOKEN, future.get());
-		assertEquals("gorp", serialNumber); // Magic value in dummy!
-	}
+            assertEquals(BMP_DONE_TOKEN, future.get());
+            assertEquals("gorp", serialNumber); // Magic value in dummy!
+      }
 
-	@Test
-	@Timeout(TEST_TIMEOUT)
-	public void readBlacklistFromMachine() throws Exception {
-		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker(Set.of(bs.bmpId), 1);
+      @Test
+      @Timeout(TEST_TIMEOUT)
+      public void readBlacklistFromMachine() throws Exception {
+            var bs = stateCtrl.findId(BOARD).orElseThrow();
+            var future = bmpWorker(Set.of(bs.bmpId), 1);
 
-		var bl = stateCtrl.readBlacklistFromMachine(bs.id, bs.bmpId)
-				.orElseThrow();
+            var bl = stateCtrl.readBlacklistFromMachine(bs.id, bs.bmpId)
+                        .orElseThrow();
 
-		assertEquals(BMP_DONE_TOKEN, future.get());
-		assertEquals(new Blacklist("chip 5 5 core 5"), bl);
-	}
+            assertEquals(BMP_DONE_TOKEN, future.get());
+            assertEquals(new Blacklist("chip 5 5 core 5"), bl);
+      }
 
-	@Test
-	@Timeout(TEST_TIMEOUT)
-	public void writeBlacklistToMachine() throws Exception {
-		var bs = stateCtrl.findId(BOARD).orElseThrow();
-		var future = bmpWorker(Set.of(bs.bmpId), 2);
-		assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
+      @Test
+      @Timeout(TEST_TIMEOUT)
+      public void writeBlacklistToMachine() throws Exception {
+            var bs = stateCtrl.findId(BOARD).orElseThrow();
+            var future = bmpWorker(Set.of(bs.bmpId), 2);
+            assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 
-		stateCtrl.writeBlacklistToMachine(bs.id, bs.bmpId,
-				new Blacklist("chip 4 4 core 4,6"));
+            stateCtrl.writeBlacklistToMachine(bs.id, bs.bmpId,
+                        new Blacklist("chip 4 4 core 4,6"));
 
-		assertEquals(BMP_DONE_TOKEN, future.get());
-		assertEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
-	}
+            assertEquals(BMP_DONE_TOKEN, future.get());
+            assertEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
+      }
 }

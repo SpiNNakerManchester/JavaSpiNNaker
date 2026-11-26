@@ -31,65 +31,65 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PasswordServices {
-	private static final int BCRYPT_STRENGTH = 10;
+      private static final int BCRYPT_STRENGTH = 10;
 
-	private static final int PASSWORD_LENGTH = 16;
+      private static final int PASSWORD_LENGTH = 16;
 
-	private PasswordEncoder passwordEncoder;
+      private PasswordEncoder passwordEncoder;
 
-	private SecureRandom rng;
+      private SecureRandom rng;
 
-	@PostConstruct
-	private void init() {
-		rng = new SecureRandom();
-		passwordEncoder = new BCryptPasswordEncoder(BCRYPT_STRENGTH, rng);
-	}
+      @PostConstruct
+      private void init() {
+            rng = new SecureRandom();
+            passwordEncoder = new BCryptPasswordEncoder(BCRYPT_STRENGTH, rng);
+      }
 
-	/**
-	 * Generate a random password.
-	 *
-	 * @return A password consisting of 16 random ASCII printable
-	 *         characters.
-	 */
-	@SuppressWarnings("UnicodeEscape") // It's clearer like this
-	public final String generatePassword() {
-		var sb = new StringBuilder();
-		rng.ints(PASSWORD_LENGTH, '\u0021', '\u007f')
-				.forEachOrdered(c -> sb.append((char) c));
-		return sb.toString();
-	}
+      /**
+       * Generate a random password.
+       *
+       * @return A password consisting of 16 random ASCII printable
+       *         characters.
+       */
+      @SuppressWarnings("UnicodeEscape") // It's clearer like this
+      public final String generatePassword() {
+            var sb = new StringBuilder();
+            rng.ints(PASSWORD_LENGTH, '\u0021', '\u007f')
+                        .forEachOrdered(c -> sb.append((char) c));
+            return sb.toString();
+      }
 
-	/**
-	 * Encode a password with bcrypt. <em>This is a slow operation! Do not
-	 * hold a database transaction open when calling this.</em>
-	 *
-	 * @param password
-	 *            The password to encode. May be {@code null}.
-	 * @return The encoded password. Will be {@code null} if the input is
-	 *         {@code null}.
-	 */
-	public final String encodePassword(String password) {
-		return isNull(password) ? null : passwordEncoder.encode(password);
-	}
+      /**
+       * Encode a password with bcrypt. <em>This is a slow operation! Do not
+       * hold a database transaction open when calling this.</em>
+       *
+       * @param password
+       *            The password to encode. May be {@code null}.
+       * @return The encoded password. Will be {@code null} if the input is
+       *         {@code null}.
+       */
+      public final String encodePassword(String password) {
+            return isNull(password) ? null : passwordEncoder.encode(password);
+      }
 
-	/**
-	 * Check using bcrypt if a password matches its encoded form retrieved
-	 * from the database. <em>This is a slow operation! Do not hold a
-	 * database transaction open when calling this.</em>
-	 *
-	 * @param password
-	 *            The password to check. If {@code null}, the encoded form
-	 *            must also be {@code null} for a match to be true.
-	 * @param encodedPassword
-	 *            The encoded form from the database.
-	 * @return True if the password matches, false otherwise.
-	 */
-	public final boolean matchPassword(String password,
-			String encodedPassword) {
-		if (isNull(password)) {
-			return isNull(encodedPassword);
-		}
-		return nonNull(encodedPassword)
-				&& passwordEncoder.matches(password, encodedPassword);
-	}
+      /**
+       * Check using bcrypt if a password matches its encoded form retrieved
+       * from the database. <em>This is a slow operation! Do not hold a
+       * database transaction open when calling this.</em>
+       *
+       * @param password
+       *            The password to check. If {@code null}, the encoded form
+       *            must also be {@code null} for a match to be true.
+       * @param encodedPassword
+       *            The encoded form from the database.
+       * @return True if the password matches, false otherwise.
+       */
+      public final boolean matchPassword(String password,
+                  String encodedPassword) {
+            if (isNull(password)) {
+                  return isNull(encodedPassword);
+            }
+            return nonNull(encodedPassword)
+                        && passwordEncoder.matches(password, encodedPassword);
+      }
 }

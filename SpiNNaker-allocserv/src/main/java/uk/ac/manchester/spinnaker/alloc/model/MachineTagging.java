@@ -36,111 +36,111 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class MachineTagging {
-	@NotBlank
-	private String name;
+      @NotBlank
+      private String name;
 
-	private int id;
+      private int id;
 
-	private URI url;
+      private URI url;
 
-	private Set<@NotBlank String> tags = new HashSet<>();
+      private Set<@NotBlank String> tags = new HashSet<>();
 
-	MachineTagging() {
-	}
+      MachineTagging() {
+      }
 
-	/**
-	 * Build a basic instance (without tags, which need another query) from the
-	 * result of {@link SQLQueries#GET_ALL_MACHINES}.
-	 *
-	 * @param row
-	 *            The database row.
-	 */
-	@UsedInJavadocOnly(SQLQueries.class)
-	public MachineTagging(Row row) {
-		id = row.getInt("machine_id");
-		name = row.getString("machine_name");
-		// Tags can't be handled this way
-		// Url can't be handled now; lack the context
-	}
+      /**
+       * Build a basic instance (without tags, which need another query) from the
+       * result of {@link SQLQueries#GET_ALL_MACHINES}.
+       *
+       * @param row
+       *            The database row.
+       */
+      @UsedInJavadocOnly(SQLQueries.class)
+      public MachineTagging(Row row) {
+            id = row.getInt("machine_id");
+            name = row.getString("machine_name");
+            // Tags can't be handled this way
+            // Url can't be handled now; lack the context
+      }
 
-	/**
-	 * {@return The name of the machine}
-	 */
-	public String getName() {
-		return name;
-	}
+      /**
+       * {@return The name of the machine}
+       */
+      public String getName() {
+            return name;
+      }
 
-	void setName(String name) {
-		this.name = name;
-	}
+      void setName(String name) {
+            this.name = name;
+      }
 
-	/**
-	 * {@return The ID of the machine}
-	 */
-	public int getId() {
-		return id;
-	}
+      /**
+       * {@return The ID of the machine}
+       */
+      public int getId() {
+            return id;
+      }
 
-	void setId(int id) {
-		this.id = id;
-	}
+      void setId(int id) {
+            this.id = id;
+      }
 
-	/**
-	 * {@return The URL to the page about the machine}
-	 */
-	public URI getUrl() {
-		return url;
-	}
+      /**
+       * {@return The URL to the page about the machine}
+       */
+      public URI getUrl() {
+            return url;
+      }
 
-	/**
-	 * Sets the URL to the page about the machine.
-	 *
-	 * @param url
-	 *            The URL to the page about the machine.
-	 */
-	public void setUrl(URI url) {
-		this.url = url;
-	}
+      /**
+       * Sets the URL to the page about the machine.
+       *
+       * @param url
+       *            The URL to the page about the machine.
+       */
+      public void setUrl(URI url) {
+            this.url = url;
+      }
 
-	/**
-	 * {@return The tags of the machine}
-	 */
-	public String getTags() {
-		return tags.stream().collect(joining(", "));
-	}
+      /**
+       * {@return The tags of the machine}
+       */
+      public String getTags() {
+            return tags.stream().collect(joining(", "));
+      }
 
-	/**
-	 * Sets the tags of the machine.
-	 *
-	 * Overrides previous tags.
-	 *
-	 * @param tags
-	 *            The tags of the machine.
-	 */
-	void setTags(Set<String> tags) {
-		this.tags = tags;
-	}
+      /**
+       * Sets the tags of the machine.
+       *
+       * Overrides previous tags.
+       *
+       * @param tags
+       *            The tags of the machine.
+       */
+      void setTags(Set<String> tags) {
+            this.tags = tags;
+      }
 
-	/**
-	 * Sets the tags of the machine.
-	 *
-	 * Appends to previous tags.
-	 * (To be determined if desirable.)
-	 *
-	 * @param tags
-	 *            The tags of the machine.
-	 */
-	public void setTags(List<String> tags) {
-		for (var tag : tags) {
-			this.tags.add(tag);
-		}
-	}
+      /**
+       * Sets the tags of the machine.
+       *
+       * Appends to previous tags.
+       * (To be determined if desirable.)
+       *
+       * @param tags
+       *            The tags of the machine.
+       */
+      public void setTags(List<String> tags) {
+            for (var tag : tags) {
+                  this.tags.add(tag);
+            }
+      }
 
-	/**
-	 * {@return Whether this machine has the "{@code default}" tag
-	 *     applied to it}
-	 */
-	public boolean isTaggedAsDefault() {
-		return tags.contains("default");
-	}
+      /**
+       * {@return Whether this machine has the "{@code default}" tag
+       *     applied to it}
+       */
+      public boolean isTaggedAsDefault() {
+            return tags.contains("default");
+      }
 }

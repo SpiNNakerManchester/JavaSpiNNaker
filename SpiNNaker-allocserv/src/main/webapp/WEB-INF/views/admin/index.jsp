@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="Spalloc Service Administration" name="title"/>
+      <jsp:param value="Spalloc Service Administration" name="title"/>
 </jsp:include>
 <body>
 

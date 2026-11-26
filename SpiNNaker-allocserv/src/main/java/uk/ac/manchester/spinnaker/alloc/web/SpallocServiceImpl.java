@@ -73,312 +73,312 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 @Service("service")
 @Path(SERV)
 public class SpallocServiceImpl extends BackgroundSupport
-		implements SpallocServiceAPI {
-	private static final Logger log = getLogger(SpallocServiceImpl.class);
+            implements SpallocServiceAPI {
+      private static final Logger log = getLogger(SpallocServiceImpl.class);
 
-	@Autowired
-	private ServiceVersion version;
+      @Autowired
+      private ServiceVersion version;
 
-	@Autowired
-	private SpallocProperties properties;
+      @Autowired
+      private SpallocProperties properties;
 
-	@Autowired
-	private SpallocAPI core;
+      @Autowired
+      private SpallocAPI core;
 
-	@Autowired
-	private JsonMapper mapper;
+      @Autowired
+      private JsonMapper mapper;
 
-	@Autowired
-	private LocalAuthProviderImpl localAuthProvider;
+      @Autowired
+      private LocalAuthProviderImpl localAuthProvider;
 
-	/**
-	 * Factory for {@linkplain MachineAPI machines}. Only use via
-	 * {@link #getMachine(String, UriInfo, SecurityContext) getMachine(...)};
-	 * this is because we're dealing with prototype beans.
-	 */
-	@Autowired
-	private ObjectProvider<MachineAPI> machineFactory;
+      /**
+       * Factory for {@linkplain MachineAPI machines}. Only use via
+       * {@link #getMachine(String, UriInfo, SecurityContext) getMachine(...)};
+       * this is because we're dealing with prototype beans.
+       */
+      @Autowired
+      private ObjectProvider<MachineAPI> machineFactory;
 
-	/**
-	 * Factory for {@linkplain JobAPI jobs}. Only use via
-	 * {@link #getJob(int, UriInfo, HttpServletRequest, SecurityContext)
-	 * getJob(...)}; this is because we're dealing with prototype beans.
-	 */
-	@Autowired
-	private ObjectProvider<JobAPI> jobFactory;
+      /**
+       * Factory for {@linkplain JobAPI jobs}. Only use via
+       * {@link #getJob(int, UriInfo, HttpServletRequest, SecurityContext)
+       * getJob(...)}; this is because we're dealing with prototype beans.
+       */
+      @Autowired
+      private ObjectProvider<JobAPI> jobFactory;
 
-	@Override
-	public ServiceDescription describeService(UriInfo ui, SecurityContext sec,
-			HttpServletRequest req) {
-		var token = (CsrfToken) req.getAttribute("_csrf");
-		return new ServiceDescription(version.getVersion(), ui, sec, token);
-	}
+      @Override
+      public ServiceDescription describeService(UriInfo ui, SecurityContext sec,
+                  HttpServletRequest req) {
+            var token = (CsrfToken) req.getAttribute("_csrf");
+            return new ServiceDescription(version.getVersion(), ui, sec, token);
+      }
 
-	@Override
-	public MachinesResponse getMachines(UriInfo ui) {
-		return new MachinesResponse(core.getMachines(false), ui);
-	}
+      @Override
+      public MachinesResponse getMachines(UriInfo ui) {
+            return new MachinesResponse(core.getMachines(false), ui);
+      }
 
-	@Override
-	public MachineAPI getMachine(String name, UriInfo ui, SecurityContext sec) {
-		var permit = new Permit(sec);
-		var machine = core.getMachine(name, permit.admin)
-				.orElseThrow(() -> new NotFound("no such machine"));
-		// Wrap so we can use security annotations
-		return machineFactory.getObject(machine, ui);
-	}
+      @Override
+      public MachineAPI getMachine(String name, UriInfo ui, SecurityContext sec) {
+            var permit = new Permit(sec);
+            var machine = core.getMachine(name, permit.admin)
+                        .orElseThrow(() -> new NotFound("no such machine"));
+            // Wrap so we can use security annotations
+            return machineFactory.getObject(machine, ui);
+      }
 
-	@Override
-	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req,
-			SecurityContext security) {
-		var permit = new Permit(security);
-		var j = core.getJob(permit, id)
-				.orElseThrow(() -> new NotFound("no such job"));
-		// Wrap so we can use security annotations
-		return jobFactory.getObject(j, req.getRemoteHost(), permit, ui);
-	}
+      @Override
+      public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req,
+                  SecurityContext security) {
+            var permit = new Permit(security);
+            var j = core.getJob(permit, id)
+                        .orElseThrow(() -> new NotFound("no such job"));
+            // Wrap so we can use security annotations
+            return jobFactory.getObject(j, req.getRemoteHost(), permit, ui);
+      }
 
-	// Could be configurable, but no real point
-	private static final int LIMIT_LIMIT = 200;
+      // Could be configurable, but no real point
+      private static final int LIMIT_LIMIT = 200;
 
-	/**
-	 * Adds in the {@code Link:} header with general paging info.
-	 *
-	 * @param value
-	 *            The core response.
-	 * @param ui
-	 *            Information about URIs
-	 * @param start
-	 *            The start offset.
-	 * @param limit
-	 *            The size of chunk.
-	 * @return Annotated response.
-	 */
-	private Response wrapPaging(ListJobsResponse value, UriInfo ui, int start,
-			int limit) {
-		var r = ok(value);
-		var links = new HashMap<String, URI>();
-		if (start > 0) {
-			var prev = ui.getRequestUriBuilder()
-					.replaceQueryParam("wait", false)
-					.replaceQueryParam("start", max(start - limit, 0)).build();
-			value.setPrev(prev);
-			links.put("prev", prev);
-		}
-		if (value.jobs.size() == limit) {
-			var next = ui.getRequestUriBuilder()
-					.replaceQueryParam("wait", false)
-					.replaceQueryParam("start", start + limit).build();
-			value.setNext(next);
-			links.put("next", next);
-		}
-		if (!links.isEmpty()) {
-			r.header("Link", join(", ", links.entrySet().stream().map(
-					e -> format("<%s>; rel=\"%s\"", e.getValue(), e.getKey()))
-					.collect(toList())));
-		}
-		return r.build();
-	}
+      /**
+       * Adds in the {@code Link:} header with general paging info.
+       *
+       * @param value
+       *            The core response.
+       * @param ui
+       *            Information about URIs
+       * @param start
+       *            The start offset.
+       * @param limit
+       *            The size of chunk.
+       * @return Annotated response.
+       */
+      private Response wrapPaging(ListJobsResponse value, UriInfo ui, int start,
+                  int limit) {
+            var r = ok(value);
+            var links = new HashMap<String, URI>();
+            if (start > 0) {
+                  var prev = ui.getRequestUriBuilder()
+                              .replaceQueryParam("wait", false)
+                              .replaceQueryParam("start", max(start - limit, 0)).build();
+                  value.setPrev(prev);
+                  links.put("prev", prev);
+            }
+            if (value.jobs.size() == limit) {
+                  var next = ui.getRequestUriBuilder()
+                              .replaceQueryParam("wait", false)
+                              .replaceQueryParam("start", start + limit).build();
+                  value.setNext(next);
+                  links.put("next", next);
+            }
+            if (!links.isEmpty()) {
+                  r.header("Link", join(", ", links.entrySet().stream().map(
+                              e -> format("<%s>; rel=\"%s\"", e.getValue(), e.getKey()))
+                              .collect(toList())));
+            }
+            return r.build();
+      }
 
-	@Override
-	public void listJobs(boolean wait, boolean destroyed, int limit, int start,
-			UriInfo ui, AsyncResponse response) {
-		if (limit > LIMIT_LIMIT || limit < 1) {
-			throw new BadArgs("limit must not be bigger than " + LIMIT_LIMIT);
-		}
-		if (start < 0) {
-			throw new BadArgs("start must not be less than 0");
-		}
-		var jc = core.getJobs(destroyed, limit, start);
-		if (wait) {
-			bgAction(response, () -> {
-				log.debug("starting wait for change of job list");
-				jc.waitForChange(properties.getWait());
-				var newJc = core.getJobs(destroyed, limit, start);
-				return wrapPaging(new ListJobsResponse(newJc, ui), ui, start,
-						limit);
-			});
-		} else {
-			fgAction(response, () -> wrapPaging(new ListJobsResponse(jc, ui),
-					ui, start, limit));
-		}
-	}
+      @Override
+      public void listJobs(boolean wait, boolean destroyed, int limit, int start,
+                  UriInfo ui, AsyncResponse response) {
+            if (limit > LIMIT_LIMIT || limit < 1) {
+                  throw new BadArgs("limit must not be bigger than " + LIMIT_LIMIT);
+            }
+            if (start < 0) {
+                  throw new BadArgs("start must not be less than 0");
+            }
+            var jc = core.getJobs(destroyed, limit, start);
+            if (wait) {
+                  bgAction(response, () -> {
+                        log.debug("starting wait for change of job list");
+                        jc.waitForChange(properties.getWait());
+                        var newJc = core.getJobs(destroyed, limit, start);
+                        return wrapPaging(new ListJobsResponse(newJc, ui), ui, start,
+                                    limit);
+                  });
+            } else {
+                  fgAction(response, () -> wrapPaging(new ListJobsResponse(jc, ui),
+                              ui, start, limit));
+            }
+      }
 
-	private static String trim(String str) {
-		if (isNull(str)) {
-			return null;
-		}
-		return str.strip();
-	}
+      private static String trim(String str) {
+            if (isNull(str)) {
+                  return null;
+            }
+            return str.strip();
+      }
 
-	/**
-	 * Select one of the ways to create a job based on the request parameters.
-	 * Note this will pick the first non-null of (group, nmpiCollabId,
-	 * nmpiJobId) from req to determine the spalloc call to make (also
-	 * acceptable if all are null).
-	 *
-	 * @param req
-	 *            The request details.
-	 * @param crds
-	 *            The request credentials.
-	 * @return The job created.
-	 * @throws JsonProcessingException
-	 *             If there is an error converting the request into bytes.
-	 */
-	private SpallocAPI.Job createJob(CreateJobRequest req,
-			CreateDescriptor crds) throws JsonProcessingException {
-		if (!isNull(req.group)) {
-			return core.createJobInGroup(trim(req.owner), trim(req.group), crds,
-					req.machineName, req.tags, req.keepaliveInterval,
-					mapper.writeValueAsBytes(req));
-		}
-		if (!isNull(req.nmpiCollab)) {
-			return core.createJobInCollabSession(trim(req.owner),
-					trim(req.nmpiCollab), crds,
-					req.machineName, req.tags, req.keepaliveInterval,
-					mapper.writeValueAsBytes(req));
-		}
-		if (!isNull(req.nmpiJobId)) {
-			return core.createJobForNMPIJob(trim(req.owner),
-					req.nmpiJobId, crds,
-					req.machineName, req.tags, req.keepaliveInterval,
-					mapper.writeValueAsBytes(req));
-		}
-		return core.createJob(trim(req.owner), crds,
-				req.machineName, req.tags, req.keepaliveInterval,
-				mapper.writeValueAsBytes(req));
-	}
+      /**
+       * Select one of the ways to create a job based on the request parameters.
+       * Note this will pick the first non-null of (group, nmpiCollabId,
+       * nmpiJobId) from req to determine the spalloc call to make (also
+       * acceptable if all are null).
+       *
+       * @param req
+       *            The request details.
+       * @param crds
+       *            The request credentials.
+       * @return The job created.
+       * @throws JsonProcessingException
+       *             If there is an error converting the request into bytes.
+       */
+      private SpallocAPI.Job createJob(CreateJobRequest req,
+                  CreateDescriptor crds) throws JsonProcessingException {
+            if (!isNull(req.group)) {
+                  return core.createJobInGroup(trim(req.owner), trim(req.group), crds,
+                              req.machineName, req.tags, req.keepaliveInterval,
+                              mapper.writeValueAsBytes(req));
+            }
+            if (!isNull(req.nmpiCollab)) {
+                  return core.createJobInCollabSession(trim(req.owner),
+                              trim(req.nmpiCollab), crds,
+                              req.machineName, req.tags, req.keepaliveInterval,
+                              mapper.writeValueAsBytes(req));
+            }
+            if (!isNull(req.nmpiJobId)) {
+                  return core.createJobForNMPIJob(trim(req.owner),
+                              req.nmpiJobId, crds,
+                              req.machineName, req.tags, req.keepaliveInterval,
+                              mapper.writeValueAsBytes(req));
+            }
+            return core.createJob(trim(req.owner), crds,
+                        req.machineName, req.tags, req.keepaliveInterval,
+                        mapper.writeValueAsBytes(req));
+      }
 
-	@Override
-	public void createJob(CreateJobRequest req, UriInfo ui,
-			SecurityContext security, AsyncResponse response) {
-		var crds = validateAndApplyDefaultsToJobRequest(req, security);
+      @Override
+      public void createJob(CreateJobRequest req, UriInfo ui,
+                  SecurityContext security, AsyncResponse response) {
+            var crds = validateAndApplyDefaultsToJobRequest(req, security);
 
-		// Ensure we only have at most one "group" specifier (0 also fine).
-		var nonNullGroups = 0;
-		var items = new Object[] {
-			req.group, req.nmpiCollab, req.nmpiJobId
-		};
-		for (Object item : items) {
-			if (!isNull(item)) {
-				nonNullGroups += 1;
-			}
-		}
-		if (nonNullGroups > 1) {
-			response.resume(status(BAD_REQUEST).type(TEXT_PLAIN).entity(
-					"At most one of group, nmpiCollabId or nmpiJobId"
-					+ " can be specified").build());
-		}
-		bgAction(response, new Permit(security), () -> {
-			try {
-				var job = createJob(req, crds);
-				return created(ui.getRequestUriBuilder().path("{id}")
-						.build(job.getId()))
-						.entity(new CreateJobResponse(job, ui)).build();
-			} catch (IllegalArgumentException e) {
-				return status(BAD_REQUEST).type(TEXT_PLAIN)
-						.entity(e.getMessage()).build();
-			}
-		});
-	}
+            // Ensure we only have at most one "group" specifier (0 also fine).
+            var nonNullGroups = 0;
+            var items = new Object[] {
+                  req.group, req.nmpiCollab, req.nmpiJobId
+            };
+            for (Object item : items) {
+                  if (!isNull(item)) {
+                        nonNullGroups += 1;
+                  }
+            }
+            if (nonNullGroups > 1) {
+                  response.resume(status(BAD_REQUEST).type(TEXT_PLAIN).entity(
+                              "At most one of group, nmpiCollabId or nmpiJobId"
+                              + " can be specified").build());
+            }
+            bgAction(response, new Permit(security), () -> {
+                  try {
+                        var job = createJob(req, crds);
+                        return created(ui.getRequestUriBuilder().path("{id}")
+                                    .build(job.getId()))
+                                    .entity(new CreateJobResponse(job, ui)).build();
+                  } catch (IllegalArgumentException e) {
+                        return status(BAD_REQUEST).type(TEXT_PLAIN)
+                                    .entity(e.getMessage()).build();
+                  }
+            });
+      }
 
-	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
-			CreateJobRequest req, SecurityContext security) throws BadArgs {
-		if (isNull(req)) {
-			throw new BadArgs("request must be supplied");
-		}
+      private CreateDescriptor validateAndApplyDefaultsToJobRequest(
+                  CreateJobRequest req, SecurityContext security) throws BadArgs {
+            if (isNull(req)) {
+                  throw new BadArgs("request must be supplied");
+            }
 
-		if (!security.isUserInRole("ADMIN")
-				&& !security.isUserInRole("NMPI_EXEC")
-				&& !isNull(req.owner) && !req.owner.isBlank()) {
-			throw new BadArgs("Only admin and NMPI users can specify an owner");
-		}
+            if (!security.isUserInRole("ADMIN")
+                        && !security.isUserInRole("NMPI_EXEC")
+                        && !isNull(req.owner) && !req.owner.isBlank()) {
+                  throw new BadArgs("Only admin and NMPI users can specify an owner");
+            }
 
-		if (isNull(req.owner) || req.owner.isBlank()) {
-			req.owner = security.getUserPrincipal().getName();
-		}
-		if (isNull(req.owner) || req.owner.isBlank()) {
-			throw new BadArgs(
-					"request must be connected to an identified owner");
-		}
-		req.owner = req.owner.strip();
+            if (isNull(req.owner) || req.owner.isBlank()) {
+                  req.owner = security.getUserPrincipal().getName();
+            }
+            if (isNull(req.owner) || req.owner.isBlank()) {
+                  throw new BadArgs(
+                              "request must be connected to an identified owner");
+            }
+            req.owner = req.owner.strip();
 
-		var ka = properties.getKeepalive();
-		if (isNull(req.keepaliveInterval)
-				|| req.keepaliveInterval.compareTo(ka.getMin()) < 0) {
-			throw new BadArgs(
-					"keepalive interval must be at least " + ka.getMin());
-		}
-		if (req.keepaliveInterval.compareTo(ka.getMax()) > 0) {
-			throw new BadArgs(
-					"keepalive interval must be no more than " + ka.getMax());
-		}
+            var ka = properties.getKeepalive();
+            if (isNull(req.keepaliveInterval)
+                        || req.keepaliveInterval.compareTo(ka.getMin()) < 0) {
+                  throw new BadArgs(
+                              "keepalive interval must be at least " + ka.getMin());
+            }
+            if (req.keepaliveInterval.compareTo(ka.getMax()) > 0) {
+                  throw new BadArgs(
+                              "keepalive interval must be no more than " + ka.getMax());
+            }
 
-		if (isNull(req.tags)) {
-			req.tags = new ArrayList<>();
-			if (isNull(req.machineName)) {
-				req.tags.add("default");
-			}
-		}
-		if (nonNull(req.machineName) && !req.tags.isEmpty()) {
-			throw new BadArgs(
-					"must not specify machine name and tags together");
-		}
+            if (isNull(req.tags)) {
+                  req.tags = new ArrayList<>();
+                  if (isNull(req.machineName)) {
+                        req.tags.add("default");
+                  }
+            }
+            if (nonNull(req.machineName) && !req.tags.isEmpty()) {
+                  throw new BadArgs(
+                              "must not specify machine name and tags together");
+            }
 
-		if (isNull(req.maxDeadBoards)) {
-			req.maxDeadBoards = 0;
-		} else if (req.maxDeadBoards < 0) {
-			throw new BadArgs(
-					"the maximum number of dead boards must not be negative");
-		}
+            if (isNull(req.maxDeadBoards)) {
+                  req.maxDeadBoards = 0;
+            } else if (req.maxDeadBoards < 0) {
+                  throw new BadArgs(
+                              "the maximum number of dead boards must not be negative");
+            }
 
-		if (nonNull(req.numBoards)) {
-			return new CreateNumBoards(req.numBoards, req.maxDeadBoards);
-		} else if (nonNull(req.dimensions)) {
-			if (nonNull(req.board)) {
-				// Both dimensions AND board; rooted rectangle
-				if (nonNull(req.board.x)) {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.x, req.board.y,
-							req.board.z, req.maxDeadBoards);
-				} else if (nonNull(req.board.cabinet)) {
-					return CreateDimensionsAt.physical(req.dimensions.width,
-							req.dimensions.height, req.board.cabinet,
-							req.board.frame, req.board.board,
-							req.maxDeadBoards);
-				} else {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.address,
-							req.maxDeadBoards);
-				}
-			}
-			return new CreateDimensions(req.dimensions.width,
-					req.dimensions.height, req.maxDeadBoards);
-		} else if (nonNull(req.board)) {
-			if (nonNull(req.board.x)) {
-				return triad(req.board.x, req.board.y, req.board.z);
-			} else if (nonNull(req.board.cabinet)) {
-				return physical(req.board.cabinet, req.board.frame,
-						req.board.board);
-			} else {
-				return address(req.board.address);
-			}
-		} else {
-			// It's a single board
-			return new CreateNumBoards(1, 0);
-		}
-	}
+            if (nonNull(req.numBoards)) {
+                  return new CreateNumBoards(req.numBoards, req.maxDeadBoards);
+            } else if (nonNull(req.dimensions)) {
+                  if (nonNull(req.board)) {
+                        // Both dimensions AND board; rooted rectangle
+                        if (nonNull(req.board.x)) {
+                              return new CreateDimensionsAt(req.dimensions.width,
+                                          req.dimensions.height, req.board.x, req.board.y,
+                                          req.board.z, req.maxDeadBoards);
+                        } else if (nonNull(req.board.cabinet)) {
+                              return CreateDimensionsAt.physical(req.dimensions.width,
+                                          req.dimensions.height, req.board.cabinet,
+                                          req.board.frame, req.board.board,
+                                          req.maxDeadBoards);
+                        } else {
+                              return new CreateDimensionsAt(req.dimensions.width,
+                                          req.dimensions.height, req.board.address,
+                                          req.maxDeadBoards);
+                        }
+                  }
+                  return new CreateDimensions(req.dimensions.width,
+                              req.dimensions.height, req.maxDeadBoards);
+            } else if (nonNull(req.board)) {
+                  if (nonNull(req.board.x)) {
+                        return triad(req.board.x, req.board.y, req.board.z);
+                  } else if (nonNull(req.board.cabinet)) {
+                        return physical(req.board.cabinet, req.board.frame,
+                                    req.board.board);
+                  } else {
+                        return address(req.board.address);
+                  }
+            } else {
+                  // It's a single board
+                  return new CreateNumBoards(1, 0);
+            }
+      }
 
-	@Override
-	public void emergencyStop(String commandCode, AsyncResponse response) {
-		bgAction(response, () -> {
-			core.emergencyStop(commandCode);
-			return ok().build();
-		});
-	}
+      @Override
+      public void emergencyStop(String commandCode, AsyncResponse response) {
+            bgAction(response, () -> {
+                  core.emergencyStop(commandCode);
+                  return ok().build();
+            });
+      }
 
-	@Override
-	public String getJwtToken() {
-		return localAuthProvider.getAccessToken();
-	}
+      @Override
+      public String getJwtToken() {
+            return localAuthProvider.getAccessToken();
+      }
 }

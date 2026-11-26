@@ -29,52 +29,52 @@ import com.google.errorprone.annotations.Immutable;
 @Immutable
 @JsonFormat(shape = ARRAY)
 public final class DownLink {
-	/**
-	 * Describes one end of a link that is disabled.
-	 */
-	@Immutable
-	public static final class End {
-		private End(BoardCoords board, Direction direction) {
-			this.board = board;
-			this.direction = direction;
-		}
+      /**
+       * Describes one end of a link that is disabled.
+       */
+      @Immutable
+      public static final class End {
+            private End(BoardCoords board, Direction direction) {
+                  this.board = board;
+                  this.direction = direction;
+            }
 
-		/**
-		 * On what board is this end of the link.
-		 */
-		@Valid
-		public final BoardCoords board;
+            /**
+             * On what board is this end of the link.
+             */
+            @Valid
+            public final BoardCoords board;
 
-		/**
-		 * In which direction does this end of the link go.
-		 */
-		@NotNull
-		public final Direction direction;
-	}
+            /**
+             * In which direction does this end of the link go.
+             */
+            @NotNull
+            public final Direction direction;
+      }
 
-	/**
-	 * Create a down link description.
-	 *
-	 * @param board1
-	 *            Which board is one end of the link.
-	 * @param dir1
-	 *            In which direction off of {@code board1} is the link.
-	 * @param board2
-	 *            Which board is one end of the link.
-	 * @param dir2
-	 *            In which direction off of {@code board2} is the link.
-	 */
-	public DownLink(BoardCoords board1, Direction dir1, BoardCoords board2,
-			Direction dir2) {
-		end1 = new End(board1, dir1);
-		end2 = new End(board2, dir2);
-	}
+      /**
+       * Create a down link description.
+       *
+       * @param board1
+       *            Which board is one end of the link.
+       * @param dir1
+       *            In which direction off of {@code board1} is the link.
+       * @param board2
+       *            Which board is one end of the link.
+       * @param dir2
+       *            In which direction off of {@code board2} is the link.
+       */
+      public DownLink(BoardCoords board1, Direction dir1, BoardCoords board2,
+                  Direction dir2) {
+            end1 = new End(board1, dir1);
+            end2 = new End(board2, dir2);
+      }
 
-	/** One end of the down link. */
-	@Valid
-	public final DownLink.End end1;
+      /** One end of the down link. */
+      @Valid
+      public final DownLink.End end1;
 
-	/** The other end of the down link. */
-	@Valid
-	public final DownLink.End end2;
+      /** The other end of the down link. */
+      @Valid
+      public final DownLink.End end2;
 }

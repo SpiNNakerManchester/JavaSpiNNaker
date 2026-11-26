@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-		https://www.apache.org/licenses/LICENSE-2.0
+            https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,20 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 window.onload = function() {
-	//<editor-fold desc="Changeable Configuration Block">
+      //<editor-fold desc="Changeable Configuration Block">
 
-	// the following lines will be replaced by docker/configurator, when it runs in a docker-container
-	window.ui = SwaggerUIBundle({
-		url: "../../srv/openapi.json",
-		queryConfigEnabled: false,
-		dom_id: '#swagger-ui',
-		deepLinking: true,
-		presets: [
-			SwaggerUIBundle.presets.apis,
-			SwaggerUIStandalonePreset
-		],
-		layout: "StandaloneLayout"
-	});
+      // the following lines will be replaced by docker/configurator, when it runs in a docker-container
+      window.ui = SwaggerUIBundle({
+            url: "../../srv/openapi.json",
+            queryConfigEnabled: false,
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+                  SwaggerUIBundle.presets.apis,
+                  SwaggerUIStandalonePreset
+            ],
+            layout: "StandaloneLayout"
+      });
 
-	//</editor-fold>
+      //</editor-fold>
 };

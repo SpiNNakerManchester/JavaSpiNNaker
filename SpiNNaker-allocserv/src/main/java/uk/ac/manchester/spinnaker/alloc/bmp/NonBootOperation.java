@@ -23,13 +23,13 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(ADCInfo.class)
 public enum NonBootOperation {
-	// Careful: values must match SQL (CHECK constraints and queries)
-	/** Read a blacklist from a board's BMP's flash. */
-	READ_BL,
-	/** Write a blacklist to a board's BMP's flash. */
-	WRITE_BL,
-	/** Read the serial numbers from a board's BMP. */
-	GET_SERIAL,
-	/** Read the {@linkplain ADCInfo temperature data} from a board's BMP. */
-	READ_TEMP
+      // Careful: values must match SQL (CHECK constraints and queries)
+      /** Read a blacklist from a board's BMP's flash. */
+      READ_BL,
+      /** Write a blacklist to a board's BMP's flash. */
+      WRITE_BL,
+      /** Read the serial numbers from a board's BMP. */
+      GET_SERIAL,
+      /** Read the {@linkplain ADCInfo temperature data} from a board's BMP. */
+      READ_TEMP
 }

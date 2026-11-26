@@ -90,497 +90,497 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 @Prototype
 class V1TaskImpl extends V1CompatTask {
 
-	/**
-	 * We are compatible with spalloc-server release version 5.0.0.
-	 */
-	public static final String VERSION = "5.0.0";
+      /**
+       * We are compatible with spalloc-server release version 5.0.0.
+       */
+      public static final String VERSION = "5.0.0";
 
-	private static final int LOTS = 10000;
+      private static final int LOTS = 10000;
 
-	private static final Logger log = getLogger(V1CompatService.class);
+      private static final Logger log = getLogger(V1CompatService.class);
 
-	private final Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
+      private final Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
 
-	private final Map<String, Future<Void>> machNotifiers = new HashMap<>();
+      private final Map<String, Future<Void>> machNotifiers = new HashMap<>();
 
-	/** The overall service properties. */
-	@Autowired
-	private SpallocProperties mainProps;
+      /** The overall service properties. */
+      @Autowired
+      private SpallocProperties mainProps;
 
-	/** The core spalloc service. */
-	@Autowired
-	private SpallocAPI spalloc;
+      /** The core spalloc service. */
+      @Autowired
+      private SpallocAPI spalloc;
 
-	@Autowired
-	private CompatHelper helper;
+      @Autowired
+      private CompatHelper helper;
 
-	@Autowired
-	private Epochs epochs;
+      @Autowired
+      private Epochs epochs;
 
-	/** Encoded form of our special permissions token. */
-	private Permit permit;
+      /** Encoded form of our special permissions token. */
+      private Permit permit;
 
-	/** Name of the group for accounting purposes. */
-	private String groupName;
+      /** Name of the group for accounting purposes. */
+      private String groupName;
 
-	V1TaskImpl(V1CompatService srv, Socket sock) throws IOException {
-		super(srv, sock);
-	}
+      V1TaskImpl(V1CompatService srv, Socket sock) throws IOException {
+            super(srv, sock);
+      }
 
-	V1TaskImpl(V1CompatService srv, Reader in, Writer out) {
-		super(srv, in, out);
-	}
+      V1TaskImpl(V1CompatService srv, Reader in, Writer out) {
+            super(srv, in, out);
+      }
 
-	@PostConstruct
-	void initUser() {
-		var props = mainProps.getCompat();
-		permit = new Permit(props.getServiceUser());
-		groupName = props.getServiceGroup();
-	}
+      @PostConstruct
+      void initUser() {
+            var props = mainProps.getCompat();
+            permit = new Permit(props.getServiceUser());
+            groupName = props.getServiceGroup();
+      }
 
-	@Override
-	protected final void closeNotifiers() {
-		for (var n : jobNotifiers.values()) {
-			n.cancel(true);
-		}
-		for (var n : machNotifiers.values()) {
-			n.cancel(true);
-		}
-	}
+      @Override
+      protected final void closeNotifiers() {
+            for (var n : jobNotifiers.values()) {
+                  n.cancel(true);
+            }
+            for (var n : machNotifiers.values()) {
+                  n.cancel(true);
+            }
+      }
 
-	@Override
-	protected final String version() {
-		return VERSION;
-	}
+      @Override
+      protected final String version() {
+            return VERSION;
+      }
 
-	@Override
-	protected final JobMachineInfo getJobMachineInfo(int jobId)
-			throws TaskException {
-		var job = getJob(jobId);
-		job.access(host());
-		var machine = job.getMachine()
-				.orElseThrow(() -> new TaskException("boards not allocated"));
-		int w, h;
-		if (machine.getDepth() == 1) {
-			// Special case: single board alloc
-			w = SIZE_X_OF_ONE_BOARD;
-			h = SIZE_Y_OF_ONE_BOARD;
-		} else {
-			// Everything else is in terms of triads; careful of wraparounds
-			var full = machine.getMachine();
-			int linearTriadSize = job.getWidth().orElse(0);
-			w = linearTriadSize * TRIAD_WIDTH;
-			if (linearTriadSize != full.getWidth()
-					|| !full.isHorizonallyWrapped()) {
-				w += HALF_SIZE;
-			}
-			linearTriadSize = job.getHeight().orElse(0);
-			h = linearTriadSize * TRIAD_HEIGHT;
-			if (linearTriadSize != full.getHeight()
-					|| !full.isVerticallyWrapped()) {
-				h += HALF_SIZE;
-			}
-		}
-		return new JobMachineInfo(w, h, machine.getConnections().stream()
-				.map(ci -> new Connection(ci.getChip(), ci.getHostname()))
-				.collect(toList()), machine.getMachine().getName(),
-				machine.getBoards());
-	}
+      @Override
+      protected final JobMachineInfo getJobMachineInfo(int jobId)
+                  throws TaskException {
+            var job = getJob(jobId);
+            job.access(host());
+            var machine = job.getMachine()
+                        .orElseThrow(() -> new TaskException("boards not allocated"));
+            int w, h;
+            if (machine.getDepth() == 1) {
+                  // Special case: single board alloc
+                  w = SIZE_X_OF_ONE_BOARD;
+                  h = SIZE_Y_OF_ONE_BOARD;
+            } else {
+                  // Everything else is in terms of triads; careful of wraparounds
+                  var full = machine.getMachine();
+                  int linearTriadSize = job.getWidth().orElse(0);
+                  w = linearTriadSize * TRIAD_WIDTH;
+                  if (linearTriadSize != full.getWidth()
+                              || !full.isHorizonallyWrapped()) {
+                        w += HALF_SIZE;
+                  }
+                  linearTriadSize = job.getHeight().orElse(0);
+                  h = linearTriadSize * TRIAD_HEIGHT;
+                  if (linearTriadSize != full.getHeight()
+                              || !full.isVerticallyWrapped()) {
+                        h += HALF_SIZE;
+                  }
+            }
+            return new JobMachineInfo(w, h, machine.getConnections().stream()
+                        .map(ci -> new Connection(ci.getChip(), ci.getHostname()))
+                        .collect(toList()), machine.getMachine().getName(),
+                        machine.getBoards());
+      }
 
-	@Override
-	protected final JobState getJobState(int jobId) throws TaskException {
-		var job = getJob(jobId);
-		job.access(host());
-		var js = new JobState.Builder();
-		js.setKeepalive(timestamp(job.getKeepaliveTimestamp()));
-		js.setKeepalivehost(job.getKeepaliveHost().orElse(""));
-		js.setPower(job.getMachine().map(m -> {
-			try {
-				return m.getPower() == ON;
-			} catch (DataAccessException e) {
-				log.warn("problem getting job power state", e);
-				return false;
-			}
-		}).orElse(false));
-		js.setReason(job.getReason().orElse(""));
-		js.setStartTime(timestamp(job.getStartTime()));
-		js.setState(state(job.getState()));
-		return js.build();
-	}
+      @Override
+      protected final JobState getJobState(int jobId) throws TaskException {
+            var job = getJob(jobId);
+            job.access(host());
+            var js = new JobState.Builder();
+            js.setKeepalive(timestamp(job.getKeepaliveTimestamp()));
+            js.setKeepalivehost(job.getKeepaliveHost().orElse(""));
+            js.setPower(job.getMachine().map(m -> {
+                  try {
+                        return m.getPower() == ON;
+                  } catch (DataAccessException e) {
+                        log.warn("problem getting job power state", e);
+                        return false;
+                  }
+            }).orElse(false));
+            js.setReason(job.getReason().orElse(""));
+            js.setStartTime(timestamp(job.getStartTime()));
+            js.setState(state(job.getState()));
+            return js.build();
+      }
 
-	@Override
-	protected final void jobKeepalive(int jobId) throws TaskException {
-		getJob(jobId).access(host());
-	}
+      @Override
+      protected final void jobKeepalive(int jobId) throws TaskException {
+            getJob(jobId).access(host());
+      }
 
-	/**
-	 * Parse a value to get a keepalive duration.
-	 *
-	 * @param keepalive
-	 *            The number to parse. May be {@code null} to get a default.
-	 * @return The duration. Never {@code null}.
-	 */
-	private Duration parseKeepalive(Number keepalive) {
-		if (isNull(keepalive)) {
-			return mainProps.getCompat().getDefaultKeepalive();
-		}
-		var d = Duration.ofSeconds(keepalive.longValue());
-		if (!(keepalive instanceof Double || keepalive instanceof Float)) {
-			return d;
-		}
-		double fractionalPart = keepalive.doubleValue() - keepalive.longValue();
-		return d.plusNanos((long) (fractionalPart * NSEC_PER_SEC));
-	}
+      /**
+       * Parse a value to get a keepalive duration.
+       *
+       * @param keepalive
+       *            The number to parse. May be {@code null} to get a default.
+       * @return The duration. Never {@code null}.
+       */
+      private Duration parseKeepalive(Number keepalive) {
+            if (isNull(keepalive)) {
+                  return mainProps.getCompat().getDefaultKeepalive();
+            }
+            var d = Duration.ofSeconds(keepalive.longValue());
+            if (!(keepalive instanceof Double || keepalive instanceof Float)) {
+                  return d;
+            }
+            double fractionalPart = keepalive.doubleValue() - keepalive.longValue();
+            return d.plusNanos((long) (fractionalPart * NSEC_PER_SEC));
+      }
 
-	/**
-	 * Parse a value to get a list of machine tags to match.
-	 *
-	 * @param src
-	 *            The value to parse.
-	 * @param mayForceDefault
-	 *            Whether we want to force a default value into the tags.
-	 * @return The list of tags. Never {@code null}.
-	 */
-	private static List<String> tags(Object src, boolean mayForceDefault) {
-		var vals = new ArrayList<String>();
-		if (src instanceof List) {
-			for (var o : (List<?>) src) {
-				vals.add(Objects.toString(o));
-			}
-		} else if (src instanceof String) {
-			vals.add((String) src);
-		}
-		if (vals.isEmpty() && mayForceDefault) {
-			return List.of("default");
-		}
-		return vals;
-	}
+      /**
+       * Parse a value to get a list of machine tags to match.
+       *
+       * @param src
+       *            The value to parse.
+       * @param mayForceDefault
+       *            Whether we want to force a default value into the tags.
+       * @return The list of tags. Never {@code null}.
+       */
+      private static List<String> tags(Object src, boolean mayForceDefault) {
+            var vals = new ArrayList<String>();
+            if (src instanceof List) {
+                  for (var o : (List<?>) src) {
+                        vals.add(Objects.toString(o));
+                  }
+            } else if (src instanceof String) {
+                  vals.add((String) src);
+            }
+            if (vals.isEmpty() && mayForceDefault) {
+                  return List.of("default");
+            }
+            return vals;
+      }
 
-	@Override
-	protected final int createJobNumBoards(int numBoards,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		var maxDead = parseDec(kwargs.get("max_dead_boards"));
-		return createJob(new CreateNumBoards(numBoards, maxDead), kwargs, cmd);
-	}
+      @Override
+      protected final int createJobNumBoards(int numBoards,
+                  Map<String, Object> kwargs, byte[] cmd) throws TaskException {
+            var maxDead = parseDec(kwargs.get("max_dead_boards"));
+            return createJob(new CreateNumBoards(numBoards, maxDead), kwargs, cmd);
+      }
 
-	@Override
-	protected final int createJobRectangle(int width, int height,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		var maxDead = parseDec(kwargs.get("max_dead_boards"));
-		return createJob(new CreateDimensions(width, height, maxDead), kwargs,
-				cmd);
-	}
+      @Override
+      protected final int createJobRectangle(int width, int height,
+                  Map<String, Object> kwargs, byte[] cmd) throws TaskException {
+            var maxDead = parseDec(kwargs.get("max_dead_boards"));
+            return createJob(new CreateDimensions(width, height, maxDead), kwargs,
+                        cmd);
+      }
 
-	@Override
-	protected final int createJobSpecificBoard(TriadCoords coords,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd);
-	}
+      @Override
+      protected final int createJobSpecificBoard(TriadCoords coords,
+                  Map<String, Object> kwargs, byte[] cmd) throws TaskException {
+            return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd);
+      }
 
-	private static String getOwner(Map<String, Object> kwargs)
-			throws TaskException {
-		var owner = Objects.toString(kwargs.get("owner"), "").strip();
-		if (owner.isBlank()) {
-			throw new TaskException(
-					"invalid owner identifier; must be non-empty");
-		}
-		if (!isAsciiPrintable(owner)) {
-			throw new TaskException(
-					"invalid owner identifier; must be printable ASCII");
-		}
-		return owner;
-	}
+      private static String getOwner(Map<String, Object> kwargs)
+                  throws TaskException {
+            var owner = Objects.toString(kwargs.get("owner"), "").strip();
+            if (owner.isBlank()) {
+                  throw new TaskException(
+                              "invalid owner identifier; must be non-empty");
+            }
+            if (!isAsciiPrintable(owner)) {
+                  throw new TaskException(
+                              "invalid owner identifier; must be printable ASCII");
+            }
+            return owner;
+      }
 
-	private Integer createJob(SpallocAPI.CreateDescriptor create,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		var owner = getOwner(kwargs);
-		var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
-		var machineName = (String) kwargs.get("machine");
-		var ts = tags(kwargs.get("tags"), isNull(machineName));
-		var job = permit.authorize(() -> spalloc.createJobInGroup(
-				permit.name, groupName, create, machineName, ts, keepalive,
-				cmd));
-		log.info("made compatibility-mode job {} on behalf of claimed user {}",
-				job.getId(), owner);
-		return job.getId();
-	}
+      private Integer createJob(SpallocAPI.CreateDescriptor create,
+                  Map<String, Object> kwargs, byte[] cmd) throws TaskException {
+            var owner = getOwner(kwargs);
+            var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
+            var machineName = (String) kwargs.get("machine");
+            var ts = tags(kwargs.get("tags"), isNull(machineName));
+            var job = permit.authorize(() -> spalloc.createJobInGroup(
+                        permit.name, groupName, create, machineName, ts, keepalive,
+                        cmd));
+            log.info("made compatibility-mode job {} on behalf of claimed user {}",
+                        job.getId(), owner);
+            return job.getId();
+      }
 
-	@Override
-	protected final void destroyJob(int jobId, String reason)
-			throws TaskException {
-		getJob(jobId).destroy(reason);
-	}
+      @Override
+      protected final void destroyJob(int jobId, String reason)
+                  throws TaskException {
+            getJob(jobId).destroy(reason);
+      }
 
-	@Override
-	protected final BoardCoordinates getBoardAtPhysicalPosition(
-			String machineName, int cabinet, int frame, int board)
-			throws TaskException {
-		return getMachine(machineName)
-				.getBoardByPhysicalCoords(
-						new PhysicalCoords(cabinet, frame, board))
-				.orElseThrow(() -> new TaskException("no such board"))
-				.getLogical();
-	}
+      @Override
+      protected final BoardCoordinates getBoardAtPhysicalPosition(
+                  String machineName, int cabinet, int frame, int board)
+                  throws TaskException {
+            return getMachine(machineName)
+                        .getBoardByPhysicalCoords(
+                                    new PhysicalCoords(cabinet, frame, board))
+                        .orElseThrow(() -> new TaskException("no such board"))
+                        .getLogical();
+      }
 
-	@Override
-	protected final BoardPhysicalCoordinates getBoardAtLogicalPosition(
-			String machineName, int x, int y, int z) throws TaskException {
-		return getMachine(machineName)
-				.getBoardByLogicalCoords(new TriadCoords(x, y, z))
-				.orElseThrow(() -> new TaskException("no such board"))
-				.getPhysical();
-	}
+      @Override
+      protected final BoardPhysicalCoordinates getBoardAtLogicalPosition(
+                  String machineName, int x, int y, int z) throws TaskException {
+            return getMachine(machineName)
+                        .getBoardByLogicalCoords(new TriadCoords(x, y, z))
+                        .orElseThrow(() -> new TaskException("no such board"))
+                        .getPhysical();
+      }
 
-	@Component
-	@SuppressWarnings("checkstyle:finalclass")
-	private static class CompatHelper extends DatabaseAwareBean {
-		/** The core spalloc service. */
-		@Autowired
-		private SpallocAPI spalloc;
+      @Component
+      @SuppressWarnings("checkstyle:finalclass")
+      private static class CompatHelper extends DatabaseAwareBean {
+            /** The core spalloc service. */
+            @Autowired
+            private SpallocAPI spalloc;
 
-		private JobDescription[] listJobs(V1TaskImpl task) {
-			// Messy; hits the database many times
-			return spalloc.listJobs(task.permit).stream()
-					.map(job -> buildJobDescription(task, job))
-					.collect(collectToArray(JobDescription[]::new));
-		}
+            private JobDescription[] listJobs(V1TaskImpl task) {
+                  // Messy; hits the database many times
+                  return spalloc.listJobs(task.permit).stream()
+                              .map(job -> buildJobDescription(task, job))
+                              .collect(collectToArray(JobDescription[]::new));
+            }
 
-		private static JobDescription buildJobDescription(V1TaskImpl task,
-				JobListEntryRecord job) {
-			var jd = new JobDescription.Builder();
-			jd.setJobID(job.getId());
-			jd.setOwner(job.getOwner().orElse("<Hidden>"));
-			jd.setKeepAlive(job.getKeepaliveInterval().getSeconds());
-			jd.setKeepAliveHost(job.getHost().orElse("<Hidden>"));
-			jd.setReason("");
-			jd.setStartTime(
-					(double) job.getCreationTimestamp().getEpochSecond());
-			jd.setState(state(job.getState()));
-			job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
-				// In order to get here, this must be safe
-				// Validation was when job was created
-				@SuppressWarnings({ "unchecked", "rawtypes" })
-				List<Integer> args = (List) cmd.getArgs();
-				jd.setArgs(args);
-				jd.setKwargs(cmd.getKwargs());
-				// Override shrouded owner from above
-				Object owner = cmd.getKwargs().get("owner");
-				if (owner != null) {
-					jd.setOwner(owner.toString());
-				}
-			});
-			jd.setMachine(job.getMachineName());
-			jd.setPower(job.isPowered());
-			jd.setBoards(job.getBoards().stream().map(
-					b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
-					.collect(toList()));
-			return jd.build();
-		}
+            private static JobDescription buildJobDescription(V1TaskImpl task,
+                        JobListEntryRecord job) {
+                  var jd = new JobDescription.Builder();
+                  jd.setJobID(job.getId());
+                  jd.setOwner(job.getOwner().orElse("<Hidden>"));
+                  jd.setKeepAlive(job.getKeepaliveInterval().getSeconds());
+                  jd.setKeepAliveHost(job.getHost().orElse("<Hidden>"));
+                  jd.setReason("");
+                  jd.setStartTime(
+                              (double) job.getCreationTimestamp().getEpochSecond());
+                  jd.setState(state(job.getState()));
+                  job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
+                        // In order to get here, this must be safe
+                        // Validation was when job was created
+                        @SuppressWarnings({ "unchecked", "rawtypes" })
+                        List<Integer> args = (List) cmd.getArgs();
+                        jd.setArgs(args);
+                        jd.setKwargs(cmd.getKwargs());
+                        // Override shrouded owner from above
+                        Object owner = cmd.getKwargs().get("owner");
+                        if (owner != null) {
+                              jd.setOwner(owner.toString());
+                        }
+                  });
+                  jd.setMachine(job.getMachineName());
+                  jd.setPower(job.isPowered());
+                  jd.setBoards(job.getBoards().stream().map(
+                              b -> new BoardCoordinates(b.getX(), b.getY(), b.getZ()))
+                              .collect(toList()));
+                  return jd.build();
+            }
 
-		private Machine[] listMachines() {
-			// Messy; hits the database many times
-			return executeRead(c -> spalloc.getMachines(false).values().stream()
-					.map(CompatHelper::buildMachineDescription)
-					.collect(collectToArray(Machine[]::new)));
-		}
+            private Machine[] listMachines() {
+                  // Messy; hits the database many times
+                  return executeRead(c -> spalloc.getMachines(false).values().stream()
+                              .map(CompatHelper::buildMachineDescription)
+                              .collect(collectToArray(Machine[]::new)));
+            }
 
-		private static Machine buildMachineDescription(SpallocAPI.Machine m) {
-			return new Machine(m.getName(), List.copyOf(m.getTags()),
-					m.getWidth(), m.getHeight(),
-					m.getDeadBoards().stream().map(Utils::board)
-							.collect(toList()),
-					m.getDownLinks().stream().flatMap(Utils::boardLinks)
-							.collect(toList()));
-		}
-	}
+            private static Machine buildMachineDescription(SpallocAPI.Machine m) {
+                  return new Machine(m.getName(), List.copyOf(m.getTags()),
+                              m.getWidth(), m.getHeight(),
+                              m.getDeadBoards().stream().map(Utils::board)
+                                          .collect(toList()),
+                              m.getDownLinks().stream().flatMap(Utils::boardLinks)
+                                          .collect(toList()));
+            }
+      }
 
-	@Override
-	protected final JobDescription[] listJobs() {
-		return permit.authorize(() -> helper.listJobs(this));
-	}
+      @Override
+      protected final JobDescription[] listJobs() {
+            return permit.authorize(() -> helper.listJobs(this));
+      }
 
-	@Override
-	protected final Machine[] listMachines() {
-		return permit.authorize(helper::listMachines);
-	}
+      @Override
+      protected final Machine[] listMachines() {
+            return permit.authorize(helper::listMachines);
+      }
 
-	@Override
-	protected final void notifyJob(Integer jobId, boolean wantNotify)
-			throws TaskException {
-		if (nonNull(jobId)) {
-			var job = getJob(jobId);
-			job.access(host());
-			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-				log.debug("Looking for changes to {}", job.getId());
-				if (job.waitForChange(
-						mainProps.getCompat().getNotifyWaitTime())) {
-					log.debug("Job {} changed!", jobId);
-					writeJobNotification(List.of(jobId));
-				}
-				log.debug("Stopped looking for changes to {}", jobId);
-			});
-		} else {
-			manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-				var actual = permit.authorize(() -> {
-					log.debug("Looking for changes to all jobs");
-					return spalloc.getJobs(false, LOTS, 0).getChanged(
-							mainProps.getCompat().getNotifyWaitTime());
-				});
-				if (actual.size() > 0) {
-					log.debug("Jobs {} changed!", actual);
-					writeJobNotification(
-							actual.stream().collect(toList()));
-				}
-				log.debug("Stopped looking for changes to all jobs");
-			});
-		}
-	}
+      @Override
+      protected final void notifyJob(Integer jobId, boolean wantNotify)
+                  throws TaskException {
+            if (nonNull(jobId)) {
+                  var job = getJob(jobId);
+                  job.access(host());
+                  manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+                        log.debug("Looking for changes to {}", job.getId());
+                        if (job.waitForChange(
+                                    mainProps.getCompat().getNotifyWaitTime())) {
+                              log.debug("Job {} changed!", jobId);
+                              writeJobNotification(List.of(jobId));
+                        }
+                        log.debug("Stopped looking for changes to {}", jobId);
+                  });
+            } else {
+                  manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
+                        var actual = permit.authorize(() -> {
+                              log.debug("Looking for changes to all jobs");
+                              return spalloc.getJobs(false, LOTS, 0).getChanged(
+                                          mainProps.getCompat().getNotifyWaitTime());
+                        });
+                        if (actual.size() > 0) {
+                              log.debug("Jobs {} changed!", actual);
+                              writeJobNotification(
+                                          actual.stream().collect(toList()));
+                        }
+                        log.debug("Stopped looking for changes to all jobs");
+                  });
+            }
+      }
 
-	@Override
-	protected final void notifyMachine(String machineName, boolean wantNotify)
-			throws TaskException {
-		if (nonNull(machineName)) {
-			var machine = getMachine(machineName);
-			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
-				if (machine.waitForChange(
-						mainProps.getCompat().getNotifyWaitTime())) {
-					writeMachineNotification(List.of(machineName));
-				}
-			});
-		} else {
-			manageNotifier(machNotifiers, machineName, wantNotify, () -> {
-				List<String> actual = permit.authorize(() -> {
-					var machines = spalloc.getMachines(false);
-					if (machines.isEmpty()) {
-						// No machines, so don't wait
-						return List.of();
-					}
-					var invMap = machines.values().stream()
-							.collect(toMap(SpallocAPI.Machine::getId,
-									SpallocAPI.Machine::getName));
-					var mIds = machines.values().stream().map(m -> m.getId())
-							.collect(toList());
-					var epoch = epochs.getMachinesEpoch(mIds);
-					try {
-						var changed = epoch.getChanged(
-								mainProps.getCompat().getNotifyWaitTime());
-						return changed.stream().map(id -> invMap.get(id))
-								.collect(toList());
-					} catch (InterruptedException e) {
-						return List.of();
-					}
-				});
-				if (actual.size() > 0) {
-					writeMachineNotification(actual.stream().collect(toList()));
-				}
-			});
-		}
-	}
+      @Override
+      protected final void notifyMachine(String machineName, boolean wantNotify)
+                  throws TaskException {
+            if (nonNull(machineName)) {
+                  var machine = getMachine(machineName);
+                  manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+                        if (machine.waitForChange(
+                                    mainProps.getCompat().getNotifyWaitTime())) {
+                              writeMachineNotification(List.of(machineName));
+                        }
+                  });
+            } else {
+                  manageNotifier(machNotifiers, machineName, wantNotify, () -> {
+                        List<String> actual = permit.authorize(() -> {
+                              var machines = spalloc.getMachines(false);
+                              if (machines.isEmpty()) {
+                                    // No machines, so don't wait
+                                    return List.of();
+                              }
+                              var invMap = machines.values().stream()
+                                          .collect(toMap(SpallocAPI.Machine::getId,
+                                                      SpallocAPI.Machine::getName));
+                              var mIds = machines.values().stream().map(m -> m.getId())
+                                          .collect(toList());
+                              var epoch = epochs.getMachinesEpoch(mIds);
+                              try {
+                                    var changed = epoch.getChanged(
+                                                mainProps.getCompat().getNotifyWaitTime());
+                                    return changed.stream().map(id -> invMap.get(id))
+                                                .collect(toList());
+                              } catch (InterruptedException e) {
+                                    return List.of();
+                              }
+                        });
+                        if (actual.size() > 0) {
+                              writeMachineNotification(actual.stream().collect(toList()));
+                        }
+                  });
+            }
+      }
 
-	@Override
-	protected final void powerJobBoards(int jobId, PowerState switchOn)
-			throws TaskException {
-		var job = getJob(jobId);
-		job.access(host());
-		job.getMachine().orElseThrow(
-				() -> new TaskException("no boards currently allocated"))
-				.setPower(switchOn);
-	}
+      @Override
+      protected final void powerJobBoards(int jobId, PowerState switchOn)
+                  throws TaskException {
+            var job = getJob(jobId);
+            job.access(host());
+            job.getMachine().orElseThrow(
+                        () -> new TaskException("no boards currently allocated"))
+                        .setPower(switchOn);
+      }
 
-	@Override
-	protected void reportProblem(String address, Integer x, Integer y,
-			Integer p, String description) {
-		HasChipLocation locus;
-		if (nonNull(x) && nonNull(y)) {
-			if (nonNull(p)) {
-				locus = new CoreLocation(x, y, p);
-			} else {
-				locus = new ChipLocation(x, y);
-			}
-		} else {
-			locus = null;
-		}
-		permit.authorize(() -> {
-			spalloc.reportProblem(address, locus, description, permit);
-			return this; // Ignored value
-		});
-	}
+      @Override
+      protected void reportProblem(String address, Integer x, Integer y,
+                  Integer p, String description) {
+            HasChipLocation locus;
+            if (nonNull(x) && nonNull(y)) {
+                  if (nonNull(p)) {
+                        locus = new CoreLocation(x, y, p);
+                  } else {
+                        locus = new ChipLocation(x, y);
+                  }
+            } else {
+                  locus = null;
+            }
+            permit.authorize(() -> {
+                  spalloc.reportProblem(address, locus, description, permit);
+                  return this; // Ignored value
+            });
+      }
 
-	private static WhereIs makeWhereIs(BoardLocation bl) {
-		var wi = new WhereIs.Builder();
-		wi.setMachine(bl.getMachine());
-		wi.setLogical(bl.getLogical());
-		wi.setPhysical(bl.getPhysical());
-		wi.setChip(bl.getChip());
-		wi.setBoardChip(bl.getBoardChip());
-		var j = bl.getJob();
-		if (nonNull(j)) {
-			wi.setJobId(j.getId());
-			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
-		}
-		return wi.build();
-	}
+      private static WhereIs makeWhereIs(BoardLocation bl) {
+            var wi = new WhereIs.Builder();
+            wi.setMachine(bl.getMachine());
+            wi.setLogical(bl.getLogical());
+            wi.setPhysical(bl.getPhysical());
+            wi.setChip(bl.getChip());
+            wi.setBoardChip(bl.getBoardChip());
+            var j = bl.getJob();
+            if (nonNull(j)) {
+                  wi.setJobId(j.getId());
+                  wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
+            }
+            return wi.build();
+      }
 
-	@Override
-	protected final WhereIs whereIsJobChip(int jobId, int x, int y)
-			throws TaskException {
-		var job = getJob(jobId);
-		job.access(host());
-		return job.whereIs(x, y).map(V1TaskImpl::makeWhereIs).orElseThrow(
-				() -> new TaskException("no boards currently allocated"));
-	}
+      @Override
+      protected final WhereIs whereIsJobChip(int jobId, int x, int y)
+                  throws TaskException {
+            var job = getJob(jobId);
+            job.access(host());
+            return job.whereIs(x, y).map(V1TaskImpl::makeWhereIs).orElseThrow(
+                        () -> new TaskException("no boards currently allocated"));
+      }
 
-	@Override
-	protected final WhereIs whereIsMachineChip(String machineName, int x, int y)
-			throws TaskException {
-		return getMachine(machineName).getBoardByChip(new ChipLocation(x, y))
-				.map(V1TaskImpl::makeWhereIs)
-				.orElseThrow(() -> new TaskException("no such board"));
-	}
+      @Override
+      protected final WhereIs whereIsMachineChip(String machineName, int x, int y)
+                  throws TaskException {
+            return getMachine(machineName).getBoardByChip(new ChipLocation(x, y))
+                        .map(V1TaskImpl::makeWhereIs)
+                        .orElseThrow(() -> new TaskException("no such board"));
+      }
 
-	@Override
-	protected final WhereIs whereIsMachineLogicalBoard(String machineName,
-			int x, int y, int z) throws TaskException {
-		return getMachine(machineName)
-				.getBoardByLogicalCoords(new TriadCoords(x, y, z))
-				.map(V1TaskImpl::makeWhereIs)
-				.orElseThrow(() -> new TaskException("no such board"));
-	}
+      @Override
+      protected final WhereIs whereIsMachineLogicalBoard(String machineName,
+                  int x, int y, int z) throws TaskException {
+            return getMachine(machineName)
+                        .getBoardByLogicalCoords(new TriadCoords(x, y, z))
+                        .map(V1TaskImpl::makeWhereIs)
+                        .orElseThrow(() -> new TaskException("no such board"));
+      }
 
-	@Override
-	protected final WhereIs whereIsMachinePhysicalBoard(String machineName,
-			int c, int f, int b) throws TaskException {
-		return getMachine(machineName)
-				.getBoardByPhysicalCoords(new PhysicalCoords(c, f, b))
-				.map(V1TaskImpl::makeWhereIs)
-				.orElseThrow(() -> new TaskException("no such board"));
-	}
+      @Override
+      protected final WhereIs whereIsMachinePhysicalBoard(String machineName,
+                  int c, int f, int b) throws TaskException {
+            return getMachine(machineName)
+                        .getBoardByPhysicalCoords(new PhysicalCoords(c, f, b))
+                        .map(V1TaskImpl::makeWhereIs)
+                        .orElseThrow(() -> new TaskException("no such board"));
+      }
 
-	// instance-aware utilities
+      // instance-aware utilities
 
-	private Job getJob(int jobId) throws TaskException {
-		return permit.authorize(() -> spalloc.getJob(permit, jobId))
-				.orElseThrow(() -> new TaskException("no such job"));
-	}
+      private Job getJob(int jobId) throws TaskException {
+            return permit.authorize(() -> spalloc.getJob(permit, jobId))
+                        .orElseThrow(() -> new TaskException("no such job"));
+      }
 
-	private SpallocAPI.Machine getMachine(String machineName)
-			throws TaskException {
-		return permit.authorize(() -> spalloc.getMachine(machineName, false))
-				.orElseThrow(() -> new TaskException("no such machine"));
-	}
+      private SpallocAPI.Machine getMachine(String machineName)
+                  throws TaskException {
+            return permit.authorize(() -> spalloc.getMachine(machineName, false))
+                        .orElseThrow(() -> new TaskException("no such machine"));
+      }
 
-	private <T> void manageNotifier(Map<T, Future<Void>> notifiers, T key,
-			boolean wantNotify, Notifier notifier) {
-		if (wantNotify) {
-			if (!notifiers.containsKey(key)) {
-				notifiers.put(key,
-						getExecutor().submit(Notifier.toCallable(notifier)));
-			}
-		} else {
-			var n = notifiers.remove(key);
-			if (nonNull(n)) {
-				n.cancel(true);
-			}
-		}
-	}
+      private <T> void manageNotifier(Map<T, Future<Void>> notifiers, T key,
+                  boolean wantNotify, Notifier notifier) {
+            if (wantNotify) {
+                  if (!notifiers.containsKey(key)) {
+                        notifiers.put(key,
+                                    getExecutor().submit(Notifier.toCallable(notifier)));
+                  }
+            } else {
+                  var n = notifiers.remove(key);
+                  if (nonNull(n)) {
+                        n.cancel(true);
+                  }
+            }
+      }
 }

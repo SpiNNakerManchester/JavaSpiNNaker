@@ -42,155 +42,155 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
  * transceiver.
  */
 public interface SpiNNakerControl {
-	/**
-	 * Switch on a collection of boards managed by a BMP on a machine and check
-	 * that they've come up correctly.
-	 * <p>
-	 * Note that this operation can take some time.
-	 *
-	 * @param boards
-	 *            The local-relative boards to switch on.
-	 * @throws IOException
-	 *             If network I/O fails or we reach the limit on retries.
-	 * @throws InterruptedException
-	 *             If we're interrupted.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
-	 */
-	void powerOnAndCheck(List<BMPBoard> boards)
-			throws ProcessException, InterruptedException, IOException;
+      /**
+       * Switch on a collection of boards managed by a BMP on a machine and check
+       * that they've come up correctly.
+       * <p>
+       * Note that this operation can take some time.
+       *
+       * @param boards
+       *            The local-relative boards to switch on.
+       * @throws IOException
+       *             If network I/O fails or we reach the limit on retries.
+       * @throws InterruptedException
+       *             If we're interrupted.
+       * @throws ProcessException
+       *             If a BMP sends a failure message.
+       */
+      void powerOnAndCheck(List<BMPBoard> boards)
+                  throws ProcessException, InterruptedException, IOException;
 
-	/**
-	 * Turns a link off. (We never need to explicitly switch a link on; that's
-	 * implicit in switching on its board.)
-	 *
-	 * @param link
-	 *            The link to turn off.
-	 * @throws IOException
-	 *             If network I/O fails.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
-	 */
-	void setLinkOff(Link link)
-			throws ProcessException, IOException, InterruptedException;
+      /**
+       * Turns a link off. (We never need to explicitly switch a link on; that's
+       * implicit in switching on its board.)
+       *
+       * @param link
+       *            The link to turn off.
+       * @throws IOException
+       *             If network I/O fails.
+       * @throws InterruptedException
+       *             If the communications were interrupted.
+       * @throws ProcessException
+       *             If a BMP rejects a message.
+       */
+      void setLinkOff(Link link)
+                  throws ProcessException, IOException, InterruptedException;
 
-	/**
-	 * Turn off boards managed by a BMP. Turning off a board also turns off its
-	 * links.
-	 *
-	 * @param boards
-	 *            The local-relative ids of the boards to turn off.
-	 * @throws IOException
-	 *             If network I/O fails or we reach the limit on retries.
-	 * @throws InterruptedException
-	 *             If we're interrupted.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
-	 */
-	void powerOff(Collection<BMPBoard> boards)
-			throws ProcessException, InterruptedException, IOException;
+      /**
+       * Turn off boards managed by a BMP. Turning off a board also turns off its
+       * links.
+       *
+       * @param boards
+       *            The local-relative ids of the boards to turn off.
+       * @throws IOException
+       *             If network I/O fails or we reach the limit on retries.
+       * @throws InterruptedException
+       *             If we're interrupted.
+       * @throws ProcessException
+       *             If a BMP sends a failure message.
+       */
+      void powerOff(Collection<BMPBoard> boards)
+                  throws ProcessException, InterruptedException, IOException;
 
-	/**
-	 * Read a BMP serial number from the given board.
-	 *
-	 * @param board
-	 *            The board to read from.
-	 * @return The serial number.
-	 * @throws IOException
-	 *             If network I/O fails or we reach the limit on retries.
-	 * @throws InterruptedException
-	 *             If we're interrupted.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
-	 */
-	String readSerial(BMPBoard board)
-			throws ProcessException, InterruptedException, IOException;
+      /**
+       * Read a BMP serial number from the given board.
+       *
+       * @param board
+       *            The board to read from.
+       * @return The serial number.
+       * @throws IOException
+       *             If network I/O fails or we reach the limit on retries.
+       * @throws InterruptedException
+       *             If we're interrupted.
+       * @throws ProcessException
+       *             If a BMP sends a failure message.
+       */
+      String readSerial(BMPBoard board)
+                  throws ProcessException, InterruptedException, IOException;
 
-	/**
-	 * Read the temperature data from the given board.
-	 *
-	 * @param board
-	 *            The board to read from.
-	 * @return The temperature (and fan speed and voltage) data.
-	 * @throws IOException
-	 *             If network I/O fails or we reach the limit on retries.
-	 * @throws InterruptedException
-	 *             If we're interrupted.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
-	 */
-	ADCInfo readTemp(BMPBoard board)
-			throws ProcessException, IOException, InterruptedException;
+      /**
+       * Read the temperature data from the given board.
+       *
+       * @param board
+       *            The board to read from.
+       * @return The temperature (and fan speed and voltage) data.
+       * @throws IOException
+       *             If network I/O fails or we reach the limit on retries.
+       * @throws InterruptedException
+       *             If we're interrupted.
+       * @throws ProcessException
+       *             If a BMP sends a failure message.
+       */
+      ADCInfo readTemp(BMPBoard board)
+                  throws ProcessException, IOException, InterruptedException;
 
-	/**
-	 * Read a blacklist from the given board.
-	 *
-	 * @param board
-	 *            The board to read the blacklist from.
-	 * @return The blacklist.
-	 * @throws IOException
-	 *             If network I/O fails or we reach the limit on retries.
-	 * @throws InterruptedException
-	 *             If we're interrupted.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
-	 */
-	Blacklist readBlacklist(BMPBoard board)
-			throws ProcessException, InterruptedException, IOException;
+      /**
+       * Read a blacklist from the given board.
+       *
+       * @param board
+       *            The board to read the blacklist from.
+       * @return The blacklist.
+       * @throws IOException
+       *             If network I/O fails or we reach the limit on retries.
+       * @throws InterruptedException
+       *             If we're interrupted.
+       * @throws ProcessException
+       *             If a BMP sends a failure message.
+       */
+      Blacklist readBlacklist(BMPBoard board)
+                  throws ProcessException, InterruptedException, IOException;
 
-	/**
-	 * Write a blacklist to the given board.
-	 *
-	 * @param board
-	 *            The board to write the blacklist to.
-	 * @param blacklist
-	 *            The blacklist to write.
-	 * @throws IOException
-	 *             If network I/O fails or we reach the limit on retries.
-	 * @throws InterruptedException
-	 *             If we're interrupted.
-	 * @throws ProcessException
-	 *             If a BMP sends a failure message.
-	 */
-	void writeBlacklist(BMPBoard board, Blacklist blacklist)
-			throws ProcessException, InterruptedException, IOException;
+      /**
+       * Write a blacklist to the given board.
+       *
+       * @param board
+       *            The board to write the blacklist to.
+       * @param blacklist
+       *            The blacklist to write.
+       * @throws IOException
+       *             If network I/O fails or we reach the limit on retries.
+       * @throws InterruptedException
+       *             If we're interrupted.
+       * @throws ProcessException
+       *             If a BMP sends a failure message.
+       */
+      void writeBlacklist(BMPBoard board, Blacklist blacklist)
+                  throws ProcessException, InterruptedException, IOException;
 
-	/**
-	 * Ping the given boards.
-	 *
-	 * @param boards
-	 *            The boards to ping.
-	 */
-	void ping(List<BMPBoard> boards);
+      /**
+       * Ping the given boards.
+       *
+       * @param boards
+       *            The boards to ping.
+       */
+      void ping(List<BMPBoard> boards);
 
-	/**
-	 * Close the controller and release any resources it holds.
-	 */
-	void close();
+      /**
+       * Close the controller and release any resources it holds.
+       */
+      void close();
 
-	/**
-	 * A guide for how to make a BMP controller.
-	 */
-	@FunctionalInterface
-	interface Factory {
-		/**
-		 * Create a SpiNNaker board controller. Note that this is only provided
-		 * for reference. It is up to the caller to ensure that the controller
-		 * is the only controller that talks to a particular BMP; <em>it is
-		 * <strong>essential</strong> that only one controller and one thread
-		 * accesses a BMP in order to prevent the BMP from crashing!</em>
-		 *
-		 * @param machine
-		 *            The machine that this will be managing.
-		 * @param coords
-		 *            The coordinates of the BMP that this will manage.
-		 * @param boardAddresses
-		 *            The IP addresses of the boards of the BMP.
-		 * @return The board controller.
-		 */
-		SpiNNakerControl create(Machine machine, BMPCoords coords,
-				Map<BMPBoard, String> boardAddresses);
-	}
+      /**
+       * A guide for how to make a BMP controller.
+       */
+      @FunctionalInterface
+      interface Factory {
+            /**
+             * Create a SpiNNaker board controller. Note that this is only provided
+             * for reference. It is up to the caller to ensure that the controller
+             * is the only controller that talks to a particular BMP; <em>it is
+             * <strong>essential</strong> that only one controller and one thread
+             * accesses a BMP in order to prevent the BMP from crashing!</em>
+             *
+             * @param machine
+             *            The machine that this will be managing.
+             * @param coords
+             *            The coordinates of the BMP that this will manage.
+             * @param boardAddresses
+             *            The IP addresses of the boards of the BMP.
+             * @return The board controller.
+             */
+            SpiNNakerControl create(Machine machine, BMPCoords coords,
+                        Map<BMPBoard, String> boardAddresses);
+      }
 }

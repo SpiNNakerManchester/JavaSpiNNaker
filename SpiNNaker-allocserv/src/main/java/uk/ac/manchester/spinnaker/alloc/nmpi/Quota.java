@@ -22,98 +22,98 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * A NMPI collab quota.
  */
 public class Quota {
-	/** The total amount of quota assigned. */
-	private double limit;
+      /** The total amount of quota assigned. */
+      private double limit;
 
-	/** The usage of the quota assigned. */
-	private double usage;
+      /** The usage of the quota assigned. */
+      private double usage;
 
-	/** The platform that the quota is assigned to. */
-	private String platform;
+      /** The platform that the quota is assigned to. */
+      private String platform;
 
-	/** The units in which the quota is measured. */
-	private String units;
+      /** The units in which the quota is measured. */
+      private String units;
 
-	/**
-	 * {@return the total amount of quota assigned}
-	 */
-	public double getLimit() {
-		return limit;
-	}
+      /**
+       * {@return the total amount of quota assigned}
+       */
+      public double getLimit() {
+            return limit;
+      }
 
-	/**
-	 * Sets the limit to set.
-	 *
-	 * @param limit
-	 *            the limit to set.
-	 */
-	public void setLimit(double limit) {
-		this.limit = limit;
-	}
+      /**
+       * Sets the limit to set.
+       *
+       * @param limit
+       *            the limit to set.
+       */
+      public void setLimit(double limit) {
+            this.limit = limit;
+      }
 
-	/**
-	 * {@return the usage of the quota assigned}
-	 */
-	public double getUsage() {
-		return usage;
-	}
+      /**
+       * {@return the usage of the quota assigned}
+       */
+      public double getUsage() {
+            return usage;
+      }
 
-	/**
-	 * Sets the usage to set.
-	 *
-	 * @param usage
-	 *            the usage to set.
-	 */
-	public void setUsage(double usage) {
-		this.usage = usage;
-	}
+      /**
+       * Sets the usage to set.
+       *
+       * @param usage
+       *            the usage to set.
+       */
+      public void setUsage(double usage) {
+            this.usage = usage;
+      }
 
-	/**
-	 * {@return the platform that the quota is assigned to}
-	 */
-	public String getPlatform() {
-		return platform;
-	}
+      /**
+       * {@return the platform that the quota is assigned to}
+       */
+      public String getPlatform() {
+            return platform;
+      }
 
-	/**
-	 * Sets the platform to set.
-	 *
-	 * @param platform
-	 *            the platform to set.
-	 */
-	public void setPlatform(String platform) {
-		this.platform = platform;
-	}
+      /**
+       * Sets the platform to set.
+       *
+       * @param platform
+       *            the platform to set.
+       */
+      public void setPlatform(String platform) {
+            this.platform = platform;
+      }
 
-	/**
-	 * {@return the units in which the quota is measured}
-	 */
-	public String getUnits() {
-		return units;
-	}
+      /**
+       * {@return the units in which the quota is measured}
+       */
+      public String getUnits() {
+            return units;
+      }
 
-	/**
-	 * Sets the units to set.
-	 *
-	 * @param units
-	 *            the units to set.
-	 */
-	public void setUnits(String units) {
-		this.units = units;
-	}
+      /**
+       * Sets the units to set.
+       *
+       * @param units
+       *            the units to set.
+       */
+      public void setUnits(String units) {
+            this.units = units;
+      }
 
-	/**
-	 * Used for JSON serialisation; ignores other properties we don't care
-	 * about.
-	 *
-	 * @param name
-	 *            The parameter to set.
-	 * @param value
-	 *            The value to set it to.
-	 * @hidden
-	 */
-	@JsonAnySetter
-	public void set(final String name, final Object value) {
-		// Ignore any other values
-	}
+      /**
+       * Used for JSON serialisation; ignores other properties we don't care
+       * about.
+       *
+       * @param name
+       *            The parameter to set.
+       * @param value
+       *            The value to set it to.
+       * @hidden
+       */
+      @JsonAnySetter
+      public void set(final String name, final Object value) {
+            // Ignore any other values
+      }
 }

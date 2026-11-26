@@ -38,421 +38,421 @@ import uk.ac.manchester.spinnaker.utils.validation.IPAddress;
  * Model of a board, for configuration purposes.
  */
 public class BoardRecord {
-	// TODO convert to structured form
-	private Integer id;
+      // TODO convert to structured form
+      private Integer id;
 
-	private Integer bmpId;
+      private Integer bmpId;
 
-	@NotBlank
-	private String machineName;
+      @NotBlank
+      private String machineName;
 
-	@ValidTriadX
-	private Integer x;
+      @ValidTriadX
+      private Integer x;
 
-	@ValidTriadY
-	private Integer y;
+      @ValidTriadY
+      private Integer y;
 
-	@ValidTriadZ
-	private Integer z;
+      @ValidTriadZ
+      private Integer z;
 
-	@ValidCabinetNumber
-	private Integer cabinet;
+      @ValidCabinetNumber
+      private Integer cabinet;
 
-	@ValidFrameNumber
-	private Integer frame;
+      @ValidFrameNumber
+      private Integer frame;
 
-	@ValidBoardNumber
-	private Integer board;
+      @ValidBoardNumber
+      private Integer board;
 
-	@IPAddress(nullOK = true, emptyOK = true)
-	private String ipAddress;
+      @IPAddress(nullOK = true, emptyOK = true)
+      private String ipAddress;
 
-	private Boolean enabled;
+      private Boolean enabled;
 
-	private Integer jobId;
+      private Integer jobId;
 
-	private boolean powered;
+      private boolean powered;
 
-	private Instant lastPowerOn;
+      private Instant lastPowerOn;
 
-	private Instant lastPowerOff;
+      private Instant lastPowerOff;
 
-	/** The BMP serial number, if known. */
-	private String bmpSerial;
+      /** The BMP serial number, if known. */
+      private String bmpSerial;
 
-	/** The physical board serial number, if known. */
-	private String physicalSerial;
+      /** The physical board serial number, if known. */
+      private String physicalSerial;
 
-	private List<BoardIssueReport> reports = new ArrayList<>();
+      private List<BoardIssueReport> reports = new ArrayList<>();
 
-	/**
-	 * {@return {The board ID, if known}}
-	 */
-	public Integer getId() {
-		return id;
-	}
+      /**
+       * {@return {The board ID, if known}}
+       */
+      public Integer getId() {
+            return id;
+      }
 
-	/**
-	 * Set the board id.
-	 *
-	 * @param id
-	 *            The board ID.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
+      /**
+       * Set the board id.
+       *
+       * @param id
+       *            The board ID.
+       */
+      public void setId(Integer id) {
+            this.id = id;
+      }
 
-	/**
-	 * {@return The BMP ID}
-	 */
+      /**
+       * {@return The BMP ID}
+       */
 
-	public Integer getBmpId() {
-		return this.bmpId;
-	}
+      public Integer getBmpId() {
+            return this.bmpId;
+      }
 
-	/**
-	 * Sets the BMP ID.
-	 *
-	 * @param bmpId
-	 *            The BMP ID.
-	 */
-	public void setBmpId(Integer bmpId) {
-		this.bmpId = bmpId;
-	}
+      /**
+       * Sets the BMP ID.
+       *
+       * @param bmpId
+       *            The BMP ID.
+       */
+      public void setBmpId(Integer bmpId) {
+            this.bmpId = bmpId;
+      }
 
-	/**
-	 * {@return Whether we have an ID}
-	 */
-	public boolean isIdPresent() {
-		return nonNull(id);
-	}
+      /**
+       * {@return Whether we have an ID}
+       */
+      public boolean isIdPresent() {
+            return nonNull(id);
+      }
 
-	/**
-	 * {@return The machine name}
-	 */
-	public String getMachineName() {
-		return machineName;
-	}
+      /**
+       * {@return The machine name}
+       */
+      public String getMachineName() {
+            return machineName;
+      }
 
-	/**
-	 * Sets the machine name.
-	 *
-	 * @param machineName
-	 *            The machine name.
-	 */
-	public void setMachineName(String machineName) {
-		this.machineName = machineName;
-	}
+      /**
+       * Sets the machine name.
+       *
+       * @param machineName
+       *            The machine name.
+       */
+      public void setMachineName(String machineName) {
+            this.machineName = machineName;
+      }
 
-	/**
-	 * {@return The board X coordinate, if known}
-	 */
-	public Integer getX() {
-		return x;
-	}
+      /**
+       * {@return The board X coordinate, if known}
+       */
+      public Integer getX() {
+            return x;
+      }
 
-	/**
-	 * Set the board X coordinate.
-	 *
-	 * @param x
-	 *            The board X coordinate.
-	 */
-	public void setX(Integer x) {
-		this.x = x;
-	}
+      /**
+       * Set the board X coordinate.
+       *
+       * @param x
+       *            The board X coordinate.
+       */
+      public void setX(Integer x) {
+            this.x = x;
+      }
 
-	/**
-	 * {@return The board Y coordinate, if known}
-	 */
-	public Integer getY() {
-		return y;
-	}
+      /**
+       * {@return The board Y coordinate, if known}
+       */
+      public Integer getY() {
+            return y;
+      }
 
-	/**
-	 * Sets the board Y coordinate.
-	 *
-	 * @param y
-	 *            The board Y coordinate.
-	 */
-	public void setY(Integer y) {
-		this.y = y;
-	}
+      /**
+       * Sets the board Y coordinate.
+       *
+       * @param y
+       *            The board Y coordinate.
+       */
+      public void setY(Integer y) {
+            this.y = y;
+      }
 
-	/**
-	 * {@return The board Z coordinate, if known}
-	 */
-	public Integer getZ() {
-		return z;
-	}
+      /**
+       * {@return The board Z coordinate, if known}
+       */
+      public Integer getZ() {
+            return z;
+      }
 
-	/**
-	 * Sets the board Z coordinate.
-	 *
-	 * @param z
-	 *            The board Z coordinate.
-	 */
-	public void setZ(Integer z) {
-		this.z = z;
-	}
+      /**
+       * Sets the board Z coordinate.
+       *
+       * @param z
+       *            The board Z coordinate.
+       */
+      public void setZ(Integer z) {
+            this.z = z;
+      }
 
-	/**
-	 * {@return Whether we have a full set of triad coordinates}
-	 */
-	public boolean isTriadCoordPresent() {
-		return nonNull(x) && nonNull(y) && nonNull(z);
-	}
+      /**
+       * {@return Whether we have a full set of triad coordinates}
+       */
+      public boolean isTriadCoordPresent() {
+            return nonNull(x) && nonNull(y) && nonNull(z);
+      }
 
-	/**
-	 * {@return The cabinet number, if known}
-	 */
-	public Integer getCabinet() {
-		return cabinet;
-	}
+      /**
+       * {@return The cabinet number, if known}
+       */
+      public Integer getCabinet() {
+            return cabinet;
+      }
 
-	/**
-	 * Sets the cabinet number.
-	 *
-	 * @param cabinet
-	 *            The cabinet number.
-	 */
-	public void setCabinet(Integer cabinet) {
-		this.cabinet = cabinet;
-	}
+      /**
+       * Sets the cabinet number.
+       *
+       * @param cabinet
+       *            The cabinet number.
+       */
+      public void setCabinet(Integer cabinet) {
+            this.cabinet = cabinet;
+      }
 
-	/**
-	 * {@return The frame number, if known}
-	 */
-	public Integer getFrame() {
-		return frame;
-	}
+      /**
+       * {@return The frame number, if known}
+       */
+      public Integer getFrame() {
+            return frame;
+      }
 
-	/**
-	 * Sets the frame number.
-	 *
-	 * @param frame
-	 *            The frame number.
-	 */
-	public void setFrame(Integer frame) {
-		this.frame = frame;
-	}
+      /**
+       * Sets the frame number.
+       *
+       * @param frame
+       *            The frame number.
+       */
+      public void setFrame(Integer frame) {
+            this.frame = frame;
+      }
 
-	/**
-	 * {@return The board number, if known}
-	 */
-	public Integer getBoard() {
-		return board;
-	}
+      /**
+       * {@return The board number, if known}
+       */
+      public Integer getBoard() {
+            return board;
+      }
 
-	/**
-	 * Sets the board number.
-	 *
-	 * @param board
-	 *            The board number.
-	 */
-	public void setBoard(Integer board) {
-		this.board = board;
-	}
+      /**
+       * Sets the board number.
+       *
+       * @param board
+       *            The board number.
+       */
+      public void setBoard(Integer board) {
+            this.board = board;
+      }
 
-	/**
-	 * {@return Whether we have a full set of physical coordinates}
-	 */
-	public boolean isPhysicalCoordPresent() {
-		return nonNull(cabinet) && nonNull(frame) && nonNull(board);
-	}
+      /**
+       * {@return Whether we have a full set of physical coordinates}
+       */
+      public boolean isPhysicalCoordPresent() {
+            return nonNull(cabinet) && nonNull(frame) && nonNull(board);
+      }
 
-	/**
-	 * {@return The board's IP address, if known}
-	 */
-	public String getIpAddress() {
-		return ipAddress;
-	}
+      /**
+       * {@return The board's IP address, if known}
+       */
+      public String getIpAddress() {
+            return ipAddress;
+      }
 
-	/**
-	 * Sets the board's IP address.
-	 *
-	 * @param ipAddress
-	 *            The board's IP address.
-	 */
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
+      /**
+       * Sets the board's IP address.
+       *
+       * @param ipAddress
+       *            The board's IP address.
+       */
+      public void setIpAddress(String ipAddress) {
+            this.ipAddress = ipAddress;
+      }
 
-	/**
-	 * {@return Whether we have an IP address}
-	 */
-	public boolean isAddressPresent() {
-		return nonNull(ipAddress);
-	}
+      /**
+       * {@return Whether we have an IP address}
+       */
+      public boolean isAddressPresent() {
+            return nonNull(ipAddress);
+      }
 
-	/**
-	 * Weather we have a valid location.
-	 *
-	 * Could be either the ID of a board (from a previous lookup)
-	 * or the name of a machine and
-	 * at least one set of coordinates for a board on that machine.
-	 *
-	 * @return True if a there is a valid location.
-	 */
-	@Keep
-	@AssertTrue(message = "board must have some mechanism for being located")
-	private boolean isValidBoardLocator() {
-		return isIdPresent() || (nonNull(machineName) && (isTriadCoordPresent()
-				|| isPhysicalCoordPresent() || isAddressPresent()));
-	}
+      /**
+       * Weather we have a valid location.
+       *
+       * Could be either the ID of a board (from a previous lookup)
+       * or the name of a machine and
+       * at least one set of coordinates for a board on that machine.
+       *
+       * @return True if a there is a valid location.
+       */
+      @Keep
+      @AssertTrue(message = "board must have some mechanism for being located")
+      private boolean isValidBoardLocator() {
+            return isIdPresent() || (nonNull(machineName) && (isTriadCoordPresent()
+                        || isPhysicalCoordPresent() || isAddressPresent()));
+      }
 
-	/**
-	 * {@return Whether the board is enabled}
-	 */
-	public boolean isEnabled() {
-		return enabled;
-	}
+      /**
+       * {@return Whether the board is enabled}
+       */
+      public boolean isEnabled() {
+            return enabled;
+      }
 
-	/**
-	 * {@return Whether the board enabled state is defined}
-	 */
-	public boolean isEnabledDefined() {
-		return nonNull(enabled);
-	}
+      /**
+       * {@return Whether the board enabled state is defined}
+       */
+      public boolean isEnabledDefined() {
+            return nonNull(enabled);
+      }
 
-	/**
-	 * set whether the board is enabled.
-	 *
-	 * @param enabled
-	 *            Whether the board is enabled.
-	 */
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
+      /**
+       * set whether the board is enabled.
+       *
+       * @param enabled
+       *            Whether the board is enabled.
+       */
+      public void setEnabled(Boolean enabled) {
+            this.enabled = enabled;
+      }
 
-	/**
-	 * {@return The ID of the job allocated to the board, if any}
-	 */
-	public Integer getJobId() {
-		return jobId;
-	}
+      /**
+       * {@return The ID of the job allocated to the board, if any}
+       */
+      public Integer getJobId() {
+            return jobId;
+      }
 
-	/**
-	 * {@return Whether a job is allocated to the board}
-	 */
-	public boolean isJobAllocated() {
-		return nonNull(jobId);
-	}
+      /**
+       * {@return Whether a job is allocated to the board}
+       */
+      public boolean isJobAllocated() {
+            return nonNull(jobId);
+      }
 
-	/**
-	 * Set the ID of the job allocated to the board.
-	 *
-	 * @param jobId
-	 *            The ID of the job allocated to the board.
-	 */
-	public void setJobId(Integer jobId) {
-		this.jobId = jobId;
-	}
+      /**
+       * Set the ID of the job allocated to the board.
+       *
+       * @param jobId
+       *            The ID of the job allocated to the board.
+       */
+      public void setJobId(Integer jobId) {
+            this.jobId = jobId;
+      }
 
-	/**
-	 * {@return When the board was last powered on, if known}
-	 */
-	public Instant getLastPowerOn() {
-		return lastPowerOn;
-	}
+      /**
+       * {@return When the board was last powered on, if known}
+       */
+      public Instant getLastPowerOn() {
+            return lastPowerOn;
+      }
 
-	/**
-	 * Set when the board was last powered on.
-	 *
-	 * @param lastPowerOn
-	 *            When the board was last powered on.
-	 */
-	public void setLastPowerOn(Instant lastPowerOn) {
-		this.lastPowerOn = lastPowerOn;
-	}
+      /**
+       * Set when the board was last powered on.
+       *
+       * @param lastPowerOn
+       *            When the board was last powered on.
+       */
+      public void setLastPowerOn(Instant lastPowerOn) {
+            this.lastPowerOn = lastPowerOn;
+      }
 
-	/**
-	 * {@return When the board was last powered off, if known}
-	 */
-	public Instant getLastPowerOff() {
-		return lastPowerOff;
-	}
+      /**
+       * {@return When the board was last powered off, if known}
+       */
+      public Instant getLastPowerOff() {
+            return lastPowerOff;
+      }
 
-	/**
-	 * Sets when the board was last powered off.
-	 *
-	 * @param lastPowerOff
-	 *            When the board was last powered off.
-	 */
-	public void setLastPowerOff(Instant lastPowerOff) {
-		this.lastPowerOff = lastPowerOff;
-	}
+      /**
+       * Sets when the board was last powered off.
+       *
+       * @param lastPowerOff
+       *            When the board was last powered off.
+       */
+      public void setLastPowerOff(Instant lastPowerOff) {
+            this.lastPowerOff = lastPowerOff;
+      }
 
-	/**
-	 * The reports associated with this board.
-	 *
-	 * The list is not modifiable.
+      /**
+       * The reports associated with this board.
+       *
+       * The list is not modifiable.
      *
-	 * @return The reports
-	 */
-	public List<BoardIssueReport> getReports() {
-		return reports;
-	}
+       * @return The reports
+       */
+      public List<BoardIssueReport> getReports() {
+            return reports;
+      }
 
-	/**
-	 * Sets the reports associated with this board.
-	 *
-	 * Overwrites any previous reports stored.
-	 *
-	 * @param reports
-	 *            The reports associated with this board.
-	 */
-	public void setReports(List<BoardIssueReport> reports) {
-		this.reports = nonNull(reports) ? List.copyOf(reports) : List.of();
-	}
+      /**
+       * Sets the reports associated with this board.
+       *
+       * Overwrites any previous reports stored.
+       *
+       * @param reports
+       *            The reports associated with this board.
+       */
+      public void setReports(List<BoardIssueReport> reports) {
+            this.reports = nonNull(reports) ? List.copyOf(reports) : List.of();
+      }
 
-	/**
-	 * {@return Whether this board is powered on}
-	 */
-	public boolean isPowered() {
-		return powered;
-	}
+      /**
+       * {@return Whether this board is powered on}
+       */
+      public boolean isPowered() {
+            return powered;
+      }
 
-	/**
-	 * Sets whether this board is powered on.
-	 *
-	 * @param power
-	 *            Whether this board is powered on.
-	 */
-	public void setPowered(boolean power) {
-		powered = power;
-	}
+      /**
+       * Sets whether this board is powered on.
+       *
+       * @param power
+       *            Whether this board is powered on.
+       */
+      public void setPowered(boolean power) {
+            powered = power;
+      }
 
-	/**
-	 * {@return The BMP serial number, if known}
-	 */
-	public String getBmpSerial() {
-		return bmpSerial;
-	}
+      /**
+       * {@return The BMP serial number, if known}
+       */
+      public String getBmpSerial() {
+            return bmpSerial;
+      }
 
-	/**
-	 * Sets the BMP serial number.
-	 *
-	 * @param bmpSerial
-	 *            The BMP serial number.
-	 */
-	public void setBmpSerial(String bmpSerial) {
-		this.bmpSerial = bmpSerial;
-	}
+      /**
+       * Sets the BMP serial number.
+       *
+       * @param bmpSerial
+       *            The BMP serial number.
+       */
+      public void setBmpSerial(String bmpSerial) {
+            this.bmpSerial = bmpSerial;
+      }
 
-	/**
-	 * {@return The physical board serial number, if known}
-	 */
-	public String getPhysicalSerial() {
-		return physicalSerial;
-	}
+      /**
+       * {@return The physical board serial number, if known}
+       */
+      public String getPhysicalSerial() {
+            return physicalSerial;
+      }
 
-	/**
-	 * Sets the physical board serial number.
-	 *
-	 * @param physicalSerial
-	 *            The physical board serial number.
-	 */
-	public void setPhysicalSerial(String physicalSerial) {
-		this.physicalSerial = physicalSerial;
-	}
+      /**
+       * Sets the physical board serial number.
+       *
+       * @param physicalSerial
+       *            The physical board serial number.
+       */
+      public void setPhysicalSerial(String physicalSerial) {
+            this.physicalSerial = physicalSerial;
+      }
 }

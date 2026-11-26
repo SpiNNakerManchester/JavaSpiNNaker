@@ -24,27 +24,27 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 class SimpleGrantedAuthority implements GrantedAuthority {
-	private static final long serialVersionUID = 7765648523730760900L;
+      private static final long serialVersionUID = 7765648523730760900L;
 
-	private final String role;
+      private final String role;
 
-	/**
-	 * Constructs a holder of a single basic role grant.
-	 *
-	 * @param role
-	 *            The role in this authority.
-	 */
-	SimpleGrantedAuthority(String role) {
-		this.role = role;
-	}
+      /**
+       * Constructs a holder of a single basic role grant.
+       *
+       * @param role
+       *            The role in this authority.
+       */
+      SimpleGrantedAuthority(String role) {
+            this.role = role;
+      }
 
-	@Override
-	public String getAuthority() {
-		return role;
-	}
+      @Override
+      public String getAuthority() {
+            return role;
+      }
 
-	@Override
-	public String toString() {
-		return role;
-	}
+      @Override
+      public String toString() {
+            return role;
+      }
 }

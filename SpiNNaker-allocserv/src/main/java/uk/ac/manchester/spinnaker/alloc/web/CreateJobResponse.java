@@ -31,15 +31,15 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
  */
 @Immutable
 public class CreateJobResponse {
-	/** The ID of the job. Probably should be ignored. */
-	public final int jobId;
+      /** The ID of the job. Probably should be ignored. */
+      public final int jobId;
 
-	/** The link to the job. Clients should not make this themselves. */
-	@JsonInclude(NON_NULL)
-	public final URI jobRef;
+      /** The link to the job. Clients should not make this themselves. */
+      @JsonInclude(NON_NULL)
+      public final URI jobRef;
 
-	CreateJobResponse(SpallocAPI.Job j, UriInfo ui) {
-		jobId = j.getId();
-		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
-	}
+      CreateJobResponse(SpallocAPI.Job j, UriInfo ui) {
+            jobId = j.getId();
+            jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
+      }
 }

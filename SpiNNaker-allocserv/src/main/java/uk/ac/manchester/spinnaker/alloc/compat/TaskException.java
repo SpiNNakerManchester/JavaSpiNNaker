@@ -23,9 +23,9 @@ package uk.ac.manchester.spinnaker.alloc.compat;
  * @see ExceptionResponse
  */
 public final class TaskException extends Exception {
-	private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-	TaskException(String msg) {
-		super(msg);
-	}
+      TaskException(String msg) {
+            super(msg);
+      }
 }

@@ -51,109 +51,109 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @UsedInJavadocOnly(SecurityContext.class)
 @Component
 public class AppAuthTransformationFilter extends OncePerRequestFilter {
-	private static final Logger log =
-			getLogger(AppAuthTransformationFilter.class);
+      private static final Logger log =
+                  getLogger(AppAuthTransformationFilter.class);
 
-	/**
-	 * The name of session fixation tokens supported by this class.
-	 */
-	private static final String TOKEN =
-			AppAuthTransformationFilter.class.getName();
+      /**
+       * The name of session fixation tokens supported by this class.
+       */
+      private static final String TOKEN =
+                  AppAuthTransformationFilter.class.getName();
 
-	@Autowired
-	private LocalAuthenticationProvider<?> localAuthProvider;
+      @Autowired
+      private LocalAuthenticationProvider<?> localAuthProvider;
 
-	/**
-	 * The repository to use for saving the security context.
-	 */
-	final SecurityContextRepository securityContextRepository =
-		new HttpSessionSecurityContextRepository();
+      /**
+       * The repository to use for saving the security context.
+       */
+      final SecurityContextRepository securityContextRepository =
+            new HttpSessionSecurityContextRepository();
 
-	@Override
-	protected boolean shouldNotFilter(HttpServletRequest request)
-			throws ServletException {
-		var a = SecurityContextHolder.getContext().getAuthentication();
-		log.debug("Current authentication: {}",
-				isNull(a) ? null : a.getClass().getName());
-		if (nonNull(a)) {
-			log.debug("Is unsupported? {}", isUnsupportedAuthTokenClass(
-					a.getClass()));
-		}
-		return isNull(a) || isUnsupportedAuthTokenClass(a.getClass());
-	}
+      @Override
+      protected boolean shouldNotFilter(HttpServletRequest request)
+                  throws ServletException {
+            var a = SecurityContextHolder.getContext().getAuthentication();
+            log.debug("Current authentication: {}",
+                        isNull(a) ? null : a.getClass().getName());
+            if (nonNull(a)) {
+                  log.debug("Is unsupported? {}", isUnsupportedAuthTokenClass(
+                              a.getClass()));
+            }
+            return isNull(a) || isUnsupportedAuthTokenClass(a.getClass());
+      }
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-		var s = request.getSession(false);
-		log.debug("Session ID: {}", isNull(s) ? null : s.getId());
-		var ctx = SecurityContextHolder.getContext();
-		var savedAuth = getSavedToken(s);
-		log.debug("Saved authentication: {}",
-				isNull(savedAuth) ? null : savedAuth.getClass().getName());
-		log.trace("Full Saved authentication: {}", savedAuth);
-		var originalAuth = ctx.getAuthentication();
-		log.debug("Original authentication: {}",
-				isNull(originalAuth) ? null
-						: originalAuth.getClass().getName());
-		log.trace("Full Original authentication: {}", originalAuth);
-		if (nonNull(savedAuth)) {
-			ctx.setAuthentication(savedAuth);
-		} else {
-			var a = localAuthProvider.updateAuthentication(request, ctx);
-			if (nonNull(a)) {
-				if (s == null) {
-					s = request.getSession(true);
-				}
-				saveToken(s, a);
-			}
-		}
-		try {
-			chain.doFilter(request, response);
-		} finally {
-			ctx.setAuthentication(originalAuth);
-			securityContextRepository.saveContext(
-					SecurityContextHolder.getContext(), request, response);
-		}
-	}
+      @Override
+      protected void doFilterInternal(HttpServletRequest request,
+                  HttpServletResponse response, FilterChain chain)
+                  throws IOException, ServletException {
+            var s = request.getSession(false);
+            log.debug("Session ID: {}", isNull(s) ? null : s.getId());
+            var ctx = SecurityContextHolder.getContext();
+            var savedAuth = getSavedToken(s);
+            log.debug("Saved authentication: {}",
+                        isNull(savedAuth) ? null : savedAuth.getClass().getName());
+            log.trace("Full Saved authentication: {}", savedAuth);
+            var originalAuth = ctx.getAuthentication();
+            log.debug("Original authentication: {}",
+                        isNull(originalAuth) ? null
+                                    : originalAuth.getClass().getName());
+            log.trace("Full Original authentication: {}", originalAuth);
+            if (nonNull(savedAuth)) {
+                  ctx.setAuthentication(savedAuth);
+            } else {
+                  var a = localAuthProvider.updateAuthentication(request, ctx);
+                  if (nonNull(a)) {
+                        if (s == null) {
+                              s = request.getSession(true);
+                        }
+                        saveToken(s, a);
+                  }
+            }
+            try {
+                  chain.doFilter(request, response);
+            } finally {
+                  ctx.setAuthentication(originalAuth);
+                  securityContextRepository.saveContext(
+                              SecurityContextHolder.getContext(), request, response);
+            }
+      }
 
-	private static Authentication getSavedToken(HttpSession session) {
-		if (nonNull(session)) {
-			var o = session.getAttribute(TOKEN);
-			if (o instanceof Token) {
-				var t = (Token) o;
-				if (t.isValid(session)) {
-					return t.getAuth();
-				}
-			}
-			if (nonNull(o)) {
-				session.removeAttribute(TOKEN);
-				log.debug("removed stale special auth token from session");
-			}
-		}
-		return null;
-	}
+      private static Authentication getSavedToken(HttpSession session) {
+            if (nonNull(session)) {
+                  var o = session.getAttribute(TOKEN);
+                  if (o instanceof Token) {
+                        var t = (Token) o;
+                        if (t.isValid(session)) {
+                              return t.getAuth();
+                        }
+                  }
+                  if (nonNull(o)) {
+                        session.removeAttribute(TOKEN);
+                        log.debug("removed stale special auth token from session");
+                  }
+            }
+            return null;
+      }
 
-	private static void saveToken(HttpSession session, Authentication auth) {
-		if (nonNull(session)) {
-			session.setAttribute(TOKEN, new Token(session, auth));
-			log.debug("added special auth token to session");
-		}
-	}
+      private static void saveToken(HttpSession session, Authentication auth) {
+            if (nonNull(session)) {
+                  session.setAttribute(TOKEN, new Token(session, auth));
+                  log.debug("added special auth token to session");
+            }
+      }
 
-	/**
-	 * Ensure that any authentication token that was bound into the session is
-	 * removed.
-	 *
-	 * @param request
-	 *            the HTTP request; used for looking up the session
-	 */
-	public static void clearToken(HttpServletRequest request) {
-		var session = request.getSession(false);
-		if (nonNull(session)) {
-			session.removeAttribute(TOKEN);
-			log.debug("removed special auth token from session");
-		}
-	}
+      /**
+       * Ensure that any authentication token that was bound into the session is
+       * removed.
+       *
+       * @param request
+       *            the HTTP request; used for looking up the session
+       */
+      public static void clearToken(HttpServletRequest request) {
+            var session = request.getSession(false);
+            if (nonNull(session)) {
+                  session.removeAttribute(TOKEN);
+                  log.debug("removed special auth token from session");
+            }
+      }
 }

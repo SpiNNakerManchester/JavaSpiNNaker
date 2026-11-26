@@ -26,22 +26,22 @@ import org.springframework.security.core.Authentication;
  * for which it was created; if the session changes, it cannot be reused.
  */
 final class Token implements Serializable {
-	private static final long serialVersionUID = -439034988839648948L;
+      private static final long serialVersionUID = -439034988839648948L;
 
-	private final String id;
+      private final String id;
 
-	private final Authentication auth;
+      private final Authentication auth;
 
-	Token(HttpSession s, Authentication a) {
-		this.auth = a;
-		this.id = s.getId();
-	}
+      Token(HttpSession s, Authentication a) {
+            this.auth = a;
+            this.id = s.getId();
+      }
 
-	boolean isValid(HttpSession s) {
-		return s.getId().equals(id);
-	}
+      boolean isValid(HttpSession s) {
+            return s.getId().equals(id);
+      }
 
-	Authentication getAuth() {
-		return auth;
-	}
+      Authentication getAuth() {
+            return auth;
+      }
 }

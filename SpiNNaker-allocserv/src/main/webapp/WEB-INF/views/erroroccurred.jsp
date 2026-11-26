@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="An error occurred" name="title"/>
+      <jsp:param value="An error occurred" name="title"/>
 </jsp:include>
 <body>
 

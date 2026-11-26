@@ -19,31 +19,31 @@ package uk.ac.manchester.spinnaker.alloc.security;
  * The strings that describe the roles that may be granted.
  */
 public interface Grants {
-	/**
-	 * The authority used to grant a user permission to create jobs, manipulate
-	 * them, and read their details. Note that many features are locked to the
-	 * owner of the job or admins. Users should also have {@link #GRANT_READER}.
-	 */
-	String GRANT_USER = "ROLE_USER";
+      /**
+       * The authority used to grant a user permission to create jobs, manipulate
+       * them, and read their details. Note that many features are locked to the
+       * owner of the job or admins. Users should also have {@link #GRANT_READER}.
+       */
+      String GRANT_USER = "ROLE_USER";
 
-	/**
-	 * The authority used to grant a user permission to get general machine
-	 * information and summaries of jobs. Without this, only the service root
-	 * (and the parts required for logging in) will be visible.
-	 */
-	String GRANT_READER = "ROLE_READER";
+      /**
+       * The authority used to grant a user permission to get general machine
+       * information and summaries of jobs. Without this, only the service root
+       * (and the parts required for logging in) will be visible.
+       */
+      String GRANT_READER = "ROLE_READER";
 
-	/**
-	 * The authority used to grant a user permission to use administrative
-	 * actions. Admins should also have {@link #GRANT_USER} and
-	 * {@link #GRANT_READER}.
-	 */
-	String GRANT_ADMIN = "ROLE_ADMIN";
+      /**
+       * The authority used to grant a user permission to use administrative
+       * actions. Admins should also have {@link #GRANT_USER} and
+       * {@link #GRANT_READER}.
+       */
+      String GRANT_ADMIN = "ROLE_ADMIN";
 
-	/**
-	 * The authority used to grant a user permission to run NMPI jobs only on
-	 * behalf of other users.  This is equivalent to {@link #GRANT_USER} but
-	 * with this additional benefit.
-	 */
-	String GRANT_NMPI_EXEC = "ROLE_NMPI_EXEC";
+      /**
+       * The authority used to grant a user permission to run NMPI jobs only on
+       * behalf of other users.  This is equivalent to {@link #GRANT_USER} but
+       * with this additional benefit.
+       */
+      String GRANT_NMPI_EXEC = "ROLE_NMPI_EXEC";
 }

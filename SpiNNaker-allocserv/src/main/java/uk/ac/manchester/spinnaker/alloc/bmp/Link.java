@@ -23,41 +23,41 @@ import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
  * inter-board link to be off.
  */
 public final class Link {
-	/** The database ID of the board that the FPGA is located on. */
-	private final BMPBoard board;
+      /** The database ID of the board that the FPGA is located on. */
+      private final BMPBoard board;
 
-	/** Which link (and hence which FPGA). */
-	private final Direction link;
+      /** Which link (and hence which FPGA). */
+      private final Direction link;
 
-	/**
-	 * Create a request.
-	 *
-	 * @param board
-	 *            The DB ID of the board that the FPGA is located on.
-	 * @param link
-	 *            Which link (and hence which FPGA).
-	 */
-	Link(int board, Direction link) {
-		this.board = new BMPBoard(board);
-		this.link = link;
-	}
+      /**
+       * Create a request.
+       *
+       * @param board
+       *            The DB ID of the board that the FPGA is located on.
+       * @param link
+       *            Which link (and hence which FPGA).
+       */
+      Link(int board, Direction link) {
+            this.board = new BMPBoard(board);
+            this.link = link;
+      }
 
-	@Override
-	public String toString() {
-		return "Link(" + board + "," + link + ":OFF)";
-	}
+      @Override
+      public String toString() {
+            return "Link(" + board + "," + link + ":OFF)";
+      }
 
-	/**
-	 * {@return The database ID of the board that the FPGA is located on}
-	 */
-	public BMPBoard getBoard() {
-		return board;
-	}
+      /**
+       * {@return The database ID of the board that the FPGA is located on}
+       */
+      public BMPBoard getBoard() {
+            return board;
+      }
 
-	/**
-	 * {@return Which link (and hence which FPGA)}
-	 */
-	public Direction getLink() {
-		return link;
-	}
+      /**
+       * {@return Which link (and hence which FPGA)}
+       */
+      public Direction getLink() {
+            return link;
+      }
 }

@@ -25,18 +25,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class ReturnResponse {
-	private Object returnValue;
+      private Object returnValue;
 
-	ReturnResponse(Object value) {
-		returnValue = value;
-	}
+      ReturnResponse(Object value) {
+            returnValue = value;
+      }
 
-	@JsonProperty("return")
-	public Object getReturnValue() {
-		return returnValue;
-	}
+      @JsonProperty("return")
+      public Object getReturnValue() {
+            return returnValue;
+      }
 
-	void setReturnValue(Object returnValue) {
-		this.returnValue = returnValue;
-	}
+      void setReturnValue(Object returnValue) {
+            this.returnValue = returnValue;
+      }
 }

@@ -48,171 +48,171 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @RequestMapping(SystemController.ROOT_PATH)
 public interface SystemController {
-	/** The root path to the controller within the overall application. */
-	String ROOT_PATH = "/system";
+      /** The root path to the controller within the overall application. */
+      String ROOT_PATH = "/system";
 
-	/** The name of the main attribute supporting a password change form. */
-	String USER_PASSWORD_CHANGE_ATTR = "user";
+      /** The name of the main attribute supporting a password change form. */
+      String USER_PASSWORD_CHANGE_ATTR = "user";
 
-	/**
-	 * The name of the boolean view attribute describing whether the password
-	 * change form may be used. Only local users may change their password!
-	 */
-	String USER_MAY_CHANGE_PASSWORD = "userMayChangePassword";
+      /**
+       * The name of the boolean view attribute describing whether the password
+       * change form may be used. Only local users may change their password!
+       */
+      String USER_MAY_CHANGE_PASSWORD = "userMayChangePassword";
 
-	/**
-	 * Get the view for the main page of the service.
-	 *
-	 * @return View ({@code index.jsp})
-	 */
-	@GetMapping("/")
-	ModelAndView index();
+      /**
+       * Get the view for the main page of the service.
+       *
+       * @return View ({@code index.jsp})
+       */
+      @GetMapping("/")
+      ModelAndView index();
 
-	/**
-	 * Get the login form page. Note that this <em>must</em> be a resource that
-	 * can be accessed without authentication; it is part of the auth flow!
-	 *
-	 * @return View ({@code login.jsp})
-	 */
-	@GetMapping("/login.html")
-	ModelAndView login();
+      /**
+       * Get the login form page. Note that this <em>must</em> be a resource that
+       * can be accessed without authentication; it is part of the auth flow!
+       *
+       * @return View ({@code login.jsp})
+       */
+      @GetMapping("/login.html")
+      ModelAndView login();
 
-	/**
-	 * Get the view for the general machine list.
-	 *
-	 * @return View ({@code listmachines.jsp}) and model (based on
-	 *         {@link MachineListEntryRecord})
-	 */
-	@GetMapping("/list_machines")
-	@PreAuthorize(IS_READER)
-	@UsedInJavadocOnly(MachineListEntryRecord.class)
-	ModelAndView getMachineList();
+      /**
+       * Get the view for the general machine list.
+       *
+       * @return View ({@code listmachines.jsp}) and model (based on
+       *         {@link MachineListEntryRecord})
+       */
+      @GetMapping("/list_machines")
+      @PreAuthorize(IS_READER)
+      @UsedInJavadocOnly(MachineListEntryRecord.class)
+      ModelAndView getMachineList();
 
-	/**
-	 * Get the view for some machine details.
-	 *
-	 * @param machine
-	 *            Which machine is being asked for
-	 * @return View ({@code machinedetails.jsp}) and model (based on
-	 *         {@link MachineDescription})
-	 */
-	@GetMapping("/machine_info/{machine}")
-	@PreAuthorize(IS_READER)
-	@UsedInJavadocOnly(MachineDescription.class)
-	ModelAndView getMachineInfo(@PathVariable("machine") String machine);
+      /**
+       * Get the view for some machine details.
+       *
+       * @param machine
+       *            Which machine is being asked for
+       * @return View ({@code machinedetails.jsp}) and model (based on
+       *         {@link MachineDescription})
+       */
+      @GetMapping("/machine_info/{machine}")
+      @PreAuthorize(IS_READER)
+      @UsedInJavadocOnly(MachineDescription.class)
+      ModelAndView getMachineInfo(@PathVariable("machine") String machine);
 
-	/**
-	 * Get the view for the general job list.
-	 *
-	 * @return View ({@code listjobs.jsp}) and model (based on
-	 *         {@link JobListEntryRecord})
-	 */
-	@GetMapping("/list_jobs")
-	@PreAuthorize(IS_READER)
-	@UsedInJavadocOnly(JobListEntryRecord.class)
-	ModelAndView getJobList();
+      /**
+       * Get the view for the general job list.
+       *
+       * @return View ({@code listjobs.jsp}) and model (based on
+       *         {@link JobListEntryRecord})
+       */
+      @GetMapping("/list_jobs")
+      @PreAuthorize(IS_READER)
+      @UsedInJavadocOnly(JobListEntryRecord.class)
+      ModelAndView getJobList();
 
-	/**
-	 * Get the view for some job details.
-	 *
-	 * @param id
-	 *            Which job is being asked for
-	 * @return View ({@code jobdetails.jsp}) and model (based on
-	 *         {@link JobDescription})
-	 */
-	@GetMapping("/job_info/{id}")
-	@PreAuthorize(IS_READER)
-	@UsedInJavadocOnly(JobDescription.class)
-	ModelAndView getJobInfo(@PathVariable("id") int id);
+      /**
+       * Get the view for some job details.
+       *
+       * @param id
+       *            Which job is being asked for
+       * @return View ({@code jobdetails.jsp}) and model (based on
+       *         {@link JobDescription})
+       */
+      @GetMapping("/job_info/{id}")
+      @PreAuthorize(IS_READER)
+      @UsedInJavadocOnly(JobDescription.class)
+      ModelAndView getJobInfo(@PathVariable("id") int id);
 
-	/**
-	 * Delete a job.
-	 *
-	 * @param id
-	 *            Which job is being deleted
-	 * @param reason
-	 *            Why the job is being deleted
-	 * @return View ({@code jobdetails.jsp}) and model (based on
-	 *         {@link JobDescription})
-	 */
-	@PostMapping("/delete_job/{id}")
-	@PreAuthorize(MAY_SEE_JOB_DETAILS)
-	@UsedInJavadocOnly(JobDescription.class)
-	ModelAndView destroyJob(@PathVariable("id") int id,
-			@RequestParam("reason") String reason);
+      /**
+       * Delete a job.
+       *
+       * @param id
+       *            Which job is being deleted
+       * @param reason
+       *            Why the job is being deleted
+       * @return View ({@code jobdetails.jsp}) and model (based on
+       *         {@link JobDescription})
+       */
+      @PostMapping("/delete_job/{id}")
+      @PreAuthorize(MAY_SEE_JOB_DETAILS)
+      @UsedInJavadocOnly(JobDescription.class)
+      ModelAndView destroyJob(@PathVariable("id") int id,
+                  @RequestParam("reason") String reason);
 
-	/**
-	 * Set the power of a job.
-	 *
-	 * @param id
-	 *            Which job is being deleted
-	 * @param power
-	 *            Whether to power on or off
-	 * @return View ({@code jobdetails.jsp}) and model (based on
-	 *         {@link JobDescription})
-	 */
-	@PostMapping("/power_job/{id}")
-	@PreAuthorize(MAY_SEE_JOB_DETAILS)
-	@UsedInJavadocOnly(JobDescription.class)
-	ModelAndView powerJob(@PathVariable("id") int id,
-			@RequestParam("power") boolean power);
+      /**
+       * Set the power of a job.
+       *
+       * @param id
+       *            Which job is being deleted
+       * @param power
+       *            Whether to power on or off
+       * @return View ({@code jobdetails.jsp}) and model (based on
+       *         {@link JobDescription})
+       */
+      @PostMapping("/power_job/{id}")
+      @PreAuthorize(MAY_SEE_JOB_DETAILS)
+      @UsedInJavadocOnly(JobDescription.class)
+      ModelAndView powerJob(@PathVariable("id") int id,
+                  @RequestParam("power") boolean power);
 
-	/**
-	 * Get the view and model for the password change form.
-	 *
-	 * @param principal
-	 *            Who is changing their password.
-	 * @return View ({@code password.jsp}) and model (based on
-	 *         {@link PasswordChangeRecord})
-	 */
-	@GetMapping("/change_password")
-	ModelAndView getPasswordChangeForm(Principal principal);
+      /**
+       * Get the view and model for the password change form.
+       *
+       * @param principal
+       *            Who is changing their password.
+       * @return View ({@code password.jsp}) and model (based on
+       *         {@link PasswordChangeRecord})
+       */
+      @GetMapping("/change_password")
+      ModelAndView getPasswordChangeForm(Principal principal);
 
-	/**
-	 * Carry out a password change.
-	 *
-	 * @param user
-	 *            The description of what to change.
-	 * @param principal
-	 *            Who is changing their password.
-	 * @return View ({@code password.jsp}) and model (based on
-	 *         {@link PasswordChangeRecord})
-	 */
-	@PostMapping("/change_password")
-	ModelAndView
-			postPasswordChangeForm(@ModelAttribute(USER_PASSWORD_CHANGE_ATTR)
-			@Valid PasswordChangeRecord user, Principal principal);
+      /**
+       * Carry out a password change.
+       *
+       * @param user
+       *            The description of what to change.
+       * @param principal
+       *            Who is changing their password.
+       * @return View ({@code password.jsp}) and model (based on
+       *         {@link PasswordChangeRecord})
+       */
+      @PostMapping("/change_password")
+      ModelAndView
+                  postPasswordChangeForm(@ModelAttribute(USER_PASSWORD_CHANGE_ATTR)
+                  @Valid PasswordChangeRecord user, Principal principal);
 
-	/**
-	 * Log the user out.
-	 *
-	 * @param request
-	 *            What request was made
-	 * @param response
-	 *            What response to build
-	 * @return Redirect to the login page
-	 * @see LogoutHandler
-	 */
-	@GetMapping("/perform_logout")
-	@UsedInJavadocOnly(LogoutHandler.class)
-	String performLogout(HttpServletRequest request,
-			HttpServletResponse response);
+      /**
+       * Log the user out.
+       *
+       * @param request
+       *            What request was made
+       * @param response
+       *            What response to build
+       * @return Redirect to the login page
+       * @see LogoutHandler
+       */
+      @GetMapping("/perform_logout")
+      @UsedInJavadocOnly(LogoutHandler.class)
+      String performLogout(HttpServletRequest request,
+                  HttpServletResponse response);
 
-	/**
-	 * Get job processes on a chip.
-	 *
-	 * @param id
-	 *            Which job is being asked for
-	 * @param x
-	 * 	          The x coordinate of the chip
-	 * @param y
-	 *            The y coordinate of the chip
-	 * @return List of Processes.  Note all cores are returned though there
-	 *        may be no process on some of them and some may be dead cores.
-	 */
-	@GetMapping("/job_processes/{id}")
-	@PreAuthorize(IS_READER)
-	@ResponseBody
-	List<Process> listProcesses(@PathVariable("id") int id,
-			@Valid @RequestParam("x") int x, @Valid @RequestParam("y") int y);
+      /**
+       * Get job processes on a chip.
+       *
+       * @param id
+       *            Which job is being asked for
+       * @param x
+       *                 The x coordinate of the chip
+       * @param y
+       *            The y coordinate of the chip
+       * @return List of Processes.  Note all cores are returned though there
+       *        may be no process on some of them and some may be dead cores.
+       */
+      @GetMapping("/job_processes/{id}")
+      @PreAuthorize(IS_READER)
+      @ResponseBody
+      List<Process> listProcesses(@PathVariable("id") int id,
+                  @Valid @RequestParam("x") int x, @Valid @RequestParam("y") int y);
 }

@@ -24,47 +24,47 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SessionResourceUpdate {
-	/** The status of the job. */
-	private String status;
+      /** The status of the job. */
+      private String status;
 
-	/** A count of how much resource has been used by the job. */
-	private ResourceUsage resourceUsage;
+      /** A count of how much resource has been used by the job. */
+      private ResourceUsage resourceUsage;
 
-	/**
-	 * Get the status of the job.
-	 *
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
+      /**
+       * Get the status of the job.
+       *
+       * @return the status
+       */
+      public String getStatus() {
+            return status;
+      }
 
-	/**
-	 * Sets the status.
-	 *
-	 * @param status
-	 *            the status to set
-	 */
-	public void setStatus(final String status) {
-		this.status = status;
-	}
+      /**
+       * Sets the status.
+       *
+       * @param status
+       *            the status to set
+       */
+      public void setStatus(final String status) {
+            this.status = status;
+      }
 
-	/**
-	 * Get the count of how much resource has been used by the job.
-	 *
-	 * @return the resourceUsage
-	 */
-	public ResourceUsage getResourceUsage() {
-		return resourceUsage;
-	}
+      /**
+       * Get the count of how much resource has been used by the job.
+       *
+       * @return the resourceUsage
+       */
+      public ResourceUsage getResourceUsage() {
+            return resourceUsage;
+      }
 
-	/**
-	 * Sets the resourceUsage.
-	 *
-	 * @param resourceUsage
-	 *            the resourceUsage to set
-	 */
-	public void setResourceUsage(final ResourceUsage resourceUsage) {
-		this.resourceUsage = resourceUsage;
-	}
+      /**
+       * Sets the resourceUsage.
+       *
+       * @param resourceUsage
+       *            the resourceUsage to set
+       */
+      public void setResourceUsage(final ResourceUsage resourceUsage) {
+            this.resourceUsage = resourceUsage;
+      }
 }

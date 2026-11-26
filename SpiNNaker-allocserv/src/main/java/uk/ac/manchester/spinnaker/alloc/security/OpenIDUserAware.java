@@ -33,83 +33,83 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
  * but they contain fairly similar contents.
  */
 public interface OpenIDUserAware {
-	/**
-	 * Get the underlying OpenID user information.
-	 *
-	 * @return The user info, if known. Pay attention to the attributes.
-	 */
-	Optional<OAuth2User> getOpenIdUser();
+      /**
+       * Get the underlying OpenID user information.
+       *
+       * @return The user info, if known. Pay attention to the attributes.
+       */
+      Optional<OAuth2User> getOpenIdUser();
 
-	/**
-	 * Get the underlying OpenID Bearer token.
-	 *
-	 * @return The bearer token, if known (probably only if originally used to
-	 *         authenticate).
-	 */
-	Optional<OAuth2AccessToken> getBearerToken();
+      /**
+       * Get the underlying OpenID Bearer token.
+       *
+       * @return The bearer token, if known (probably only if originally used to
+       *         authenticate).
+       */
+      Optional<OAuth2AccessToken> getBearerToken();
 
-	/**
-	 * Get a claim/attribute that is a string.
-	 *
-	 * @param claimName
-	 *            The name of the claim.
-	 * @return The string.
-	 * @throws IllegalStateException
-	 *             If {@link #getOpenIdUser()} doesn't provide anything we can
-	 *             get claims from.
-	 */
-	default String getStringClaim(String claimName) {
-		return getOpenIdUser()
-				.map(u -> Objects.toString(u.getAttribute(claimName)))
-						.orElseThrow(() -> new IllegalStateException(
-								"no user or token to supply claim"));
-	}
+      /**
+       * Get a claim/attribute that is a string.
+       *
+       * @param claimName
+       *            The name of the claim.
+       * @return The string.
+       * @throws IllegalStateException
+       *             If {@link #getOpenIdUser()} doesn't provide anything we can
+       *             get claims from.
+       */
+      default String getStringClaim(String claimName) {
+            return getOpenIdUser()
+                        .map(u -> Objects.toString(u.getAttribute(claimName)))
+                                    .orElseThrow(() -> new IllegalStateException(
+                                                "no user or token to supply claim"));
+      }
 
-	/**
-	 * {@return The OpenID subject identifier}
-	 *
-	 * @throws IllegalStateException
-	 *             If the object was made without either a user or a token.
-	 */
-	default String getOpenIdSubject() {
-		return getStringClaim(SUB);
-	}
+      /**
+       * {@return The OpenID subject identifier}
+       *
+       * @throws IllegalStateException
+       *             If the object was made without either a user or a token.
+       */
+      default String getOpenIdSubject() {
+            return getStringClaim(SUB);
+      }
 
-	/**
-	 * The preferred OpenID user name.
-	 *
-	 * <em>We don't use this directly</em>
-	 * as it may clash with other user names.
-	 *
-	 * @return The preferred OpenID user name
-	 * @throws IllegalStateException
-	 *             If the object was made without either a user or a token.
-	 */
-	default String getOpenIdUserName() {
-		return getStringClaim(PREFERRED_USERNAME);
-	}
+      /**
+       * The preferred OpenID user name.
+       *
+       * <em>We don't use this directly</em>
+       * as it may clash with other user names.
+       *
+       * @return The preferred OpenID user name
+       * @throws IllegalStateException
+       *             If the object was made without either a user or a token.
+       */
+      default String getOpenIdUserName() {
+            return getStringClaim(PREFERRED_USERNAME);
+      }
 
-	/**
-	 * {@return The real name of the OpenID user}
-	 *
-	 * @throws IllegalStateException
-	 *             If the object was made without either a user or a token.
-	 */
-	default String getOpenIdName() {
-		return getStringClaim(NAME);
-	}
+      /**
+       * {@return The real name of the OpenID user}
+       *
+       * @throws IllegalStateException
+       *             If the object was made without either a user or a token.
+       */
+      default String getOpenIdName() {
+            return getStringClaim(NAME);
+      }
 
-	/**
-	 * {@return The verified email address of the OpenID user, if available}
-	 */
-	default Optional<String> getOpenIdEmail() {
-		var email = getOpenIdUser().map(uu -> uu.getAttributes())
-				.filter(uu -> uu.containsKey(EMAIL_VERIFIED)
-						&& (Boolean) uu.get(EMAIL_VERIFIED))
-				.map(uu -> uu.get(EMAIL).toString());
-		if (email.isPresent()) {
-			return email;
-		}
-		return null;
-	}
+      /**
+       * {@return The verified email address of the OpenID user, if available}
+       */
+      default Optional<String> getOpenIdEmail() {
+            var email = getOpenIdUser().map(uu -> uu.getAttributes())
+                        .filter(uu -> uu.containsKey(EMAIL_VERIFIED)
+                                    && (Boolean) uu.get(EMAIL_VERIFIED))
+                        .map(uu -> uu.get(EMAIL).toString());
+            if (email.isPresent()) {
+                  return email;
+            }
+            return null;
+      }
 }

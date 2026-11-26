@@ -63,230 +63,230 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 @Service("spalloc-v1-compatibility-service")
 @UsedInJavadocOnly(Prototype.class)
 public class V1CompatService {
-	private static final Logger log = getLogger(V1CompatService.class);
+      private static final Logger log = getLogger(V1CompatService.class);
 
-	/** The overall service properties. */
-	@Autowired
-	private SpallocProperties mainProps;
+      /** The overall service properties. */
+      @Autowired
+      private SpallocProperties mainProps;
 
-	/**
-	 * Factory for {@linkplain V1CompatTask tasks}. Only use via
-	 * {@link #getTask(Socket) getTask(...)} or the test API.
-	 */
-	@Autowired
-	private ObjectProvider<V1CompatTask> taskFactory;
+      /**
+       * Factory for {@linkplain V1CompatTask tasks}. Only use via
+       * {@link #getTask(Socket) getTask(...)} or the test API.
+       */
+      @Autowired
+      private ObjectProvider<V1CompatTask> taskFactory;
 
-	/** How we make threads. */
-	private final ThreadFactory threadFactory;
+      /** How we make threads. */
+      private final ThreadFactory threadFactory;
 
-	/** The service socket. */
-	private ServerSocket serv;
+      /** The service socket. */
+      private ServerSocket serv;
 
-	/** The main network service listener thread. */
-	private Thread servThread;
+      /** The main network service listener thread. */
+      private Thread servThread;
 
-	/**
-	 * How to serialize and deserialize JSON. Would be a bean except then we'd
-	 * be wiring by name.
-	 */
-	private final ObjectMapper mapper;
+      /**
+       * How to serialize and deserialize JSON. Would be a bean except then we'd
+       * be wiring by name.
+       */
+      private final ObjectMapper mapper;
 
-	/** How the majority of threads are launched by the service. */
-	private ExecutorService executor;
+      /** How the majority of threads are launched by the service. */
+      private ExecutorService executor;
 
-	private Duration shutdownTimeout;
+      private Duration shutdownTimeout;
 
-	V1CompatService() {
-		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
-				.build();
-		var group = new ThreadGroup("spalloc-legacy-service");
-		var counter = new ValueHolder<>(1);
-		threadFactory = r -> {
-			var t = new Thread(group, r,
-					"spalloc-legacy-" + counter.update(i -> i + 1));
-			t.setUncaughtExceptionHandler((thread, ex) -> log
-					.error("uncaught exception in {}", thread, ex));
-			return t;
-		};
-	}
+      V1CompatService() {
+            mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
+                        .build();
+            var group = new ThreadGroup("spalloc-legacy-service");
+            var counter = new ValueHolder<>(1);
+            threadFactory = r -> {
+                  var t = new Thread(group, r,
+                              "spalloc-legacy-" + counter.update(i -> i + 1));
+                  t.setUncaughtExceptionHandler((thread, ex) -> log
+                              .error("uncaught exception in {}", thread, ex));
+                  return t;
+            };
+      }
 
-	/** A class that can reach into a compat service. */
-	abstract static class Aware {
-		private final V1CompatService srv;
+      /** A class that can reach into a compat service. */
+      abstract static class Aware {
+            private final V1CompatService srv;
 
-		Aware(V1CompatService service) {
-			srv = requireNonNull(service);
-		}
+            Aware(V1CompatService service) {
+                  srv = requireNonNull(service);
+            }
 
-		/**
-		 * {@return The executor to use}
-		 */
-		protected final ExecutorService getExecutor() {
-			return requireNonNull(srv.executor);
-		}
+            /**
+             * {@return The executor to use}
+             */
+            protected final ExecutorService getExecutor() {
+                  return requireNonNull(srv.executor);
+            }
 
-		/**
-		 * {@return The JSON mapper to use if necessary}
-		 */
-		protected final ObjectMapper getJsonMapper() {
-			return requireNonNull(srv.mapper);
-		}
+            /**
+             * {@return The JSON mapper to use if necessary}
+             */
+            protected final ObjectMapper getJsonMapper() {
+                  return requireNonNull(srv.mapper);
+            }
 
-		/**
-		 * {@return The relevant properties}
-		 */
-		protected final CompatibilityProperties getProperties() {
-			return srv.mainProps.getCompat();
-		}
-	}
+            /**
+             * {@return The relevant properties}
+             */
+            protected final CompatibilityProperties getProperties() {
+                  return srv.mainProps.getCompat();
+            }
+      }
 
-	@PostConstruct
-	private void open() throws IOException {
-		var props = mainProps.getCompat();
-		if (props.getThreadPoolSize() > 0) {
-			log.info("setting thread pool size to {}",
-					props.getThreadPoolSize());
-			executor = newFixedThreadPool(props.getThreadPoolSize(),
-					threadFactory);
-		} else {
-			log.info("using unbounded thread pool");
-			executor = newCachedThreadPool(threadFactory);
-		}
+      @PostConstruct
+      private void open() throws IOException {
+            var props = mainProps.getCompat();
+            if (props.getThreadPoolSize() > 0) {
+                  log.info("setting thread pool size to {}",
+                              props.getThreadPoolSize());
+                  executor = newFixedThreadPool(props.getThreadPoolSize(),
+                              threadFactory);
+            } else {
+                  log.info("using unbounded thread pool");
+                  executor = newCachedThreadPool(threadFactory);
+            }
 
-		if (props.isEnable()) {
-			var addr = new InetSocketAddress(props.getHost(), props.getPort());
-			serv = new ServerSocket();
-			serv.bind(addr);
-			servThread = threadFactory.newThread(this::acceptConnections);
-			servThread.setName("spalloc-legacy-service");
-			log.info("launching listener thread {} on address {}", servThread,
-					addr);
-			servThread.start();
-		}
+            if (props.isEnable()) {
+                  var addr = new InetSocketAddress(props.getHost(), props.getPort());
+                  serv = new ServerSocket();
+                  serv.bind(addr);
+                  servThread = threadFactory.newThread(this::acceptConnections);
+                  servThread.setName("spalloc-legacy-service");
+                  log.info("launching listener thread {} on address {}", servThread,
+                              addr);
+                  servThread.start();
+            }
 
-		this.shutdownTimeout = props.getShutdownTimeout();
-	}
+            this.shutdownTimeout = props.getShutdownTimeout();
+      }
 
-	@PreDestroy
-	private void close() throws IOException, InterruptedException {
-		if (nonNull(serv)) {
-			log.info("shutting down listener thread {}", servThread);
-			// Shut down the server socket first; no new clients
-			servThread.interrupt();
-			serv.close();
-			servThread.join();
-		}
+      @PreDestroy
+      private void close() throws IOException, InterruptedException {
+            if (nonNull(serv)) {
+                  log.info("shutting down listener thread {}", servThread);
+                  // Shut down the server socket first; no new clients
+                  servThread.interrupt();
+                  serv.close();
+                  servThread.join();
+            }
 
-		// Shut down the clients
-		var remainingTasks = executor.shutdownNow();
-		if (!remainingTasks.isEmpty()) {
-			log.warn("there are {} compat tasks outstanding",
-					remainingTasks.size());
-		}
-		if (executor.awaitTermination(shutdownTimeout.toMillis(),
-				MILLISECONDS)) {
-			log.info("compat service stopped");
-		} else {
-			log.warn("compat service executor ({}) still running!", executor);
-		}
-	}
+            // Shut down the clients
+            var remainingTasks = executor.shutdownNow();
+            if (!remainingTasks.isEmpty()) {
+                  log.warn("there are {} compat tasks outstanding",
+                              remainingTasks.size());
+            }
+            if (executor.awaitTermination(shutdownTimeout.toMillis(),
+                        MILLISECONDS)) {
+                  log.info("compat service stopped");
+            } else {
+                  log.warn("compat service executor ({}) still running!", executor);
+            }
+      }
 
-	/**
-	 * Make a task.
-	 *
-	 * @param socket
-	 *            The connected socket that the task will be handling.
-	 * @return The task instance.
-	 */
-	private V1CompatTask getTask(Socket socket) {
-		return taskFactory.getObject(this, socket);
-	}
+      /**
+       * Make a task.
+       *
+       * @param socket
+       *            The connected socket that the task will be handling.
+       * @return The task instance.
+       */
+      private V1CompatTask getTask(Socket socket) {
+            return taskFactory.getObject(this, socket);
+      }
 
-	/**
-	 * Main service loop. Accepts connections and dispatches them to workers.
-	 */
-	private void acceptConnections() {
-		try {
-			while (acceptConnection()) {
-				continue;
-			}
-		} finally {
-			try {
-				serv.close();
-			} catch (IOException e) {
-				log.warn("IO error", e);
-			}
-		}
-	}
+      /**
+       * Main service loop. Accepts connections and dispatches them to workers.
+       */
+      private void acceptConnections() {
+            try {
+                  while (acceptConnection()) {
+                        continue;
+                  }
+            } finally {
+                  try {
+                        serv.close();
+                  } catch (IOException e) {
+                        log.warn("IO error", e);
+                  }
+            }
+      }
 
-	/**
-	 * Accept a single connection and dispatch it to a worker task in a thread.
-	 *
-	 * @return If {@code false}, we want to stop accepting connections.
-	 */
-	private boolean acceptConnection() {
-		try {
-			var service = getTask(serv.accept());
-			executor.execute(() -> service.handleConnection());
-		} catch (SocketException e) {
-			// Check here; interrupt = shutting down = no errors, please
-			if (interrupted()) {
-				return false;
-			}
-			if (serv.isClosed()) {
-				return false;
-			}
-			log.warn("IO error", e);
-		} catch (IOException e) {
-			log.warn("IO error", e);
-		}
-		// If we've been interrupted here, we want the main loop to stop
-		return !interrupted();
-	}
+      /**
+       * Accept a single connection and dispatch it to a worker task in a thread.
+       *
+       * @return If {@code false}, we want to stop accepting connections.
+       */
+      private boolean acceptConnection() {
+            try {
+                  var service = getTask(serv.accept());
+                  executor.execute(() -> service.handleConnection());
+            } catch (SocketException e) {
+                  // Check here; interrupt = shutting down = no errors, please
+                  if (interrupted()) {
+                        return false;
+                  }
+                  if (serv.isClosed()) {
+                        return false;
+                  }
+                  log.warn("IO error", e);
+            } catch (IOException e) {
+                  log.warn("IO error", e);
+            }
+            // If we've been interrupted here, we want the main loop to stop
+            return !interrupted();
+      }
 
-	/**
-	 * Not a public API! Operations for testing only.
-	 *
-	 * @hidden
-	 */
-	@ForTestingOnly
-	public interface TestAPI {
-		/**
-		 * Make an instance of {@link V1CompatTask} that we can talk to.
-		 *
-		 * @param in
-		 *            How to send a message to the task. Should be
-		 *            <em>unconnected</em>.
-		 * @param out
-		 *            How to receive a message from the task. Should be
-		 *            <em>unconnected</em>.
-		 * @return A future that can be cancelled to shut things down.
-		 * @throws Exception
-		 *             If various things go wrong.
-		 */
-		Future<?> launchInstance(PipedWriter in, PipedReader out)
-				throws Exception;
-	}
+      /**
+       * Not a public API! Operations for testing only.
+       *
+       * @hidden
+       */
+      @ForTestingOnly
+      public interface TestAPI {
+            /**
+             * Make an instance of {@link V1CompatTask} that we can talk to.
+             *
+             * @param in
+             *            How to send a message to the task. Should be
+             *            <em>unconnected</em>.
+             * @param out
+             *            How to receive a message from the task. Should be
+             *            <em>unconnected</em>.
+             * @return A future that can be cancelled to shut things down.
+             * @throws Exception
+             *             If various things go wrong.
+             */
+            Future<?> launchInstance(PipedWriter in, PipedReader out)
+                        throws Exception;
+      }
 
-	/**
-	 * Not a public API.
-	 *
-	 * @return Test interface.
-	 * @hidden
-	 */
-	@ForTestingOnly
-	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = ".*/src/test/java/.*")
-	public TestAPI getTestApi() {
-		ForTestingOnly.Utils.checkForTestClassOnStack();
-		return new TestAPI() {
-			@Override
-			public Future<?> launchInstance(PipedWriter in, PipedReader out)
-					throws Exception {
-				var service = taskFactory.getObject(V1CompatService.this,
-						new PipedReader(in), new PipedWriter(out));
-				return executor.submit(() -> service.handleConnection());
-			}
-		};
-	}
+      /**
+       * Not a public API.
+       *
+       * @return Test interface.
+       * @hidden
+       */
+      @ForTestingOnly
+      @RestrictedApi(explanation = "just for testing", link = "index.html",
+                  allowedOnPath = ".*/src/test/java/.*")
+      public TestAPI getTestApi() {
+            ForTestingOnly.Utils.checkForTestClassOnStack();
+            return new TestAPI() {
+                  @Override
+                  public Future<?> launchInstance(PipedWriter in, PipedReader out)
+                              throws Exception {
+                        var service = taskFactory.getObject(V1CompatService.this,
+                                    new PipedReader(in), new PipedWriter(out));
+                        return executor.submit(() -> service.handleConnection());
+                  }
+            };
+      }
 }

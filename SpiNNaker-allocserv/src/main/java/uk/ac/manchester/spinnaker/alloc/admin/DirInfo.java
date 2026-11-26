@@ -47,81 +47,81 @@ import uk.ac.manchester.spinnaker.machine.board.ValidTriadZ;
  * @see MachineDefinitionLoader
  */
 public final class DirInfo extends SQLQueries {
-	private static final Logger log = getLogger(DirInfo.class);
+      private static final Logger log = getLogger(DirInfo.class);
 
-	private static final Map<Integer, EnumMap<Direction, DirInfo>> MAP =
-			new HashMap<>();
+      private static final Map<Integer, EnumMap<Direction, DirInfo>> MAP =
+                  new HashMap<>();
 
-	/**
-	 * When your Z coordinate is this.
-	 */
-	@ValidTriadZ
-	public final int z;
+      /**
+       * When your Z coordinate is this.
+       */
+      @ValidTriadZ
+      public final int z;
 
-	/** When you are moving in this direction. */
-	public final Direction dir;
+      /** When you are moving in this direction. */
+      public final Direction dir;
 
-	/** Change your X coordinate by this. */
-	public final int dx;
+      /** Change your X coordinate by this. */
+      public final int dx;
 
-	/** Change your Y coordinate by this. */
-	public final int dy;
+      /** Change your Y coordinate by this. */
+      public final int dy;
 
-	/** Change your Z coordinate by this. */
-	public final int dz;
+      /** Change your Z coordinate by this. */
+      public final int dz;
 
-	private DirInfo(int z, Direction d, int dx, int dy, int dz) {
-		this.z = z;
-		this.dir = requireNonNull(d);
-		this.dx = dx;
-		this.dy = dy;
-		this.dz = dz;
+      private DirInfo(int z, Direction d, int dx, int dy, int dz) {
+            this.z = z;
+            this.dir = requireNonNull(d);
+            this.dx = dx;
+            this.dy = dy;
+            this.dz = dz;
 
-		MAP.computeIfAbsent(z, __ -> new EnumMap<>(Direction.class)).put(d,
-				this);
-	}
+            MAP.computeIfAbsent(z, __ -> new EnumMap<>(Direction.class)).put(d,
+                        this);
+      }
 
-	/**
-	 * Obtain the correct motion information given a starting point and a
-	 * direction.
-	 *
-	 * @param z
-	 *            The starting Z coordinate. (Motions are independent of X and
-	 *            Y.) Must be in range {@code 0..2}.
-	 * @param direction
-	 *            The direction to move in.
-	 * @return How to move.
-	 */
-	public static DirInfo get(int z, Direction direction) {
-		return MAP.get(z).get(direction);
-	}
+      /**
+       * Obtain the correct motion information given a starting point and a
+       * direction.
+       *
+       * @param z
+       *            The starting Z coordinate. (Motions are independent of X and
+       *            Y.) Must be in range {@code 0..2}.
+       * @param direction
+       *            The direction to move in.
+       * @return How to move.
+       */
+      public static DirInfo get(int z, Direction direction) {
+            return MAP.get(z).get(direction);
+      }
 
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof DirInfo)) {
-			return false;
-		}
-		var di = (DirInfo) o;
-		return z == di.z && dir == di.dir;
-	}
+      @Override
+      public boolean equals(Object o) {
+            if (!(o instanceof DirInfo)) {
+                  return false;
+            }
+            var di = (DirInfo) o;
+            return z == di.z && dir == di.dir;
+      }
 
-	@Override
-	public int hashCode() {
-		return z ^ dir.hashCode();
-	}
+      @Override
+      public int hashCode() {
+            return z ^ dir.hashCode();
+      }
 
-	static void load(Connection conn) {
-		if (MAP.isEmpty()) {
-			conn.transaction(false, () -> {
-				try (var di = conn.query(LOAD_DIR_INFO)) {
-					di.call(row -> new DirInfo(row.getInt("z"),
-							row.getEnum("direction", Direction.class),
-							row.getInt("dx"), row.getInt("dy"),
-							row.getInt("dz")));
-				}
-			});
-			log.debug("created {} DirInfo instances",
-					MAP.values().stream().mapToInt(Map::size).sum());
-		}
-	}
+      static void load(Connection conn) {
+            if (MAP.isEmpty()) {
+                  conn.transaction(false, () -> {
+                        try (var di = conn.query(LOAD_DIR_INFO)) {
+                              di.call(row -> new DirInfo(row.getInt("z"),
+                                          row.getEnum("direction", Direction.class),
+                                          row.getInt("dx"), row.getInt("dy"),
+                                          row.getInt("dz")));
+                        }
+                  });
+                  log.debug("created {} DirInfo instances",
+                              MAP.values().stream().mapToInt(Map::size).sum());
+            }
+      }
 }

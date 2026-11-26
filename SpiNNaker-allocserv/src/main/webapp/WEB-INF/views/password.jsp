@@ -22,25 +22,25 @@ This is a USER form; all users may access this to alter their own password.
 --%>
 
 <jsp:include page="head.jsp">
-	<jsp:param value="Change Password" name="title"/>
+      <jsp:param value="Change Password" name="title"/>
 </jsp:include>
 <body>
 
 <h1>Change Password</h1>
 
 <form:form method="POST" modelAttribute="user">
-	User Name: <c:out value="${ user.username }" escapeXml="true" />
-	<br>
-	<form:label path="oldPassword">Old Password: </form:label>
-	<form:input path="oldPassword" type="password" />
-	<p>
-	<form:label path="newPassword">New Password: </form:label>
-	<form:input path="newPassword" type="password" />
-	<br>
-	<form:label path="newPassword2">New Password (again): </form:label>
-	<form:input path="newPassword2" type="password" />
-	<p>
-	<input type="submit" value="Change Password" />
+      User Name: <c:out value="${ user.username }" escapeXml="true" />
+      <br>
+      <form:label path="oldPassword">Old Password: </form:label>
+      <form:input path="oldPassword" type="password" />
+      <p>
+      <form:label path="newPassword">New Password: </form:label>
+      <form:input path="newPassword" type="password" />
+      <br>
+      <form:label path="newPassword2">New Password (again): </form:label>
+      <form:input path="newPassword2" type="password" />
+      <p>
+      <input type="submit" value="Change Password" />
 </form:form>
 
 <jsp:include page="basicfooter.jsp" />

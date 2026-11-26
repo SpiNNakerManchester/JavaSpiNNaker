@@ -48,102 +48,102 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 @ActiveProfiles("unittest")
 public class AdminControllerTest extends TestSupport {
 
-	@Autowired
-	private MockMvc mvc;
+      @Autowired
+      private MockMvc mvc;
 
-	@Autowired
-	private UserControl userControl;
+      @Autowired
+      private UserControl userControl;
 
-	@Test
-	public void testCreateUser() throws Exception {
-		doTransactionalTest(() -> {
-			// Create an admin
-			UserRecord admin = new UserRecord();
-			admin.setUserName("admin");
-			admin.setEnabled(true);
-			admin.setHasPassword(true);
-			admin.setTrustLevel(TrustLevel.ADMIN);
-			admin.setPassword("admin");
+      @Test
+      public void testCreateUser() throws Exception {
+            doTransactionalTest(() -> {
+                  // Create an admin
+                  UserRecord admin = new UserRecord();
+                  admin.setUserName("admin");
+                  admin.setEnabled(true);
+                  admin.setHasPassword(true);
+                  admin.setTrustLevel(TrustLevel.ADMIN);
+                  admin.setPassword("admin");
 
-			var adminRecord = userControl.createUser(admin,
-					m -> URI.create(""));
-			assertTrue(adminRecord.isPresent());
+                  var adminRecord = userControl.createUser(admin,
+                              m -> URI.create(""));
+                  assertTrue(adminRecord.isPresent());
 
-			String userPass = Base64.getEncoder().encodeToString(
-					"admin:admin".getBytes());
-			try {
-				var result = mvc.perform(
-					MockMvcRequestBuilders
-					.post(BASE_PATH + CREATE_USER_PATH)
-					.with(csrf())
-					.header("Authorization", "Basic " + userPass)
-					.param("internal", "true")
-					.param("userName", "test")
-					.param("trustLevel", "USER")
-					.param("password", "test")
-					.param("enabled", "true")
-					.param("hasPassword", "true")
-					.accept(MediaType.APPLICATION_JSON));
-				result.andExpect(
-						redirectedUrlPattern(BASE_PATH + USERS_PATH + "/*"));
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-	}
+                  String userPass = Base64.getEncoder().encodeToString(
+                              "admin:admin".getBytes());
+                  try {
+                        var result = mvc.perform(
+                              MockMvcRequestBuilders
+                              .post(BASE_PATH + CREATE_USER_PATH)
+                              .with(csrf())
+                              .header("Authorization", "Basic " + userPass)
+                              .param("internal", "true")
+                              .param("userName", "test")
+                              .param("trustLevel", "USER")
+                              .param("password", "test")
+                              .param("enabled", "true")
+                              .param("hasPassword", "true")
+                              .accept(MediaType.APPLICATION_JSON));
+                        result.andExpect(
+                                    redirectedUrlPattern(BASE_PATH + USERS_PATH + "/*"));
+                  } catch (Exception e) {
+                        throw new RuntimeException(e);
+                  }
+            });
+      }
 
-	@Test
-	public void updateUserPassword() throws Exception {
-		doTransactionalTest(() -> {
-			// Create an admin
-			UserRecord admin = new UserRecord();
-			admin.setUserName("admin");
-			admin.setEnabled(true);
-			admin.setHasPassword(true);
-			admin.setTrustLevel(TrustLevel.ADMIN);
-			admin.setPassword("admin");
+      @Test
+      public void updateUserPassword() throws Exception {
+            doTransactionalTest(() -> {
+                  // Create an admin
+                  UserRecord admin = new UserRecord();
+                  admin.setUserName("admin");
+                  admin.setEnabled(true);
+                  admin.setHasPassword(true);
+                  admin.setTrustLevel(TrustLevel.ADMIN);
+                  admin.setPassword("admin");
 
-			var adminRecord = userControl.createUser(admin,
-					m -> URI.create(""));
-			assertTrue(adminRecord.isPresent());
-			log.info("Admin created: {}", adminRecord.get());
+                  var adminRecord = userControl.createUser(admin,
+                              m -> URI.create(""));
+                  assertTrue(adminRecord.isPresent());
+                  log.info("Admin created: {}", adminRecord.get());
 
-			String userPass = Base64.getEncoder().encodeToString(
-					"admin:admin".getBytes());
+                  String userPass = Base64.getEncoder().encodeToString(
+                              "admin:admin".getBytes());
 
-			// Create a user
-			UserRecord test = new UserRecord();
-			test.setUserName("test");
-			test.setEnabled(true);
-			test.setHasPassword(true);
-			test.setTrustLevel(TrustLevel.USER);
-			test.setPassword("test");
+                  // Create a user
+                  UserRecord test = new UserRecord();
+                  test.setUserName("test");
+                  test.setEnabled(true);
+                  test.setHasPassword(true);
+                  test.setTrustLevel(TrustLevel.USER);
+                  test.setPassword("test");
 
-			var testRecord = userControl.createUser(test,
-					m -> URI.create(""));
-			assertTrue(testRecord.isPresent());
-			UserRecord testUser = testRecord.get();
+                  var testRecord = userControl.createUser(test,
+                              m -> URI.create(""));
+                  assertTrue(testRecord.isPresent());
+                  UserRecord testUser = testRecord.get();
 
-			try {
-				var result = mvc.perform(
-					MockMvcRequestBuilders
-					.post(BASE_PATH + USERS_PATH + "/" + testUser.getUserId())
-					.with(csrf())
-					.header("Authorization", "Basic " + userPass)
-					.param("internal", "true")
-					.param("userName", "test")
-					.param("trustLevel", "USER")
-					.param("password", "testchange")
-					.accept(MediaType.APPLICATION_JSON));
+                  try {
+                        var result = mvc.perform(
+                              MockMvcRequestBuilders
+                              .post(BASE_PATH + USERS_PATH + "/" + testUser.getUserId())
+                              .with(csrf())
+                              .header("Authorization", "Basic " + userPass)
+                              .param("internal", "true")
+                              .param("userName", "test")
+                              .param("trustLevel", "USER")
+                              .param("password", "testchange")
+                              .accept(MediaType.APPLICATION_JSON));
 
-				// Note: not sure how to get this dynamically!
-				result.andExpect(
-					forwardedUrl("/WEB-INF/views/admin/userdetails.jsp"));
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-	}
+                        // Note: not sure how to get this dynamically!
+                        result.andExpect(
+                              forwardedUrl("/WEB-INF/views/admin/userdetails.jsp"));
+                  } catch (Exception e) {
+                        throw new RuntimeException(e);
+                  }
+            });
+      }
 
 
 }

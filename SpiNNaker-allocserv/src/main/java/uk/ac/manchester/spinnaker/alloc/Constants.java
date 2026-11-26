@@ -19,9 +19,9 @@ package uk.ac.manchester.spinnaker.alloc;
  * Miscellaneous constants.
  */
 public interface Constants {
-	/** The number of boards in a triad. */
-	int TRIAD_DEPTH = 3;
+      /** The number of boards in a triad. */
+      int TRIAD_DEPTH = 3;
 
-	/** The width and height of a triad, in chips. */
-	int TRIAD_CHIP_SIZE = 12;
+      /** The width and height of a triad, in chips. */
+      int TRIAD_CHIP_SIZE = 12;
 }

@@ -33,105 +33,105 @@ import com.google.errorprone.annotations.concurrent.GuardedBy;
 @Service("control")
 @ManagedResource("Spalloc:type=ServiceMasterControl,name=control")
 public class ServiceMasterControl {
-	@GuardedBy("this")
-	private boolean paused = false;
+      @GuardedBy("this")
+      private boolean paused = false;
 
-	@GuardedBy("this")
-	private boolean dummyBMP = false;
+      @GuardedBy("this")
+      private boolean dummyBMP = false;
 
-	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+      private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param properties
-	 *            The service properties.
-	 */
-	@Autowired
-	public ServiceMasterControl(SpallocProperties properties) {
-		this.paused = properties.isPause();
-		this.dummyBMP = properties.getTransceiver().isDummy();
-	}
+      /**
+       * Create an instance.
+       *
+       * @param properties
+       *            The service properties.
+       */
+      @Autowired
+      public ServiceMasterControl(SpallocProperties properties) {
+            this.paused = properties.isPause();
+            this.dummyBMP = properties.getTransceiver().isDummy();
+      }
 
-	/**
-	 * {@return Whether periodic tasks should not run}
-	 */
-	@ManagedAttribute(description = "Whether periodic tasks should not run.")
-	public synchronized boolean isPaused() {
-		return paused;
-	}
+      /**
+       * {@return Whether periodic tasks should not run}
+       */
+      @ManagedAttribute(description = "Whether periodic tasks should not run.")
+      public synchronized boolean isPaused() {
+            return paused;
+      }
 
-	/**
-	 * Sets whether periodic tasks should not run.
-	 *
-	 * @param paused
-	 *            Whether periodic tasks should not run.
-	 */
-	public synchronized void setPaused(boolean paused) {
-		boolean old = this.paused;
-		this.paused = paused;
-		pcs.firePropertyChange("paused", old, paused);
-	}
+      /**
+       * Sets whether periodic tasks should not run.
+       *
+       * @param paused
+       *            Whether periodic tasks should not run.
+       */
+      public synchronized void setPaused(boolean paused) {
+            boolean old = this.paused;
+            this.paused = paused;
+            pcs.firePropertyChange("paused", old, paused);
+      }
 
-	/**
-	 * Add a listener to the {@link #isPaused() paused} property.
-	 *
-	 * @param listener
-	 *            The listener to add.
-	 */
-	public void addPausedListener(PropertyChangeListener listener) {
-		pcs.addPropertyChangeListener("paused", listener);
-	}
+      /**
+       * Add a listener to the {@link #isPaused() paused} property.
+       *
+       * @param listener
+       *            The listener to add.
+       */
+      public void addPausedListener(PropertyChangeListener listener) {
+            pcs.addPropertyChangeListener("paused", listener);
+      }
 
-	/**
-	 * Remove a listener from the {@link #isPaused() paused} property.
-	 *
-	 * @param listener
-	 *            The listener to remove.
-	 */
-	public void removePausedListener(PropertyChangeListener listener) {
-		pcs.removePropertyChangeListener("paused", listener);
-	}
+      /**
+       * Remove a listener from the {@link #isPaused() paused} property.
+       *
+       * @param listener
+       *            The listener to remove.
+       */
+      public void removePausedListener(PropertyChangeListener listener) {
+            pcs.removePropertyChangeListener("paused", listener);
+      }
 
-	/**
-	 * {@return Whether to use dummy transceivers for talking to the BMPs}
-	 */
-	@ManagedAttribute(
-			description = "Whether the service actually talks to BMPs; "
-					+ "when using a dummy, all actual hardware is ignored.")
-	public synchronized boolean isUseDummyBMP() {
-		return dummyBMP;
-	}
+      /**
+       * {@return Whether to use dummy transceivers for talking to the BMPs}
+       */
+      @ManagedAttribute(
+                  description = "Whether the service actually talks to BMPs; "
+                              + "when using a dummy, all actual hardware is ignored.")
+      public synchronized boolean isUseDummyBMP() {
+            return dummyBMP;
+      }
 
-	/**
-	 * Set whether to use dummy transceivers for talking to the BMPs.
-	 *
-	 * @param dummyBMP
-	 *            Whether to use dummy transceivers for talking to the BMPs.
-	 */
-	public synchronized void setUseDummyBMP(boolean dummyBMP) {
-		boolean old = this.dummyBMP;
-		this.dummyBMP = dummyBMP;
-		pcs.firePropertyChange("useDummyBMP", old, dummyBMP);
-	}
+      /**
+       * Set whether to use dummy transceivers for talking to the BMPs.
+       *
+       * @param dummyBMP
+       *            Whether to use dummy transceivers for talking to the BMPs.
+       */
+      public synchronized void setUseDummyBMP(boolean dummyBMP) {
+            boolean old = this.dummyBMP;
+            this.dummyBMP = dummyBMP;
+            pcs.firePropertyChange("useDummyBMP", old, dummyBMP);
+      }
 
-	/**
-	 * Add a listener to the {@link #isUseDummyBMP() useDummyBMP} property.
-	 *
-	 * @param listener
-	 *            The listener to add.
-	 */
-	public void addUseDummyBMPListener(PropertyChangeListener listener) {
-		pcs.addPropertyChangeListener("useDummyBMP", listener);
-	}
+      /**
+       * Add a listener to the {@link #isUseDummyBMP() useDummyBMP} property.
+       *
+       * @param listener
+       *            The listener to add.
+       */
+      public void addUseDummyBMPListener(PropertyChangeListener listener) {
+            pcs.addPropertyChangeListener("useDummyBMP", listener);
+      }
 
-	/**
-	 * Remove a listener from the {@link #isUseDummyBMP() useDummyBMP} property.
-	 *
-	 * @param listener
-	 *            The listener to remove.
-	 */
-	public void removeUseDummyBMPListener(PropertyChangeListener listener) {
-		pcs.removePropertyChangeListener("useDummyBMP", listener);
-	}
+      /**
+       * Remove a listener from the {@link #isUseDummyBMP() useDummyBMP} property.
+       *
+       * @param listener
+       *            The listener to remove.
+       */
+      public void removeUseDummyBMPListener(PropertyChangeListener listener) {
+            pcs.removePropertyChangeListener("useDummyBMP", listener);
+      }
 }

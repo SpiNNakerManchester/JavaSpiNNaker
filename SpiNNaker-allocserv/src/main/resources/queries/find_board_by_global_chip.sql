@@ -13,37 +13,37 @@
 -- limitations under the License.
 
 SELECT
-	-- IDs
-	boards.board_id,
-	boards.bmp_id,
-	boards.allocated_job AS job_id,
-	-- General info
-	m.machine_name,
-	boards.address,
-	-- Triad (logical) coords
-	boards.x,
-	boards.y,
-	boards.z,
-	-- Cabinet/frame/board (physical) coords
-	bmp.cabinet,
-	bmp.frame,
-	boards.board_num,
-	-- Coords of the chip
-	boards.root_x + bmc.chip_x AS chip_x,
-	boards.root_y + bmc.chip_y AS chip_y,
-	-- Coords of the root of the chip's board
-	boards.root_x AS board_chip_x,
-	boards.root_y AS board_chip_y,
-	-- Coords of the root of the job's root board (if any)
-	root.root_x AS job_root_chip_x,
-	root.root_y AS job_root_chip_y
+      -- IDs
+      boards.board_id,
+      boards.bmp_id,
+      boards.allocated_job AS job_id,
+      -- General info
+      m.machine_name,
+      boards.address,
+      -- Triad (logical) coords
+      boards.x,
+      boards.y,
+      boards.z,
+      -- Cabinet/frame/board (physical) coords
+      bmp.cabinet,
+      bmp.frame,
+      boards.board_num,
+      -- Coords of the chip
+      boards.root_x + bmc.chip_x AS chip_x,
+      boards.root_y + bmc.chip_y AS chip_y,
+      -- Coords of the root of the chip's board
+      boards.root_x AS board_chip_x,
+      boards.root_y AS board_chip_y,
+      -- Coords of the root of the job's root board (if any)
+      root.root_x AS job_root_chip_x,
+      root.root_y AS job_root_chip_y
 FROM boards
-	JOIN bmp USING (bmp_id)
-	JOIN machines AS m ON m.machine_id = bmp.machine_id
-	JOIN board_model_coords AS bmc ON m.board_model = bmc.model
-	-- LEFT JOIN because might not be any job
-	LEFT JOIN jobs ON jobs.job_id = boards.allocated_job
-	LEFT JOIN boards AS root ON root.board_id = jobs.root_id
+      JOIN bmp USING (bmp_id)
+      JOIN machines AS m ON m.machine_id = bmp.machine_id
+      JOIN board_model_coords AS bmc ON m.board_model = bmc.model
+      -- LEFT JOIN because might not be any job
+      LEFT JOIN jobs ON jobs.job_id = boards.allocated_job
+      LEFT JOIN boards AS root ON root.board_id = jobs.root_id
 WHERE
-	boards.machine_id = :machine_id AND chip_x = :x AND chip_y = :y
+      boards.machine_id = :machine_id AND chip_x = :x AND chip_y = :y
 LIMIT 1;
