@@ -29,45 +29,45 @@ import org.springframework.security.core.GrantedAuthority;
  * Just how trusted is a user.
  */
 public enum TrustLevel {
-	/** Grants no real permissions at all. */
-	BASIC(),
-	/**
-	 * Grants read-only permissions in addition to {@link #BASIC}.
-	 *
-	 * @see Grants#GRANT_READER
-	 */
-	READER(GRANT_READER),
-	/**
-	 * Grants job creation and management permissions in addition to
-	 * {@link #READER}.
-	 *
-	 * @see Grants#GRANT_USER
-	 */
-	USER(GRANT_READER, GRANT_USER),
-	/**
-	 * Grants service administration permissions in addition to {@link #USER}.
-	 *
-	 * @see Grants#GRANT_ADMIN
-	 */
-	ADMIN(GRANT_READER, GRANT_USER, GRANT_ADMIN),
-	/**
-	 * Grants ability to run NMPI jobs, in addition to {@link #USER}.
-	 *
-	 * @see Grants#GRANT_NMPI_EXEC
-	 */
-	NMPI_EXEC(GRANT_READER, GRANT_USER, GRANT_NMPI_EXEC);
+    /** Grants no real permissions at all. */
+    BASIC(),
+    /**
+     * Grants read-only permissions in addition to {@link #BASIC}.
+     *
+     * @see Grants#GRANT_READER
+     */
+    READER(GRANT_READER),
+    /**
+     * Grants job creation and management permissions in addition to
+     * {@link #READER}.
+     *
+     * @see Grants#GRANT_USER
+     */
+    USER(GRANT_READER, GRANT_USER),
+    /**
+     * Grants service administration permissions in addition to {@link #USER}.
+     *
+     * @see Grants#GRANT_ADMIN
+     */
+    ADMIN(GRANT_READER, GRANT_USER, GRANT_ADMIN),
+    /**
+     * Grants ability to run NMPI jobs, in addition to {@link #USER}.
+     *
+     * @see Grants#GRANT_NMPI_EXEC
+     */
+    NMPI_EXEC(GRANT_READER, GRANT_USER, GRANT_NMPI_EXEC);
 
-	@SuppressWarnings("ImmutableEnumChecker")
-	private final List<String> grants;
+    @SuppressWarnings("ImmutableEnumChecker")
+    private final List<String> grants;
 
-	TrustLevel(String... grants) {
-		this.grants = List.of(grants);
-	}
+    TrustLevel(String... grants) {
+        this.grants = List.of(grants);
+    }
 
-	/**
-	 * {@return The authorities granted by this trust level}
-	 */
-	Stream<GrantedAuthority> getGrants() {
-		return grants.stream().map(SimpleGrantedAuthority::new);
-	}
+    /**
+     * {@return The authorities granted by this trust level}
+     */
+    Stream<GrantedAuthority> getGrants() {
+        return grants.stream().map(SimpleGrantedAuthority::new);
+    }
 }

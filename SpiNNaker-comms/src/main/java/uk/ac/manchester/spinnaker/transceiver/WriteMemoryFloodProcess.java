@@ -38,129 +38,129 @@ import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
 /** A process for writing memory on multiple SpiNNaker chips at once. */
 class WriteMemoryFloodProcess extends TxrxProcess {
 
-	/**
-	 * Constructs a process for writing memory on multiple SpiNNaker chips.
-	 *
-	 * @param connectionSelector
-	 *            How to select how to communicate.
-	 * @param retryTracker
-	 *            Object used to track how many retries were used in an
-	 *            operation. May be {@code null} if no suck tracking is
-	 *            required.
-	 */
-	WriteMemoryFloodProcess(
-			ConnectionSelector<? extends SCPConnection> connectionSelector,
-			RetryTracker retryTracker) {
-		super(connectionSelector, retryTracker);
-	}
+    /**
+     * Constructs a process for writing memory on multiple SpiNNaker chips.
+     *
+     * @param connectionSelector
+     *            How to select how to communicate.
+     * @param retryTracker
+     *            Object used to track how many retries were used in an
+     *            operation. May be {@code null} if no suck tracking is
+     *            required.
+     */
+    WriteMemoryFloodProcess(
+            ConnectionSelector<? extends SCPConnection> connectionSelector,
+            RetryTracker retryTracker) {
+        super(connectionSelector, retryTracker);
+    }
 
-	private static final float BPW = 4.0F;
+    private static final float BPW = 4.0F;
 
-	private static int numBlocks(int numBytes) {
-		return (int) ceil(ceil(numBytes / BPW) / UDP_MESSAGE_MAX_SIZE);
-	}
+    private static int numBlocks(int numBytes) {
+        return (int) ceil(ceil(numBytes / BPW) / UDP_MESSAGE_MAX_SIZE);
+    }
 
-	/**
-	 * Flood fills memory with data from a buffer.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the fill
-	 * @param baseAddress
-	 *            Where the data is to be written to
-	 * @param data
-	 *            The data, from the <i>position</i> (inclusive) to the
-	 *            <i>limit</i> (exclusive)
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
-			ByteBuffer data)
-			throws IOException, ProcessException, InterruptedException {
-		int numBytes = data.remaining();
-		call(new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
+    /**
+     * Flood fills memory with data from a buffer.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the fill
+     * @param baseAddress
+     *            Where the data is to be written to
+     * @param data
+     *            The data, from the <i>position</i> (inclusive) to the
+     *            <i>limit</i> (exclusive)
+     * @throws IOException
+     *             If anything goes wrong with networking.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     */
+    void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
+            ByteBuffer data)
+            throws IOException, ProcessException, InterruptedException {
+        int numBytes = data.remaining();
+        call(new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
 
-		int blockID = 0;
-		for (var slice : sliceUp(data, UDP_MESSAGE_MAX_SIZE)) {
-			sendRequest(new FloodFillData(nearestNeighbourID, blockID++,
-					baseAddress, slice));
-			baseAddress = baseAddress.add(slice.remaining());
-		}
-		finishBatch();
+        int blockID = 0;
+        for (var slice : sliceUp(data, UDP_MESSAGE_MAX_SIZE)) {
+            sendRequest(new FloodFillData(nearestNeighbourID, blockID++,
+                    baseAddress, slice));
+            baseAddress = baseAddress.add(slice.remaining());
+        }
+        finishBatch();
 
-		call(new FloodFillEnd(nearestNeighbourID));
-	}
+        call(new FloodFillEnd(nearestNeighbourID));
+    }
 
-	/**
-	 * Flood fills memory with data from an input stream.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the fill
-	 * @param baseAddress
-	 *            Where the data is to be written to
-	 * @param dataStream
-	 *            The place to get the data from.
-	 * @param numBytes
-	 *            The number of bytes to read. Be aware that you can specify a
-	 *            number larger than the number of bytes actually available; if
-	 *            you do so, the fill will terminate early and this may cause
-	 *            problems.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or the input stream.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
-			InputStream dataStream, int numBytes)
-			throws IOException, ProcessException, InterruptedException {
-		call(new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
+    /**
+     * Flood fills memory with data from an input stream.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the fill
+     * @param baseAddress
+     *            Where the data is to be written to
+     * @param dataStream
+     *            The place to get the data from.
+     * @param numBytes
+     *            The number of bytes to read. Be aware that you can specify a
+     *            number larger than the number of bytes actually available; if
+     *            you do so, the fill will terminate early and this may cause
+     *            problems.
+     * @throws IOException
+     *             If anything goes wrong with networking or the input stream.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     */
+    void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
+            InputStream dataStream, int numBytes)
+            throws IOException, ProcessException, InterruptedException {
+        call(new FloodFillStart(nearestNeighbourID, numBlocks(numBytes)));
 
-		int blockID = 0;
-		while (numBytes > 0) {
-			// Allocate a new buffer each time; assume message holds ref to it
-			var tmp =
-					read(dataStream, allocate(UDP_MESSAGE_MAX_SIZE), numBytes);
-			if (tmp == null) {
-				break;
-			}
-			sendRequest(new FloodFillData(nearestNeighbourID, blockID,
-					baseAddress, tmp));
-			blockID++;
-			numBytes -= tmp.remaining();
-			baseAddress = baseAddress.add(tmp.remaining());
-		}
-		finishBatch();
+        int blockID = 0;
+        while (numBytes > 0) {
+            // Allocate a new buffer each time; assume message holds ref to it
+            var tmp =
+                    read(dataStream, allocate(UDP_MESSAGE_MAX_SIZE), numBytes);
+            if (tmp == null) {
+                break;
+            }
+            sendRequest(new FloodFillData(nearestNeighbourID, blockID,
+                    baseAddress, tmp));
+            blockID++;
+            numBytes -= tmp.remaining();
+            baseAddress = baseAddress.add(tmp.remaining());
+        }
+        finishBatch();
 
-		call(new FloodFillEnd(nearestNeighbourID));
-	}
+        call(new FloodFillEnd(nearestNeighbourID));
+    }
 
-	/**
-	 * Flood fills memory with data from a file.
-	 *
-	 * @param nearestNeighbourID
-	 *            The ID of the fill
-	 * @param baseAddress
-	 *            Where the data is to be written to
-	 * @param dataFile
-	 *            The data in a file, which will be fully transferred.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or access to the file.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
-			File dataFile)
-			throws IOException, ProcessException, InterruptedException {
-		try (var s = buffer(new FileInputStream(dataFile))) {
-			writeMemory(nearestNeighbourID, baseAddress, s,
-					(int) dataFile.length());
-		}
-	}
+    /**
+     * Flood fills memory with data from a file.
+     *
+     * @param nearestNeighbourID
+     *            The ID of the fill
+     * @param baseAddress
+     *            Where the data is to be written to
+     * @param dataFile
+     *            The data in a file, which will be fully transferred.
+     * @throws IOException
+     *             If anything goes wrong with networking or access to the file.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     */
+    void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
+            File dataFile)
+            throws IOException, ProcessException, InterruptedException {
+        try (var s = buffer(new FileInputStream(dataFile))) {
+            writeMemory(nearestNeighbourID, baseAddress, s,
+                    (int) dataFile.length());
+        }
+    }
 }

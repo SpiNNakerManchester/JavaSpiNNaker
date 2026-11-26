@@ -38,34 +38,34 @@ import uk.ac.manchester.spinnaker.nmpi.model.Icinga2CheckResult;
  * Interface to the Icinga2 API for status monitoring.
  */
 public interface Icinga2 {
-	/**
-	 * Update the status of a service or host.
-	 *
-	 * @param authHeader
-	 *            The authorization header value to authenticate with
-	 * @param result
-	 *            The result of a status check to update with.
-	 * @return The response from the server as a String.
-	 */
-	@Produces(APPLICATION_JSON)
-	@Consumes(APPLICATION_JSON)
-	@POST
-	@Path("/v1/actions/process-check-result")
-	Map<String, Object> processCheckResult(
-			@HeaderParam("Authorization") String authHeader,
-			Icinga2CheckResult result);
+    /**
+     * Update the status of a service or host.
+     *
+     * @param authHeader
+     *            The authorization header value to authenticate with
+     * @param result
+     *            The result of a status check to update with.
+     * @return The response from the server as a String.
+     */
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    @POST
+    @Path("/v1/actions/process-check-result")
+    Map<String, Object> processCheckResult(
+            @HeaderParam("Authorization") String authHeader,
+            Icinga2CheckResult result);
 
-	/**
-	 * Get a client for the API.
-	 *
-	 * @param url
-	 *            The URL to connect to.
-	 * @return A proxy of the API.
-	 */
-	static Icinga2 createClient(String url) {
-		var mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, Icinga2.class,
-				List.of(new JacksonJsonProvider()));
-	}
+    /**
+     * Get a client for the API.
+     *
+     * @param url
+     *            The URL to connect to.
+     * @return A proxy of the API.
+     */
+    static Icinga2 createClient(String url) {
+        var mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(SNAKE_CASE);
+        return JAXRSClientFactory.create(url, Icinga2.class,
+                List.of(new JacksonJsonProvider()));
+    }
 }

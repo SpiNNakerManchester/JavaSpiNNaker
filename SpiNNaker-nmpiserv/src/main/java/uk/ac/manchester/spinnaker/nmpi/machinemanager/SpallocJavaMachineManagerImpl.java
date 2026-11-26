@@ -41,152 +41,152 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * A machine manager that interfaces to the new spalloc service.
  */
 public class SpallocJavaMachineManagerImpl implements MachineManager {
-	/** The version to use for the boards. */
-	private static final String VERSION = "5";
+    /** The version to use for the boards. */
+    private static final String VERSION = "5";
 
-	/** The reason to use when closed. */
-	private static final String REASON_STOPPING = "RemoteSpiNNaker Stopping";
+    /** The reason to use when closed. */
+    private static final String REASON_STOPPING = "RemoteSpiNNaker Stopping";
 
-	/** The reason to use when a job is finished. */
-	private static final String REASON_FINISHED = "Finished";
+    /** The reason to use when a job is finished. */
+    private static final String REASON_FINISHED = "Finished";
 
-	/** The URI of the spalloc server. */
-	@Value("${spalloc.server}")
-	private URI spallocUri;
+    /** The URI of the spalloc server. */
+    @Value("${spalloc.server}")
+    private URI spallocUri;
 
-	/** The spalloc client to use. */
-	private SpallocClientFactory clientFactory;
+    /** The spalloc client to use. */
+    private SpallocClientFactory clientFactory;
 
-	private String username;
+    private String username;
 
-	private String password;
+    private String password;
 
-	/** A map between machines and spalloc jobs. */
-	private Map<SpinnakerMachine, SpallocClient.Job> jobMap = new HashMap<>();
+    /** A map between machines and spalloc jobs. */
+    private Map<SpinnakerMachine, SpallocClient.Job> jobMap = new HashMap<>();
 
-	/**
-	 * The last state of a job for a given machine, so we know when it has
-	 * changed.
-	 */
-	private Map<SpinnakerMachine, State> lastJobState = new HashMap<>();
+    /**
+     * The last state of a job for a given machine, so we know when it has
+     * changed.
+     */
+    private Map<SpinnakerMachine, State> lastJobState = new HashMap<>();
 
-	@PostConstruct
-	private void setup() throws IOException {
-		var userInfo = spallocUri.getUserInfo();
-		int splitPoint = userInfo.indexOf(':');
-		username = userInfo.substring(0, splitPoint);
-		password = userInfo.substring(splitPoint + 1);
-		var spalloc = UriBuilder.fromUri(spallocUri).userInfo(null).build();
-		clientFactory = new SpallocClientFactory(spalloc);
-	}
+    @PostConstruct
+    private void setup() throws IOException {
+        var userInfo = spallocUri.getUserInfo();
+        int splitPoint = userInfo.indexOf(':');
+        username = userInfo.substring(0, splitPoint);
+        password = userInfo.substring(splitPoint + 1);
+        var spalloc = UriBuilder.fromUri(spallocUri).userInfo(null).build();
+        clientFactory = new SpallocClientFactory(spalloc);
+    }
 
-	@Override
-	public void close() throws Exception {
-		for (var job : jobMap.values()) {
-			job.delete(REASON_STOPPING);
-		}
-	}
+    @Override
+    public void close() throws Exception {
+        for (var job : jobMap.values()) {
+            job.delete(REASON_STOPPING);
+        }
+    }
 
-	@Override
-	public List<SpinnakerMachine> getMachines() throws IOException {
-		var client = clientFactory.login(username, password);
-		return client.listMachines().stream().map(
-				m -> new SpinnakerMachine(m.getName(), VERSION,
-						m.getWidth(), m.getHeight(), m.getLiveBoardCount(),
-						null))
-				.collect(Collectors.toList());
-	}
+    @Override
+    public List<SpinnakerMachine> getMachines() throws IOException {
+        var client = clientFactory.login(username, password);
+        return client.listMachines().stream().map(
+                m -> new SpinnakerMachine(m.getName(), VERSION,
+                        m.getWidth(), m.getHeight(), m.getLiveBoardCount(),
+                        null))
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public SpinnakerMachine getNextAvailableMachine(final int nBoards,
-			final String owner, final int jobId) {
-		try {
-			var client = clientFactory.login(username, password);
-			var createJob = new CreateJob(nBoards);
-			createJob.setOwner(owner);
-			createJob.setNmpiJobId(jobId);
-			var job = client.createJob(createJob);
-			job.waitForPower();
-			var m = job.machine();
-			var machine = new SpinnakerMachine(
-					m.getConnections().get(0).getHostname(), VERSION,
-					m.getWidth(), m.getHeight(), nBoards, null);
-			jobMap.put(machine, job);
-			lastJobState.put(machine, State.READY);
-			return machine;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public SpinnakerMachine getNextAvailableMachine(final int nBoards,
+            final String owner, final int jobId) {
+        try {
+            var client = clientFactory.login(username, password);
+            var createJob = new CreateJob(nBoards);
+            createJob.setOwner(owner);
+            createJob.setNmpiJobId(jobId);
+            var job = client.createJob(createJob);
+            job.waitForPower();
+            var m = job.machine();
+            var machine = new SpinnakerMachine(
+                    m.getConnections().get(0).getHostname(), VERSION,
+                    m.getWidth(), m.getHeight(), nBoards, null);
+            jobMap.put(machine, job);
+            lastJobState.put(machine, State.READY);
+            return machine;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public boolean isMachineAvailable(final SpinnakerMachine machine) {
-		final var job = jobMap.get(machine);
-		if (isNull(job)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean isMachineAvailable(final SpinnakerMachine machine) {
+        final var job = jobMap.get(machine);
+        if (isNull(job)) {
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean waitForMachineStateChange(final SpinnakerMachine machine,
-			final int waitTime) {
-		final var job = jobMap.get(machine);
-		if (isNull(job)) {
-			return true;
-		}
-		final var state = lastJobState.get(machine);
-		try {
-			final var newState = job.describe(true).getState();
-			lastJobState.put(machine, newState);
-			return newState == state;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public boolean waitForMachineStateChange(final SpinnakerMachine machine,
+            final int waitTime) {
+        final var job = jobMap.get(machine);
+        if (isNull(job)) {
+            return true;
+        }
+        final var state = lastJobState.get(machine);
+        try {
+            final var newState = job.describe(true).getState();
+            lastJobState.put(machine, newState);
+            return newState == state;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public void releaseMachine(final SpinnakerMachine machine) {
-		final var job = jobMap.get(machine);
-		if (isNull(job)) {
-			return;
-		}
-		try {
-			job.delete(REASON_FINISHED);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		jobMap.remove(machine);
-	}
+    @Override
+    public void releaseMachine(final SpinnakerMachine machine) {
+        final var job = jobMap.get(machine);
+        if (isNull(job)) {
+            return;
+        }
+        try {
+            job.delete(REASON_FINISHED);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        jobMap.remove(machine);
+    }
 
-	@Override
-	public void setMachinePower(final SpinnakerMachine machine,
-			final boolean powerOn) {
-		final var job = jobMap.get(machine);
-		if (isNull(job)) {
-			return;
-		}
-		try {
-			job.setPower(powerOn);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public void setMachinePower(final SpinnakerMachine machine,
+            final boolean powerOn) {
+        final var job = jobMap.get(machine);
+        if (isNull(job)) {
+            return;
+        }
+        try {
+            job.setPower(powerOn);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public ChipCoordinates getChipCoordinates(final SpinnakerMachine machine,
-			final int x, final int y) {
-		final var job = jobMap.get(machine);
-		if (isNull(job)) {
-			return null;
-		}
-		try {
-			var whereIs = job.whereIs(new ChipLocation(x, y))
-					.getPhysicalCoords();
-			return new ChipCoordinates(whereIs.c, whereIs.f, whereIs.b);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public ChipCoordinates getChipCoordinates(final SpinnakerMachine machine,
+            final int x, final int y) {
+        final var job = jobMap.get(machine);
+        if (isNull(job)) {
+            return null;
+        }
+        try {
+            var whereIs = job.whereIs(new ChipLocation(x, y))
+                    .getPhysicalCoords();
+            return new ChipCoordinates(whereIs.c, whereIs.f, whereIs.b);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

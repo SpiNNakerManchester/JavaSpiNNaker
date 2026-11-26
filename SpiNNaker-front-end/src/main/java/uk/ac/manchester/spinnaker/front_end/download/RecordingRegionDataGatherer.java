@@ -49,111 +49,111 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
  * to hold a write transaction open.
  */
 public class RecordingRegionDataGatherer extends DataGatherer {
-	/**
-	 * How long a termination delay has to be to be worth reporting, in
-	 * milliseconds.
-	 */
-	private static final int TERMINATION_REPORT_THRESHOLD = 250;
+    /**
+     * How long a termination delay has to be to be worth reporting, in
+     * milliseconds.
+     */
+    private static final int TERMINATION_REPORT_THRESHOLD = 250;
 
-	private static final Logger log =
-			getLogger(RecordingRegionDataGatherer.class);
+    private static final Logger log =
+            getLogger(RecordingRegionDataGatherer.class);
 
-	private final BufferManagerStorage database;
+    private final BufferManagerStorage database;
 
-	@GuardedBy("itself")
-	private final Map<Placement, List<RecordingRegion>> recordingRegions =
-			new HashMap<>();
+    @GuardedBy("itself")
+    private final Map<Placement, List<RecordingRegion>> recordingRegions =
+            new HashMap<>();
 
-	private final ExecutorService dbWorker = newSingleThreadExecutor();
+    private final ExecutorService dbWorker = newSingleThreadExecutor();
 
-	private int numWrites = 0;
+    private int numWrites = 0;
 
-	/**
-	 * Create a data gatherer.
-	 *
-	 * @param machine
-	 *            The description of the machine talked to.
-	 * @param database
-	 *            Where to put the retrieved data.
-	 * @throws IOException
-	 *            If we can't discover the machine details due to I/O problems
-	 * @throws InterruptedException
-	 *            If communications are interrupted.
-	 * @throws SpinnmanException
-	 *            If the there is an error creating a transceiver.
-	 * @throws StorageException
-	 *           If the database access fails.
-	 */
-	@MustBeClosed
-	public RecordingRegionDataGatherer(Machine machine,
-			BufferManagerStorage database)
-			throws IOException, StorageException, SpinnmanException,
-			InterruptedException {
-		super(database, machine);
-		this.database = database;
-	}
+    /**
+     * Create a data gatherer.
+     *
+     * @param machine
+     *            The description of the machine talked to.
+     * @param database
+     *            Where to put the retrieved data.
+     * @throws IOException
+     *            If we can't discover the machine details due to I/O problems
+     * @throws InterruptedException
+     *            If communications are interrupted.
+     * @throws SpinnmanException
+     *            If the there is an error creating a transceiver.
+     * @throws StorageException
+     *           If the database access fails.
+     */
+    @MustBeClosed
+    public RecordingRegionDataGatherer(Machine machine,
+            BufferManagerStorage database)
+            throws IOException, StorageException, SpinnmanException,
+            InterruptedException {
+        super(database, machine);
+        this.database = database;
+    }
 
-	private List<RecordingRegion> getRegions(Placement placement)
-			throws IOException, ProcessException, InterruptedException {
-		// Cheap check first
-		synchronized (recordingRegions) {
-			var regions = recordingRegions.get(placement);
-			if (regions != null) {
-				return regions;
-			}
-		}
+    private List<RecordingRegion> getRegions(Placement placement)
+            throws IOException, ProcessException, InterruptedException {
+        // Cheap check first
+        synchronized (recordingRegions) {
+            var regions = recordingRegions.get(placement);
+            if (regions != null) {
+                return regions;
+            }
+        }
 
-		// Need to go to the machine; don't hold the lock while doing so
-		var regions = getRecordingRegionDescriptors(txrx, placement);
-		synchronized (recordingRegions) {
-			// Put the value in the map if it wasn't already there
-			return recordingRegions.computeIfAbsent(placement, __ -> regions);
-		}
-	}
+        // Need to go to the machine; don't hold the lock while doing so
+        var regions = getRecordingRegionDescriptors(txrx, placement);
+        synchronized (recordingRegions) {
+            // Put the value in the map if it wasn't already there
+            return recordingRegions.computeIfAbsent(placement, __ -> regions);
+        }
+    }
 
-	@Override
-	protected Region getRecordingRegion(
-			Placement placement, int index)
-			throws IOException, ProcessException, InterruptedException {
-		var region = getRegions(placement).get(index);
-		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
-				index, region);
-		return new Region(placement, index, region.data, (int) region.size,
-				true);
-	}
+    @Override
+    protected Region getRecordingRegion(
+            Placement placement, int index)
+            throws IOException, ProcessException, InterruptedException {
+        var region = getRegions(placement).get(index);
+        log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
+                index, region);
+        return new Region(placement, index, region.data, (int) region.size,
+                true);
+    }
 
-	@Override
-	protected void storeData(Region r, ByteBuffer data) {
-		if (data == null) {
-			log.warn("failed to download data for {} R:{} from {}:{}", r.core,
-					r.regionIndex, r.startAddress, r.size);
-			return;
-		}
-		dbWorker.execute(() -> {
-			log.debug("storing region data for {} R:{} from {} as {} bytes",
-					r.core, r.regionIndex, r.startAddress, data.remaining());
-			try {
-				database.addRecordingContents(r, data);
-				numWrites++;
-			} catch (StorageException e) {
-				log.error("failed to write to database", e);
-			}
-		});
-	}
+    @Override
+    protected void storeData(Region r, ByteBuffer data) {
+        if (data == null) {
+            log.warn("failed to download data for {} R:{} from {}:{}", r.core,
+                    r.regionIndex, r.startAddress, r.size);
+            return;
+        }
+        dbWorker.execute(() -> {
+            log.debug("storing region data for {} R:{} from {} as {} bytes",
+                    r.core, r.regionIndex, r.startAddress, data.remaining());
+            try {
+                database.addRecordingContents(r, data);
+                numWrites++;
+            } catch (StorageException e) {
+                log.error("failed to write to database", e);
+            }
+        });
+    }
 
-	@Override
-	public void close() throws InterruptedException, IOException {
-		super.close();
-		log.info("waiting for database usage to complete");
-		long start = currentTimeMillis();
-		dbWorker.shutdown();
-		// It really shouldn't take a minute to finish
-		dbWorker.awaitTermination(1, MINUTES);
-		long end = currentTimeMillis();
-		log.info("total of {} database writes done", numWrites);
-		if (end - start > TERMINATION_REPORT_THRESHOLD) {
-			double diff = (end - start) / (double) MSEC_PER_SEC;
-			log.info("DB shutdown took {}s", format("%.2f", diff));
-		}
-	}
+    @Override
+    public void close() throws InterruptedException, IOException {
+        super.close();
+        log.info("waiting for database usage to complete");
+        long start = currentTimeMillis();
+        dbWorker.shutdown();
+        // It really shouldn't take a minute to finish
+        dbWorker.awaitTermination(1, MINUTES);
+        long end = currentTimeMillis();
+        log.info("total of {} database writes done", numWrites);
+        if (end - start > TERMINATION_REPORT_THRESHOLD) {
+            double diff = (end - start) / (double) MSEC_PER_SEC;
+            log.info("DB shutdown took {}s", format("%.2f", diff));
+        }
+    }
 }

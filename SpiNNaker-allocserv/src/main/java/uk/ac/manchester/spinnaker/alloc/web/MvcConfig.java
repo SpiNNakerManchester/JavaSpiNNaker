@@ -40,28 +40,28 @@ import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;
 @Configuration
 @Role(ROLE_SUPPORT)
 public class MvcConfig implements WebMvcConfigurer, WebSocketConfigurer {
-	// TODO check if we should use the url path maker bean
+    // TODO check if we should use the url path maker bean
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/system/resources/**")
-				.addResourceLocations(
-						"classpath:/META-INF/public-web-resources/");
-	}
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/system/resources/**")
+                .addResourceLocations(
+                        "classpath:/META-INF/public-web-resources/");
+    }
 
-	@Autowired
-	private SpinWSHandler wsHandler;
+    @Autowired
+    private SpinWSHandler wsHandler;
 
-	@Autowired
-	private SpallocProperties props;
+    @Autowired
+    private SpallocProperties props;
 
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		if (props.getProxy().isEnable()) {
-			// It's its own interceptor!
-			registry.addHandler(wsHandler, "/proxy/*")
-					.addInterceptors(wsHandler)
-					.setAllowedOriginPatterns("*");
-		}
-	}
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        if (props.getProxy().isEnable()) {
+            // It's its own interceptor!
+            registry.addHandler(wsHandler, "/proxy/*")
+                    .addInterceptors(wsHandler)
+                    .setAllowedOriginPatterns("*");
+        }
+    }
 }

@@ -28,65 +28,65 @@ import java.nio.charset.Charset;
  * SpiNNaker.
  */
 public class DatabaseConfirmation extends AbstractNotificationMessage {
-	/**
-	 * The path to the database, as seen by the sender's filesystem. Note that
-	 * there is a length limit; the overall message must fit in a UDP message.
-	 */
-	public final String databasePath;
+    /**
+     * The path to the database, as seen by the sender's filesystem. Note that
+     * there is a length limit; the overall message must fit in a UDP message.
+     */
+    public final String databasePath;
 
-	/** The encoding of the database path into bytes. */
-	private static final Charset CHARSET = defaultCharset();
+    /** The encoding of the database path into bytes. */
+    private static final Charset CHARSET = defaultCharset();
 
-	/**
-	 * Create a message without a database path in it. This is used to
-	 * acknowledge that the job database has been read and say that the
-	 * listening software is ready for the simulation to start.
-	 */
-	public DatabaseConfirmation() {
-		super(DATABASE_CONFIRMATION);
-		databasePath = null;
-	}
+    /**
+     * Create a message without a database path in it. This is used to
+     * acknowledge that the job database has been read and say that the
+     * listening software is ready for the simulation to start.
+     */
+    public DatabaseConfirmation() {
+        super(DATABASE_CONFIRMATION);
+        databasePath = null;
+    }
 
-	/**
-	 * Create a message with a database path in it.
-	 *
-	 * @param databasePath
-	 *            The path.
-	 */
-	public DatabaseConfirmation(String databasePath) {
-		super(DATABASE_CONFIRMATION);
-		this.databasePath = requireNonNull(databasePath);
-	}
+    /**
+     * Create a message with a database path in it.
+     *
+     * @param databasePath
+     *            The path.
+     */
+    public DatabaseConfirmation(String databasePath) {
+        super(DATABASE_CONFIRMATION);
+        this.databasePath = requireNonNull(databasePath);
+    }
 
-	/**
-	 * Deserialise from a buffer.
-	 *
-	 * @param data
-	 *            The buffer to read from
-	 */
-	DatabaseConfirmation(ByteBuffer data) {
-		super(data);
-		if (data.remaining() > 0) {
-			if (data.hasArray()) {
-				databasePath = new String(data.array(),
-						data.arrayOffset() + data.position(), data.remaining(),
-						CHARSET);
-			} else {
-				// Must copy; ugh!
-				var ary = new byte[data.remaining()];
-				data.get(ary);
-				databasePath = new String(ary, CHARSET);
-			}
-		} else {
-			databasePath = null;
-		}
-	}
+    /**
+     * Deserialise from a buffer.
+     *
+     * @param data
+     *            The buffer to read from
+     */
+    DatabaseConfirmation(ByteBuffer data) {
+        super(data);
+        if (data.remaining() > 0) {
+            if (data.hasArray()) {
+                databasePath = new String(data.array(),
+                        data.arrayOffset() + data.position(), data.remaining(),
+                        CHARSET);
+            } else {
+                // Must copy; ugh!
+                var ary = new byte[data.remaining()];
+                data.get(ary);
+                databasePath = new String(ary, CHARSET);
+            }
+        } else {
+            databasePath = null;
+        }
+    }
 
-	@Override
-	public void addToBuffer(ByteBuffer buffer) {
-		super.addToBuffer(buffer);
-		if (databasePath != null) {
-			buffer.put(databasePath.getBytes(CHARSET));
-		}
-	}
+    @Override
+    public void addToBuffer(ByteBuffer buffer) {
+        super.addToBuffer(buffer);
+        if (databasePath != null) {
+            buffer.put(databasePath.getBytes(CHARSET));
+        }
+    }
 }

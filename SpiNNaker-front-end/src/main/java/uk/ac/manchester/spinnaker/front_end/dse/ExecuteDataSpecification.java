@@ -37,74 +37,74 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
  * Common base for executing data specifications.
  */
 public abstract class ExecuteDataSpecification extends BoardLocalSupport
-		implements AutoCloseable {
-	/** The database. */
-	protected final DSEDatabaseEngine db;
+        implements AutoCloseable {
+    /** The database. */
+    protected final DSEDatabaseEngine db;
 
-	/** How to run tasks in parallel. */
-	private final BasicExecutor executor;
+    /** How to run tasks in parallel. */
+    private final BasicExecutor executor;
 
-	/**
-	 * Constructs a base for executing data specifications.
-	 *
-	 * @param machine
-	 *            The description of the SpiNNaker machine.
-	 * @param db
-	 *            The DSE database.
-	 * @throws IOException
-	 *             If the transceiver can't talk to its sockets.
-	 * @throws IllegalStateException
-	 *             If something really strange occurs with talking to the BMP;
-	 *             this constructor should not be doing that!
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If the database cannot be read.
-	 * @throws URISyntaxException
-	 *             If the proxy URI is specified but not valid.
-	 */
-	@MustBeClosed
-	@SuppressWarnings("MustBeClosed")
-	protected ExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
-			throws IOException, ProcessException, InterruptedException,
-			StorageException, URISyntaxException {
-		super(db == null ? null : db.getStorageInterface(), machine);
-		this.db = db;
-		this.executor = new BasicExecutor(PARALLEL_SIZE);
-	}
+    /**
+     * Constructs a base for executing data specifications.
+     *
+     * @param machine
+     *            The description of the SpiNNaker machine.
+     * @param db
+     *            The DSE database.
+     * @throws IOException
+     *             If the transceiver can't talk to its sockets.
+     * @throws IllegalStateException
+     *             If something really strange occurs with talking to the BMP;
+     *             this constructor should not be doing that!
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     * @throws StorageException
+     *             If the database cannot be read.
+     * @throws URISyntaxException
+     *             If the proxy URI is specified but not valid.
+     */
+    @MustBeClosed
+    @SuppressWarnings("MustBeClosed")
+    protected ExecuteDataSpecification(Machine machine, DSEDatabaseEngine db)
+            throws IOException, ProcessException, InterruptedException,
+            StorageException, URISyntaxException {
+        super(db == null ? null : db.getStorageInterface(), machine);
+        this.db = db;
+        this.executor = new BasicExecutor(PARALLEL_SIZE);
+    }
 
-	/**
-	 * Run the tasks in parallel. Submits to {@link #executor} and detoxifies
-	 * the exceptions.
-	 *
-	 * @param tasks
-	 *            The tasks to run.
-	 * @param mapper
-	 *            Gets how to implement a task.
-	 * @throws IOException
-	 *             If the transceiver can't talk to its sockets.
-	 * @throws IllegalStateException
-	 *             If an unexpected exception occurs in any of the parallel
-	 *             tasks.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If the database can't be talked to.
-	 */
-	protected final void processTasksInParallel(Collection<Ethernet> tasks,
-			Function<Ethernet, SimpleCallable> mapper) throws StorageException,
-			IOException, ProcessException, InterruptedException {
-		try {
-			executor.submitTasks(tasks, mapper).awaitAndCombineExceptions();
-		} catch (StorageException | IOException | ProcessException
-				| InterruptedException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected exception", e);
-		}
-	}
+    /**
+     * Run the tasks in parallel. Submits to {@link #executor} and detoxifies
+     * the exceptions.
+     *
+     * @param tasks
+     *            The tasks to run.
+     * @param mapper
+     *            Gets how to implement a task.
+     * @throws IOException
+     *             If the transceiver can't talk to its sockets.
+     * @throws IllegalStateException
+     *             If an unexpected exception occurs in any of the parallel
+     *             tasks.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     * @throws StorageException
+     *             If the database can't be talked to.
+     */
+    protected final void processTasksInParallel(Collection<Ethernet> tasks,
+            Function<Ethernet, SimpleCallable> mapper) throws StorageException,
+            IOException, ProcessException, InterruptedException {
+        try {
+            executor.submitTasks(tasks, mapper).awaitAndCombineExceptions();
+        } catch (StorageException | IOException | ProcessException
+                | InterruptedException | RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalStateException("unexpected exception", e);
+        }
+    }
 }

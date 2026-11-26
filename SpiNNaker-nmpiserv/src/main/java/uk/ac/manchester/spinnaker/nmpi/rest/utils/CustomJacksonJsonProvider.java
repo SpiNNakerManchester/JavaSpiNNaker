@@ -46,68 +46,68 @@ import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 @Consumes(WILDCARD)
 @Produces(WILDCARD)
 public class CustomJacksonJsonProvider extends JacksonJsonProvider {
-	/** Mapper objects of this provider. */
-	private final Set<ObjectMapper> registeredMappers = new HashSet<>();
+    /** Mapper objects of this provider. */
+    private final Set<ObjectMapper> registeredMappers = new HashSet<>();
 
-	/** The module of the provider. */
-	private final SimpleModule module = new SimpleModule();
+    /** The module of the provider. */
+    private final SimpleModule module = new SimpleModule();
 
-	/** The date-time module of the provider. */
-	private final JodaModule jodaModule = new JodaModule();
+    /** The date-time module of the provider. */
+    private final JodaModule jodaModule = new JodaModule();
 
-	/**
-	 * Add a deserialiser for a specific type.
-	 *
-	 * @param <T>
-	 *            The type that will be deserialised.
-	 * @param type
-	 *            The type.
-	 * @param deserialiser
-	 *            The deserialiser.
-	 */
-	public <T> void addDeserialiser(final Class<T> type,
-			final StdDeserializer<T> deserialiser) {
-		module.addDeserializer(type, deserialiser);
-	}
+    /**
+     * Add a deserialiser for a specific type.
+     *
+     * @param <T>
+     *            The type that will be deserialised.
+     * @param type
+     *            The type.
+     * @param deserialiser
+     *            The deserialiser.
+     */
+    public <T> void addDeserialiser(final Class<T> type,
+            final StdDeserializer<T> deserialiser) {
+        module.addDeserializer(type, deserialiser);
+    }
 
-	/**
-	 * Register a new mapper.
-	 *
-	 * @param type
-	 *            The class of the mapper
-	 * @param mediaType
-	 *            The media type to handle
-	 */
-	private void registerMapper(final Class<?> type,
-			final MediaType mediaType) {
-		final var mapper = locateMapper(type, mediaType);
-		if (!registeredMappers.contains(mapper)) {
-			mapper.registerModule(module);
-			mapper.setPropertyNamingStrategy(SNAKE_CASE);
-			mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-			mapper.registerModule(jodaModule);
-			registeredMappers.add(mapper);
-		}
-	}
+    /**
+     * Register a new mapper.
+     *
+     * @param type
+     *            The class of the mapper
+     * @param mediaType
+     *            The media type to handle
+     */
+    private void registerMapper(final Class<?> type,
+            final MediaType mediaType) {
+        final var mapper = locateMapper(type, mediaType);
+        if (!registeredMappers.contains(mapper)) {
+            mapper.registerModule(module);
+            mapper.setPropertyNamingStrategy(SNAKE_CASE);
+            mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.registerModule(jodaModule);
+            registeredMappers.add(mapper);
+        }
+    }
 
-	@Override
-	public Object readFrom(final Class<Object> type, final Type genericType,
-			final Annotation[] annotations, final MediaType mediaType,
-			final MultivaluedMap<String, String> httpHeaders,
-			final InputStream entityStream) throws IOException {
-		registerMapper(type, mediaType);
-		return super.readFrom(type, genericType, annotations, mediaType,
-				httpHeaders, entityStream);
-	}
+    @Override
+    public Object readFrom(final Class<Object> type, final Type genericType,
+            final Annotation[] annotations, final MediaType mediaType,
+            final MultivaluedMap<String, String> httpHeaders,
+            final InputStream entityStream) throws IOException {
+        registerMapper(type, mediaType);
+        return super.readFrom(type, genericType, annotations, mediaType,
+                httpHeaders, entityStream);
+    }
 
-	@Override
-	public void writeTo(final Object value, final Class<?> type,
-			final Type genericType, final Annotation[] annotations,
-			final MediaType mediaType,
-			final MultivaluedMap<String, Object> httpHeaders,
-			final OutputStream entityStream) throws IOException {
-		registerMapper(type, mediaType);
-		super.writeTo(value, type, genericType, annotations, mediaType,
-				httpHeaders, entityStream);
-	}
+    @Override
+    public void writeTo(final Object value, final Class<?> type,
+            final Type genericType, final Annotation[] annotations,
+            final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders,
+            final OutputStream entityStream) throws IOException {
+        registerMapper(type, mediaType);
+        super.writeTo(value, type, genericType, annotations, mediaType,
+                httpHeaders, entityStream);
+    }
 }

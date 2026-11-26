@@ -36,38 +36,38 @@ import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
  * {@code proc_power()} in the same file.
  */
 public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
-	private static final int DELAY_SHIFT = 16;
+    private static final int DELAY_SHIFT = 16;
 
-	private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
+    private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
 
-	/**
-	 * Constructs a request to power on or power off boards.
-	 *
-	 * @param powerCommand
-	 *            The power command being sent
-	 * @param boards
-	 *            The boards on the same backplane to power on or off
-	 * @param delay
-	 *            Number of seconds delay between power state changes of the
-	 *            different boards.
-	 */
-	public SetPower(PowerCommand powerCommand, Collection<BMPBoard> boards,
-			double delay) {
-		super(FRAME_ROOT, CMD_BMP_POWER, argument1(delay, powerCommand),
-				boardMask(boards));
-	}
+    /**
+     * Constructs a request to power on or power off boards.
+     *
+     * @param powerCommand
+     *            The power command being sent
+     * @param boards
+     *            The boards on the same backplane to power on or off
+     * @param delay
+     *            Number of seconds delay between power state changes of the
+     *            different boards.
+     */
+    public SetPower(PowerCommand powerCommand, Collection<BMPBoard> boards,
+            double delay) {
+        super(FRAME_ROOT, CMD_BMP_POWER, argument1(delay, powerCommand),
+                boardMask(boards));
+    }
 
-	private static int argument1(double delay, PowerCommand powerCommand) {
-		return ((int) (delay * MSEC_PER_SEC) << DELAY_SHIFT)
-				| powerCommand.value;
-	}
+    private static int argument1(double delay, PowerCommand powerCommand) {
+        return ((int) (delay * MSEC_PER_SEC) << DELAY_SHIFT)
+                | powerCommand.value;
+    }
 
-	private static int boardMask(Collection<BMPBoard> boards) {
-		return boards.stream().mapToInt(board -> 1 << board.board).sum();
-	}
+    private static int boardMask(Collection<BMPBoard> boards) {
+        return boards.stream().mapToInt(board -> 1 << board.board).sum();
+    }
 
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("powering request", CMD_BMP_POWER, buffer);
-	}
+    @Override
+    public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new BMPResponse("powering request", CMD_BMP_POWER, buffer);
+    }
 }

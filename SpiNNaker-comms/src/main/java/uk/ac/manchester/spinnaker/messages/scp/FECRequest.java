@@ -34,58 +34,58 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 // TODO Seal in 17
 public abstract class FECRequest<T extends SCPResponse> extends SCPRequest<T> {
 
-	/**
-	 * Constructs a command message using default (0) arguements.
-	 *
-	 * @param core
-	 *            Where to send the request.
-	 * @param replyExpected
-	 *            Whether we expect a reply.
-	 * @param command
-	 *            What command we are invoking.
-	 */
-	FECRequest(HasCoreLocation core, boolean replyExpected,
-			RunningCommand command) {
-		super(header(core, replyExpected), command, 0, 0, 0, NO_DATA);
-	}
+    /**
+     * Constructs a command message using default (0) arguements.
+     *
+     * @param core
+     *            Where to send the request.
+     * @param replyExpected
+     *            Whether we expect a reply.
+     * @param command
+     *            What command we are invoking.
+     */
+    FECRequest(HasCoreLocation core, boolean replyExpected,
+            RunningCommand command) {
+        super(header(core, replyExpected), command, 0, 0, 0, NO_DATA);
+    }
 
-	/**
-	 * Constructs a command message using given arguments.
-	 *
-	 * @param core
-	 *            Where to send the request.
-	 * @param replyExpected
-	 *            Whether we expect a reply.
-	 * @param command
-	 *            What command we are invoking.
-	 * @param arg1
-	 *            Argument 1.
-	 * @param arg2
-	 *            Argument 2.
-	 * @param arg3
-	 *            Argument 3.
-	 * @param arg4
-	 *            Argument 4.
-	 */
-	FECRequest(HasCoreLocation core, boolean replyExpected,
-			RunningCommand command, int arg1, int arg2, int arg3, int arg4) {
-		super(header(core, replyExpected), command, arg1, arg2, arg3,
-				wordAsBuffer(arg4));
-	}
+    /**
+     * Constructs a command message using given arguments.
+     *
+     * @param core
+     *            Where to send the request.
+     * @param replyExpected
+     *            Whether we expect a reply.
+     * @param command
+     *            What command we are invoking.
+     * @param arg1
+     *            Argument 1.
+     * @param arg2
+     *            Argument 2.
+     * @param arg3
+     *            Argument 3.
+     * @param arg4
+     *            Argument 4.
+     */
+    FECRequest(HasCoreLocation core, boolean replyExpected,
+            RunningCommand command, int arg1, int arg2, int arg3, int arg4) {
+        super(header(core, replyExpected), command, arg1, arg2, arg3,
+                wordAsBuffer(arg4));
+    }
 
-	/**
-	 * Make a variant of SDP header that is used to talk to running cores.
-	 *
-	 * @param core
-	 *            The SpiNNaker core that we want to talk to.
-	 * @param replyExpected
-	 *            Whether we expect a reply.
-	 * @return The SDP header.
-	 */
-	private static SDPHeader header(HasCoreLocation core,
-			boolean replyExpected) {
-		return new SDPHeader(
-				replyExpected ? REPLY_EXPECTED : REPLY_NOT_EXPECTED,
-				new SDPLocation(core), RUNNING_COMMAND_SDP_PORT);
-	}
+    /**
+     * Make a variant of SDP header that is used to talk to running cores.
+     *
+     * @param core
+     *            The SpiNNaker core that we want to talk to.
+     * @param replyExpected
+     *            Whether we expect a reply.
+     * @return The SDP header.
+     */
+    private static SDPHeader header(HasCoreLocation core,
+            boolean replyExpected) {
+        return new SDPHeader(
+                replyExpected ? REPLY_EXPECTED : REPLY_NOT_EXPECTED,
+                new SDPLocation(core), RUNNING_COMMAND_SDP_PORT);
+    }
 }

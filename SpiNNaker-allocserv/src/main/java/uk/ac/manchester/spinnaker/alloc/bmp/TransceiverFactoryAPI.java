@@ -31,22 +31,22 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
  *            The actual type of transceiver produced.
  */
 public interface TransceiverFactoryAPI<T extends BMPTransceiverInterface> {
-	/**
-	 * Get the transceiver for talking to a given machine's BMPs.
-	 *
-	 * @param machineDescription
-	 *            The machine we're talking about.
-	 * @param bmp
-	 *            Which BMP on the machine are we talking to.
-	 * @return The transceiver. Only operations relating to BMPs are required to
-	 *         be supported.
-	 * @throws IOException
-	 *             If low-level things go wrong.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws SpinnmanException
-	 *             If the transceiver can't be built.
-	 */
-	T getTransciever(Machine machineDescription, BMPCoords bmp)
-			throws IOException, SpinnmanException, InterruptedException;
+    /**
+     * Get the transceiver for talking to a given machine's BMPs.
+     *
+     * @param machineDescription
+     *            The machine we're talking about.
+     * @param bmp
+     *            Which BMP on the machine are we talking to.
+     * @return The transceiver. Only operations relating to BMPs are required to
+     *         be supported.
+     * @throws IOException
+     *             If low-level things go wrong.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws SpinnmanException
+     *             If the transceiver can't be built.
+     */
+    T getTransciever(Machine machineDescription, BMPCoords bmp)
+            throws IOException, SpinnmanException, InterruptedException;
 }

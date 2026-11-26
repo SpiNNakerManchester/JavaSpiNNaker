@@ -30,27 +30,27 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target(TYPE)
 public @interface SARKStruct {
-	/**
-	 * {@return The name of the struct in SARK}
-	 */
-	String value();
+    /**
+     * {@return The name of the struct in SARK}
+     */
+    String value();
 
-	/**
-	 * {@return Which API contains the structure}
-	 */
-	API api() default API.SARK;
+    /**
+     * {@return Which API contains the structure}
+     */
+    API api() default API.SARK;
 
-	/**
-	 * The supported APIs for mapped structures.
-	 */
-	enum API {
-		/** This identifies a structure defined by SARK. */
-		SARK,
-		/** This identifies a structure defined by SCAMP. */
-		SCAMP,
-		/** This identifies a structure defined by spin1_api. */
-		SPIN1API,
-		/** This identifies a structure defined by the BMP. */
-		BMP
-	}
+    /**
+     * The supported APIs for mapped structures.
+     */
+    enum API {
+        /** This identifies a structure defined by SARK. */
+        SARK,
+        /** This identifies a structure defined by SCAMP. */
+        SCAMP,
+        /** This identifies a structure defined by spin1_api. */
+        SPIN1API,
+        /** This identifies a structure defined by the BMP. */
+        BMP
+    }
 }

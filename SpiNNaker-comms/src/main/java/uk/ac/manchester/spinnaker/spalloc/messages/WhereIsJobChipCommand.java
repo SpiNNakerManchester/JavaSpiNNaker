@@ -27,18 +27,18 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * @see WhereIs The basic result type associated with the request
  */
 public class WhereIsJobChipCommand extends Command<Integer> {
-	/**
-	 * Create a request to locate a chip within a job's allocation.
-	 *
-	 * @param jobId
-	 *            The job to request about.
-	 * @param chip
-	 *            The coordinates of the chip to ask about.
-	 */
-	public WhereIsJobChipCommand(int jobId, HasChipLocation chip) {
-		super("where_is");
-		addKwArg("job_id", jobId);
-		addKwArg("chip_x", chip.getX());
-		addKwArg("chip_y", chip.getY());
-	}
+    /**
+     * Create a request to locate a chip within a job's allocation.
+     *
+     * @param jobId
+     *            The job to request about.
+     * @param chip
+     *            The coordinates of the chip to ask about.
+     */
+    public WhereIsJobChipCommand(int jobId, HasChipLocation chip) {
+        super("where_is");
+        addKwArg("job_id", jobId);
+        addKwArg("chip_x", chip.getX());
+        addKwArg("chip_y", chip.getY());
+    }
 }

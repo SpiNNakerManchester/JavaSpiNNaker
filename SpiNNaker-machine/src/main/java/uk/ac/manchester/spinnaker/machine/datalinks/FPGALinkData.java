@@ -28,53 +28,53 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  */
 @Immutable
 public final class FPGALinkData extends AbstractDataLink {
-	/** The link ID from the FPGA perspective. */
-	public final int fpgaLinkId;
+    /** The link ID from the FPGA perspective. */
+    public final int fpgaLinkId;
 
-	/** The ID of the FPGA port being used. */
-	public final FpgaId fpgaId;
+    /** The ID of the FPGA port being used. */
+    public final FpgaId fpgaId;
 
-	/**
-	 * Build an instance.
-	 *
-	 * @param fpgaLinkId
-	 *            The link ID from the FPGA perspective.
-	 * @param fpgaId
-	 *            The ID of the FPGA port being used.
-	 * @param location
-	 *            The location/chip being linked to
-	 * @param linkId
-	 *            The ID/direction coming out of the chip
-	 * @param boardAddress
-	 *            IP address of the data link on the board.
-	 */
-	public FPGALinkData(int fpgaLinkId, FpgaId fpgaId, HasChipLocation location,
-			Direction linkId, InetAddress boardAddress) {
-		super(location, linkId, boardAddress);
-		this.fpgaLinkId = fpgaLinkId;
-		this.fpgaId = fpgaId;
-	}
+    /**
+     * Build an instance.
+     *
+     * @param fpgaLinkId
+     *            The link ID from the FPGA perspective.
+     * @param fpgaId
+     *            The ID of the FPGA port being used.
+     * @param location
+     *            The location/chip being linked to
+     * @param linkId
+     *            The ID/direction coming out of the chip
+     * @param boardAddress
+     *            IP address of the data link on the board.
+     */
+    public FPGALinkData(int fpgaLinkId, FpgaId fpgaId, HasChipLocation location,
+            Direction linkId, InetAddress boardAddress) {
+        super(location, linkId, boardAddress);
+        this.fpgaLinkId = fpgaLinkId;
+        this.fpgaId = fpgaId;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(location, boardAddress, direction, fpgaLinkId,
-				fpgaId);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(location, boardAddress, direction, fpgaLinkId,
+                fpgaId);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof FPGALinkData) {
-			var other = (FPGALinkData) obj;
-			return sameAs(other) && (fpgaLinkId == other.fpgaLinkId)
-					&& (fpgaId == other.fpgaId);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FPGALinkData) {
+            var other = (FPGALinkData) obj;
+            return sameAs(other) && (fpgaLinkId == other.fpgaLinkId)
+                    && (fpgaId == other.fpgaId);
+        }
+        return false;
+    }
 
-	@Override
-	public String toString() {
-		return "FPGALinkData {" + "X:" + getX() + " Y:" + getY()
-				+ ", boardAddress=" + boardAddress + ", linkId=" + direction
-				+ ", fpgaLinkId=" + fpgaLinkId + ", fpgaId=" + fpgaId + "}";
-	}
+    @Override
+    public String toString() {
+        return "FPGALinkData {" + "X:" + getX() + " Y:" + getY()
+                + ", boardAddress=" + boardAddress + ", linkId=" + direction
+                + ", fpgaLinkId=" + fpgaLinkId + ", fpgaId=" + fpgaId + "}";
+    }
 }

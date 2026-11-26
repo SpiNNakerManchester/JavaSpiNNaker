@@ -41,59 +41,59 @@ import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
  *            purposes.
  */
 public interface LocalAuthenticationProvider<TestAPI>
-		extends AuthenticationProvider {
-	/**
-	 * Create a user. Only admins can create users.
-	 *
-	 * @param username
-	 *            The user name to use.
-	 * @param password
-	 *            The <em>unencoded</em> password to use.
-	 * @param trustLevel
-	 *            How much is the user trusted.
-	 * @return True if the user was created, false if the user already existed.
-	 */
-	@PreAuthorize(IS_ADMIN)
-	boolean createUser(String username, String password, TrustLevel trustLevel);
+        extends AuthenticationProvider {
+    /**
+     * Create a user. Only admins can create users.
+     *
+     * @param username
+     *            The user name to use.
+     * @param password
+     *            The <em>unencoded</em> password to use.
+     * @param trustLevel
+     *            How much is the user trusted.
+     * @return True if the user was created, false if the user already existed.
+     */
+    @PreAuthorize(IS_ADMIN)
+    boolean createUser(String username, String password, TrustLevel trustLevel);
 
-	/**
-	 * Unlock any locked users whose lock period has expired.
-	 */
-	void unlockLockedUsers();
+    /**
+     * Unlock any locked users whose lock period has expired.
+     */
+    void unlockLockedUsers();
 
-	/**
-	 * Convert the type of the authentication in the security context.
-	 *
-	 * @param req
-	 *            The request being made.
-	 * @param ctx
-	 *            The security context.
-	 * @return The new authentication (which is also installed into the security
-	 *         context), or {@code null} <em>if the authentication is not
-	 *         changed</em>.
-	 */
-	Authentication updateAuthentication(HttpServletRequest req,
-			SecurityContext ctx);
+    /**
+     * Convert the type of the authentication in the security context.
+     *
+     * @param req
+     *            The request being made.
+     * @param ctx
+     *            The security context.
+     * @return The new authentication (which is also installed into the security
+     *         context), or {@code null} <em>if the authentication is not
+     *         changed</em>.
+     */
+    Authentication updateAuthentication(HttpServletRequest req,
+            SecurityContext ctx);
 
-	/**
-	 * Map the authorities, adding them to the result.
-	 *
-	 * @param authority
-	 *            The overall authority to map.
-	 * @param resultCollection
-	 *            Where to add the authorities.
-	 */
-	void mapAuthorities(OidcUserAuthority authority,
-			Collection<GrantedAuthority> resultCollection);
+    /**
+     * Map the authorities, adding them to the result.
+     *
+     * @param authority
+     *            The overall authority to map.
+     * @param resultCollection
+     *            Where to add the authorities.
+     */
+    void mapAuthorities(OidcUserAuthority authority,
+            Collection<GrantedAuthority> resultCollection);
 
-	/**
-	 * Testing method, other use not supported.
-	 *
-	 * @return The test interface.
-	 * @hidden
-	 */
-	@ForTestingOnly
-	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = ".*/src/test/java/.*")
-	TestAPI getTestAPI();
+    /**
+     * Testing method, other use not supported.
+     *
+     * @return The test interface.
+     * @hidden
+     */
+    @ForTestingOnly
+    @RestrictedApi(explanation = "just for testing", link = "index.html",
+            allowedOnPath = ".*/src/test/java/.*")
+    TestAPI getTestAPI();
 }

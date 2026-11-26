@@ -24,73 +24,73 @@ import java.util.function.Supplier;
  * Extra utilities for working with {@link Optional} in Java 8.
  */
 public abstract class OptionalUtils {
-	private OptionalUtils() {
-	}
+    private OptionalUtils() {
+    }
 
-	/**
-	 * How to apply a sequence of modification transforms to a value in an
-	 * optional if there is a value there at all.
-	 *
-	 * @param <T>
-	 *            The type of value in the optional.
-	 * @param source
-	 *            Where to get the value from.
-	 * @param actions
-	 *            The transformations to apply to the value in the optional if
-	 *            it exists; these are expected to <em>modify</em> that object.
-	 * @return The original optional.
-	 */
-	@SafeVarargs
-	public static <T> Optional<T> apply(Optional<T> source,
-			Consumer<T>... actions) {
-		source.ifPresent(t -> {
-			for (var action : actions) {
-				action.accept(t);
-			}
-		});
-		return source;
-	}
+    /**
+     * How to apply a sequence of modification transforms to a value in an
+     * optional if there is a value there at all.
+     *
+     * @param <T>
+     *            The type of value in the optional.
+     * @param source
+     *            Where to get the value from.
+     * @param actions
+     *            The transformations to apply to the value in the optional if
+     *            it exists; these are expected to <em>modify</em> that object.
+     * @return The original optional.
+     */
+    @SafeVarargs
+    public static <T> Optional<T> apply(Optional<T> source,
+            Consumer<T>... actions) {
+        source.ifPresent(t -> {
+            for (var action : actions) {
+                action.accept(t);
+            }
+        });
+        return source;
+    }
 
-	/**
-	 * How to do one thing if an {@linkplain Optional optional} is present, and
-	 * another if it is absent.
-	 *
-	 * @param <T>
-	 *            The type of value in the optional.
-	 * @param <U>
-	 *            The type of the result.
-	 * @param source
-	 *            Where to get the value from.
-	 * @param ifPresent
-	 *            What to do if the value is available.
-	 * @param ifAbsent
-	 *            What to do if the value is not available.
-	 * @return The result, depending on which arm was taken.
-	 */
-	public static <T, U> U ifElse(Optional<T> source, Function<T, U> ifPresent,
-			Supplier<U> ifAbsent) {
-		return source.map(ifPresent).orElseGet(ifAbsent);
-	}
+    /**
+     * How to do one thing if an {@linkplain Optional optional} is present, and
+     * another if it is absent.
+     *
+     * @param <T>
+     *            The type of value in the optional.
+     * @param <U>
+     *            The type of the result.
+     * @param source
+     *            Where to get the value from.
+     * @param ifPresent
+     *            What to do if the value is available.
+     * @param ifAbsent
+     *            What to do if the value is not available.
+     * @return The result, depending on which arm was taken.
+     */
+    public static <T, U> U ifElse(Optional<T> source, Function<T, U> ifPresent,
+            Supplier<U> ifAbsent) {
+        return source.map(ifPresent).orElseGet(ifAbsent);
+    }
 
-	/**
-	 * How to do one thing if an {@linkplain Optional optional} is present, and
-	 * another if it is absent.
-	 *
-	 * @param <T>
-	 *            The type of value in the optional.
-	 * @param <U>
-	 *            The type of the result.
-	 * @param source
-	 *            Where to get the value from.
-	 * @param ifPresent
-	 *            What to do if the value is available.
-	 * @param ifAbsent
-	 *            What to do if the value is not available.
-	 * @return The result, depending on which arm was taken.
-	 */
-	public static <T, U> Optional<U> ifElseFlat(Optional<T> source,
-			Function<T, U> ifPresent, Supplier<U> ifAbsent) {
-		return source.map(t -> Optional.ofNullable(ifPresent.apply(t)))
-				.orElseGet(() -> Optional.ofNullable(ifAbsent.get()));
-	}
+    /**
+     * How to do one thing if an {@linkplain Optional optional} is present, and
+     * another if it is absent.
+     *
+     * @param <T>
+     *            The type of value in the optional.
+     * @param <U>
+     *            The type of the result.
+     * @param source
+     *            Where to get the value from.
+     * @param ifPresent
+     *            What to do if the value is available.
+     * @param ifAbsent
+     *            What to do if the value is not available.
+     * @return The result, depending on which arm was taken.
+     */
+    public static <T, U> Optional<U> ifElseFlat(Optional<T> source,
+            Function<T, U> ifPresent, Supplier<U> ifAbsent) {
+        return source.map(t -> Optional.ofNullable(ifPresent.apply(t)))
+                .orElseGet(() -> Optional.ofNullable(ifAbsent.get()));
+    }
 }

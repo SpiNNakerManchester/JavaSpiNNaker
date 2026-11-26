@@ -34,29 +34,29 @@ import jakarta.validation.constraints.Pattern;
 @Documented
 @Retention(RUNTIME)
 @Target({
-	METHOD, FIELD, PARAMETER, TYPE_USE
+    METHOD, FIELD, PARAMETER, TYPE_USE
 })
 @Pattern(regexp = "(\\s*\\w+\\s*(,\\s*\\w+\\s*)*)?")
 public @interface TagList {
-	/**
-	 * Message on constraint violated.
-	 *
-	 * @return Message
-	 */
-	String message() //
-	default "${validatedValue} must be a comma-separated list of simple words";
+    /**
+     * Message on constraint violated.
+     *
+     * @return Message
+     */
+    String message() //
+    default "${validatedValue} must be a comma-separated list of simple words";
 
-	/**
-	 * Group of constraints. Required by validation spec.
-	 *
-	 * @return Constraint groups, if any
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Group of constraints. Required by validation spec.
+     *
+     * @return Constraint groups, if any
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Payload info. Required by validation spec.
-	 *
-	 * @return Payloads, if any.
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload info. Required by validation spec.
+     *
+     * @return Payloads, if any.
+     */
+    Class<? extends Payload>[] payload() default {};
 }

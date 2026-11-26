@@ -36,55 +36,55 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * in {@code scamp-cmd.c}.
  */
 public class RouterAlloc extends SCPRequest<RouterAlloc.Response> {
-	private final int numEntries;
+    private final int numEntries;
 
-	/**
-	 * Construct the Router allocate request.
-	 *
-	 * @param chip
-	 *            the chip to allocate on
-	 * @param appID
-	 *            The ID of the application, between 0 and 255
-	 * @param numEntries
-	 *            The number of entries to allocate
-	 *
-	 */
-	public RouterAlloc(HasChipLocation chip, AppID appID, int numEntries) {
-		super(chip.getScampCore(), CMD_ALLOC, argument1(appID), numEntries);
-		this.numEntries = numEntries;
-	}
+    /**
+     * Construct the Router allocate request.
+     *
+     * @param chip
+     *            the chip to allocate on
+     * @param appID
+     *            The ID of the application, between 0 and 255
+     * @param numEntries
+     *            The number of entries to allocate
+     *
+     */
+    public RouterAlloc(HasChipLocation chip, AppID appID, int numEntries) {
+        super(chip.getScampCore(), CMD_ALLOC, argument1(appID), numEntries);
+        this.numEntries = numEntries;
+    }
 
-	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
-	}
+    private static int argument1(AppID appID) {
+        return (appID.appID << BYTE1) | (ALLOC_ROUTING.value << BYTE0);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException,
-			MemoryAllocationFailedException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException,
+            MemoryAllocationFailedException {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request to allocate router entries. */
-	protected final class Response extends
-			PayloadedResponse<Integer, MemoryAllocationFailedException> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
-				MemoryAllocationFailedException {
-			super("Router Allocation", CMD_ALLOC, buffer);
-		}
+    /** An SCP response to a request to allocate router entries. */
+    protected final class Response extends
+            PayloadedResponse<Integer, MemoryAllocationFailedException> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
+                MemoryAllocationFailedException {
+            super("Router Allocation", CMD_ALLOC, buffer);
+        }
 
-		/**
-		 * {@return The base entry index allocated within the router}
-		 */
-		@Override
-		protected Integer parse(ByteBuffer buffer)
-				throws MemoryAllocationFailedException {
-			int baseIndex = buffer.getInt();
-			if (baseIndex == 0) {
-				throw new MemoryAllocationFailedException(format(
-						"Could not allocate %d router entries", numEntries));
-			}
-			return baseIndex;
-		}
-	}
+        /**
+         * {@return The base entry index allocated within the router}
+         */
+        @Override
+        protected Integer parse(ByteBuffer buffer)
+                throws MemoryAllocationFailedException {
+            int baseIndex = buffer.getInt();
+            if (baseIndex == 0) {
+                throw new MemoryAllocationFailedException(format(
+                        "Could not allocate %d router entries", numEntries));
+            }
+            return baseIndex;
+        }
+    }
 }

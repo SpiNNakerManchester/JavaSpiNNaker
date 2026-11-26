@@ -21,22 +21,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestDoubleMapIterable {
 
-	@SuppressWarnings("unused")
-	@Test
-	public void testMultiple() {
-		var aMap = Map.of(//
-				23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
-				43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
+    @SuppressWarnings("unused")
+    @Test
+    public void testMultiple() {
+        var aMap = Map.of(//
+                23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+                43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
 
-		var instance = new DoubleMapIterable<Integer>(aMap);
-		int count = 0;
-		for (var value : instance) {
-			count += 1;
-		}
-		assertEquals(6, count);
-		for (var value : instance) {
-			count += 1;
-		}
-		assertEquals(12, count);
-	}
+        var instance = new DoubleMapIterable<Integer>(aMap);
+        int count = 0;
+        for (var value : instance) {
+            count += 1;
+        }
+        assertEquals(6, count);
+        for (var value : instance) {
+            count += 1;
+        }
+        assertEquals(12, count);
+    }
 }

@@ -24,71 +24,71 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestDoubleMapIterator {
 
-	@Test
-	public void testSingle() {
-		var aMap = Map.of(23.2, Map.of("One", 1, "Two", 2, "Three", 3));
+    @Test
+    public void testSingle() {
+        var aMap = Map.of(23.2, Map.of("One", 1, "Two", 2, "Three", 3));
 
-		var instance = new DoubleMapIterator<>(aMap);
-		int count = 0;
-		while (instance.hasNext()) {
-			int value = instance.next();
-			assertEquals(value, value); // TODO real test
-			count += 1;
-		}
-		assertEquals(3, count);
-	}
+        var instance = new DoubleMapIterator<>(aMap);
+        int count = 0;
+        while (instance.hasNext()) {
+            int value = instance.next();
+            assertEquals(value, value); // TODO real test
+            count += 1;
+        }
+        assertEquals(3, count);
+    }
 
-	@Test
-	public void testMultiple() {
-		var aMap = Map.of(//
-				23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
-				43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
+    @Test
+    public void testMultiple() {
+        var aMap = Map.of(//
+                23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+                43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
 
-		var instance = new DoubleMapIterator<>(aMap);
-		int count = 0;
-		while (instance.hasNext()) {
-			int value = instance.next();
-			assertEquals(value, value); // TODO real test
-			count += 1;
-		}
-		assertEquals(6, count);
+        var instance = new DoubleMapIterator<>(aMap);
+        int count = 0;
+        while (instance.hasNext()) {
+            int value = instance.next();
+            assertEquals(value, value); // TODO real test
+            count += 1;
+        }
+        assertEquals(6, count);
 
-		assertThrows(NoSuchElementException.class, () -> {
-			instance.next();
-		});
+        assertThrows(NoSuchElementException.class, () -> {
+            instance.next();
+        });
 
-	}
+    }
 
-	@Test
-	public void testEmptyWhole() {
-		// Compiler solver needs type hint
-		var aMap = new HashMap<Double, Map<String, Integer>>();
-		var instance = new DoubleMapIterator<>(aMap);
-		int count = 0;
-		while (instance.hasNext()) {
-			int value = instance.next();
-			assertEquals(value, value); // TODO real test
-			// System.out.println(value);
-			count += 1;
-		}
-		assertEquals(0, count);
-	}
+    @Test
+    public void testEmptyWhole() {
+        // Compiler solver needs type hint
+        var aMap = new HashMap<Double, Map<String, Integer>>();
+        var instance = new DoubleMapIterator<>(aMap);
+        int count = 0;
+        while (instance.hasNext()) {
+            int value = instance.next();
+            assertEquals(value, value); // TODO real test
+            // System.out.println(value);
+            count += 1;
+        }
+        assertEquals(0, count);
+    }
 
-	@Test
-	public void testOneEmpty() {
-		// Compiler solver needs type hint
-		var aMap = Map.of(343.2, new HashMap<String, Integer>(), //
-				23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
-				43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
+    @Test
+    public void testOneEmpty() {
+        // Compiler solver needs type hint
+        var aMap = Map.of(343.2, new HashMap<String, Integer>(), //
+                23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+                43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
 
-		var instance = new DoubleMapIterator<>(aMap);
-		int count = 0;
-		while (instance.hasNext()) {
-			int value = instance.next();
-			assertEquals(value, value); // TODO real test
-			count += 1;
-		}
-		assertEquals(6, count);
-	}
+        var instance = new DoubleMapIterator<>(aMap);
+        int count = 0;
+        while (instance.hasNext()) {
+            int value = instance.next();
+            assertEquals(value, value); // TODO real test
+            count += 1;
+        }
+        assertEquals(6, count);
+    }
 
 }

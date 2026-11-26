@@ -59,593 +59,593 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 @RequestMapping(AdminController.BASE_PATH)
 @PreAuthorize(IS_ADMIN)
 public interface AdminController {
-	/** The base path of this interface within the MVC domain. */
-	String BASE_PATH = SystemController.ROOT_PATH + "/admin";
-
-	/** Path to all-users operations. */
-	String USERS_PATH = "/users";
-
-	/** Path to user creation operations. */
-	String CREATE_USER_PATH = "/create-user";
-
-	/** Path to single-user operations. */
-	String USER_PATH = USERS_PATH + "/{id}";
-
-	/** Path to single-user-deletion operation. */
-	String USER_DELETE_PATH = USER_PATH + "/delete";
-
-	/** Path to all-groups operations. */
-	String GROUPS_PATH = "/groups";
-
-	/** Path to group creation operations. */
-	String CREATE_GROUP_PATH = "/create-group";
-
-	/** Path to single-group operations. */
-	String GROUP_PATH = GROUPS_PATH + "/{id}";
-
-	/** Path to user-add-to-group operation. */
-	String GROUP_ADD_USER_PATH = GROUP_PATH + "/add-user";
-
-	/** Path to user-remove-from-group operation. */
-	String GROUP_REMOVE_USER_PATH = GROUP_PATH + "/remove-user/{userid}";
-
-	/** Path to quota-adjustment operation. */
-	String GROUP_QUOTA_PATH = GROUP_PATH + "/adjust-quota";
-
-	/** Path to single-user-deletion operation. */
-	String GROUP_DELETE_PATH = GROUP_PATH + "/delete";
-
-	/** Path to boards operations. */
-	String BOARDS_PATH = "/boards";
-
-	/** Path to blacklist operations. */
-	String BLACKLIST_PATH = "/boards/blacklist";
-
-	/** Path to temperature operations. */
-	String TEMPERATURE_PATH = "/boards/temperature";
-
-	/** Path to machine-instantiation operations. */
-	String MACHINE_PATH = "/machine";
-
-	/** Name of parameter used when submitting a new machine definition. */
-	String MACHINE_FILE_PARAM = "file";
-
-	/** Name of parameter used to mark a retagging. */
-	String MACHINE_RETAG_PARAM = "retag";
-
-	/**
-	 * Get supported ops.
-	 *
-	 * @param model
-	 *            Overall model
-	 * @return the view
-	 */
-	@GetMapping("/")
-	ModelAndView mainUI(ModelMap model);
-
-	/**
-	 * List all users.
-	 *
-	 * @param model
-	 *            Overall model
-	 * @return the model and view
-	 */
-	@GetMapping(USERS_PATH)
-	ModelAndView listUsers(ModelMap model);
-
-	/**
-	 * Get the form for creating a user.
-	 *
-	 * @param model
-	 *            Overall model
-	 * @return the model and view
-	 */
-	@GetMapping(CREATE_USER_PATH)
-	ModelAndView getUserCreationForm(ModelMap model);
-
-	/**
-	 * Create a user.
-	 *
-	 * @param user
-	 *            The description of the user to create
-	 * @param model
-	 *            Overall model
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	@PostMapping(CREATE_USER_PATH)
-	ModelAndView createUser(@Valid @ModelAttribute("user") UserRecord user,
-			ModelMap model, RedirectAttributes attrs);
-
-	/**
-	 * Show user details.
-	 *
-	 * @param id
-	 *            The user ID
-	 * @return the model and view
-	 */
-	@GetMapping(USER_PATH)
-	ModelAndView showUserForm(@PathVariable("id") int id);
-
-	/**
-	 * Modify user details.
-	 *
-	 * @param id
-	 *            The user ID
-	 * @param user
-	 *            The description of the user to update
-	 * @param model
-	 *            Overall model
-	 * @param principal
-	 *            Who is the admin? Used for safety checks.
-	 * @return the model and view
-	 */
-	@PostMapping(USER_PATH)
-	ModelAndView submitUserForm(@PathVariable("id") int id,
-			@Valid @ModelAttribute("user") UserRecord user, ModelMap model,
-			Principal principal);
-
-	/**
-	 * Delete a user.
-	 *
-	 * @param id
-	 *            The user ID to delete
-	 * @param principal
-	 *            Who is the admin? Used for safety checks.
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	@PostMapping(USER_DELETE_PATH)
-	ModelAndView deleteUser(@PathVariable("id") int id, Principal principal,
-			RedirectAttributes attrs);
-
-	/**
-	 * List all groups.
-	 *
-	 * @param model
-	 *            Overall model
-	 * @return the model and view
-	 */
-	@GetMapping(GROUPS_PATH)
-	ModelAndView listGroups(ModelMap model);
-
-	/**
-	 * Get info about a particular group.
-	 *
-	 * @param id
-	 *            The ID of the group to get info about.
-	 * @return the model and view
-	 */
-	@GetMapping(GROUP_PATH)
-	ModelAndView showGroupInfo(@PathVariable("id") int id);
-
-	/**
-	 * Get the form for creating a group.
-	 *
-	 * @param model
-	 *            Overall model
-	 * @return the model (a {@link CreateGroupModel}) and view
-	 */
-	@GetMapping(CREATE_GROUP_PATH)
-	ModelAndView getGroupCreationForm(ModelMap model);
-
-	/**
-	 * Create a group.
-	 *
-	 * @param group
-	 *            The description of the group to create
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	@PostMapping(CREATE_GROUP_PATH)
-	ModelAndView createGroup(
-			@Valid @ModelAttribute("group") CreateGroupModel group,
-			RedirectAttributes attrs);
-
-	/**
-	 * Model used when creating a group. No other purpose.
-	 */
-	class CreateGroupModel {
-		private String name = "";
-
-		@PositiveOrZero
-		private Long quota = null;
-
-		private boolean quotaDefined = false;
-
-		private static final int DECIMAL = 10;
-
-		/**
-		 * {@return The name of the group to create}
-		 */
-		@NotBlank
-		public String getName() {
-			return name;
-		}
-
-		/**
-		 * Sets the name of the group to create.
-		 *
-		 * @param name
-		 *            The name of the group to create.
-		 */
-		public void setName(String name) {
-			this.name = name.strip();
-		}
-
-		/**
-		 * the quota of the group to create, as a String.
-		 *
-		 * Empty if the group is quota-less.
-		 *
-		 * @return The quota of the group to create
-		 */
-		public String getQuota() {
-			return Objects.toString(quota, "");
-		}
-
-		/**
-		 * Sets the quota of the group to create, as a {@link String}.
-		 *
-		 * @param quota
-		 *            The quota of the group to create, as a {@link String}.
-		 */
-		public void setQuota(String quota) {
-			try {
-				this.quota = Long.parseLong(quota, DECIMAL);
-			} catch (NumberFormatException e) {
-				this.quota = null;
-			}
-		}
-
-		/**
-		 * {@return This request, as a partial group record}
-		 */
-		public GroupRecord toGroupRecord() {
-			var gr = new GroupRecord();
-			gr.setGroupName(name);
-			if (quotaDefined) {
-				gr.setQuota(quota);
-			}
-			return gr;
-		}
-
-		/**
-		 * {@return Whether the group has a quota}
-		 */
-		public boolean isQuotad() {
-			return quotaDefined;
-		}
-
-		/**
-		 * Sets whether the group has a quota.
-		 *
-		 * @param value
-		 *            Whether the group has a quota.
-		 */
-		public void setQuotad(boolean value) {
-			quotaDefined = value;
-		}
-	}
-
-	/**
-	 * Add a user to a group.
-	 *
-	 * @param id
-	 *            The group ID to adjust
-	 * @param user
-	 *            The name of the user to add
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	@PostMapping(GROUP_ADD_USER_PATH)
-	ModelAndView addUserToGroup(@PathVariable("id") int id,
-			@NotBlank @RequestParam("user") String user,
-			RedirectAttributes attrs);
-
-	/**
-	 * Remove a user from a group.
-	 *
-	 * @param id
-	 *            The group ID to adjust
-	 * @param userid
-	 *            The ID of the user to remove
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	@PostMapping(GROUP_REMOVE_USER_PATH)
-	ModelAndView removeUserFromGroup(@PathVariable("id") int id,
-			@PathVariable("userid") int userid,
-			RedirectAttributes attrs);
-
-	/**
-	 * Adjust the quota of a group.
-	 *
-	 * @param id
-	 *            The group ID to adjust
-	 * @param delta
-	 *            By how much are we to adjust the quota. In
-	 *            <em>board-hours</em>.
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	@PostMapping(GROUP_QUOTA_PATH)
-	ModelAndView adjustGroupQuota(@PathVariable("id") int id,
-			@RequestParam("delta") int delta, RedirectAttributes attrs);
-
-	/**
-	 * Delete a group. It is legal for a user to not be a member of any group;
-	 * they just won't be able to submit jobs if that's the case.
-	 *
-	 * @param id
-	 *            The group ID to delete
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	@PostMapping(GROUP_DELETE_PATH)
-	ModelAndView deleteGroup(@PathVariable("id") int id,
-			RedirectAttributes attrs);
-
-	/**
-	 * UI for boards.
-	 *
-	 * @param model
-	 *            Overall model
-	 * @return the model and view
-	 */
-	@GetMapping(BOARDS_PATH)
-	ModelAndView boards(ModelMap model);
-
-	/**
-	 * Manipulate a board.
-	 *
-	 * @param board
-	 *            The board coordinates, and possibly the state change
-	 * @param model
-	 *            Overall model
-	 * @return the model and view
-	 */
-	@PostMapping(BOARDS_PATH)
-	ModelAndView board(@Valid @ModelAttribute("board") BoardRecord board,
-			ModelMap model);
-
-	/**
-	 * Save a new blacklist.
-	 *
-	 * @param bldata The blacklist data.
-	 * @return The empty response with the appropriate code.
-	 */
-	@PostMapping(BLACKLIST_PATH)
-	ResponseEntity<Void> blacklistSave(
-			@Valid @RequestBody BlacklistData bldata);
-
-	/**
-	 * Fetch the blacklist for a board from the machine.
-	 *
-	 * @param boardId The board to get the data for.
-	 * @param bmpId The BMP of the board.
-	 * @return the blacklist data.
-	 */
-	@GetMapping(value = BLACKLIST_PATH)
-	@ResponseBody
-	BlacklistData blacklistFetch(
-			@Valid @RequestParam("board_id") int boardId,
-			@Valid @RequestParam("bmp_id") int bmpId);
-
-	/**
-	 * Get the temperature data for a board.
-	 *
-	 * @param boardId
-	 *            Which board to get the data for.
-	 * @param bmpId
-	 *            The BMP that controls the board.
-	 * @return the model and view in a future
-	 */
-	@GetMapping(value = TEMPERATURE_PATH)
-	@ResponseBody
-	BoardTemperatures getTemperatures(
-			@Valid @RequestParam("board_id") int boardId,
-			@Valid @RequestParam("bmp_id") int bmpId);
-
-	/**
-	 * Provide the form for uploading a machine definition.
-	 *
-	 * @param model
-	 *            Overall model
-	 * @return the model and view
-	 */
-	@GetMapping(MACHINE_PATH)
-	ModelAndView machineManagement(ModelMap model);
-
-	/**
-	 * Handle the change of the tags of a machine.
-	 *
-	 * @param machineName
-	 *            The name of the machine being retagged
-	 * @param newTags
-	 *            The tags of the machine; comma-separated list
-	 * @return the model and view
-	 */
-	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
-	ModelAndView retagMachine(
-			@NotEmpty @ModelAttribute("machine") String machineName, @TagList
-			@NotNull @ModelAttribute(MACHINE_RETAG_PARAM) String newTags);
-
-	/**
-	 * Mark a machine as out of service.
-	 *
-	 * @param machineName
-	 *            The name of the machine being disabled
-	 * @return the model and view
-	 */
-	@PostMapping(value = MACHINE_PATH, params = "outOfService")
-	ModelAndView disableMachine(
-			@NotEmpty @ModelAttribute("machine") String machineName);
-
-	/**
-	 * Mark a machine as in service.
-	 *
-	 * @param machineName
-	 *            The name of the machine being enabled
-	 * @return the model and view
-	 */
-	@PostMapping(value = MACHINE_PATH, params = "intoService")
-	ModelAndView enableMachine(
-			@NotEmpty @ModelAttribute("machine") String machineName);
-
-	/**
-	 * Handle the upload of a machine definition. Note that no user has any
-	 * quota set on a newly defined machine; it's totally free to use by
-	 * default.
-	 *
-	 * @param file
-	 *            The file being uploaded
-	 * @return the model and view
-	 */
-	@PostMapping(path = MACHINE_PATH)
-	ModelAndView defineMachine(
-			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
-
-	/**
-	 * The model of a blacklist used by the administration web interface.
-	 */
-	class BlacklistData {
-		private int boardId;
-
-		private int bmpId;
-
-		private String blacklist;
-
-		private boolean present;
-
-		private boolean synched;
-
-		/**
-		 * {@return The board ID}
-		 */
-		@Positive
-		public int getBoardId() {
-			return boardId;
-		}
-
-		/**
-		 * Sets the board ID.
-		 *
-		 * @param boardId
-		 *            The board ID.
-		 */
-		public void setBoardId(int boardId) {
-			this.boardId = boardId;
-		}
-
-		/**
-		 * {@return The BMP ID}
-		 */
-		@Positive
-		public int getBmpId() {
-			return bmpId;
-		}
-
-		/**
-		 * Sets the BMP ID.
-		 *
-		 * @param bmpId The BMP ID.
-		 */
-		public void setBmpId(int bmpId) {
-			this.bmpId = bmpId;
-		}
-
-		/**
-		 * {@return The text of the blacklist, if present}
-		 */
-		public String getBlacklist() {
-			return blacklist;
-		}
-
-		/**
-		 * Sets the text of the blacklist.
-		 *
-		 * @param blacklist
-		 *            The text of the blacklist.
-		 */
-		public void setBlacklist(String blacklist) {
-			this.blacklist = blacklist;
-		}
-
-		/**
-		 * {@return The parsed blacklist}
-		 *
-		 * @throws IllegalArgumentException
-		 *             If the string is invalid.
-		 * @throws NullPointerException
-		 *             If no blacklist data is present.
-		 */
-		public Blacklist getParsedBlacklist() {
-			return new Blacklist(blacklist);
-		}
-
-		/**
-		 * {@return Whether there is blacklist data present}
-		 */
-		public boolean isPresent() {
-			return present;
-		}
-
-		/**
-		 * Sets whether there is blacklist data present.
-		 *
-		 * @param present
-		 *            Whether there is blacklist data present.
-		 */
-		public void setPresent(boolean present) {
-			this.present = present;
-		}
-
-		/**
-		 * {@return Whether the blacklist data is believed to be the same
-		 *     as the data on the board}
-		 */
-		public boolean isSynched() {
-			return synched;
-		}
-
-		/**
-		 * Sets whether the blacklist data is believed to be the same as
-		 *     the data on the board.
-		 *
-		 * @param synched
-		 *            Whether the blacklist data is believed to be the same as
-		 *            the data on the board.
-		 */
-		public void setSynched(boolean synched) {
-			this.synched = synched;
-		}
-
-		@Keep
-		@AssertTrue(message = "blacklist must be validly formatted")
-		private boolean isValidBlacklist() {
-			if (present) {
-				try {
-					new Blacklist(blacklist);
-				} catch (Exception e) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
+    /** The base path of this interface within the MVC domain. */
+    String BASE_PATH = SystemController.ROOT_PATH + "/admin";
+
+    /** Path to all-users operations. */
+    String USERS_PATH = "/users";
+
+    /** Path to user creation operations. */
+    String CREATE_USER_PATH = "/create-user";
+
+    /** Path to single-user operations. */
+    String USER_PATH = USERS_PATH + "/{id}";
+
+    /** Path to single-user-deletion operation. */
+    String USER_DELETE_PATH = USER_PATH + "/delete";
+
+    /** Path to all-groups operations. */
+    String GROUPS_PATH = "/groups";
+
+    /** Path to group creation operations. */
+    String CREATE_GROUP_PATH = "/create-group";
+
+    /** Path to single-group operations. */
+    String GROUP_PATH = GROUPS_PATH + "/{id}";
+
+    /** Path to user-add-to-group operation. */
+    String GROUP_ADD_USER_PATH = GROUP_PATH + "/add-user";
+
+    /** Path to user-remove-from-group operation. */
+    String GROUP_REMOVE_USER_PATH = GROUP_PATH + "/remove-user/{userid}";
+
+    /** Path to quota-adjustment operation. */
+    String GROUP_QUOTA_PATH = GROUP_PATH + "/adjust-quota";
+
+    /** Path to single-user-deletion operation. */
+    String GROUP_DELETE_PATH = GROUP_PATH + "/delete";
+
+    /** Path to boards operations. */
+    String BOARDS_PATH = "/boards";
+
+    /** Path to blacklist operations. */
+    String BLACKLIST_PATH = "/boards/blacklist";
+
+    /** Path to temperature operations. */
+    String TEMPERATURE_PATH = "/boards/temperature";
+
+    /** Path to machine-instantiation operations. */
+    String MACHINE_PATH = "/machine";
+
+    /** Name of parameter used when submitting a new machine definition. */
+    String MACHINE_FILE_PARAM = "file";
+
+    /** Name of parameter used to mark a retagging. */
+    String MACHINE_RETAG_PARAM = "retag";
+
+    /**
+     * Get supported ops.
+     *
+     * @param model
+     *            Overall model
+     * @return the view
+     */
+    @GetMapping("/")
+    ModelAndView mainUI(ModelMap model);
+
+    /**
+     * List all users.
+     *
+     * @param model
+     *            Overall model
+     * @return the model and view
+     */
+    @GetMapping(USERS_PATH)
+    ModelAndView listUsers(ModelMap model);
+
+    /**
+     * Get the form for creating a user.
+     *
+     * @param model
+     *            Overall model
+     * @return the model and view
+     */
+    @GetMapping(CREATE_USER_PATH)
+    ModelAndView getUserCreationForm(ModelMap model);
+
+    /**
+     * Create a user.
+     *
+     * @param user
+     *            The description of the user to create
+     * @param model
+     *            Overall model
+     * @param attrs
+     *            Where to put attributes of the model so that they are
+     *            respected after the redirect without being present in the URL.
+     * @return the model and view
+     */
+    @PostMapping(CREATE_USER_PATH)
+    ModelAndView createUser(@Valid @ModelAttribute("user") UserRecord user,
+            ModelMap model, RedirectAttributes attrs);
+
+    /**
+     * Show user details.
+     *
+     * @param id
+     *            The user ID
+     * @return the model and view
+     */
+    @GetMapping(USER_PATH)
+    ModelAndView showUserForm(@PathVariable("id") int id);
+
+    /**
+     * Modify user details.
+     *
+     * @param id
+     *            The user ID
+     * @param user
+     *            The description of the user to update
+     * @param model
+     *            Overall model
+     * @param principal
+     *            Who is the admin? Used for safety checks.
+     * @return the model and view
+     */
+    @PostMapping(USER_PATH)
+    ModelAndView submitUserForm(@PathVariable("id") int id,
+            @Valid @ModelAttribute("user") UserRecord user, ModelMap model,
+            Principal principal);
+
+    /**
+     * Delete a user.
+     *
+     * @param id
+     *            The user ID to delete
+     * @param principal
+     *            Who is the admin? Used for safety checks.
+     * @param attrs
+     *            Where to put attributes of the model so that they are
+     *            respected after the redirect without being present in the URL.
+     * @return the model and view
+     */
+    @PostMapping(USER_DELETE_PATH)
+    ModelAndView deleteUser(@PathVariable("id") int id, Principal principal,
+            RedirectAttributes attrs);
+
+    /**
+     * List all groups.
+     *
+     * @param model
+     *            Overall model
+     * @return the model and view
+     */
+    @GetMapping(GROUPS_PATH)
+    ModelAndView listGroups(ModelMap model);
+
+    /**
+     * Get info about a particular group.
+     *
+     * @param id
+     *            The ID of the group to get info about.
+     * @return the model and view
+     */
+    @GetMapping(GROUP_PATH)
+    ModelAndView showGroupInfo(@PathVariable("id") int id);
+
+    /**
+     * Get the form for creating a group.
+     *
+     * @param model
+     *            Overall model
+     * @return the model (a {@link CreateGroupModel}) and view
+     */
+    @GetMapping(CREATE_GROUP_PATH)
+    ModelAndView getGroupCreationForm(ModelMap model);
+
+    /**
+     * Create a group.
+     *
+     * @param group
+     *            The description of the group to create
+     * @param attrs
+     *            Where to put attributes of the model so that they are
+     *            respected after the redirect without being present in the URL.
+     * @return the model and view
+     */
+    @PostMapping(CREATE_GROUP_PATH)
+    ModelAndView createGroup(
+            @Valid @ModelAttribute("group") CreateGroupModel group,
+            RedirectAttributes attrs);
+
+    /**
+     * Model used when creating a group. No other purpose.
+     */
+    class CreateGroupModel {
+        private String name = "";
+
+        @PositiveOrZero
+        private Long quota = null;
+
+        private boolean quotaDefined = false;
+
+        private static final int DECIMAL = 10;
+
+        /**
+         * {@return The name of the group to create}
+         */
+        @NotBlank
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Sets the name of the group to create.
+         *
+         * @param name
+         *            The name of the group to create.
+         */
+        public void setName(String name) {
+            this.name = name.strip();
+        }
+
+        /**
+         * the quota of the group to create, as a String.
+         *
+         * Empty if the group is quota-less.
+         *
+         * @return The quota of the group to create
+         */
+        public String getQuota() {
+            return Objects.toString(quota, "");
+        }
+
+        /**
+         * Sets the quota of the group to create, as a {@link String}.
+         *
+         * @param quota
+         *            The quota of the group to create, as a {@link String}.
+         */
+        public void setQuota(String quota) {
+            try {
+                this.quota = Long.parseLong(quota, DECIMAL);
+            } catch (NumberFormatException e) {
+                this.quota = null;
+            }
+        }
+
+        /**
+         * {@return This request, as a partial group record}
+         */
+        public GroupRecord toGroupRecord() {
+            var gr = new GroupRecord();
+            gr.setGroupName(name);
+            if (quotaDefined) {
+                gr.setQuota(quota);
+            }
+            return gr;
+        }
+
+        /**
+         * {@return Whether the group has a quota}
+         */
+        public boolean isQuotad() {
+            return quotaDefined;
+        }
+
+        /**
+         * Sets whether the group has a quota.
+         *
+         * @param value
+         *            Whether the group has a quota.
+         */
+        public void setQuotad(boolean value) {
+            quotaDefined = value;
+        }
+    }
+
+    /**
+     * Add a user to a group.
+     *
+     * @param id
+     *            The group ID to adjust
+     * @param user
+     *            The name of the user to add
+     * @param attrs
+     *            Where to put attributes of the model so that they are
+     *            respected after the redirect without being present in the URL.
+     * @return the model and view
+     */
+    @PostMapping(GROUP_ADD_USER_PATH)
+    ModelAndView addUserToGroup(@PathVariable("id") int id,
+            @NotBlank @RequestParam("user") String user,
+            RedirectAttributes attrs);
+
+    /**
+     * Remove a user from a group.
+     *
+     * @param id
+     *            The group ID to adjust
+     * @param userid
+     *            The ID of the user to remove
+     * @param attrs
+     *            Where to put attributes of the model so that they are
+     *            respected after the redirect without being present in the URL.
+     * @return the model and view
+     */
+    @PostMapping(GROUP_REMOVE_USER_PATH)
+    ModelAndView removeUserFromGroup(@PathVariable("id") int id,
+            @PathVariable("userid") int userid,
+            RedirectAttributes attrs);
+
+    /**
+     * Adjust the quota of a group.
+     *
+     * @param id
+     *            The group ID to adjust
+     * @param delta
+     *            By how much are we to adjust the quota. In
+     *            <em>board-hours</em>.
+     * @param attrs
+     *            Where to put attributes of the model so that they are
+     *            respected after the redirect without being present in the URL.
+     * @return the model and view
+     */
+    @PostMapping(GROUP_QUOTA_PATH)
+    ModelAndView adjustGroupQuota(@PathVariable("id") int id,
+            @RequestParam("delta") int delta, RedirectAttributes attrs);
+
+    /**
+     * Delete a group. It is legal for a user to not be a member of any group;
+     * they just won't be able to submit jobs if that's the case.
+     *
+     * @param id
+     *            The group ID to delete
+     * @param attrs
+     *            Where to put attributes of the model so that they are
+     *            respected after the redirect without being present in the URL.
+     * @return the model and view
+     */
+    @PostMapping(GROUP_DELETE_PATH)
+    ModelAndView deleteGroup(@PathVariable("id") int id,
+            RedirectAttributes attrs);
+
+    /**
+     * UI for boards.
+     *
+     * @param model
+     *            Overall model
+     * @return the model and view
+     */
+    @GetMapping(BOARDS_PATH)
+    ModelAndView boards(ModelMap model);
+
+    /**
+     * Manipulate a board.
+     *
+     * @param board
+     *            The board coordinates, and possibly the state change
+     * @param model
+     *            Overall model
+     * @return the model and view
+     */
+    @PostMapping(BOARDS_PATH)
+    ModelAndView board(@Valid @ModelAttribute("board") BoardRecord board,
+            ModelMap model);
+
+    /**
+     * Save a new blacklist.
+     *
+     * @param bldata The blacklist data.
+     * @return The empty response with the appropriate code.
+     */
+    @PostMapping(BLACKLIST_PATH)
+    ResponseEntity<Void> blacklistSave(
+            @Valid @RequestBody BlacklistData bldata);
+
+    /**
+     * Fetch the blacklist for a board from the machine.
+     *
+     * @param boardId The board to get the data for.
+     * @param bmpId The BMP of the board.
+     * @return the blacklist data.
+     */
+    @GetMapping(value = BLACKLIST_PATH)
+    @ResponseBody
+    BlacklistData blacklistFetch(
+            @Valid @RequestParam("board_id") int boardId,
+            @Valid @RequestParam("bmp_id") int bmpId);
+
+    /**
+     * Get the temperature data for a board.
+     *
+     * @param boardId
+     *            Which board to get the data for.
+     * @param bmpId
+     *            The BMP that controls the board.
+     * @return the model and view in a future
+     */
+    @GetMapping(value = TEMPERATURE_PATH)
+    @ResponseBody
+    BoardTemperatures getTemperatures(
+            @Valid @RequestParam("board_id") int boardId,
+            @Valid @RequestParam("bmp_id") int bmpId);
+
+    /**
+     * Provide the form for uploading a machine definition.
+     *
+     * @param model
+     *            Overall model
+     * @return the model and view
+     */
+    @GetMapping(MACHINE_PATH)
+    ModelAndView machineManagement(ModelMap model);
+
+    /**
+     * Handle the change of the tags of a machine.
+     *
+     * @param machineName
+     *            The name of the machine being retagged
+     * @param newTags
+     *            The tags of the machine; comma-separated list
+     * @return the model and view
+     */
+    @PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
+    ModelAndView retagMachine(
+            @NotEmpty @ModelAttribute("machine") String machineName, @TagList
+            @NotNull @ModelAttribute(MACHINE_RETAG_PARAM) String newTags);
+
+    /**
+     * Mark a machine as out of service.
+     *
+     * @param machineName
+     *            The name of the machine being disabled
+     * @return the model and view
+     */
+    @PostMapping(value = MACHINE_PATH, params = "outOfService")
+    ModelAndView disableMachine(
+            @NotEmpty @ModelAttribute("machine") String machineName);
+
+    /**
+     * Mark a machine as in service.
+     *
+     * @param machineName
+     *            The name of the machine being enabled
+     * @return the model and view
+     */
+    @PostMapping(value = MACHINE_PATH, params = "intoService")
+    ModelAndView enableMachine(
+            @NotEmpty @ModelAttribute("machine") String machineName);
+
+    /**
+     * Handle the upload of a machine definition. Note that no user has any
+     * quota set on a newly defined machine; it's totally free to use by
+     * default.
+     *
+     * @param file
+     *            The file being uploaded
+     * @return the model and view
+     */
+    @PostMapping(path = MACHINE_PATH)
+    ModelAndView defineMachine(
+            @NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
+
+    /**
+     * The model of a blacklist used by the administration web interface.
+     */
+    class BlacklistData {
+        private int boardId;
+
+        private int bmpId;
+
+        private String blacklist;
+
+        private boolean present;
+
+        private boolean synched;
+
+        /**
+         * {@return The board ID}
+         */
+        @Positive
+        public int getBoardId() {
+            return boardId;
+        }
+
+        /**
+         * Sets the board ID.
+         *
+         * @param boardId
+         *            The board ID.
+         */
+        public void setBoardId(int boardId) {
+            this.boardId = boardId;
+        }
+
+        /**
+         * {@return The BMP ID}
+         */
+        @Positive
+        public int getBmpId() {
+            return bmpId;
+        }
+
+        /**
+         * Sets the BMP ID.
+         *
+         * @param bmpId The BMP ID.
+         */
+        public void setBmpId(int bmpId) {
+            this.bmpId = bmpId;
+        }
+
+        /**
+         * {@return The text of the blacklist, if present}
+         */
+        public String getBlacklist() {
+            return blacklist;
+        }
+
+        /**
+         * Sets the text of the blacklist.
+         *
+         * @param blacklist
+         *            The text of the blacklist.
+         */
+        public void setBlacklist(String blacklist) {
+            this.blacklist = blacklist;
+        }
+
+        /**
+         * {@return The parsed blacklist}
+         *
+         * @throws IllegalArgumentException
+         *             If the string is invalid.
+         * @throws NullPointerException
+         *             If no blacklist data is present.
+         */
+        public Blacklist getParsedBlacklist() {
+            return new Blacklist(blacklist);
+        }
+
+        /**
+         * {@return Whether there is blacklist data present}
+         */
+        public boolean isPresent() {
+            return present;
+        }
+
+        /**
+         * Sets whether there is blacklist data present.
+         *
+         * @param present
+         *            Whether there is blacklist data present.
+         */
+        public void setPresent(boolean present) {
+            this.present = present;
+        }
+
+        /**
+         * {@return Whether the blacklist data is believed to be the same
+         *     as the data on the board}
+         */
+        public boolean isSynched() {
+            return synched;
+        }
+
+        /**
+         * Sets whether the blacklist data is believed to be the same as
+         *     the data on the board.
+         *
+         * @param synched
+         *            Whether the blacklist data is believed to be the same as
+         *            the data on the board.
+         */
+        public void setSynched(boolean synched) {
+            this.synched = synched;
+        }
+
+        @Keep
+        @AssertTrue(message = "blacklist must be validly formatted")
+        private boolean isValidBlacklist() {
+            if (present) {
+                try {
+                    new Blacklist(blacklist);
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }

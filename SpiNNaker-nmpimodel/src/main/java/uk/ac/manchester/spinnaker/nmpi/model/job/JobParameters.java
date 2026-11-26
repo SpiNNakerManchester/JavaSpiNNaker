@@ -20,5 +20,5 @@ package uk.ac.manchester.spinnaker.nmpi.model.job;
  * with {@link JobParametersTypeName} if it is to be serialized or deserialized.
  */
 public interface JobParameters {
-	// No methods defined
+    // No methods defined
 }

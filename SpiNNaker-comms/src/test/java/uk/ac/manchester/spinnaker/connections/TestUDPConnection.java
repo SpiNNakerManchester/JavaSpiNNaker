@@ -41,95 +41,95 @@ import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 public class TestUDPConnection {
-	private static BoardTestConfiguration boardConfig;
+    private static BoardTestConfiguration boardConfig;
 
-	private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
+    private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
 
-	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
+    private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
-	private static final Integer TIMEOUT = 1000;
+    private static final Integer TIMEOUT = 1000;
 
-	@BeforeAll
-	public static void setUpBeforeClass() throws Exception {
-		boardConfig = new BoardTestConfiguration();
-	}
+    @BeforeAll
+    public static void setUpBeforeClass() throws Exception {
+        boardConfig = new BoardTestConfiguration();
+    }
 
-	@Test
-	public void testSCPVersionWithBoard() throws Exception {
-		boardConfig.setUpRemoteBoard();
-		var scpReq = new GetVersion(ZERO_CORE);
-		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
-		SCPResultMessage result;
-		try (var connection =
-				new SCPConnection(BOOT_CHIP, null, null,
-						boardConfig.remotehost)) {
-			connection.send(scpReq);
-			result = connection.receiveSCPResponse(TIMEOUT);
-		} catch (SocketTimeoutException e) {
-			assertEquals(0, e.bytesTransferred);
-			assumeTrue(false, "timed out (general connectivity issue?)");
-			throw e; // unreachable
-		}
-		var scpResponse = result.parsePayload(scpReq);
-		System.out.println(scpResponse.get());
-		assertEquals(scpResponse.result, RC_OK);
-	}
+    @Test
+    public void testSCPVersionWithBoard() throws Exception {
+        boardConfig.setUpRemoteBoard();
+        var scpReq = new GetVersion(ZERO_CORE);
+        scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
+        SCPResultMessage result;
+        try (var connection =
+                new SCPConnection(BOOT_CHIP, null, null,
+                        boardConfig.remotehost)) {
+            connection.send(scpReq);
+            result = connection.receiveSCPResponse(TIMEOUT);
+        } catch (SocketTimeoutException e) {
+            assertEquals(0, e.bytesTransferred);
+            assumeTrue(false, "timed out (general connectivity issue?)");
+            throw e; // unreachable
+        }
+        var scpResponse = result.parsePayload(scpReq);
+        System.out.println(scpResponse.get());
+        assertEquals(scpResponse.result, RC_OK);
+    }
 
-	private static final int LINK_SIZE = 250;
+    private static final int LINK_SIZE = 250;
 
-	@Test
-	public void testSCPReadLinkWithBoard() throws Exception {
-		boardConfig.setUpRemoteBoard();
-		var scpReq =
-				new ReadLink(ZERO_CHIP, EAST, BUFFERED_SDRAM_START, LINK_SIZE);
-		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
-		SCPResultMessage result;
-		try (var connection =
-				new SCPConnection(BOOT_CHIP, null, null,
-						boardConfig.remotehost)) {
-			connection.send(scpReq);
-			result = connection.receiveSCPResponse(TIMEOUT);
-		} catch (SocketTimeoutException e) {
-			assertEquals(0, e.bytesTransferred);
-			assumeTrue(false, "timed out (general connectivity issue?)");
-			throw e; // unreachable
-		}
-		assertEquals(result.getResult(), RC_OK);
-	}
+    @Test
+    public void testSCPReadLinkWithBoard() throws Exception {
+        boardConfig.setUpRemoteBoard();
+        var scpReq =
+                new ReadLink(ZERO_CHIP, EAST, BUFFERED_SDRAM_START, LINK_SIZE);
+        scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
+        SCPResultMessage result;
+        try (var connection =
+                new SCPConnection(BOOT_CHIP, null, null,
+                        boardConfig.remotehost)) {
+            connection.send(scpReq);
+            result = connection.receiveSCPResponse(TIMEOUT);
+        } catch (SocketTimeoutException e) {
+            assertEquals(0, e.bytesTransferred);
+            assumeTrue(false, "timed out (general connectivity issue?)");
+            throw e; // unreachable
+        }
+        assertEquals(result.getResult(), RC_OK);
+    }
 
-	@Test
-	public void testSCPReadMemoryWithBoard() throws Exception {
-		boardConfig.setUpRemoteBoard();
-		var scpReq = new ReadMemory(ZERO_CHIP, BUFFERED_SDRAM_START,
-				UDP_MESSAGE_MAX_SIZE);
-		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
-		SCPResultMessage result;
-		try (var connection =
-				new SCPConnection(BOOT_CHIP, null, null,
-						boardConfig.remotehost)) {
-			connection.send(scpReq);
-			result = connection.receiveSCPResponse(TIMEOUT);
-		} catch (SocketTimeoutException e) {
-			assertEquals(0, e.bytesTransferred);
-			assumeTrue(false, "timed out (general connectivity issue?)");
-			throw e; // unreachable
-		}
-		assertEquals(result.getResult(), RC_OK);
-	}
+    @Test
+    public void testSCPReadMemoryWithBoard() throws Exception {
+        boardConfig.setUpRemoteBoard();
+        var scpReq = new ReadMemory(ZERO_CHIP, BUFFERED_SDRAM_START,
+                UDP_MESSAGE_MAX_SIZE);
+        scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
+        SCPResultMessage result;
+        try (var connection =
+                new SCPConnection(BOOT_CHIP, null, null,
+                        boardConfig.remotehost)) {
+            connection.send(scpReq);
+            result = connection.receiveSCPResponse(TIMEOUT);
+        } catch (SocketTimeoutException e) {
+            assertEquals(0, e.bytesTransferred);
+            assumeTrue(false, "timed out (general connectivity issue?)");
+            throw e; // unreachable
+        }
+        assertEquals(result.getResult(), RC_OK);
+    }
 
-	@Test
-	public void testSendSCPRequestToNonexistentHost()
-			throws UnknownHostException {
-		boardConfig.setUpNonexistentBoard();
-		assertThrows(IOException.class, () -> {
-			try (var connection =
-					new SCPConnection(BOOT_CHIP, null, null,
-							boardConfig.remotehost)) {
-				var scp = new ReadMemory(ZERO_CHIP, NULL, UDP_MESSAGE_MAX_SIZE);
-				scp.scpRequestHeader.issueSequenceNumber(Set.of());
-				connection.send(scp);
-				connection.receiveSCPResponse(2);
-			}
-		});
-	}
+    @Test
+    public void testSendSCPRequestToNonexistentHost()
+            throws UnknownHostException {
+        boardConfig.setUpNonexistentBoard();
+        assertThrows(IOException.class, () -> {
+            try (var connection =
+                    new SCPConnection(BOOT_CHIP, null, null,
+                            boardConfig.remotehost)) {
+                var scp = new ReadMemory(ZERO_CHIP, NULL, UDP_MESSAGE_MAX_SIZE);
+                scp.scpRequestHeader.issueSequenceNumber(Set.of());
+                connection.send(scp);
+                connection.receiveSCPResponse(2);
+            }
+        });
+    }
 }

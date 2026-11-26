@@ -28,43 +28,43 @@ import java.util.Map;
  * </dl>
  */
 public enum IPTagTimeOutWaitTime {
-	/** Wait for 10ms. */
-	TIMEOUT_10_ms(1),
-	/** Wait for 20ms. */
-	TIMEOUT_20_ms(2),
-	/** Wait for 40ms. */
-	TIMEOUT_40_ms(3),
-	/** Wait for 80ms. */
-	TIMEOUT_80_ms(4),
-	/** Wait for 160ms. */
-	TIMEOUT_160_ms(5),
-	/** Wait for 320ms. */
-	TIMEOUT_320_ms(6),
-	/** Wait for 640ms. */
-	TIMEOUT_640_ms(7),
-	/** Wait for 1.28s. */
-	TIMEOUT_1280_ms(8),
-	/** Wait for 2.56s. */
-	TIMEOUT_2560_ms(9);
+    /** Wait for 10ms. */
+    TIMEOUT_10_ms(1),
+    /** Wait for 20ms. */
+    TIMEOUT_20_ms(2),
+    /** Wait for 40ms. */
+    TIMEOUT_40_ms(3),
+    /** Wait for 80ms. */
+    TIMEOUT_80_ms(4),
+    /** Wait for 160ms. */
+    TIMEOUT_160_ms(5),
+    /** Wait for 320ms. */
+    TIMEOUT_320_ms(6),
+    /** Wait for 640ms. */
+    TIMEOUT_640_ms(7),
+    /** Wait for 1.28s. */
+    TIMEOUT_1280_ms(8),
+    /** Wait for 2.56s. */
+    TIMEOUT_2560_ms(9);
 
-	/** The SCAMP-encoded value. */
-	public final int value;
+    /** The SCAMP-encoded value. */
+    public final int value;
 
-	private static final Map<Integer, IPTagTimeOutWaitTime> MAP =
-			makeEnumBackingMap(values(), v -> v.value);
+    private static final Map<Integer, IPTagTimeOutWaitTime> MAP =
+            makeEnumBackingMap(values(), v -> v.value);
 
-	IPTagTimeOutWaitTime(int value) {
-		this.value = value;
-	}
+    IPTagTimeOutWaitTime(int value) {
+        this.value = value;
+    }
 
-	/**
-	 * Deserialise a value into the enum.
-	 *
-	 * @param value
-	 *            The value to deserialise.
-	 * @return The deserialised value, or {@code null} if it is unrecognised.
-	 */
-	public static IPTagTimeOutWaitTime get(int value) {
-		return MAP.get(value);
-	}
+    /**
+     * Deserialise a value into the enum.
+     *
+     * @param value
+     *            The value to deserialise.
+     * @return The deserialised value, or {@code null} if it is unrecognised.
+     */
+    public static IPTagTimeOutWaitTime get(int value) {
+        return MAP.get(value);
+    }
 }

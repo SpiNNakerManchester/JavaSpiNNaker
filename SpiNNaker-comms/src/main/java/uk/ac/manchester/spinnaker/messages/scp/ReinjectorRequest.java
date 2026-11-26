@@ -33,68 +33,68 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
  */
 //TODO Seal in 17
 public abstract class ReinjectorRequest<T extends CheckOKResponse>
-		extends SCPRequest<T> {
+        extends SCPRequest<T> {
 
-	/**
-	 * Constructs a request without arguments.
-	 *
-	 * @param core
-	 *            Where to send the request.
-	 * @param command
-	 *            What command we are invoking.
-	 */
-	ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command) {
-		super(header(core), command, 0, 0, 0, NO_DATA);
-	}
+    /**
+     * Constructs a request without arguments.
+     *
+     * @param core
+     *            Where to send the request.
+     * @param command
+     *            What command we are invoking.
+     */
+    ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command) {
+        super(header(core), command, 0, 0, 0, NO_DATA);
+    }
 
-	/**
-	 * Constructs a request with just 1 argument.
-	 *
-	 * @param core
-	 *            Where to send the request.
-	 * @param command
-	 *            What command we are invoking.
-	 * @param argument
-	 *            What argument to provide (encoded as an integer).
-	 */
-	ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command,
-			int argument) {
-		super(header(core), command, argument, 0, 0, NO_DATA);
-	}
+    /**
+     * Constructs a request with just 1 argument.
+     *
+     * @param core
+     *            Where to send the request.
+     * @param command
+     *            What command we are invoking.
+     * @param argument
+     *            What argument to provide (encoded as an integer).
+     */
+    ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command,
+            int argument) {
+        super(header(core), command, argument, 0, 0, NO_DATA);
+    }
 
-	/**
-	 * Constructs a request with three arguments and a body.
-	 *
-	 * @param core
-	 *            Where to send the request.
-	 * @param command
-	 *            What command we are invoking.
-	 * @param argument1
-	 *            The first argument.
-	 * @param argument2
-	 *            The second argument.
-	 * @param argument3
-	 *            The third argument.
-	 * @param body
-	 *            Subsequent binary data.
-	 */
-	ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command,
-			int argument1, int argument2, int argument3, ByteBuffer body) {
-		super(header(core), command, argument1, argument2, argument3, body);
-	}
+    /**
+     * Constructs a request with three arguments and a body.
+     *
+     * @param core
+     *            Where to send the request.
+     * @param command
+     *            What command we are invoking.
+     * @param argument1
+     *            The first argument.
+     * @param argument2
+     *            The second argument.
+     * @param argument3
+     *            The third argument.
+     * @param body
+     *            Subsequent binary data.
+     */
+    ReinjectorRequest(HasCoreLocation core, ReinjectorCommand command,
+            int argument1, int argument2, int argument3, ByteBuffer body) {
+        super(header(core), command, argument1, argument2, argument3, body);
+    }
 
-	/**
-	 * Make a variant of SDP header that talks to the packet reinjector. It
-	 * <i>always</i> wants a reply and always talks to a particular SDP port
-	 * (the port for the reinjector).
-	 *
-	 * @param core
-	 *            The SpiNNaker core that we want to talk to. Should be running
-	 *            the extra monitor core (not checked).
-	 * @return The SDP header.
-	 */
-	private static SDPHeader header(HasCoreLocation core) {
-		return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core),
-				EXTRA_MONITOR_CORE_REINJECTION);
-	}
+    /**
+     * Make a variant of SDP header that talks to the packet reinjector. It
+     * <i>always</i> wants a reply and always talks to a particular SDP port
+     * (the port for the reinjector).
+     *
+     * @param core
+     *            The SpiNNaker core that we want to talk to. Should be running
+     *            the extra monitor core (not checked).
+     * @return The SDP header.
+     */
+    private static SDPHeader header(HasCoreLocation core) {
+        return new SDPHeader(REPLY_EXPECTED, new SDPLocation(core),
+                EXTRA_MONITOR_CORE_REINJECTION);
+    }
 }

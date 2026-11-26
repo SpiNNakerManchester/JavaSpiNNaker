@@ -39,38 +39,38 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  */
 public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 
-	/**
-	 * Construct a request to write data to an FPGA register.
-	 *
-	 * @param fpga
-	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
-	 * @param register
-	 *            Register address to read to. Must be aligned.
-	 * @param value
-	 *            A 32-bit value to write to the register.
-	 * @param board
-	 *            which board to write the ADC register on
-	 * @throws IllegalArgumentException
-	 *             If {@link FPGA#FPGA_ALL} is used or the register address is
-	 *             not aligned.
-	 */
-	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
-			BMPBoard board) {
-		super(board, CMD_FPGA_WRITE, register.address, WORD_SIZE, fpga.value,
-				wordAsBuffer(value));
-		if (!register.isAligned()) {
-			throw new IllegalArgumentException(
-					"FPGA register addresses must be aligned");
-		}
-		if (!fpga.isSingleFPGA()) {
-			throw new IllegalArgumentException(
-					"cannot write multiple FPGAs at once with this message");
-		}
-	}
+    /**
+     * Construct a request to write data to an FPGA register.
+     *
+     * @param fpga
+     *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
+     * @param register
+     *            Register address to read to. Must be aligned.
+     * @param value
+     *            A 32-bit value to write to the register.
+     * @param board
+     *            which board to write the ADC register on
+     * @throws IllegalArgumentException
+     *             If {@link FPGA#FPGA_ALL} is used or the register address is
+     *             not aligned.
+     */
+    public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
+            BMPBoard board) {
+        super(board, CMD_FPGA_WRITE, register.address, WORD_SIZE, fpga.value,
+                wordAsBuffer(value));
+        if (!register.isAligned()) {
+            throw new IllegalArgumentException(
+                    "FPGA register addresses must be aligned");
+        }
+        if (!fpga.isSingleFPGA()) {
+            throw new IllegalArgumentException(
+                    "cannot write multiple FPGAs at once with this message");
+        }
+    }
 
-	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Send FPGA register write", CMD_FPGA_WRITE,
-				buffer);
-	}
+    @Override
+    public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new BMPResponse("Send FPGA register write", CMD_FPGA_WRITE,
+                buffer);
+    }
 }

@@ -33,51 +33,51 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 
-	/**
-	 * Constructs a request for the data from a FPGA's register.
-	 *
-	 * @param fpga
-	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
-	 * @param register
-	 *            Register address to read to. Must be aligned
-	 * @param board
-	 *            which board to request the ADC register from
-	 * @throws IllegalArgumentException
-	 *             If {@link FPGA#FPGA_ALL} is used or the register address is
-	 *             not aligned.
-	 */
-	public ReadFPGARegister(FPGA fpga, MemoryLocation register,
-			BMPBoard board) {
-		super(board, CMD_FPGA_READ, register.address, WORD_SIZE, fpga.value);
-		if (!register.isAligned()) {
-			throw new IllegalArgumentException(
-					"FPGA register addresses must be aligned");
-		}
-		if (!fpga.isSingleFPGA()) {
-			throw new IllegalArgumentException(
-					"cannot read multiple FPGAs at once with this message");
-		}
-	}
+    /**
+     * Constructs a request for the data from a FPGA's register.
+     *
+     * @param fpga
+     *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
+     * @param register
+     *            Register address to read to. Must be aligned
+     * @param board
+     *            which board to request the ADC register from
+     * @throws IllegalArgumentException
+     *             If {@link FPGA#FPGA_ALL} is used or the register address is
+     *             not aligned.
+     */
+    public ReadFPGARegister(FPGA fpga, MemoryLocation register,
+            BMPBoard board) {
+        super(board, CMD_FPGA_READ, register.address, WORD_SIZE, fpga.value);
+        if (!register.isAligned()) {
+            throw new IllegalArgumentException(
+                    "FPGA register addresses must be aligned");
+        }
+        if (!fpga.isSingleFPGA()) {
+            throw new IllegalArgumentException(
+                    "cannot read multiple FPGAs at once with this message");
+        }
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for the contents of an FPGA register. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<Integer> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read FPGA register", CMD_FPGA_READ, buffer);
-		}
+    /** An SCP response to a request for the contents of an FPGA register. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<Integer> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read FPGA register", CMD_FPGA_READ, buffer);
+        }
 
-		/**
-		 * {@return The FPGA register contents, not further interpreted}
-		 */
-		@Override
-		protected Integer parse(ByteBuffer buffer) {
-			return buffer.getInt();
-		}
-	}
+        /**
+         * {@return The FPGA register contents, not further interpreted}
+         */
+        @Override
+        protected Integer parse(ByteBuffer buffer) {
+            return buffer.getInt();
+        }
+    }
 }

@@ -47,114 +47,114 @@ import uk.ac.manchester.spinnaker.transceiver.TxrxProcess;
  * that this does not bother to implement the full connection API.
  */
 public class ThrottledConnection implements Closeable {
-	private static final Logger log = getLogger(ThrottledConnection.class);
+    private static final Logger log = getLogger(ThrottledConnection.class);
 
-	/** The minimum interval between messages, in <em>nanoseconds</em>. */
-	public static final long THROTTLE_NS = 50000;
+    /** The minimum interval between messages, in <em>nanoseconds</em>. */
+    public static final long THROTTLE_NS = 50000;
 
-	/** The {@link #receive()} timeout, in milliseconds. */
-	private static final int TIMEOUT_MS = 2000;
+    /** The {@link #receive()} timeout, in milliseconds. */
+    private static final int TIMEOUT_MS = 2000;
 
-	static {
-		log.info("inter-message minimum time set to {}us",
-				THROTTLE_NS / NSEC_PER_USEC);
-	}
+    static {
+        log.info("inter-message minimum time set to {}us",
+                THROTTLE_NS / NSEC_PER_USEC);
+    }
 
-	private final SCPConnection connection;
+    private final SCPConnection connection;
 
-	private final AtomicBoolean closed = new AtomicBoolean();
+    private final AtomicBoolean closed = new AtomicBoolean();
 
-	private long lastSend = nanoTime();
+    private long lastSend = nanoTime();
 
-	/**
-	 * Create a throttled connection for talking to a board and point an IPTag
-	 * so that messages sent to it arrive on this connection.
-	 *
-	 * @param iptag
-	 *            The tag to reprogram to talk to this connection.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the reprogramming.
-	 */
-	@MustBeClosed
-	@SuppressWarnings("MustBeClosed")
-	public ThrottledConnection(IPTag iptag)
-			throws IOException, ProcessException, InterruptedException {
-		connection = new SCPConnection(iptag.getDestination(), null, null,
-				iptag.getBoardAddress());
-		log.debug("created throttled connection to {} ({}) from {}:{}; "
-						+ "reprogramming tag #{} to point to this connection",
-				iptag.getDestination(), iptag.getBoardAddress(),
-				connection.getLocalIPAddress(),
-				connection.getLocalPort(), iptag.getTag());
-		var process = new TxrxProcess(new SingletonConnectionSelector<>(
-				connection), null);
-		process.call(new IPTagSet(connection.getChip(), null, 0,
-					iptag.getTag(), iptag.isStripSDP(), true));
-	}
+    /**
+     * Create a throttled connection for talking to a board and point an IPTag
+     * so that messages sent to it arrive on this connection.
+     *
+     * @param iptag
+     *            The tag to reprogram to talk to this connection.
+     * @throws IOException
+     *             If IO fails.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the reprogramming.
+     */
+    @MustBeClosed
+    @SuppressWarnings("MustBeClosed")
+    public ThrottledConnection(IPTag iptag)
+            throws IOException, ProcessException, InterruptedException {
+        connection = new SCPConnection(iptag.getDestination(), null, null,
+                iptag.getBoardAddress());
+        log.debug("created throttled connection to {} ({}) from {}:{}; "
+                        + "reprogramming tag #{} to point to this connection",
+                iptag.getDestination(), iptag.getBoardAddress(),
+                connection.getLocalIPAddress(),
+                connection.getLocalPort(), iptag.getTag());
+        var process = new TxrxProcess(new SingletonConnectionSelector<>(
+                connection), null);
+        process.call(new IPTagSet(connection.getChip(), null, 0,
+                    iptag.getTag(), iptag.isStripSDP(), true));
+    }
 
-	/**
-	 * Get a message from the connection.
-	 *
-	 * @return The content of the message.
-	 * @throws IOException
-	 *             If IO fails.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws SocketTimeoutException
-	 *             If no message is received by the timeout.
-	 */
-	public ByteBuffer receive()
-			throws SocketTimeoutException, IOException, InterruptedException {
-		return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN);
-	}
+    /**
+     * Get a message from the connection.
+     *
+     * @return The content of the message.
+     * @throws IOException
+     *             If IO fails.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws SocketTimeoutException
+     *             If no message is received by the timeout.
+     */
+    public ByteBuffer receive()
+            throws SocketTimeoutException, IOException, InterruptedException {
+        return connection.receive(TIMEOUT_MS).slice().order(LITTLE_ENDIAN);
+    }
 
-	/**
-	 * Throttled send.
-	 *
-	 * @param message
-	 *            The message to send.
-	 * @throws IOException
-	 *             If IO fails.
-	 */
-	public void send(SDPMessage message) throws IOException {
-		log.debug("about to send {} bytes", message.getData().remaining());
-		if (log.isDebugEnabled()) {
-			var payload = message.getData();
-			log.debug("message payload data: {}", range(0, payload.remaining())
-					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
-		}
-		throttledSend(message);
-	}
+    /**
+     * Throttled send.
+     *
+     * @param message
+     *            The message to send.
+     * @throws IOException
+     *             If IO fails.
+     */
+    public void send(SDPMessage message) throws IOException {
+        log.debug("about to send {} bytes", message.getData().remaining());
+        if (log.isDebugEnabled()) {
+            var payload = message.getData();
+            log.debug("message payload data: {}", range(0, payload.remaining())
+                    .mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
+        }
+        throttledSend(message);
+    }
 
-	private void throttledSend(SDPMessage message) throws IOException {
-		if (waitUntil(lastSend + THROTTLE_NS)) {
-			throw new InterruptedIOException(
-					"interrupted while sending message");
-		}
-		connection.send(message);
-		lastSend = nanoTime();
-	}
+    private void throttledSend(SDPMessage message) throws IOException {
+        if (waitUntil(lastSend + THROTTLE_NS)) {
+            throw new InterruptedIOException(
+                    "interrupted while sending message");
+        }
+        connection.send(message);
+        lastSend = nanoTime();
+    }
 
-	@Override
-	public void close() {
-		if (closed.compareAndSet(false, true)) {
-			connection.closeEventually();
-		}
-	}
+    @Override
+    public void close() {
+        if (closed.compareAndSet(false, true)) {
+            connection.closeEventually();
+        }
+    }
 
-	/**
-	 * {@return The location of the Chip connected to}
-	 */
-	public ChipLocation getLocation() {
-		return connection.getChip();
-	}
+    /**
+     * {@return The location of the Chip connected to}
+     */
+    public ChipLocation getLocation() {
+        return connection.getChip();
+    }
 
-	@Override
-	public String toString() {
-		return "Throttled: " + connection.toString();
-	}
+    @Override
+    public String toString() {
+        return "Throttled: " + connection.toString();
+    }
 }

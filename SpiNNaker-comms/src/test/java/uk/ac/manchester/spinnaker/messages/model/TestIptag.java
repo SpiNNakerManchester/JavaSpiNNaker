@@ -29,23 +29,23 @@ import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 
 class TestIptag {
-	private static BoardTestConfiguration boardConfig;
+    private static BoardTestConfiguration boardConfig;
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		boardConfig = new BoardTestConfiguration();
-	}
+    @BeforeAll
+    static void setUpBeforeClass() throws Exception {
+        boardConfig = new BoardTestConfiguration();
+    }
 
-	@Test
-	void testNewIptag() throws UnknownHostException, SocketException {
-		boardConfig.setUpRemoteBoard();
-		var ip = InetAddress.getByName("8.8.8.8");
-		int port = 1337;
-		int tag = 255;
-		var iptag = new IPTag(boardConfig.remotehost, ZERO_ZERO, tag, ip, port);
-		assertEquals(ip, iptag.getIPAddress());
-		assertEquals(port, (int) iptag.getPort());
-		assertEquals(tag, iptag.getTag());
-	}
+    @Test
+    void testNewIptag() throws UnknownHostException, SocketException {
+        boardConfig.setUpRemoteBoard();
+        var ip = InetAddress.getByName("8.8.8.8");
+        int port = 1337;
+        int tag = 255;
+        var iptag = new IPTag(boardConfig.remotehost, ZERO_ZERO, tag, ip, port);
+        assertEquals(ip, iptag.getIPAddress());
+        assertEquals(port, (int) iptag.getPort());
+        assertEquals(tag, iptag.getTag());
+    }
 
 }

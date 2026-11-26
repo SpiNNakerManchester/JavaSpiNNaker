@@ -24,49 +24,49 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DockerInspectResponse {
-	/**
-	 * Docker container state descriptor.
-	 */
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class State {
-		@JsonProperty("Running")
-		private boolean running;
+    /**
+     * Docker container state descriptor.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class State {
+        @JsonProperty("Running")
+        private boolean running;
 
-		/**
-		 * {@return if it is running}
-		 */
-		public boolean isRunning() {
-			return running;
-		}
+        /**
+         * {@return if it is running}
+         */
+        public boolean isRunning() {
+            return running;
+        }
 
-		/**
-		 * Set what is running.
-		 *
-		 * @param running
-		 *            whether it is running
-		 */
-		public void setRunning(boolean running) {
-			this.running = running;
-		}
-	}
+        /**
+         * Set what is running.
+         *
+         * @param running
+         *            whether it is running
+         */
+        public void setRunning(boolean running) {
+            this.running = running;
+        }
+    }
 
-	private State state;
+    private State state;
 
-	/**
-	 * {@return the state descriptor}
-	 */
-	@JsonProperty("State")
-	public State getState() {
-		return state;
-	}
+    /**
+     * {@return the state descriptor}
+     */
+    @JsonProperty("State")
+    public State getState() {
+        return state;
+    }
 
-	/**
-	 * Set the state.
-	 *
-	 * @param state
-	 *            the state to set
-	 */
-	void setState(State state) {
-		this.state = state;
-	}
+    /**
+     * Set the state.
+     *
+     * @param state
+     *            the state to set
+     */
+    void setState(State state) {
+        this.state = state;
+    }
 }

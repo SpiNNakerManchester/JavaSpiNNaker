@@ -31,35 +31,35 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  */
 public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 
-	/**
-	 * Construct a request to read the software version.
-	 *
-	 * @param board
-	 *            The board to get the version from
-	 */
-	public GetBMPVersion(BMPBoard board) {
-		super(board, CMD_VER);
-	}
+    /**
+     * Construct a request to read the software version.
+     *
+     * @param board
+     *            The board to get the version from
+     */
+    public GetBMPVersion(BMPBoard board) {
+        super(board, CMD_VER);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for the version of software running. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<VersionInfo> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read Version", CMD_VER, buffer);
-		}
+    /** An SCP response to a request for the version of software running. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<VersionInfo> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read Version", CMD_VER, buffer);
+        }
 
-		/**
-		 * {@return The version information received}
-		 */
-		@Override
-		protected VersionInfo parse(ByteBuffer buffer) {
-			return new VersionInfo(buffer, true);
-		}
-	}
+        /**
+         * {@return The version information received}
+         */
+        @Override
+        protected VersionInfo parse(ByteBuffer buffer) {
+            return new VersionInfo(buffer, true);
+        }
+    }
 }

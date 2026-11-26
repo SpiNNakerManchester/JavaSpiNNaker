@@ -13,40 +13,40 @@
 -- limitations under the License.
 
 WITH RECURSIVE
-	-- Name the arguments for sanity
-	args(root_id, width, height, machine_id, max_dead_boards) AS (
-		SELECT :board_id, :width, :height, :machine_id, :max_dead_boards),
-	-- Profile the machines and boards to the one we care about
-	m AS (
-		SELECT machines.* FROM machines JOIN args USING (machine_id)
-		LIMIT 1),
-	bs AS (
-		SELECT boards.* FROM boards JOIN args USING (machine_id)),
-	selected_root AS (
-		SELECT bs.* FROM bs JOIN args ON bs.board_id = args.root_id
-		LIMIT 1),
-	-- Generate sequences of right size
-	cx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM cx, args
-		WHERE x < args.width - 1),
-	cy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM cy, args
-		WHERE y < args.height - 1),
-	cz(z) AS (SELECT 0 UNION SELECT 1 UNION SELECT 2),
-	-- Form the sequences into grids of points
-	c(x,y,z) AS (SELECT x, y, z FROM cx, cy, cz),
-	-- Count boards in rectangle based at specified root
-	root_count(available) AS (
-		SELECT SUM(%usable) AS available
-		FROM selected_root, m, c, bs
-		WHERE bs.x = (c.x + selected_root.x) % m.width
-			AND bs.y = (c.y + selected_root.y) % m.height
-			AND bs.z = c.z)
+    -- Name the arguments for sanity
+    args(root_id, width, height, machine_id, max_dead_boards) AS (
+        SELECT :board_id, :width, :height, :machine_id, :max_dead_boards),
+    -- Profile the machines and boards to the one we care about
+    m AS (
+        SELECT machines.* FROM machines JOIN args USING (machine_id)
+        LIMIT 1),
+    bs AS (
+        SELECT boards.* FROM boards JOIN args USING (machine_id)),
+    selected_root AS (
+        SELECT bs.* FROM bs JOIN args ON bs.board_id = args.root_id
+        LIMIT 1),
+    -- Generate sequences of right size
+    cx(x) AS (SELECT 0 UNION ALL SELECT x+1 FROM cx, args
+        WHERE x < args.width - 1),
+    cy(y) AS (SELECT 0 UNION ALL SELECT y+1 FROM cy, args
+        WHERE y < args.height - 1),
+    cz(z) AS (SELECT 0 UNION SELECT 1 UNION SELECT 2),
+    -- Form the sequences into grids of points
+    c(x,y,z) AS (SELECT x, y, z FROM cx, cy, cz),
+    -- Count boards in rectangle based at specified root
+    root_count(available) AS (
+        SELECT SUM(%usable) AS available
+        FROM selected_root, m, c, bs
+        WHERE bs.x = (c.x + selected_root.x) % m.width
+            AND bs.y = (c.y + selected_root.y) % m.height
+            AND bs.z = c.z)
 SELECT
-	selected_root.board_id AS id,
-	selected_root.x AS x,
-	selected_root.y AS y,
-	selected_root.z AS z,
-	root_count.available AS available
+    selected_root.board_id AS id,
+    selected_root.x AS x,
+    selected_root.y AS y,
+    selected_root.z AS z,
+    root_count.available AS available
 FROM args, selected_root, root_count
 WHERE root_count.available >= args.width * args.height - args.max_dead_boards
-	AND %root_usable
+    AND %root_usable
 LIMIT 1;

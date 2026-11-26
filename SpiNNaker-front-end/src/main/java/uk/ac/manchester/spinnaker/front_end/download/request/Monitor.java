@@ -36,70 +36,70 @@ import uk.ac.manchester.spinnaker.machine.ValidY;
  */
 @JsonFormat(shape = OBJECT)
 public class Monitor implements HasCoreLocation {
-	/** The X coordinate of the core this monitor is placed on. */
-	@ValidX
-	private final int x;
+    /** The X coordinate of the core this monitor is placed on. */
+    @ValidX
+    private final int x;
 
-	/** The Y coordinate of the core this monitor is placed on. */
-	@ValidY
-	private final int y;
+    /** The Y coordinate of the core this monitor is placed on. */
+    @ValidY
+    private final int y;
 
-	/** The processor ID of the core this monitor is placed on. */
-	@ValidP
-	private final int p;
+    /** The processor ID of the core this monitor is placed on. */
+    @ValidP
+    private final int p;
 
-	/** The vertex placements that this monitor will read. */
-	private final List<@Valid @NotNull Placement> placements;
+    /** The vertex placements that this monitor will read. */
+    private final List<@Valid @NotNull Placement> placements;
 
-	/**
-	 * Constructor with minimum information needed.
-	 * <p>
-	 * Could be called from an unmarshaller.
-	 *
-	 * @param x
-	 *            Monitor X coordinate.
-	 * @param y
-	 *            Monitor Y coordinate.
-	 * @param p
-	 *            Monitor processor ID.
-	 * @param placements
-	 *            Vertex placement info handled by this monitor.
-	 */
-	Monitor(@JsonProperty(value = "x", required = true) int x,
-			@JsonProperty(value = "y", required = true) int y,
-			@JsonProperty(value = "p", required = true) int p,
-			@JsonProperty(value = "placements", required = false) List<
-					Placement> placements) {
-		this.x = x;
-		this.y = y;
-		this.p = p;
-		this.placements = copy(placements);
-	}
+    /**
+     * Constructor with minimum information needed.
+     * <p>
+     * Could be called from an unmarshaller.
+     *
+     * @param x
+     *            Monitor X coordinate.
+     * @param y
+     *            Monitor Y coordinate.
+     * @param p
+     *            Monitor processor ID.
+     * @param placements
+     *            Vertex placement info handled by this monitor.
+     */
+    Monitor(@JsonProperty(value = "x", required = true) int x,
+            @JsonProperty(value = "y", required = true) int y,
+            @JsonProperty(value = "p", required = true) int p,
+            @JsonProperty(value = "placements", required = false) List<
+                    Placement> placements) {
+        this.x = x;
+        this.y = y;
+        this.p = p;
+        this.placements = copy(placements);
+    }
 
-	@Override
-	public int getX() {
-		return x;
-	}
+    @Override
+    public int getX() {
+        return x;
+    }
 
-	@Override
-	public int getY() {
-		return y;
-	}
+    @Override
+    public int getY() {
+        return y;
+    }
 
-	@Override
-	public int getP() {
-		return p;
-	}
+    @Override
+    public int getP() {
+        return p;
+    }
 
-	/**
-	 * {@return the placements (read-only)}
-	 */
-	public List<Placement> getPlacements() {
-		return placements;
-	}
+    /**
+     * {@return the placements (read-only)}
+     */
+    public List<Placement> getPlacements() {
+        return placements;
+    }
 
-	@Override
-	public String toString() {
-		return "Monitor: " + asCoreLocation().toString();
-	}
+    @Override
+    public String toString() {
+        return "Monitor: " + asCoreLocation().toString();
+    }
 }

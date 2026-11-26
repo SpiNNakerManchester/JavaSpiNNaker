@@ -24,21 +24,21 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Subclasses add {@linkplain PayloadedResponse payload parsing}.
  */
 public abstract class CheckOKResponse extends SCPResponse {
-	/**
-	 * Create an instance.
-	 *
-	 * @param operation
-	 *            The overall operation that we are doing.
-	 * @param command
-	 *            The command that we are handling a response to.
-	 * @param buffer
-	 *            The buffer holding the response data.
-	 * @throws UnexpectedResponseCodeException
-	 *             If the response wasn't OK.
-	 */
-	CheckOKResponse(String operation, Enum<?> command,
-			ByteBuffer buffer) throws UnexpectedResponseCodeException {
-		super(buffer);
-		throwIfNotOK(operation, command);
-	}
+    /**
+     * Create an instance.
+     *
+     * @param operation
+     *            The overall operation that we are doing.
+     * @param command
+     *            The command that we are handling a response to.
+     * @param buffer
+     *            The buffer holding the response data.
+     * @throws UnexpectedResponseCodeException
+     *             If the response wasn't OK.
+     */
+    CheckOKResponse(String operation, Enum<?> command,
+            ByteBuffer buffer) throws UnexpectedResponseCodeException {
+        super(buffer);
+        throwIfNotOK(operation, command);
+    }
 }

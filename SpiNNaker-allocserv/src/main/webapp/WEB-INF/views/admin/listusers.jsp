@@ -16,48 +16,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="User List" name="title"/>
+    <jsp:param value="User List" name="title"/>
 </jsp:include>
 <body>
 
 <h1>Spalloc Users</h1>
 <p>
 <button onclick="location.href='${ createUserUri }'"
-		type="button">Create a new user</button>
+        type="button">Create a new user</button>
 <p>
 <table>
-	<thead>
-		<tr>
-			<th>Username</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr><th colspan="2" class="minordetail">Local Users</th></tr>
-		<c:forEach items="${ localusers }" var="item">
-			<tr>
-				<td>
-					<c:out value="${ item.key }" escapeXml="true" />
-				</td>
-				<td>
-					<button onclick="location.href='${ item.value }'"
-							type="button">Manage</button>
-				</td>
-			</tr>
-		</c:forEach>
-		<tr><th colspan="2" class="minordetail">OpenID Users</th></tr>
-		<c:forEach items="${ openidusers }" var="item">
-			<tr>
-				<td>
-					<c:out value="${ item.key }" escapeXml="true" />
-				</td>
-				<td>
-					<button onclick="location.href='${ item.value }'"
-							type="button">Manage</button>
-				</td>
-			</tr>
-		</c:forEach>
-	</tbody>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><th colspan="2" class="minordetail">Local Users</th></tr>
+        <c:forEach items="${ localusers }" var="item">
+            <tr>
+                <td>
+                    <c:out value="${ item.key }" escapeXml="true" />
+                </td>
+                <td>
+                    <button onclick="location.href='${ item.value }'"
+                            type="button">Manage</button>
+                </td>
+            </tr>
+        </c:forEach>
+        <tr><th colspan="2" class="minordetail">OpenID Users</th></tr>
+        <c:forEach items="${ openidusers }" var="item">
+            <tr>
+                <td>
+                    <c:out value="${ item.key }" escapeXml="true" />
+                </td>
+                <td>
+                    <button onclick="location.href='${ item.value }'"
+                            type="button">Manage</button>
+                </td>
+            </tr>
+        </c:forEach>
+    </tbody>
 </table>
 
 <jsp:include page="footer.jsp" />

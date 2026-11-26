@@ -27,54 +27,54 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
 @Service
 @Role(ROLE_SUPPORT)
 public class ServiceVersion {
-	private String fullVersion;
+    private String fullVersion;
 
-	private Version v;
+    private Version v;
 
-	private String buildTimestamp;
+    private String buildTimestamp;
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param version
-	 *            The version, injected from the POM by the build process.
-	 * @param buildTimestamp
-	 *            The build timestamp, injected from the POM by the build
-	 *            process.
-	 */
-	public ServiceVersion(@Value("${version}") String version,
-			@Value("${build-timestamp}") String buildTimestamp) {
-		fullVersion = version;
-		v = new Version(version.replaceAll("-.*", ""));
-		this.buildTimestamp = buildTimestamp;
-	}
+    /**
+     * Create an instance.
+     *
+     * @param version
+     *            The version, injected from the POM by the build process.
+     * @param buildTimestamp
+     *            The build timestamp, injected from the POM by the build
+     *            process.
+     */
+    public ServiceVersion(@Value("${version}") String version,
+            @Value("${build-timestamp}") String buildTimestamp) {
+        fullVersion = version;
+        v = new Version(version.replaceAll("-.*", ""));
+        this.buildTimestamp = buildTimestamp;
+    }
 
-	/**
-	 * The logical version number.
-	 *
-	 * Expected to at least <em>approximately</em> follow semver rules.
-	 *
-	 * @return The logical version number.
-	 */
-	public Version getVersion() {
-		return v;
-	}
+    /**
+     * The logical version number.
+     *
+     * Expected to at least <em>approximately</em> follow semver rules.
+     *
+     * @return The logical version number.
+     */
+    public Version getVersion() {
+        return v;
+    }
 
-	/**
-	 * {@return The full version identifier. Conforms only to Maven conventions}
-	 */
-	public String getFullVersion() {
-		return fullVersion;
-	}
+    /**
+     * {@return The full version identifier. Conforms only to Maven conventions}
+     */
+    public String getFullVersion() {
+        return fullVersion;
+    }
 
-	/**
-	 * The build timestamp.
-	 *
-	 * The format of this is not intended for further machine parsing
-	 *
-	 * @return The build timestamp.
-	 */
-	public String getBuildTimestamp() {
-		return buildTimestamp;
-	}
+    /**
+     * The build timestamp.
+     *
+     * The format of this is not intended for further machine parsing
+     *
+     * @return The build timestamp.
+     */
+    public String getBuildTimestamp() {
+        return buildTimestamp;
+    }
 }

@@ -38,44 +38,44 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 
 @NotThreadSafe
 class SpallocMachineTest {
-	private static Machine jsonMachine;
+    private static Machine jsonMachine;
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		var url = SpallocMachineTest.class.getResource("/spinn4.json");
-		var mapper = MapperFactory.createMapper();
-		var fromJson = mapper.readValue(url, MachineBean.class);
-		jsonMachine = new Machine(fromJson);
-	}
+    @BeforeAll
+    static void setUpBeforeClass() throws Exception {
+        var url = SpallocMachineTest.class.getResource("/spinn4.json");
+        var mapper = MapperFactory.createMapper();
+        var fromJson = mapper.readValue(url, MachineBean.class);
+        jsonMachine = new Machine(fromJson);
+    }
 
-	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
+    private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
 
-	private static final int PORT = 22245;
+    private static final int PORT = 22245;
 
-	private static final int TEN_S = 10000;
+    private static final int TEN_S = 10000;
 
-	@Test
-	@Timeout(120) // Two minutes is enough
-	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/53")
-	void testSpallocMachine() throws Exception {
-		assumeTrue(ping(SPALLOC) == 0);
+    @Test
+    @Timeout(120) // Two minutes is enough
+    @Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/53")
+    void testSpallocMachine() throws Exception {
+        assumeTrue(ping(SPALLOC) == 0);
 
-		try (var job = new SpallocJob(SPALLOC, PORT, TEN_S,
-				new CreateJob().owner(OWNER))) {
-			job.waitUntilReady(null);
+        try (var job = new SpallocJob(SPALLOC, PORT, TEN_S,
+                new CreateJob().owner(OWNER))) {
+            job.waitUntilReady(null);
 
-			System.out.println(job.getState());
-			System.out.println(job.getHostname());
-			var host = InetAddress.getByName(job.getHostname());
+            System.out.println(job.getState());
+            System.out.println(job.getHostname());
+            var host = InetAddress.getByName(job.getHostname());
 
-			// InetAddress host = InetAddress.getByName("spinn-2.cs.man.ac.uk");
-			try (var txrx = new Transceiver(host, FIVE)) {
-				assertNotNull(txrx.ensureBoardIsReady());
-				assertNotNull(txrx.getMachineDimensions());
-				assertNotNull(txrx.getScampVersion());
-				var machine = txrx.getMachineDetails();
-				assertNull(jsonMachine.difference(machine));
-			}
-		}
-	}
+            // InetAddress host = InetAddress.getByName("spinn-2.cs.man.ac.uk");
+            try (var txrx = new Transceiver(host, FIVE)) {
+                assertNotNull(txrx.ensureBoardIsReady());
+                assertNotNull(txrx.getMachineDimensions());
+                assertNotNull(txrx.getScampVersion());
+                var machine = txrx.getMachineDetails();
+                assertNull(jsonMachine.difference(machine));
+            }
+        }
+    }
 }

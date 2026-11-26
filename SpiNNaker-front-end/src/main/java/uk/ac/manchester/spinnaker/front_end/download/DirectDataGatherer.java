@@ -48,103 +48,103 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
  */
 @Deprecated
 public class DirectDataGatherer extends DataGatherer {
-	/** The number of memory regions in the DSE model. */
-	private static final int MAX_MEM_REGIONS = 16;
+    /** The number of memory regions in the DSE model. */
+    private static final int MAX_MEM_REGIONS = 16;
 
-	/** Application data magic number. */
-	private static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
+    /** Application data magic number. */
+    private static final int APPDATA_MAGIC_NUM = 0xAD130AD6;
 
-	/** Version of the file produced by the DSE. */
-	private static final int DSE_VERSION = 0x00010000;
+    /** Version of the file produced by the DSE. */
+    private static final int DSE_VERSION = 0x00010000;
 
-	private final BufferManagerStorage database;
+    private final BufferManagerStorage database;
 
-	@GuardedBy("itself")
-	private final Map<CoreLocation,
-			Map<MemoryLocation, ByteBuffer>> coreTableCache;
+    @GuardedBy("itself")
+    private final Map<CoreLocation,
+            Map<MemoryLocation, ByteBuffer>> coreTableCache;
 
-	/**
-	 * Create a data gatherer.
-	 *
-	 * @param machine
-	 *            The description of the machine being talked to.
-	 * @param database
-	 *            Where to put the retrieved data.
-	 * @throws IOException
-	 *            If we can't discover the machine details due to I/O problems
-	 * @throws InterruptedException
-	 *            If communications are interrupted.
-	 * @throws SpinnmanException
-	 *            If the there is an error creating a transceiver.
-	 * @throws StorageException
-	 *           If the database access fails.
-	 */
-	@MustBeClosed
-	public DirectDataGatherer(Machine machine, BufferManagerStorage database)
-			throws IOException, StorageException, SpinnmanException,
-			InterruptedException {
-		super(database, machine);
-		this.database = database;
-		coreTableCache = new HashMap<>();
-	}
+    /**
+     * Create a data gatherer.
+     *
+     * @param machine
+     *            The description of the machine being talked to.
+     * @param database
+     *            Where to put the retrieved data.
+     * @throws IOException
+     *            If we can't discover the machine details due to I/O problems
+     * @throws InterruptedException
+     *            If communications are interrupted.
+     * @throws SpinnmanException
+     *            If the there is an error creating a transceiver.
+     * @throws StorageException
+     *           If the database access fails.
+     */
+    @MustBeClosed
+    public DirectDataGatherer(Machine machine, BufferManagerStorage database)
+            throws IOException, StorageException, SpinnmanException,
+            InterruptedException {
+        super(database, machine);
+        this.database = database;
+        coreTableCache = new HashMap<>();
+    }
 
-	/**
-	 * Get the region location table for a chip.
-	 *
-	 * @param core
-	 *            Where to retrieve from.
-	 * @param vertex
-	 *            Information about what this means.
-	 * @return The region location table, as an integer buffer.
-	 * @throws IOException
-	 *             If IO fails
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects the message.
-	 */
-	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
-			throws IOException, ProcessException, InterruptedException {
-		// TODO get this info from the database, if the DB knows it
-		Map<MemoryLocation, ByteBuffer> map;
-		synchronized (coreTableCache) {
-			map = coreTableCache.computeIfAbsent(core, __ -> new HashMap<>());
-		}
-		// Individual cores are only ever handled from one thread
-		var buffer = map.get(vertex.getBase());
-		if (buffer == null) {
-			buffer = txrx.readMemory(core, vertex.getBase(),
-					WORD_SIZE * (MAX_MEM_REGIONS + 2));
-			int word = buffer.getInt();
-			if (word != APPDATA_MAGIC_NUM) {
-				throw new IllegalStateException(
-						format("unexpected magic number: %08x", word));
-			}
-			word = buffer.getInt();
-			if (word != DSE_VERSION) {
-				throw new IllegalStateException(
-						format("unexpected DSE version: %08x", word));
-			}
-			map.put(vertex.getBase(), buffer);
-		}
-		return buffer.asIntBuffer();
-	}
+    /**
+     * Get the region location table for a chip.
+     *
+     * @param core
+     *            Where to retrieve from.
+     * @param vertex
+     *            Information about what this means.
+     * @return The region location table, as an integer buffer.
+     * @throws IOException
+     *             If IO fails
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects the message.
+     */
+    private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
+            throws IOException, ProcessException, InterruptedException {
+        // TODO get this info from the database, if the DB knows it
+        Map<MemoryLocation, ByteBuffer> map;
+        synchronized (coreTableCache) {
+            map = coreTableCache.computeIfAbsent(core, __ -> new HashMap<>());
+        }
+        // Individual cores are only ever handled from one thread
+        var buffer = map.get(vertex.getBase());
+        if (buffer == null) {
+            buffer = txrx.readMemory(core, vertex.getBase(),
+                    WORD_SIZE * (MAX_MEM_REGIONS + 2));
+            int word = buffer.getInt();
+            if (word != APPDATA_MAGIC_NUM) {
+                throw new IllegalStateException(
+                        format("unexpected magic number: %08x", word));
+            }
+            word = buffer.getInt();
+            if (word != DSE_VERSION) {
+                throw new IllegalStateException(
+                        format("unexpected DSE version: %08x", word));
+            }
+            map.put(vertex.getBase(), buffer);
+        }
+        return buffer.asIntBuffer();
+    }
 
-	@Override
-	protected Region getRecordingRegion(Placement placement, int regionID)
-			throws IOException, ProcessException, InterruptedException {
-		var b = getCoreRegionTable(placement.asCoreLocation(),
-				placement.getVertex());
-		// TODO This is wrong because of shared regions!
-		int size = b.get(regionID + 1) - b.get(regionID);
-		return new Region(
-			placement, regionID, new MemoryLocation(b.get(regionID)), size,
-			true);
-	}
+    @Override
+    protected Region getRecordingRegion(Placement placement, int regionID)
+            throws IOException, ProcessException, InterruptedException {
+        var b = getCoreRegionTable(placement.asCoreLocation(),
+                placement.getVertex());
+        // TODO This is wrong because of shared regions!
+        int size = b.get(regionID + 1) - b.get(regionID);
+        return new Region(
+            placement, regionID, new MemoryLocation(b.get(regionID)), size,
+            true);
+    }
 
-	@Override
-	protected void storeData(Region r, ByteBuffer data)
-			throws StorageException {
-		database.storeRegionContents(r, data);
-	}
+    @Override
+    protected void storeData(Region r, ByteBuffer data)
+            throws StorageException {
+        database.storeRegionContents(r, data);
+    }
 }

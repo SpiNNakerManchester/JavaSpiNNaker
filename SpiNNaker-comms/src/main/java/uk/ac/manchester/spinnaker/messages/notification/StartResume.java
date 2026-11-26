@@ -23,12 +23,12 @@ import java.nio.ByteBuffer;
  * Message which indicates that the toolchain has started or resumed.
  */
 public class StartResume extends AbstractNotificationMessage {
-	/** Create an instance. */
-	public StartResume() {
-		super(START_RESUME_NOTIFICATION);
-	}
+    /** Create an instance. */
+    public StartResume() {
+        super(START_RESUME_NOTIFICATION);
+    }
 
-	StartResume(ByteBuffer buffer) {
-		super(buffer);
-	}
+    StartResume(ByteBuffer buffer) {
+        super(buffer);
+    }
 }

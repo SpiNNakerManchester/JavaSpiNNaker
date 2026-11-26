@@ -30,60 +30,60 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Calls {@code cmd_info()} in {@code scamp-cmd.c}.
  */
 public class GetChipInfo extends SCPRequest<GetChipInfo.Response> {
-	private static final int FLAGS = 0x5F;
+    private static final int FLAGS = 0x5F;
 
-	private static final int SIZE_FLAG = 0x20;
+    private static final int SIZE_FLAG = 0x20;
 
-	/**
-	 * Construct request to read the chip information from a core, without size.
-	 *
-	 * @param chip
-	 *            the chip to read from
-	 */
-	public GetChipInfo(HasChipLocation chip) {
-		this(chip, false);
-	}
+    /**
+     * Construct request to read the chip information from a core, without size.
+     *
+     * @param chip
+     *            the chip to read from
+     */
+    public GetChipInfo(HasChipLocation chip) {
+        this(chip, false);
+    }
 
-	/**
-	 * Construct request to read the chip information from a core,
-	 *     possibly with size.
-	 *
-	 * @param chip
-	 *            the chip to read from
-	 * @param withSize
-	 *            Whether the size should be included in the response. <em>Might
-	 *            be ignored by SCAMP.</em>
-	 */
-	public GetChipInfo(HasChipLocation chip, boolean withSize) {
-		super(chip.getScampCore(), CMD_INFO, informationSelect(withSize));
-	}
+    /**
+     * Construct request to read the chip information from a core,
+     *     possibly with size.
+     *
+     * @param chip
+     *            the chip to read from
+     * @param withSize
+     *            Whether the size should be included in the response. <em>Might
+     *            be ignored by SCAMP.</em>
+     */
+    public GetChipInfo(HasChipLocation chip, boolean withSize) {
+        super(chip.getScampCore(), CMD_INFO, informationSelect(withSize));
+    }
 
-	private static int informationSelect(boolean withSize) {
-		// Bits 0-4 + bit 6 = all information except size
-		// Bits 0-6 = all information including size
-		return FLAGS | (withSize ? SIZE_FLAG : 0);
-	}
+    private static int informationSelect(boolean withSize) {
+        // Bits 0-4 + bit 6 = all information except size
+        // Bits 0-6 = all information including size
+        return FLAGS | (withSize ? SIZE_FLAG : 0);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for the version of software running. */
-	protected final class Response
-			extends PayloadedResponse<ChipSummaryInfo, RuntimeException> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Version", CMD_INFO, buffer);
-		}
+    /** An SCP response to a request for the version of software running. */
+    protected final class Response
+            extends PayloadedResponse<ChipSummaryInfo, RuntimeException> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Version", CMD_INFO, buffer);
+        }
 
-		/**
-		 *  {@return The chip summary information}
-		 */
-		@Override
-		protected ChipSummaryInfo parse(ByteBuffer buffer) {
-			return new ChipSummaryInfo(buffer, sdpHeader.getSource());
-		}
-	}
+        /**
+         *  {@return The chip summary information}
+         */
+        @Override
+        protected ChipSummaryInfo parse(ByteBuffer buffer) {
+            return new ChipSummaryInfo(buffer, sdpHeader.getSource());
+        }
+    }
 }

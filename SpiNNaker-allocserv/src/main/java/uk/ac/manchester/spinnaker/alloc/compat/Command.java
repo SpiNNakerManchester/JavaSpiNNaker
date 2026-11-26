@@ -35,47 +35,47 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class Command {
-	private static final int MAX_SIZE = 10;
+    private static final int MAX_SIZE = 10;
 
-	@NotBlank
-	private String command;
+    @NotBlank
+    private String command;
 
-	@Size(max = MAX_SIZE, message = "crazy number of arguments")
-	private List<@SaneParameter Object> args = List.of();
+    @Size(max = MAX_SIZE, message = "crazy number of arguments")
+    private List<@SaneParameter Object> args = List.of();
 
-	@Size(max = MAX_SIZE, message = "crazy number of keyword arguments")
-	private Map<@NotBlank String, @SaneParameter Object> kwargs = Map.of();
+    @Size(max = MAX_SIZE, message = "crazy number of keyword arguments")
+    private Map<@NotBlank String, @SaneParameter Object> kwargs = Map.of();
 
-	/**
-	 * {@return The name of the command}
-	 */
-	public String getCommand() {
-		return command;
-	}
+    /**
+     * {@return The name of the command}
+     */
+    public String getCommand() {
+        return command;
+    }
 
-	void setCommand(String command) {
-		this.command = command;
-	}
+    void setCommand(String command) {
+        this.command = command;
+    }
 
-	/**
-	 * {@return The positional arguments to the command}
-	 */
-	public List<Object> getArgs() {
-		return args;
-	}
+    /**
+     * {@return The positional arguments to the command}
+     */
+    public List<Object> getArgs() {
+        return args;
+    }
 
-	void setArgs(List<Object> args) {
-		this.args = new ArrayList<Object>(args);
-	}
+    void setArgs(List<Object> args) {
+        this.args = new ArrayList<Object>(args);
+    }
 
-	/**
-	 * {@return The keyword arguments to the command}
-	 */
-	public Map<String, Object> getKwargs() {
-		return kwargs;
-	}
+    /**
+     * {@return The keyword arguments to the command}
+     */
+    public Map<String, Object> getKwargs() {
+        return kwargs;
+    }
 
-	void setKwargs(Map<String, Object> kwargs) {
-		this.kwargs = new HashMap<String, Object>(kwargs);
-	}
+    void setKwargs(Map<String, Object> kwargs) {
+        this.kwargs = new HashMap<String, Object>(kwargs);
+    }
 }

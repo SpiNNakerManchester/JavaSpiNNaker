@@ -47,235 +47,235 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  * How to actually talk to an SQLite database.
  */
 public class SQLiteDataSpecStorage extends SQLiteProxyStorage<DSEStorage>
-		implements DSEStorage {
-	/**
-	 * Create an instance.
-	 *
-	 * @param connectionProvider
-	 *            The connection provider that will be asked for how to talk SQL
-	 *            to the database.
-	 */
-	public SQLiteDataSpecStorage(DSEDatabaseEngine connectionProvider) {
-		super(connectionProvider);
-	}
+        implements DSEStorage {
+    /**
+     * Create an instance.
+     *
+     * @param connectionProvider
+     *            The connection provider that will be asked for how to talk SQL
+     *            to the database.
+     */
+    public SQLiteDataSpecStorage(DSEDatabaseEngine connectionProvider) {
+        super(connectionProvider);
+    }
 
-	@Override
-	public List<Ethernet> listEthernetsToLoad() throws StorageException {
-		return callR(SQLiteDataSpecStorage::listEthernetsToLoad,
-				"listing ethernets");
-	}
+    @Override
+    public List<Ethernet> listEthernetsToLoad() throws StorageException {
+        return callR(SQLiteDataSpecStorage::listEthernetsToLoad,
+                "listing ethernets");
+    }
 
-	private static List<Ethernet> listEthernetsToLoad(Connection conn)
-			throws SQLException {
-		try (var s = conn.prepareStatement(LIST_ETHERNETS);
-				var rs = s.executeQuery()) {
-			var result = new ArrayList<Ethernet>();
-			while (rs.next()) {
-				result.add(new EthernetImpl(rs.getInt("ethernet_x"),
-						rs.getInt("ethernet_y"), rs.getString("ip_address")));
-			}
-			return result;
-		}
-	}
+    private static List<Ethernet> listEthernetsToLoad(Connection conn)
+            throws SQLException {
+        try (var s = conn.prepareStatement(LIST_ETHERNETS);
+                var rs = s.executeQuery()) {
+            var result = new ArrayList<Ethernet>();
+            while (rs.next()) {
+                result.add(new EthernetImpl(rs.getInt("ethernet_x"),
+                        rs.getInt("ethernet_y"), rs.getString("ip_address")));
+            }
+            return result;
+        }
+    }
 
-	private static EthernetImpl sanitise(Ethernet ethernet) {
-		if (!(ethernet instanceof EthernetImpl)) {
-			throw new IllegalArgumentException("can only list cores"
-					+ " for ethernets described by this class");
-		}
-		return (EthernetImpl) ethernet;
-	}
+    private static EthernetImpl sanitise(Ethernet ethernet) {
+        if (!(ethernet instanceof EthernetImpl)) {
+            throw new IllegalArgumentException("can only list cores"
+                    + " for ethernets described by this class");
+        }
+        return (EthernetImpl) ethernet;
+    }
 
-	@Override
-	public List<CoreLocation> listCoresToLoad(Ethernet ethernet,
-			boolean loadSystemCores) throws StorageException {
-		return callR(conn -> listCoresToLoad(conn, sanitise(ethernet),
-				loadSystemCores), "listing cores to load data onto");
-	}
+    @Override
+    public List<CoreLocation> listCoresToLoad(Ethernet ethernet,
+            boolean loadSystemCores) throws StorageException {
+        return callR(conn -> listCoresToLoad(conn, sanitise(ethernet),
+                loadSystemCores), "listing cores to load data onto");
+    }
 
-	private List<CoreLocation> listCoresToLoad(Connection conn,
-			EthernetImpl ethernet, boolean loadSystemCores)
-			throws SQLException {
-		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
-			// ethernet_x, ethernet_y, is_system
-			setArguments(s, ethernet.location.getX(), ethernet.location.getY(),
-					loadSystemCores);
-			try (var rs = s.executeQuery()) {
-				var result = new ArrayList<CoreLocation>();
-				while (rs.next()) {
-					result.add(new CoreLocation(rs.getInt("x"),
-							rs.getInt("y"), rs.getInt("p")));
-				}
-				return result;
-			}
-		}
-	}
+    private List<CoreLocation> listCoresToLoad(Connection conn,
+            EthernetImpl ethernet, boolean loadSystemCores)
+            throws SQLException {
+        try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
+            // ethernet_x, ethernet_y, is_system
+            setArguments(s, ethernet.location.getX(), ethernet.location.getY(),
+                    loadSystemCores);
+            try (var rs = s.executeQuery()) {
+                var result = new ArrayList<CoreLocation>();
+                while (rs.next()) {
+                    result.add(new CoreLocation(rs.getInt("x"),
+                            rs.getInt("y"), rs.getInt("p")));
+                }
+                return result;
+            }
+        }
+    }
 
-	@Override
-	public LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation core)
-			throws StorageException {
-		return callR(conn -> getRegionSizes(conn, core),
-				"getting region sizes");
-	}
+    @Override
+    public LinkedHashMap<Integer, Integer> getRegionSizes(CoreLocation core)
+            throws StorageException {
+        return callR(conn -> getRegionSizes(conn, core),
+                "getting region sizes");
+    }
 
-	private LinkedHashMap<Integer, Integer> getRegionSizes(
-			Connection conn, CoreLocation xyp) throws SQLException {
-		try (var s = conn.prepareStatement(GET_REGION_SIZES)) {
-			// x, y, p
-			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
-			try (var rs = s.executeQuery()) {
-				var result = new LinkedHashMap<Integer, Integer>();
-				while (rs.next()) {
-					result.put(rs.getInt("region_num"), rs.getInt("size"));
-				}
-				return result;
-			}
-		}
-	}
+    private LinkedHashMap<Integer, Integer> getRegionSizes(
+            Connection conn, CoreLocation xyp) throws SQLException {
+        try (var s = conn.prepareStatement(GET_REGION_SIZES)) {
+            // x, y, p
+            setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
+            try (var rs = s.executeQuery()) {
+                var result = new LinkedHashMap<Integer, Integer>();
+                while (rs.next()) {
+                    result.put(rs.getInt("region_num"), rs.getInt("size"));
+                }
+                return result;
+            }
+        }
+    }
 
-	@Override
-	public HashMap<Integer, RegionInfo> getRegionPointersAndContent(
-			CoreLocation xyp) throws StorageException {
-		return callR(
-				conn -> getRegionPointersAndContent(conn, xyp),
-				"reading data specification for region");
-	}
+    @Override
+    public HashMap<Integer, RegionInfo> getRegionPointersAndContent(
+            CoreLocation xyp) throws StorageException {
+        return callR(
+                conn -> getRegionPointersAndContent(conn, xyp),
+                "reading data specification for region");
+    }
 
-	private static HashMap<Integer, RegionInfo> getRegionPointersAndContent(
-			Connection conn, CoreLocation xyp) throws SQLException {
-		HashMap<Integer, RegionInfo> results =
-				new HashMap<Integer, RegionInfo>();
-		try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
-			// x, y, p
-			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					ByteBuffer content = null;
-					if (rs.getBytes("content") != null) {
-						content =
-								wrap(rs.getBytes("content")).asReadOnlyBuffer();
-					}
-					var info = new RegionInfo(
-							xyp, content,
-							new MemoryLocation(rs.getInt("pointer")));
-					results.put(rs.getInt("region_num"), info);
-				}
-			}
-			return results;
-		}
-	}
+    private static HashMap<Integer, RegionInfo> getRegionPointersAndContent(
+            Connection conn, CoreLocation xyp) throws SQLException {
+        HashMap<Integer, RegionInfo> results =
+                new HashMap<Integer, RegionInfo>();
+        try (var s = conn.prepareStatement(GET_REGION_POINTER_AND_CONTEXT)) {
+            // x, y, p
+            setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
+            try (var rs = s.executeQuery()) {
+                while (rs.next()) {
+                    ByteBuffer content = null;
+                    if (rs.getBytes("content") != null) {
+                        content =
+                                wrap(rs.getBytes("content")).asReadOnlyBuffer();
+                    }
+                    var info = new RegionInfo(
+                            xyp, content,
+                            new MemoryLocation(rs.getInt("pointer")));
+                    results.put(rs.getInt("region_num"), info);
+                }
+            }
+            return results;
+        }
+    }
 
-	@Override
-	public void setStartAddress(CoreLocation xyp,
-			MemoryLocation start) throws StorageException {
-		callV(conn -> setStartAddres(conn, xyp, start),
-				"saving data loading metadata");
-	}
+    @Override
+    public void setStartAddress(CoreLocation xyp,
+            MemoryLocation start) throws StorageException {
+        callV(conn -> setStartAddres(conn, xyp, start),
+                "saving data loading metadata");
+    }
 
-	private static void setStartAddres(Connection conn,
-			CoreLocation xyp, MemoryLocation start) throws SQLException {
-		try (var s = conn.prepareStatement(SET_START_ADDRESS)) {
-			// start_address, x, y, p
-			setArguments(s, start.address, xyp.getX(), xyp.getY(), xyp.getP());
-			s.executeUpdate();
-		}
-	}
+    private static void setStartAddres(Connection conn,
+            CoreLocation xyp, MemoryLocation start) throws SQLException {
+        try (var s = conn.prepareStatement(SET_START_ADDRESS)) {
+            // start_address, x, y, p
+            setArguments(s, start.address, xyp.getX(), xyp.getY(), xyp.getP());
+            s.executeUpdate();
+        }
+    }
 
-	@Override
-	public MemoryLocation getStartAddress(CoreLocation xyp)
-			throws StorageException {
-		return callR(conn -> getStartAddress(conn, xyp),
-				"getting start address");
-	}
+    @Override
+    public MemoryLocation getStartAddress(CoreLocation xyp)
+            throws StorageException {
+        return callR(conn -> getStartAddress(conn, xyp),
+                "getting start address");
+    }
 
-	private MemoryLocation getStartAddress(Connection conn, CoreLocation xyp)
-			throws SQLException {
-		try (var s = conn.prepareStatement(GET_START_ADDRESS)) {
-			// x, y, p
-			setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					return new MemoryLocation(rs.getInt("start_address"));
-				}
-			}
-		}
-		throw new IllegalStateException(
-				"could not get_start_address for core "
-						+  xyp.getX() + ":" + xyp.getY() + ":" + xyp.getP()
-						+ " known to have one");
-	}
+    private MemoryLocation getStartAddress(Connection conn, CoreLocation xyp)
+            throws SQLException {
+        try (var s = conn.prepareStatement(GET_START_ADDRESS)) {
+            // x, y, p
+            setArguments(s, xyp.getX(), xyp.getY(), xyp.getP());
+            try (var rs = s.executeQuery()) {
+                while (rs.next()) {
+                    return new MemoryLocation(rs.getInt("start_address"));
+                }
+            }
+        }
+        throw new IllegalStateException(
+                "could not get_start_address for core "
+                        +  xyp.getX() + ":" + xyp.getY() + ":" + xyp.getP()
+                        + " known to have one");
+    }
 
-	@Override
-	public void setRegionPointer(CoreLocation xyp, int regionNum,
-			int pointer) throws StorageException {
-		callV(conn -> setRegionPointer(conn, xyp, regionNum, pointer),
-				"saving data loading metadata");
-	}
+    @Override
+    public void setRegionPointer(CoreLocation xyp, int regionNum,
+            int pointer) throws StorageException {
+        callV(conn -> setRegionPointer(conn, xyp, regionNum, pointer),
+                "saving data loading metadata");
+    }
 
-	private static void setRegionPointer(Connection conn,
-			CoreLocation xyp, int regionNum, int pointer)
-			throws SQLException {
-		try (var s = conn.prepareStatement(SET_REGION_POINTER)) {
-			// pointer, x, y, p, region_num
-			setArguments(s, pointer, xyp.getX(), xyp.getY(), xyp.getP(),
-					regionNum);
-			s.executeUpdate();
-		}
-	}
+    private static void setRegionPointer(Connection conn,
+            CoreLocation xyp, int regionNum, int pointer)
+            throws SQLException {
+        try (var s = conn.prepareStatement(SET_REGION_POINTER)) {
+            // pointer, x, y, p, region_num
+            setArguments(s, pointer, xyp.getX(), xyp.getY(), xyp.getP(),
+                    regionNum);
+            s.executeUpdate();
+        }
+    }
 
-	@Override
-	public int getAppId() throws StorageException {
-		return callR(conn -> getAppId(conn), "getting app id");
-	}
+    @Override
+    public int getAppId() throws StorageException {
+        return callR(conn -> getAppId(conn), "getting app id");
+    }
 
-	private int getAppId(Connection conn)
-			throws SQLException {
-		try (var s = conn.prepareStatement(GET_APP_ID)) {
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					return rs.getInt("app_id");
-				}
-			}
-		}
-		throw new IllegalStateException("could not ge app id");
-	}
+    private int getAppId(Connection conn)
+            throws SQLException {
+        try (var s = conn.prepareStatement(GET_APP_ID)) {
+            try (var rs = s.executeQuery()) {
+                while (rs.next()) {
+                    return rs.getInt("app_id");
+                }
+            }
+        }
+        throw new IllegalStateException("could not ge app id");
+    }
 
-	@Override
-	public MachineDimensions getMachineDimensions() throws StorageException {
-		return callR(conn -> getMachineDimensions(conn),
-				"getting machine dimensions");
-	}
+    @Override
+    public MachineDimensions getMachineDimensions() throws StorageException {
+        return callR(conn -> getMachineDimensions(conn),
+                "getting machine dimensions");
+    }
 
-	private MachineDimensions getMachineDimensions(Connection conn)
-			throws SQLException {
-		try (var s = conn.prepareStatement(GET_MACHINE_DIMENSIONS)) {
-			try (var rs = s.executeQuery()) {
-				while (rs.next()) {
-					return new MachineDimensions(rs.getInt("width"),
-							rs.getInt("height"));
-				}
-			}
-		}
-		throw new IllegalStateException("could not get machine dimensions");
-	}
+    private MachineDimensions getMachineDimensions(Connection conn)
+            throws SQLException {
+        try (var s = conn.prepareStatement(GET_MACHINE_DIMENSIONS)) {
+            try (var rs = s.executeQuery()) {
+                while (rs.next()) {
+                    return new MachineDimensions(rs.getInt("width"),
+                            rs.getInt("height"));
+                }
+            }
+        }
+        throw new IllegalStateException("could not get machine dimensions");
+    }
 
-	private static final class EthernetImpl extends Ethernet {
-		private EthernetImpl(int etherx, int ethery, String addr) {
-			super(etherx, ethery, addr);
-		}
+    private static final class EthernetImpl extends Ethernet {
+        private EthernetImpl(int etherx, int ethery, String addr) {
+            super(etherx, ethery, addr);
+        }
 
-		@Override
-		public boolean equals(Object other) {
-			if (!(other instanceof EthernetImpl)) {
-				return false;
-			}
-			var b = (EthernetImpl) other;
-			return location == b.location;
-		}
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof EthernetImpl)) {
+                return false;
+            }
+            var b = (EthernetImpl) other;
+            return location == b.location;
+        }
 
-		@Override
-		public int hashCode() {
-			return location.hashCode();
-		}
-	}
+        @Override
+        public int hashCode() {
+            return location.hashCode();
+        }
+    }
 }

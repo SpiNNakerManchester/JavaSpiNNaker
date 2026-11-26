@@ -29,237 +29,237 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 @Immutable
 @JsonDeserialize(builder = WhereIs.Builder.class)
 public final class WhereIs {
-	private final ChipLocation jobChip;
+    private final ChipLocation jobChip;
 
-	private final Integer jobId;
+    private final Integer jobId;
 
-	private final ChipLocation chip;
+    private final ChipLocation chip;
 
-	private final BoardCoordinates logical;
+    private final BoardCoordinates logical;
 
-	private final String machine;
+    private final String machine;
 
-	private final ChipLocation boardChip;
+    private final ChipLocation boardChip;
 
-	private final BoardPhysicalCoordinates physical;
+    private final BoardPhysicalCoordinates physical;
 
-	/**
-	 * Create.
-	 *
-	 * @param jobChip
-	 *            the chip location relative to the job's allocation.
-	 * @param jobId
-	 *            the job id.
-	 * @param chip
-	 *            the absolute chip location.
-	 * @param logical
-	 *            the logical coordinates of the board
-	 * @param machine
-	 *            the name of the machine
-	 * @param boardChip
-	 *            the chip location relative to its board
-	 * @param physical
-	 *            the physical coordinates of the board
-	 */
-	public WhereIs(ChipLocation jobChip, Integer jobId, ChipLocation chip,
-			BoardCoordinates logical, String machine, ChipLocation boardChip,
-			BoardPhysicalCoordinates physical) {
-		this.jobChip = jobChip;
-		this.jobId = jobId;
-		this.chip = chip;
-		this.logical = logical;
-		this.machine = machine;
-		this.boardChip = boardChip;
-		this.physical = physical;
-	}
+    /**
+     * Create.
+     *
+     * @param jobChip
+     *            the chip location relative to the job's allocation.
+     * @param jobId
+     *            the job id.
+     * @param chip
+     *            the absolute chip location.
+     * @param logical
+     *            the logical coordinates of the board
+     * @param machine
+     *            the name of the machine
+     * @param boardChip
+     *            the chip location relative to its board
+     * @param physical
+     *            the physical coordinates of the board
+     */
+    public WhereIs(ChipLocation jobChip, Integer jobId, ChipLocation chip,
+            BoardCoordinates logical, String machine, ChipLocation boardChip,
+            BoardPhysicalCoordinates physical) {
+        this.jobChip = jobChip;
+        this.jobId = jobId;
+        this.chip = chip;
+        this.logical = logical;
+        this.machine = machine;
+        this.boardChip = boardChip;
+        this.physical = physical;
+    }
 
-	/**
-	 * Get the chip location relative to the job's allocation.
-	 *
-	 * @return the job-relative chip location
-	 */
-	public ChipLocation getJobChip() {
-		return jobChip;
-	}
+    /**
+     * Get the chip location relative to the job's allocation.
+     *
+     * @return the job-relative chip location
+     */
+    public ChipLocation getJobChip() {
+        return jobChip;
+    }
 
-	/**
-	 * Get the job id.
-	 *
-	 * @return the job id
-	 */
-	public Integer getJobId() {
-		return jobId;
-	}
+    /**
+     * Get the job id.
+     *
+     * @return the job id
+     */
+    public Integer getJobId() {
+        return jobId;
+    }
 
-	/**
-	 * Get the chip.
-	 *
-	 * @return the chip
-	 */
-	public ChipLocation getChip() {
-		return chip;
-	}
+    /**
+     * Get the chip.
+     *
+     * @return the chip
+     */
+    public ChipLocation getChip() {
+        return chip;
+    }
 
-	/**
-	 * Get the logical board coordinates.
-	 *
-	 * @return the logical board coordinates
-	 */
-	public BoardCoordinates getLogical() {
-		return logical;
-	}
+    /**
+     * Get the logical board coordinates.
+     *
+     * @return the logical board coordinates
+     */
+    public BoardCoordinates getLogical() {
+        return logical;
+    }
 
-	/**
-	 * Get the machine.
-	 *
-	 * @return the machine
-	 */
-	public String getMachine() {
-		return machine;
-	}
+    /**
+     * Get the machine.
+     *
+     * @return the machine
+     */
+    public String getMachine() {
+        return machine;
+    }
 
-	/**
-	 * Get the chip location relative to the board.
-	 *
-	 * @return the board chip location
-	 */
-	public ChipLocation getBoardChip() {
-		return boardChip;
-	}
+    /**
+     * Get the chip location relative to the board.
+     *
+     * @return the board chip location
+     */
+    public ChipLocation getBoardChip() {
+        return boardChip;
+    }
 
-	/**
-	 * Get the physical board coordinates.
-	 *
-	 * @return the physical board coordinates
-	 */
-	public BoardPhysicalCoordinates getPhysical() {
-		return physical;
-	}
+    /**
+     * Get the physical board coordinates.
+     *
+     * @return the physical board coordinates
+     */
+    public BoardPhysicalCoordinates getPhysical() {
+        return physical;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof WhereIs) {
-			var other = (WhereIs) o;
-			return Objects.equals(jobChip, other.jobChip)
-					&& Objects.equals(jobId, other.jobId)
-					&& Objects.equals(chip, other.chip)
-					&& Objects.equals(logical, other.logical)
-					&& Objects.equals(machine, other.machine)
-					&& Objects.equals(boardChip, other.boardChip)
-					&& Objects.equals(physical, other.physical);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof WhereIs) {
+            var other = (WhereIs) o;
+            return Objects.equals(jobChip, other.jobChip)
+                    && Objects.equals(jobId, other.jobId)
+                    && Objects.equals(chip, other.chip)
+                    && Objects.equals(logical, other.logical)
+                    && Objects.equals(machine, other.machine)
+                    && Objects.equals(boardChip, other.boardChip)
+                    && Objects.equals(physical, other.physical);
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String toString() {
-		return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
-				+ " logical: " + logical + " machine: " + machine
-				+ " boardChip: " + boardChip + " physical: " + physical;
-	}
+    @Override
+    public String toString() {
+        return "jobChip: " + jobChip + " jobId: " + jobId + " chip: " + chip
+                + " logical: " + logical + " machine: " + machine
+                + " boardChip: " + boardChip + " physical: " + physical;
+    }
 
-	/**
-	 * Builder for {@link WhereIs}.
-	 */
-	@JsonPOJOBuilder(withPrefix = "set")
-	public static class Builder {
-		private ChipLocation jobChip;
+    /**
+     * Builder for {@link WhereIs}.
+     */
+    @JsonPOJOBuilder(withPrefix = "set")
+    public static class Builder {
+        private ChipLocation jobChip;
 
-		private Integer jobId;
+        private Integer jobId;
 
-		private ChipLocation chip;
+        private ChipLocation chip;
 
-		private BoardCoordinates logical;
+        private BoardCoordinates logical;
 
-		private String machine;
+        private String machine;
 
-		private ChipLocation boardChip;
+        private ChipLocation boardChip;
 
-		private BoardPhysicalCoordinates physical;
+        private BoardPhysicalCoordinates physical;
 
-		/**
-		 * Set the chip location relative to the job's allocation.
-		 *
-		 * @param jobChip
-		 *            The chip location relative to the job's allocation.
-		 */
-		public void setJobChip(ChipLocation jobChip) {
-			this.jobChip = jobChip;
-		}
+        /**
+         * Set the chip location relative to the job's allocation.
+         *
+         * @param jobChip
+         *            The chip location relative to the job's allocation.
+         */
+        public void setJobChip(ChipLocation jobChip) {
+            this.jobChip = jobChip;
+        }
 
-		/**
-		 * Sets the job id.
-		 *
-		 * @param jobId
-		 *            The job id.
-		 */
-		public void setJobId(Integer jobId) {
-			this.jobId = jobId;
-		}
+        /**
+         * Sets the job id.
+         *
+         * @param jobId
+         *            The job id.
+         */
+        public void setJobId(Integer jobId) {
+            this.jobId = jobId;
+        }
 
-		/**
-		 * Set the absolute chip location.
-		 *
-		 * @param chip
-		 *            The absolute chip location.
-		 */
-		public void setChip(ChipLocation chip) {
-			this.chip = chip;
-		}
+        /**
+         * Set the absolute chip location.
+         *
+         * @param chip
+         *            The absolute chip location.
+         */
+        public void setChip(ChipLocation chip) {
+            this.chip = chip;
+        }
 
-		/**
-		 * Set the logical coordinates of the board.
-		 *
-		 * @param logical
-		 *            The logical coordinates of the board.
-		 */
-		public void setLogical(BoardCoordinates logical) {
-			this.logical = logical;
-		}
+        /**
+         * Set the logical coordinates of the board.
+         *
+         * @param logical
+         *            The logical coordinates of the board.
+         */
+        public void setLogical(BoardCoordinates logical) {
+            this.logical = logical;
+        }
 
-		/**
-		 * Set the name of the machine.
-		 *
-		 * @param machine
-		 *            The name of the machine.
-		 */
-		public void setMachine(String machine) {
-			this.machine = machine;
-		}
+        /**
+         * Set the name of the machine.
+         *
+         * @param machine
+         *            The name of the machine.
+         */
+        public void setMachine(String machine) {
+            this.machine = machine;
+        }
 
-		/**
-		 * Set the chip location relative to its board.
-		 *
-		 * @param boardChip
-		 *            The chip location relative to its board.
-		 */
-		public void setBoardChip(ChipLocation boardChip) {
-			this.boardChip = boardChip;
-		}
+        /**
+         * Set the chip location relative to its board.
+         *
+         * @param boardChip
+         *            The chip location relative to its board.
+         */
+        public void setBoardChip(ChipLocation boardChip) {
+            this.boardChip = boardChip;
+        }
 
-		/**
-		 * Sets the physical coordinates of the board.
-		 *
-		 * @param physical
-		 *            The physical coordinates of the board.
-		 */
-		public void setPhysical(BoardPhysicalCoordinates physical) {
-			this.physical = physical;
-		}
+        /**
+         * Sets the physical coordinates of the board.
+         *
+         * @param physical
+         *            The physical coordinates of the board.
+         */
+        public void setPhysical(BoardPhysicalCoordinates physical) {
+            this.physical = physical;
+        }
 
-		/**
-		 * Build an instance of the immutable {@link WhereIs}.
-		 *
-		 * @return The instance.
-		 */
-		public WhereIs build() {
-			return new WhereIs(jobChip, jobId, chip, logical, machine,
-					boardChip, physical);
-		}
-	}
+        /**
+         * Build an instance of the immutable {@link WhereIs}.
+         *
+         * @return The instance.
+         */
+        public WhereIs build() {
+            return new WhereIs(jobChip, jobId, chip, logical, machine,
+                    boardChip, physical);
+        }
+    }
 }

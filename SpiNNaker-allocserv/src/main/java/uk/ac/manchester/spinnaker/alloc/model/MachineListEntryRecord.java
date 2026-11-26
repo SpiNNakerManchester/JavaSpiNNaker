@@ -59,140 +59,140 @@ import jakarta.validation.constraints.PositiveOrZero;
  * </table>
  */
 public class MachineListEntryRecord {
-	private int id;
+    private int id;
 
-	@NotBlank
-	private String name;
+    @NotBlank
+    private String name;
 
-	private URI detailsUrl;
+    private URI detailsUrl;
 
-	@Positive
-	private int numBoards;
+    @Positive
+    private int numBoards;
 
-	@PositiveOrZero
-	private int numInUse;
+    @PositiveOrZero
+    private int numInUse;
 
-	@PositiveOrZero
-	private int numJobs;
+    @PositiveOrZero
+    private int numJobs;
 
-	private List<@NotBlank String> tags = List.of();
+    private List<@NotBlank String> tags = List.of();
 
-	/**
-	 * {@return the machine ID}
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * {@return the machine ID}
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Sets the machine ID.
-	 *
-	 * @param id
-	 *            the machine ID
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+    /**
+     * Sets the machine ID.
+     *
+     * @param id
+     *            the machine ID
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	/**
-	 * {@return the machine name}
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * {@return the machine name}
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Sets the machine name.
-	 *
-	 * @param name
-	 *            the machine name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Sets the machine name.
+     *
+     * @param name
+     *            the machine name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * {@return where to go for more details}
-	 */
-	public Optional<URI> getDetailsUrl() {
-		return Optional.ofNullable(detailsUrl);
-	}
+    /**
+     * {@return where to go for more details}
+     */
+    public Optional<URI> getDetailsUrl() {
+        return Optional.ofNullable(detailsUrl);
+    }
 
-	/**
-	 * Sets where to go for more details.
-	 *
-	 * @param detailsUrl
-	 *            where to go for more details
-	 */
-	public void setDetailsUrl(URI detailsUrl) {
-		this.detailsUrl = detailsUrl;
-	}
+    /**
+     * Sets where to go for more details.
+     *
+     * @param detailsUrl
+     *            where to go for more details
+     */
+    public void setDetailsUrl(URI detailsUrl) {
+        this.detailsUrl = detailsUrl;
+    }
 
-	/**
-	 * {@return the number of boards in the machine}
-	 */
-	public int getNumBoards() {
-		return numBoards;
-	}
+    /**
+     * {@return the number of boards in the machine}
+     */
+    public int getNumBoards() {
+        return numBoards;
+    }
 
-	/**
-	 * Sets the number of boards in the machine.
-	 *
-	 * @param numBoards
-	 *            the number of boards in the machine
-	 */
-	public void setNumBoards(int numBoards) {
-		this.numBoards = numBoards;
-	}
+    /**
+     * Sets the number of boards in the machine.
+     *
+     * @param numBoards
+     *            the number of boards in the machine
+     */
+    public void setNumBoards(int numBoards) {
+        this.numBoards = numBoards;
+    }
 
-	/**
-	 * {@return the number of boards in use}
-	 */
-	public int getNumInUse() {
-		return numInUse;
-	}
+    /**
+     * {@return the number of boards in use}
+     */
+    public int getNumInUse() {
+        return numInUse;
+    }
 
-	/**
-	 * Sets the number of boards in use.
-	 *
-	 * @param numInUse
-	 *            the number of boards in use
-	 */
-	public void setNumInUse(int numInUse) {
-		this.numInUse = numInUse;
-	}
+    /**
+     * Sets the number of boards in use.
+     *
+     * @param numInUse
+     *            the number of boards in use
+     */
+    public void setNumInUse(int numInUse) {
+        this.numInUse = numInUse;
+    }
 
-	/**
-	 * {@return the number of jobs running on the machine}
-	 */
-	public int getNumJobs() {
-		return numJobs;
-	}
+    /**
+     * {@return the number of jobs running on the machine}
+     */
+    public int getNumJobs() {
+        return numJobs;
+    }
 
-	/**
-	 * Sets the number of jobs running on the machine.
-	 *
-	 * @param numJobs
-	 *            the number of jobs running on the machine
-	 */
-	public void setNumJobs(int numJobs) {
-		this.numJobs = numJobs;
-	}
+    /**
+     * Sets the number of jobs running on the machine.
+     *
+     * @param numJobs
+     *            the number of jobs running on the machine
+     */
+    public void setNumJobs(int numJobs) {
+        this.numJobs = numJobs;
+    }
 
-	/**
-	 * {@return the machine's tags}
-	 */
-	public List<String> getTags() {
-		return tags;
-	}
+    /**
+     * {@return the machine's tags}
+     */
+    public List<String> getTags() {
+        return tags;
+    }
 
-	/**
-	 * Sets the machine's tags.
-	 *
-	 * @param tags
-	 *            the machine's tags
-	 */
-	public void setTags(List<String> tags) {
-		this.tags = copy(tags);
-	}
+    /**
+     * Sets the machine's tags.
+     *
+     * @param tags
+     *            the machine's tags
+     */
+    public void setTags(List<String> tags) {
+        this.tags = copy(tags);
+    }
 }

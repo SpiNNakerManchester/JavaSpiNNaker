@@ -17,26 +17,26 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 /** SDP Command codes to the extra monitors for router table control. */
 enum RouterTableCommand implements CommandCode {
-	/**
-	 * Save the application multicast routes, which must be currently installed.
-	 */
-	SAVE_APPLICATION_ROUTES(6),
-	/** Load the (previously saved) application multicast routes. */
-	LOAD_APPLICATION_ROUTES(7),
-	/** Load the (previously configured) system multicast routes. */
-	LOAD_SYSTEM_ROUTES(8);
+    /**
+     * Save the application multicast routes, which must be currently installed.
+     */
+    SAVE_APPLICATION_ROUTES(6),
+    /** Load the (previously saved) application multicast routes. */
+    LOAD_APPLICATION_ROUTES(7),
+    /** Load the (previously configured) system multicast routes. */
+    LOAD_SYSTEM_ROUTES(8);
 
-	/**
-	 * The encoded form of the command.
-	 */
-	private final short value;
+    /**
+     * The encoded form of the command.
+     */
+    private final short value;
 
-	RouterTableCommand(int cmd) {
-		this.value = (short) cmd;
-	}
+    RouterTableCommand(int cmd) {
+        this.value = (short) cmd;
+    }
 
-	@Override
-	public short getValue() {
-		return value;
-	}
+    @Override
+    public short getValue() {
+        return value;
+    }
 }

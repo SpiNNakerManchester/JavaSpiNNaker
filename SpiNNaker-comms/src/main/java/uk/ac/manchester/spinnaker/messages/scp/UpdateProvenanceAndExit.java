@@ -31,20 +31,20 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class UpdateProvenanceAndExit extends FECRequest<NoResponse> {
 
-	/**
-	 * Constructs a request to update the runtime info on this core.
-	 *
-	 * @param core
-	 *            The SpiNNaker core to update the provenance info of.
-	 */
-	public UpdateProvenanceAndExit(HasCoreLocation core) {
-		super(core, false, UPDATE_PROVENCE_REGION_AND_EXIT);
-	}
+    /**
+     * Constructs a request to update the runtime info on this core.
+     *
+     * @param core
+     *            The SpiNNaker core to update the provenance info of.
+     */
+    public UpdateProvenanceAndExit(HasCoreLocation core) {
+        super(core, false, UPDATE_PROVENCE_REGION_AND_EXIT);
+    }
 
-	@Override
-	public NoResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new NoResponse("update provenance and exit",
-				UPDATE_PROVENCE_REGION_AND_EXIT, buffer);
-	}
+    @Override
+    public NoResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new NoResponse("update provenance and exit",
+                UPDATE_PROVENCE_REGION_AND_EXIT, buffer);
+    }
 }

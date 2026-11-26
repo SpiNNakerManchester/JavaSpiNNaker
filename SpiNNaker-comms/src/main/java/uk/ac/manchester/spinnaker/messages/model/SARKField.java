@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target(FIELD)
 public @interface SARKField {
-	/**
-	 * {@return The name of the field in the equivalent structure}
-	 */
-	String value();
+    /**
+     * {@return The name of the field in the equivalent structure}
+     */
+    String value();
 }

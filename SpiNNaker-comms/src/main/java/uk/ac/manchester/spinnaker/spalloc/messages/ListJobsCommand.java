@@ -24,10 +24,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  * @see JobDescription The basic result type associated with the request
  */
 public class ListJobsCommand extends Command<Integer> {
-	/**
-	 * Create a request to list the jobs.
-	 */
-	public ListJobsCommand() {
-		super("list_jobs");
-	}
+    /**
+     * Create a request to list the jobs.
+     */
+    public ListJobsCommand() {
+        super("list_jobs");
+    }
 }

@@ -37,80 +37,80 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code sark_xfree_id()}) in {@code scamp-cmd.c}.
  */
 public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
-	private final boolean readNumFreedBlocks;
+    private final boolean readNumFreedBlocks;
 
-	/**
-	 * Free the memory associated with a given application ID.
-	 *
-	 * @param chip
-	 *            The chip to deallocate on.
-	 * @param appID
-	 *            The ID of the application.
-	 */
-	public SDRAMDeAlloc(HasChipLocation chip, AppID appID) {
-		super(chip.getScampCore(), CMD_ALLOC, argument1(appID));
-		readNumFreedBlocks = true;
-	}
+    /**
+     * Free the memory associated with a given application ID.
+     *
+     * @param chip
+     *            The chip to deallocate on.
+     * @param appID
+     *            The ID of the application.
+     */
+    public SDRAMDeAlloc(HasChipLocation chip, AppID appID) {
+        super(chip.getScampCore(), CMD_ALLOC, argument1(appID));
+        readNumFreedBlocks = true;
+    }
 
-	/**
-	 * Free a block of memory of known size.
-	 *
-	 * @param chip
-	 *            The chip to deallocate on.
-	 * @param baseAddress
-	 *            The start address in SDRAM of the block that needs to be
-	 *            deallocated.
-	 */
-	public SDRAMDeAlloc(HasChipLocation chip, MemoryLocation baseAddress) {
-		super(chip.getScampCore(), CMD_ALLOC, FREE_SDRAM_BY_POINTER.value,
-				baseAddress.address);
-		readNumFreedBlocks = false;
-	}
+    /**
+     * Free a block of memory of known size.
+     *
+     * @param chip
+     *            The chip to deallocate on.
+     * @param baseAddress
+     *            The start address in SDRAM of the block that needs to be
+     *            deallocated.
+     */
+    public SDRAMDeAlloc(HasChipLocation chip, MemoryLocation baseAddress) {
+        super(chip.getScampCore(), CMD_ALLOC, FREE_SDRAM_BY_POINTER.value,
+                baseAddress.address);
+        readNumFreedBlocks = false;
+    }
 
-	// @formatter:off
-	/*
-	 * [  31-16 |   15-8 | 7-0 ]
-	 * [ unused | app_id |  op ]
-	 */
-	// @formatter:on
-	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
-	}
+    // @formatter:off
+    /*
+     * [  31-16 |   15-8 | 7-0 ]
+     * [ unused | app_id |  op ]
+     */
+    // @formatter:on
+    private static int argument1(AppID appID) {
+        return (appID.appID << BYTE1) | (FREE_SDRAM_BY_APP_ID.value << BYTE0);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException,
-			MemoryAllocationFailedException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException,
+            MemoryAllocationFailedException {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request to deallocate SDRAM. */
-	protected final class Response extends
-			PayloadedResponse<Integer, MemoryAllocationFailedException> {
-		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
-				MemoryAllocationFailedException {
-			super("SDRAM Deallocation", CMD_ALLOC, buffer);
-		}
+    /** An SCP response to a request to deallocate SDRAM. */
+    protected final class Response extends
+            PayloadedResponse<Integer, MemoryAllocationFailedException> {
+        Response(ByteBuffer buffer) throws UnexpectedResponseCodeException,
+                MemoryAllocationFailedException {
+            super("SDRAM Deallocation", CMD_ALLOC, buffer);
+        }
 
-		/**
-		 * Get the number of blocks allocated.
-		 *
-		 * @return The number of allocated blocks that have been freed from the
-		 *         appID given, or one when the direct block of space to
-		 *         deallocate was given.
-		 */
-		@Override
-		protected Integer parse(ByteBuffer buffer)
-				throws MemoryAllocationFailedException {
-			if (!readNumFreedBlocks) {
-				return 1;
-			}
-			int numFreedBlocks = buffer.getInt();
-			if (numFreedBlocks == 0) {
-				throw new MemoryAllocationFailedException(
-						"Could not deallocate SDRAM");
-			}
-			return numFreedBlocks;
-		}
-	}
+        /**
+         * Get the number of blocks allocated.
+         *
+         * @return The number of allocated blocks that have been freed from the
+         *         appID given, or one when the direct block of space to
+         *         deallocate was given.
+         */
+        @Override
+        protected Integer parse(ByteBuffer buffer)
+                throws MemoryAllocationFailedException {
+            if (!readNumFreedBlocks) {
+                return 1;
+            }
+            int numFreedBlocks = buffer.getInt();
+            if (numFreedBlocks == 0) {
+                throw new MemoryAllocationFailedException(
+                        "Could not deallocate SDRAM");
+            }
+            return numFreedBlocks;
+        }
+    }
 }

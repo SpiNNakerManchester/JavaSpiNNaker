@@ -33,33 +33,33 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly({Chip.class, Link.class})
 public class LinkBean {
-	/** Where the link is going. */
-	@Valid
-	public final ChipLocation destination;
+    /** Where the link is going. */
+    @Valid
+    public final ChipLocation destination;
 
-	/** What direction the link is going in. */
-	@NotNull
-	public final Direction sourceDirection;
+    /** What direction the link is going in. */
+    @NotNull
+    public final Direction sourceDirection;
 
-	/**
-	 * Make an instance.
-	 *
-	 * @param sourceLinkId
-	 *            What is the direction of the link?
-	 * @param destinationX
-	 *            Where is the link going to? X coordinate.
-	 * @param destinationY
-	 *            Where is the link going to? Y coordinate.
-	 */
-	@JsonCreator
-	public LinkBean(
-			@JsonProperty(value = "sourceLinkId", required = true)
-			int sourceLinkId,
-			@JsonProperty(value = "destinationX", required = true)
-			int destinationX,
-			@JsonProperty(value = "destinationY", required = true)
-			int destinationY) {
-		destination = new ChipLocation(destinationX, destinationY);
-		sourceDirection = Direction.byId(sourceLinkId);
-	}
+    /**
+     * Make an instance.
+     *
+     * @param sourceLinkId
+     *            What is the direction of the link?
+     * @param destinationX
+     *            Where is the link going to? X coordinate.
+     * @param destinationY
+     *            Where is the link going to? Y coordinate.
+     */
+    @JsonCreator
+    public LinkBean(
+            @JsonProperty(value = "sourceLinkId", required = true)
+            int sourceLinkId,
+            @JsonProperty(value = "destinationX", required = true)
+            int destinationX,
+            @JsonProperty(value = "destinationY", required = true)
+            int destinationY) {
+        destination = new ChipLocation(destinationX, destinationY);
+        sourceDirection = Direction.byId(sourceLinkId);
+    }
 }

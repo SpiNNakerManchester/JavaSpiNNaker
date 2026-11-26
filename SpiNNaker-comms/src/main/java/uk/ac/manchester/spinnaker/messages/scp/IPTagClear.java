@@ -34,26 +34,26 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class IPTagClear extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to clear the tag on the give Chip.
-	 *
-	 * @param chip
-	 *            The chip to clear the tag on.
-	 * @param tag
-	 *            The ID of the tag to clear (0..7)
-	 */
-	public IPTagClear(HasChipLocation chip, @TagID int tag) {
-		super(chip.getScampCore(), CMD_IPTAG, argument1(tag));
-	}
+    /**
+     * Constructs a request to clear the tag on the give Chip.
+     *
+     * @param chip
+     *            The chip to clear the tag on.
+     * @param tag
+     *            The ID of the tag to clear (0..7)
+     */
+    public IPTagClear(HasChipLocation chip, @TagID int tag) {
+        super(chip.getScampCore(), CMD_IPTAG, argument1(tag));
+    }
 
-	// arg1 = flags[11:8] : timeout : command : dest_port : tag
-	private static Integer argument1(int tag) {
-		return (CLR.value << COMMAND_FIELD) | (tag & THREE_BITS_MASK);
-	}
+    // arg1 = flags[11:8] : timeout : command : dest_port : tag
+    private static Integer argument1(int tag) {
+        return (CLR.value << COMMAND_FIELD) | (tag & THREE_BITS_MASK);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Clear IP Tag", CMD_IPTAG, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Clear IP Tag", CMD_IPTAG, buffer);
+    }
 }

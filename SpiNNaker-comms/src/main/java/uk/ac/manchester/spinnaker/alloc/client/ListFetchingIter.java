@@ -37,70 +37,70 @@ import org.slf4j.Logger;
  *            The type of elements of the lists retrieved.
  */
 abstract class ListFetchingIter<T> implements Iterator<List<T>> {
-	private static final Logger log = getLogger(ListFetchingIter.class);
+    private static final Logger log = getLogger(ListFetchingIter.class);
 
-	private boolean done = false;
+    private boolean done = false;
 
-	private List<T> handles = null;
+    private List<T> handles = null;
 
-	@Override
-	public final boolean hasNext() {
-		if (!done) {
-			if (handles == null && canFetchMore()) {
-				try {
-					handles = fetchNext();
-				} catch (IOException e) {
-					log.warn("problem when fetching list section", e);
-					handles = null;
-				}
-			}
-			if (handles == null || handles.isEmpty()) {
-				done = true;
-			}
-		}
-		return !done;
-	}
+    @Override
+    public final boolean hasNext() {
+        if (!done) {
+            if (handles == null && canFetchMore()) {
+                try {
+                    handles = fetchNext();
+                } catch (IOException e) {
+                    log.warn("problem when fetching list section", e);
+                    handles = null;
+                }
+            }
+            if (handles == null || handles.isEmpty()) {
+                done = true;
+            }
+        }
+        return !done;
+    }
 
-	@Override
-	public final List<T> next() {
-		if (handles == null) {
-			throw new NoSuchElementException("no more");
-		}
-		try {
-			return handles;
-		} finally {
-			handles = null;
-			if (!canFetchMore()) {
-				done = true;
-			}
-		}
-	}
+    @Override
+    public final List<T> next() {
+        if (handles == null) {
+            throw new NoSuchElementException("no more");
+        }
+        try {
+            return handles;
+        } finally {
+            handles = null;
+            if (!canFetchMore()) {
+                done = true;
+            }
+        }
+    }
 
-	/**
-	 * Get the next chunk. Advance the internal state of what chunk to fetch.
-	 *
-	 * @return The list of items from the chunk. This list may be empty or
-	 *         {@code null}, but either will indicate that the sequence of items
-	 *         is exhausted.
-	 * @throws IOException
-	 *             If the fetch fails.
-	 */
-	abstract List<T> fetchNext() throws IOException;
+    /**
+     * Get the next chunk. Advance the internal state of what chunk to fetch.
+     *
+     * @return The list of items from the chunk. This list may be empty or
+     *         {@code null}, but either will indicate that the sequence of items
+     *         is exhausted.
+     * @throws IOException
+     *             If the fetch fails.
+     */
+    abstract List<T> fetchNext() throws IOException;
 
-	/**
-	 * Whether there is the ability to fetch another chunk.
-	 *
-	 * @return {@code true} if {@link #fetchNext()} will do something sensible.
-	 */
-	abstract boolean canFetchMore();
+    /**
+     * Whether there is the ability to fetch another chunk.
+     *
+     * @return {@code true} if {@link #fetchNext()} will do something sensible.
+     */
+    abstract boolean canFetchMore();
 
-	/**
-	 * Get the elements of this iterator as a stream.
-	 *
-	 * @return a sequential stream.
-	 */
-	public Stream<List<T>> stream() {
-		return StreamSupport.stream(
-				spliteratorUnknownSize(this, ORDERED | IMMUTABLE), false);
-	}
+    /**
+     * Get the elements of this iterator as a stream.
+     *
+     * @return a sequential stream.
+     */
+    public Stream<List<T>> stream() {
+        return StreamSupport.stream(
+                spliteratorUnknownSize(this, ORDERED | IMMUTABLE), false);
+    }
 }

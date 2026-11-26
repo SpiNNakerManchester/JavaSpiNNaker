@@ -65,220 +65,220 @@ import uk.ac.manchester.spinnaker.nmpi.status.StatusMonitorManager;
 @Import(JaxRsConfig.class)
 public class RemoteSpinnakerBeans {
 
-	/**
-	 * Types of status possible.
-	 */
-	public enum StatusServiceType {
-		/**
-		 * Status Cake service.
-		 */
-		STATUS_CAKE,
-		/**
-		 * Icigna2 service.
-		 */
-		ICINGA2
-	}
+    /**
+     * Types of status possible.
+     */
+    public enum StatusServiceType {
+        /**
+         * Status Cake service.
+         */
+        STATUS_CAKE,
+        /**
+         * Icigna2 service.
+         */
+        ICINGA2
+    }
 
-	/**
-	 * Configures using properties.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer
-			propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
+    /**
+     * Configures using properties.
+     *
+     * @return bean
+     */
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer
+            propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
-	/**
-	 * Parsing of Spinnaker machine descriptions.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public static ConversionServiceFactoryBean conversionService() {
-		final var factory = new ConversionServiceFactoryBean();
-		factory.setConverters(singleton((StringToMachineConverter)
-				SpinnakerMachine::parse));
-		return factory;
-	}
+    /**
+     * Parsing of Spinnaker machine descriptions.
+     *
+     * @return bean
+     */
+    @Bean
+    public static ConversionServiceFactoryBean conversionService() {
+        final var factory = new ConversionServiceFactoryBean();
+        factory.setConverters(singleton((StringToMachineConverter)
+                SpinnakerMachine::parse));
+        return factory;
+    }
 
-	interface StringToMachineConverter
-			extends Converter<String, SpinnakerMachine> {
-		// Marker interface to allow lambda
-	}
+    interface StringToMachineConverter
+            extends Converter<String, SpinnakerMachine> {
+        // Marker interface to allow lambda
+    }
 
-	/**
-	 * The context of the application.
-	 */
-	@Autowired
-	private ApplicationContext ctx;
+    /**
+     * The context of the application.
+     */
+    @Autowired
+    private ApplicationContext ctx;
 
-	/**
-	 * Determine if machines are to be spalloc allocated.
-	 */
-	@Value("${spalloc.enabled}")
-	private boolean useSpalloc;
+    /**
+     * Determine if machines are to be spalloc allocated.
+     */
+    @Value("${spalloc.enabled}")
+    private boolean useSpalloc;
 
-	/**
-	 * Whether we should use the Java or original Spalloc implementation.
-	 */
-	@Value("${spalloc.use_java}")
-	private boolean spallocUseJava;
+    /**
+     * Whether we should use the Java or original Spalloc implementation.
+     */
+    @Value("${spalloc.use_java}")
+    private boolean spallocUseJava;
 
-	/**
-	 * Determine if local jobs or Xen VMs are to be used.
-	 */
-	@Value("${xen.server.enabled}")
-	private boolean useXenVms;
+    /**
+     * Determine if local jobs or Xen VMs are to be used.
+     */
+    @Value("${xen.server.enabled}")
+    private boolean useXenVms;
 
-	/**
-	 * Determine whether to use docker instead.
-	 */
-	@Value("${docker.enabled}")
-	private boolean useDocker;
+    /**
+     * Determine whether to use docker instead.
+     */
+    @Value("${docker.enabled}")
+    private boolean useDocker;
 
-	/**
-	 * The URL of the server.
-	 */
-	@Value("${baseserver.url}${cxf.path}${cxf.rest.path}/")
-	private URL baseServerUrl;
+    /**
+     * The URL of the server.
+     */
+    @Value("${baseserver.url}${cxf.path}${cxf.rest.path}/")
+    private URL baseServerUrl;
 
-	/**
-	 * The URL of the server for local (non-external) access.
-	 */
-	@Value("${localbaseserver.url}${cxf.path}${cxf.rest.path}/")
-	private URL localBaseServerUrl;
+    /**
+     * The URL of the server for local (non-external) access.
+     */
+    @Value("${localbaseserver.url}${cxf.path}${cxf.rest.path}/")
+    private URL localBaseServerUrl;
 
-	/**
-	 * The REST path of the server.
-	 */
-	@Value("${cxf.rest.path}")
-	private String restPath;
+    /**
+     * The REST path of the server.
+     */
+    @Value("${cxf.rest.path}")
+    private String restPath;
 
-	/**
-	 * The OIDC redirect URL to return to when authenticated.
-	 */
-	@Value("${baseserver.url}${callback.path}")
-	private String oidcRedirectUri;
+    /**
+     * The OIDC redirect URL to return to when authenticated.
+     */
+    @Value("${baseserver.url}${callback.path}")
+    private String oidcRedirectUri;
 
-	/**
-	 * Determine whether status updates should be done.
-	 */
-	@Value("${status.update}")
-	private boolean updateStatus;
+    /**
+     * Determine whether status updates should be done.
+     */
+    @Value("${status.update}")
+    private boolean updateStatus;
 
-	/**
-	 * The type of status service to use.
-	 */
-	@Value("${status.update.type}")
-	private StatusServiceType statusType;
+    /**
+     * The type of status service to use.
+     */
+    @Value("${status.update.type}")
+    private StatusServiceType statusType;
 
-	@Value("${nmpi.compat}")
-	private boolean compatNmpi;
+    @Value("${nmpi.compat}")
+    private boolean compatNmpi;
 
-	/**
-	 * The machine manager; direct or via spalloc.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public MachineManager machineManager() {
-		if (useSpalloc) {
-			if (spallocUseJava) {
-				return new SpallocJavaMachineManagerImpl();
-			}
-			return new SpallocMachineManagerImpl();
-		}
-		return new FixedMachineManagerImpl();
-	}
+    /**
+     * The machine manager; direct or via spalloc.
+     *
+     * @return bean
+     */
+    @Bean
+    public MachineManager machineManager() {
+        if (useSpalloc) {
+            if (spallocUseJava) {
+                return new SpallocJavaMachineManagerImpl();
+            }
+            return new SpallocMachineManagerImpl();
+        }
+        return new FixedMachineManagerImpl();
+    }
 
-	/**
-	 * The queue manager.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public NMPIQueueManager queueManager() {
-		if (compatNmpi) {
-			return new NMPIQueueManagerCompat();
-		}
-		return new NMPIQueueManagerV3();
-	}
+    /**
+     * The queue manager.
+     *
+     * @return bean
+     */
+    @Bean
+    public NMPIQueueManager queueManager() {
+        if (compatNmpi) {
+            return new NMPIQueueManagerCompat();
+        }
+        return new NMPIQueueManagerV3();
+    }
 
-	/**
-	 * The executer factory; local or inside Xen VMs.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public JobExecuterFactory jobExecuterFactory() {
-		if (useXenVms) {
-			return new XenVMExecuterFactory();
-		}
-		if (useDocker) {
-			return new DockerExecutorFactory();
-		}
-		return new LocalJobExecuterFactory();
-	}
+    /**
+     * The executer factory; local or inside Xen VMs.
+     *
+     * @return bean
+     */
+    @Bean
+    public JobExecuterFactory jobExecuterFactory() {
+        if (useXenVms) {
+            return new XenVMExecuterFactory();
+        }
+        if (useDocker) {
+            return new DockerExecutorFactory();
+        }
+        return new LocalJobExecuterFactory();
+    }
 
-	/**
-	 * The output manager.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public OutputManagerImpl outputManager() {
-		// Pass this, as it is non-trivial constructed value
-		return new OutputManagerImpl(baseServerUrl);
-	}
+    /**
+     * The output manager.
+     *
+     * @return bean
+     */
+    @Bean
+    public OutputManagerImpl outputManager() {
+        // Pass this, as it is non-trivial constructed value
+        return new OutputManagerImpl(baseServerUrl);
+    }
 
-	/**
-	 * The job manager.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public JobManager jobManager() {
-		// Pass this, as it is non-trivial constructed value
-		return new JobManager(localBaseServerUrl);
-	}
+    /**
+     * The job manager.
+     *
+     * @return bean
+     */
+    @Bean
+    public JobManager jobManager() {
+        // Pass this, as it is non-trivial constructed value
+        return new JobManager(localBaseServerUrl);
+    }
 
-	/**
-	 * The status monitor manager.
-	 *
-	 * @return bean
-	 * @throws RuntimeException
-	 *             If the status type is unknown
-	 */
-	@Bean
-	public StatusMonitorManager statusMonitorManager() {
-		if (updateStatus) {
-			if (statusType == StatusServiceType.STATUS_CAKE) {
-				return new StatusCakeStatusMonitorManagerImpl();
-			} else if (statusType == StatusServiceType.ICINGA2) {
-				return new Icinga2StatusMonitorManagerImpl();
-			} else {
-				throw new RuntimeException(
-						"Unknown status service type: " + statusType);
-			}
-		}
-		return new NullStatusMonitorManagerImpl();
-	}
+    /**
+     * The status monitor manager.
+     *
+     * @return bean
+     * @throws RuntimeException
+     *             If the status type is unknown
+     */
+    @Bean
+    public StatusMonitorManager statusMonitorManager() {
+        if (updateStatus) {
+            if (statusType == StatusServiceType.STATUS_CAKE) {
+                return new StatusCakeStatusMonitorManagerImpl();
+            } else if (statusType == StatusServiceType.ICINGA2) {
+                return new Icinga2StatusMonitorManagerImpl();
+            } else {
+                throw new RuntimeException(
+                        "Unknown status service type: " + statusType);
+            }
+        }
+        return new NullStatusMonitorManagerImpl();
+    }
 
-	/**
-	 * The JAX-RS interface.
-	 *
-	 * @return bean
-	 */
-	@Bean
-	public Server jaxRsServer() {
-		final var factory = new JAXRSServerFactoryBean();
-		factory.setAddress(restPath);
-		factory.setBus(ctx.getBean(SpringBus.class));
-		factory.setServiceBeans(asList(outputManager(), jobManager()));
-		factory.setProviders(
-				asList(new JacksonJsonProvider(), new NullExceptionMapper()));
-		return factory.create();
-	}
+    /**
+     * The JAX-RS interface.
+     *
+     * @return bean
+     */
+    @Bean
+    public Server jaxRsServer() {
+        final var factory = new JAXRSServerFactoryBean();
+        factory.setAddress(restPath);
+        factory.setBus(ctx.getBean(SpringBus.class));
+        factory.setServiceBeans(asList(outputManager(), jobManager()));
+        factory.setProviders(
+                asList(new JacksonJsonProvider(), new NullExceptionMapper()));
+        return factory.create();
+    }
 }

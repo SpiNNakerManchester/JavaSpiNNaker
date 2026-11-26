@@ -16,10 +16,10 @@
 package uk.ac.manchester.spinnaker.alloc.client;
 
 class Power {
-	/** The power state. */
-	String power;
+    /** The power state. */
+    String power;
 
-	public void setPower(String power) {
-		this.power = power;
-	}
+    public void setPower(String power) {
+        this.power = power;
+    }
 }

@@ -20,53 +20,53 @@ import org.junit.jupiter.api.Test;
 
 public class TestLink {
 
-	private final ChipLocation chip00 = new ChipLocation(0, 0);
+    private final ChipLocation chip00 = new ChipLocation(0, 0);
 
-	private final ChipLocation chip01 = new ChipLocation(0, 1);
+    private final ChipLocation chip01 = new ChipLocation(0, 1);
 
-	private final ChipLocation chip11 = new ChipLocation(1, 1);
+    private final ChipLocation chip11 = new ChipLocation(1, 1);
 
-	/**
-	 * Test equal Links.
-	 */
-	@Test
-	public void testEquals() {
-		var link1 = new Link(chip00, Direction.EAST, chip01);
-		var link2 = new Link(chip00, Direction.EAST, chip01);
-		assertEquals(link1, link2);
-		assertEquals(link1.hashCode(), link2.hashCode());
-		assertEquals(link1.toString(), link2.toString());
-		assertEquals(link1, link1);
-		assertNotEquals(link1, "link1");
-		assertNotEquals(link1, null);
-	}
+    /**
+     * Test equal Links.
+     */
+    @Test
+    public void testEquals() {
+        var link1 = new Link(chip00, Direction.EAST, chip01);
+        var link2 = new Link(chip00, Direction.EAST, chip01);
+        assertEquals(link1, link2);
+        assertEquals(link1.hashCode(), link2.hashCode());
+        assertEquals(link1.toString(), link2.toString());
+        assertEquals(link1, link1);
+        assertNotEquals(link1, "link1");
+        assertNotEquals(link1, null);
+    }
 
-	private void checkDifferent(Link link1, Link link2) {
-		assertNotEquals(link1, link2);
-		assertNotEquals(link1.hashCode(), link2.hashCode());
-		assertNotEquals(link1.toString(), link2.toString());
-	}
+    private void checkDifferent(Link link1, Link link2) {
+        assertNotEquals(link1, link2);
+        assertNotEquals(link1.hashCode(), link2.hashCode());
+        assertNotEquals(link1.toString(), link2.toString());
+    }
 
-	/**
-	 * Test of different Links.
-	 */
-	@Test
-	public void testDifferent() {
-		var link1 = new Link(chip00, Direction.EAST, chip01);
-		var link2 = new Link(chip11, Direction.EAST, chip01);
-		checkDifferent(link1, link2);
+    /**
+     * Test of different Links.
+     */
+    @Test
+    public void testDifferent() {
+        var link1 = new Link(chip00, Direction.EAST, chip01);
+        var link2 = new Link(chip11, Direction.EAST, chip01);
+        checkDifferent(link1, link2);
 
-		link2 = new Link(chip00, Direction.NORTH, chip01);
-		checkDifferent(link1, link2);
+        link2 = new Link(chip00, Direction.NORTH, chip01);
+        checkDifferent(link1, link2);
 
-		link2 = new Link(chip00, Direction.EAST, chip11);
-		checkDifferent(link1, link2);
-	}
+        link2 = new Link(chip00, Direction.EAST, chip11);
+        checkDifferent(link1, link2);
+    }
 
-	public void testById() {
-		var link1 = new Link(chip00, Direction.NORTH, chip01);
-		var link2 = new Link(chip00, 2, chip01);
-		assertEquals(link1, link2);
-	}
+    public void testById() {
+        var link1 = new Link(chip00, Direction.NORTH, chip01);
+        var link2 = new Link(chip00, 2, chip01);
+        assertEquals(link1, link2);
+    }
 
 }

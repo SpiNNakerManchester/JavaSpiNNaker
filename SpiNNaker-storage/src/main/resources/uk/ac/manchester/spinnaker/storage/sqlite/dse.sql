@@ -135,11 +135,11 @@ ON reference.reference_num = region.reference_num
 
 CREATE VIEW IF NOT EXISTS pointer_content_view AS
 SELECT x, y, p, region_num, pointer, content FROM
-	(SELECT reference.x, reference.y, reference.p, reference.region_num, pointer, NULL as content
-	FROM reference LEFT JOIN region
-	ON reference.reference_num = region.reference_num
-		AND reference.x = region.x
-		AND reference.y = region.y)
+    (SELECT reference.x, reference.y, reference.p, reference.region_num, pointer, NULL as content
+    FROM reference LEFT JOIN region
+    ON reference.reference_num = region.reference_num
+        AND reference.x = region.x
+        AND reference.y = region.y)
 UNION
 SELECT x, y, p, region_num, pointer, content FROM region;
 

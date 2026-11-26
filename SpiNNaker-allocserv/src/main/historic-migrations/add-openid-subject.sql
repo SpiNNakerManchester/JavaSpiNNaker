@@ -22,33 +22,33 @@ SELECT count(machine_id) FROM machines;
 
 -- New table definition
 CREATE TABLE new_user_info (
-	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	user_name TEXT UNIQUE NOT NULL,
-	encrypted_password TEXT, -- If NULL, login via OpenID
-	last_successful_login_timestamp INTEGER, -- If NULL, never logged in
-	-- Roles; see SecurityConfig.TrustLevel
-	trust_level INTEGER NOT NULL CHECK (trust_level IN (0, 1, 2, 3)),
-	-- Automatic disablement support
-	failure_count INTEGER NOT NULL DEFAULT (0),
-	locked INTEGER NOT NULL DEFAULT (0) CHECK (locked IN (0, 1)),
-	last_fail_timestamp INTEGER NOT NULL DEFAULT (0),
-	-- Administrative disablement support
-	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1)),
-	openid_subject TEXT UNIQUE,
-	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
-		encrypted_password IS NOT NULL) VIRTUAL
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_name TEXT UNIQUE NOT NULL,
+    encrypted_password TEXT, -- If NULL, login via OpenID
+    last_successful_login_timestamp INTEGER, -- If NULL, never logged in
+    -- Roles; see SecurityConfig.TrustLevel
+    trust_level INTEGER NOT NULL CHECK (trust_level IN (0, 1, 2, 3)),
+    -- Automatic disablement support
+    failure_count INTEGER NOT NULL DEFAULT (0),
+    locked INTEGER NOT NULL DEFAULT (0) CHECK (locked IN (0, 1)),
+    last_fail_timestamp INTEGER NOT NULL DEFAULT (0),
+    -- Administrative disablement support
+    disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1)),
+    openid_subject TEXT UNIQUE,
+    is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
+        encrypted_password IS NOT NULL) VIRTUAL
 );
 
 -- Copy data
 INSERT INTO new_user_info(user_id, user_name, encrypted_password,
-	last_successful_login_timestamp, trust_level, failure_count,
-	locked, last_fail_timestamp, disabled,
-	openid_subject)
+    last_successful_login_timestamp, trust_level, failure_count,
+    locked, last_fail_timestamp, disabled,
+    openid_subject)
 SELECT
-	user_id, user_name, encrypted_password,
-	last_successful_login_timestamp, trust_level, failure_count,
-	locked, last_fail_timestamp, disabled,
-	NULL
+    user_id, user_name, encrypted_password,
+    last_successful_login_timestamp, trust_level, failure_count,
+    locked, last_fail_timestamp, disabled,
+    NULL
 FROM user_info;
 
 -- Drop dependencies (will be auto-rebuilt on app boot)

@@ -28,38 +28,38 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonFormat(shape = OBJECT)
 public class NotableMessages {
-	private List<String> errors;
+    private List<String> errors;
 
-	private List<String> warnings;
+    private List<String> warnings;
 
-	/**
-	 * Construct the result of a IOBUF retrieval.
-	 *
-	 * @param errors
-	 *            The notable errors in the IOBUFs.
-	 * @param warnings
-	 *            The notable warnings in the IOBUFs.
-	 */
-	public NotableMessages(
-			@JsonProperty(value = "errors", required = true) List<
-					String> errors,
-			@JsonProperty(value = "warnings", required = true) List<
-					String> warnings) {
-		this.errors = errors;
-		this.warnings = warnings;
-	}
+    /**
+     * Construct the result of a IOBUF retrieval.
+     *
+     * @param errors
+     *            The notable errors in the IOBUFs.
+     * @param warnings
+     *            The notable warnings in the IOBUFs.
+     */
+    public NotableMessages(
+            @JsonProperty(value = "errors", required = true) List<
+                    String> errors,
+            @JsonProperty(value = "warnings", required = true) List<
+                    String> warnings) {
+        this.errors = errors;
+        this.warnings = warnings;
+    }
 
-	/**
-	 * {@return The notable errors in the IOBUFs}
-	 */
-	public List<String> getErrors() {
-		return errors;
-	}
+    /**
+     * {@return The notable errors in the IOBUFs}
+     */
+    public List<String> getErrors() {
+        return errors;
+    }
 
-	/**
-	 * {@return The notable warnings in the IOBUFs}
-	 */
-	public List<String> getWarnings() {
-		return warnings;
-	}
+    /**
+     * {@return The notable warnings in the IOBUFs}
+     */
+    public List<String> getWarnings() {
+        return warnings;
+    }
 }

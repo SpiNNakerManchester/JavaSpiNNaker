@@ -19,25 +19,25 @@ import java.io.IOException;
 
 /** Thrown when a network-level problem occurs during protocol handling. */
 public class SpallocProtocolException extends IOException {
-	private static final long serialVersionUID = -1591596793445886688L;
+    private static final long serialVersionUID = -1591596793445886688L;
 
-	/**
-	 * Constructs a protocol exception base on another exception.
-	 *
-	 * @param cause
-	 *            The cause of this exception.
-	 */
-	public SpallocProtocolException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Constructs a protocol exception base on another exception.
+     *
+     * @param cause
+     *            The cause of this exception.
+     */
+    public SpallocProtocolException(Throwable cause) {
+        super(cause);
+    }
 
-	/**
-	 * Constructs a protocol exception base o string.
-	 *
-	 * @param msg
-	 *            The message of this exception.
-	 */
-	public SpallocProtocolException(String msg) {
-		super(msg);
-	}
+    /**
+     * Constructs a protocol exception base o string.
+     *
+     * @param msg
+     *            The message of this exception.
+     */
+    public SpallocProtocolException(String msg) {
+        super(msg);
+    }
 }

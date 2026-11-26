@@ -20,38 +20,38 @@ package uk.ac.manchester.spinnaker.machine.board;
  * location.
  */
 public interface HasBMPLocation {
-	/**
-	 * The cabinet number of the board.
-	 *
-	 * Not actually a processor coordinate.
-	 *
-	 * @return The cabinet number of the board.
-	 */
-	@ValidCabinetNumber
-	int getCabinet();
+    /**
+     * The cabinet number of the board.
+     *
+     * Not actually a processor coordinate.
+     *
+     * @return The cabinet number of the board.
+     */
+    @ValidCabinetNumber
+    int getCabinet();
 
-	/**
-	 * The frame number of the board.
-	 *
-	 * Not actually a processor coordinate.
-	 *
-	 * @return The frame number
-	 */
-	@ValidFrameNumber
-	int getFrame();
+    /**
+     * The frame number of the board.
+     *
+     * Not actually a processor coordinate.
+     *
+     * @return The frame number
+     */
+    @ValidFrameNumber
+    int getFrame();
 
-	/**
-	 * {@return The board number of the board. Not actually a processor ID}
-	 */
-	@ValidBoardNumber
-	int getBoard();
+    /**
+     * {@return The board number of the board. Not actually a processor ID}
+     */
+    @ValidBoardNumber
+    int getBoard();
 
-	/**
-	 * Converts (if required) this to a simple X, Y, P tuple.
-	 *
-	 * @return A CoreLocation representation of the X, Y, P tuple
-	 */
-	default BMPLocation asBMPLocation() {
-		return new BMPLocation(getCabinet(), getFrame(), getBoard());
-	}
+    /**
+     * Converts (if required) this to a simple X, Y, P tuple.
+     *
+     * @return A CoreLocation representation of the X, Y, P tuple
+     */
+    default BMPLocation asBMPLocation() {
+        return new BMPLocation(getCabinet(), getFrame(), getBoard());
+    }
 }

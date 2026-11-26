@@ -27,21 +27,21 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class MachinesChangedNotification implements Notification {
-	private List<String> machinesChanged = List.of();
+    private List<String> machinesChanged = List.of();
 
-	/**
-	 * {@return What machines have changed}
-	 */
-	public List<String> getMachinesChanged() {
-		return machinesChanged;
-	}
+    /**
+     * {@return What machines have changed}
+     */
+    public List<String> getMachinesChanged() {
+        return machinesChanged;
+    }
 
-	void setMachinesChanged(List<String> machinesChanged) {
-		this.machinesChanged = copy(machinesChanged);
-	}
+    void setMachinesChanged(List<String> machinesChanged) {
+        this.machinesChanged = copy(machinesChanged);
+    }
 
-	@Override
-	public String toString() {
-		return "Machine Changed " + machinesChanged;
-	}
+    @Override
+    public String toString() {
+        return "Machine Changed " + machinesChanged;
+    }
 }

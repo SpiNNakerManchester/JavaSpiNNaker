@@ -22,13 +22,13 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 public class IssueReportResponse {
-	/**
-	 * What immediate action will be taken. Typically "{@code noted}" or
-	 * "{@code taken out of service}".
-	 */
-	public final String action;
+    /**
+     * What immediate action will be taken. Typically "{@code noted}" or
+     * "{@code taken out of service}".
+     */
+    public final String action;
 
-	IssueReportResponse(String action) {
-		this.action = action;
-	}
+    IssueReportResponse(String action) {
+        this.action = action;
+    }
 }

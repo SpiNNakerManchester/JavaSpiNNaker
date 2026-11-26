@@ -36,47 +36,47 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code scamp-cmd.c}.
  */
 public final class FixedRouteRead extends SCPRequest<FixedRouteRead.Response> {
-	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (FIXED.value << BYTE0);
-	}
+    private static int argument1(AppID appID) {
+        return (appID.appID << BYTE1) | (FIXED.value << BYTE0);
+    }
 
-	// Top bit set = do a read
-	private static int argument2() {
-		return 1 << TOP_BIT;
-	}
+    // Top bit set = do a read
+    private static int argument2() {
+        return 1 << TOP_BIT;
+    }
 
-	/**
-	 * Constructs a request to read a fixed route entry.
-	 *
-	 * @param chip
-	 *            The chip to get the route from.
-	 * @param appID
-	 *            The ID of the application associated with the route
-	 */
-	public FixedRouteRead(HasChipLocation chip, AppID appID) {
-		super(chip.getScampCore(), CMD_RTR, argument1(appID), argument2());
-	}
+    /**
+     * Constructs a request to read a fixed route entry.
+     *
+     * @param chip
+     *            The chip to get the route from.
+     * @param appID
+     *            The ID of the application associated with the route
+     */
+    public FixedRouteRead(HasChipLocation chip, AppID appID) {
+        super(chip.getScampCore(), CMD_RTR, argument1(appID), argument2());
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new Response(buffer);
+    }
 
-	/** Response for the fixed route read. */
-	protected final class Response
-			extends PayloadedResponse<RoutingEntry, RuntimeException> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
-		}
+    /** Response for the fixed route read. */
+    protected final class Response
+            extends PayloadedResponse<RoutingEntry, RuntimeException> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read Fixed RoutingEntry route", CMD_RTR, buffer);
+        }
 
-		/**
-		 * {@return the fixed route router route}
-		 */
-		@Override
-		protected RoutingEntry parse(ByteBuffer buffer) {
-			return new RoutingEntry(buffer.getInt());
-		}
-	}
+        /**
+         * {@return the fixed route router route}
+         */
+        @Override
+        protected RoutingEntry parse(ByteBuffer buffer) {
+            return new RoutingEntry(buffer.getInt());
+        }
+    }
 }

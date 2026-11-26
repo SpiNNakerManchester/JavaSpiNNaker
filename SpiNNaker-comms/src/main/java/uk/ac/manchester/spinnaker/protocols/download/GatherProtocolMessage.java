@@ -30,40 +30,40 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
  * looks like SDP in general.
  */
 public abstract class GatherProtocolMessage extends SDPMessage {
-	/**
-	 * Create a protocol message.
-	 *
-	 * @param destination
-	 *            Where to send the message
-	 * @param destPort
-	 *            Which SDP port to send the message to
-	 * @param payload
-	 *            What the contents of the message should be.
-	 */
-	protected GatherProtocolMessage(HasCoreLocation destination,
-			SDPPort destPort, ByteBuffer payload) {
-		super(new SDPHeader(REPLY_NOT_EXPECTED, new SDPLocation(destination),
-				destPort), payload);
-	}
+    /**
+     * Create a protocol message.
+     *
+     * @param destination
+     *            Where to send the message
+     * @param destPort
+     *            Which SDP port to send the message to
+     * @param payload
+     *            What the contents of the message should be.
+     */
+    protected GatherProtocolMessage(HasCoreLocation destination,
+            SDPPort destPort, ByteBuffer payload) {
+        super(new SDPHeader(REPLY_NOT_EXPECTED, new SDPLocation(destination),
+                destPort), payload);
+    }
 
-	/** The various IDs of messages used in the fast download protocol. */
-	public enum ID {
-		/** ID of message used to start sending data. */
-		START_SENDING_DATA(100),
-		/** ID of message used to start sending missing sequence numbers. */
-		START_MISSING_SEQS(1000),
-		/** ID of message used to send more missing sequence numbers. */
-		NEXT_MISSING_SEQS(1001),
-		/**
-		 * ID of the clear message used to stop the extra monitor transmitting.
-		 */
-		CLEAR_TRANSMISSIONS(2000);
+    /** The various IDs of messages used in the fast download protocol. */
+    public enum ID {
+        /** ID of message used to start sending data. */
+        START_SENDING_DATA(100),
+        /** ID of message used to start sending missing sequence numbers. */
+        START_MISSING_SEQS(1000),
+        /** ID of message used to send more missing sequence numbers. */
+        NEXT_MISSING_SEQS(1001),
+        /**
+         * ID of the clear message used to stop the extra monitor transmitting.
+         */
+        CLEAR_TRANSMISSIONS(2000);
 
-		/** The value of the ID. */
-		public final int value;
+        /** The value of the ID. */
+        public final int value;
 
-		ID(int value) {
-			this.value = value;
-		}
-	}
+        ID(int value) {
+            this.value = value;
+        }
+    }
 }

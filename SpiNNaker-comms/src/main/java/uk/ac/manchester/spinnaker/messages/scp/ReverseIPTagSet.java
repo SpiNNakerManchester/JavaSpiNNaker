@@ -50,49 +50,49 @@ import uk.ac.manchester.spinnaker.utils.validation.UDPPort;
  */
 public class ReverseIPTagSet extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Constructs a request to set a Reverse IP Tag based on the supplied data.
-	 *
-	 * @param chip
-	 *            The chip to set the tag on.
-	 * @param destination
-	 *            The coordinates of the destination processor.
-	 * @param port
-	 *            The port, between 0 and 65535.
-	 * @param tag
-	 *            The tag, between 0 and 7.
-	 * @param sdpPort
-	 *            The SDP port associated with this tag.
-	 */
-	public ReverseIPTagSet(@Valid @NotNull HasChipLocation chip,
-			@Valid @NotNull HasCoreLocation destination, @UDPPort int port,
-			@TagID int tag, int sdpPort) {
-		super(chip.getScampCore(), CMD_IPTAG,
-				argument1(sdpPort, destination, tag),
-				argument2(destination, port), 0);
-	}
+    /**
+     * Constructs a request to set a Reverse IP Tag based on the supplied data.
+     *
+     * @param chip
+     *            The chip to set the tag on.
+     * @param destination
+     *            The coordinates of the destination processor.
+     * @param port
+     *            The port, between 0 and 65535.
+     * @param tag
+     *            The tag, between 0 and 7.
+     * @param sdpPort
+     *            The SDP port associated with this tag.
+     */
+    public ReverseIPTagSet(@Valid @NotNull HasChipLocation chip,
+            @Valid @NotNull HasCoreLocation destination, @UDPPort int port,
+            @TagID int tag, int sdpPort) {
+        super(chip.getScampCore(), CMD_IPTAG,
+                argument1(sdpPort, destination, tag),
+                argument2(destination, port), 0);
+    }
 
-	// arg1 = flags[11:8] : timeout : command : dest_port : tag
-	private static int argument1(int sdpPort, HasCoreLocation destination,
-			int tag) {
-		final int strip = 1;
-		final int reverse = 1;
-		return (reverse << REVERSE_FIELD_BIT) | (strip << STRIP_FIELD_BIT)
-				| (SET.value << COMMAND_FIELD)
-				| ((sdpPort & THREE_BITS_MASK) << SDP_PORT_FIELD)
-				| (destination.getP() << DEST_P_FIELD)
-				| (tag & THREE_BITS_MASK);
-	}
+    // arg1 = flags[11:8] : timeout : command : dest_port : tag
+    private static int argument1(int sdpPort, HasCoreLocation destination,
+            int tag) {
+        final int strip = 1;
+        final int reverse = 1;
+        return (reverse << REVERSE_FIELD_BIT) | (strip << STRIP_FIELD_BIT)
+                | (SET.value << COMMAND_FIELD)
+                | ((sdpPort & THREE_BITS_MASK) << SDP_PORT_FIELD)
+                | (destination.getP() << DEST_P_FIELD)
+                | (tag & THREE_BITS_MASK);
+    }
 
-	// arg2 = dest_addr : port
-	private static int argument2(HasCoreLocation destination, int port) {
-		return (destination.getX() << DEST_X_FIELD)
-				| (destination.getY() << DEST_Y_FIELD) | (port & PORT_MASK);
-	}
+    // arg2 = dest_addr : port
+    private static int argument2(HasCoreLocation destination, int port) {
+        return (destination.getX() << DEST_X_FIELD)
+                | (destination.getY() << DEST_Y_FIELD) | (port & PORT_MASK);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Set Reverse IP Tag", CMD_IPTAG, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Set Reverse IP Tag", CMD_IPTAG, buffer);
+    }
 }

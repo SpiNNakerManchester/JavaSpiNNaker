@@ -37,18 +37,18 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 @Component
 @Provider
 class SQLExceptionMapper implements ExceptionMapper<SQLException> {
-	static final Logger log = getLogger(SQLExceptionMapper.class);
+    static final Logger log = getLogger(SQLExceptionMapper.class);
 
-	@Autowired
-	private SpallocProperties properties;
+    @Autowired
+    private SpallocProperties properties;
 
-	@Override
-	public Response toResponse(SQLException exception) {
-		log.warn("uncaught SQL exception", exception);
-		if (properties.getSqlite().isDebugFailures()) {
-			return status(INTERNAL_SERVER_ERROR)
-					.entity("failed: " + exception.getMessage()).build();
-		}
-		return status(INTERNAL_SERVER_ERROR).entity("failed").build();
-	}
+    @Override
+    public Response toResponse(SQLException exception) {
+        log.warn("uncaught SQL exception", exception);
+        if (properties.getSqlite().isDebugFailures()) {
+            return status(INTERNAL_SERVER_ERROR)
+                    .entity("failed: " + exception.getMessage()).build();
+        }
+        return status(INTERNAL_SERVER_ERROR).entity("failed").build();
+    }
 }

@@ -20,16 +20,16 @@ package uk.ac.manchester.spinnaker.alloc.client;
  * one of the FPGAs on a board.
  */
 public enum Direction {
-	/** Northward. */
-	N,
-	/** Eastward. */
-	E,
-	/** Southeast. */
-	SE,
-	/** Southward. */
-	S,
-	/** Westward. */
-	W,
-	/** Northwest. */
-	NW
+    /** Northward. */
+    N,
+    /** Eastward. */
+    E,
+    /** Southeast. */
+    SE,
+    /** Southward. */
+    S,
+    /** Westward. */
+    W,
+    /** Northwest. */
+    NW
 }

@@ -30,32 +30,32 @@ import com.google.errorprone.annotations.MustBeClosed;
  * Factoring out of correct resource loading pattern.
  */
 public abstract class ResourceLoader {
-	private ResourceLoader() {
-	}
+    private ResourceLoader() {
+    }
 
-	@MustBeClosed
-	private static InputStream open(String name) throws FileNotFoundException {
-		var stream = ResourceLoader.class.getResourceAsStream(name);
-		if (isNull(stream)) {
-			throw new FileNotFoundException(name);
-		}
-		return stream;
-	}
+    @MustBeClosed
+    private static InputStream open(String name) throws FileNotFoundException {
+        var stream = ResourceLoader.class.getResourceAsStream(name);
+        if (isNull(stream)) {
+            throw new FileNotFoundException(name);
+        }
+        return stream;
+    }
 
-	/**
-	 * Load a text resource from the given name using this class's class loader.
-	 *
-	 * @param name
-	 *            The name of the resource to load.
-	 * @return The content of the resource.
-	 * @throws RuntimeException
-	 *             If things don't work. Shouldn't happen if build is correct.
-	 */
-	public static String loadResource(String name) {
-		try (var stream = open(name)) {
-			return IOUtils.toString(stream, UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException("failed to read resource", e);
-		}
-	}
+    /**
+     * Load a text resource from the given name using this class's class loader.
+     *
+     * @param name
+     *            The name of the resource to load.
+     * @return The content of the resource.
+     * @throws RuntimeException
+     *             If things don't work. Shouldn't happen if build is correct.
+     */
+    public static String loadResource(String name) {
+        try (var stream = open(name)) {
+            return IOUtils.toString(stream, UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("failed to read resource", e);
+        }
+    }
 }

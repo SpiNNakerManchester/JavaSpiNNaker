@@ -20,171 +20,171 @@ package uk.ac.manchester.spinnaker.nmpi.machinemanager.responses;
  */
 public class WhereIs {
 
-	/**
-	 * The job-relative location of the chip.
-	 */
-	private int[] jobChip;
+    /**
+     * The job-relative location of the chip.
+     */
+    private int[] jobChip;
 
-	/**
-	 * The id of the job.
-	 */
-	private int jobId;
+    /**
+     * The id of the job.
+     */
+    private int jobId;
 
-	/**
-	 * The physical location of the chip.
-	 */
-	private int[] chip;
+    /**
+     * The physical location of the chip.
+     */
+    private int[] chip;
 
-	/**
-	 * The logical location of the job.
-	 */
-	private int[] logical;
+    /**
+     * The logical location of the job.
+     */
+    private int[] logical;
 
-	/**
-	 * The machine if the job.
-	 */
-	private String machine;
+    /**
+     * The machine if the job.
+     */
+    private String machine;
 
-	/**
-	 * The board-relative location of the chip.
-	 */
-	private int[] boardChip;
+    /**
+     * The board-relative location of the chip.
+     */
+    private int[] boardChip;
 
-	/**
-	 * The physical location of the job.
-	 */
-	private int[] physical;
+    /**
+     * The physical location of the job.
+     */
+    private int[] physical;
 
-	/**
-	 * Get the job_chip.
-	 *
-	 * @return the job_chip
-	 */
-	public int[] getJobChip() {
-		return jobChip;
-	}
+    /**
+     * Get the job_chip.
+     *
+     * @return the job_chip
+     */
+    public int[] getJobChip() {
+        return jobChip;
+    }
 
-	/**
-	 * Sets the job chip.
-	 *
-	 * @param jobChip
-	 *            the job chip to set
-	 */
-	public void setJobChip(final int[] jobChip) {
-		this.jobChip = jobChip;
-	}
+    /**
+     * Sets the job chip.
+     *
+     * @param jobChip
+     *            the job chip to set
+     */
+    public void setJobChip(final int[] jobChip) {
+        this.jobChip = jobChip;
+    }
 
-	/**
-	 * Get the job id.
-	 *
-	 * @return the job id
-	 */
-	public int getJobId() {
-		return jobId;
-	}
+    /**
+     * Get the job id.
+     *
+     * @return the job id
+     */
+    public int getJobId() {
+        return jobId;
+    }
 
-	/**
-	 * Sets the job id.
-	 *
-	 * @param jobId
-	 *            the job id to set
-	 */
-	public void setJobId(final int jobId) {
-		this.jobId = jobId;
-	}
+    /**
+     * Sets the job id.
+     *
+     * @param jobId
+     *            the job id to set
+     */
+    public void setJobId(final int jobId) {
+        this.jobId = jobId;
+    }
 
-	/**
-	 * Get the chip.
-	 *
-	 * @return the chip
-	 */
-	public int[] getChip() {
-		return chip;
-	}
+    /**
+     * Get the chip.
+     *
+     * @return the chip
+     */
+    public int[] getChip() {
+        return chip;
+    }
 
-	/**
-	 * Sets the chip.
-	 *
-	 * @param chip
-	 *            the chip to set
-	 */
-	public void setChip(final int[] chip) {
-		this.chip = chip;
-	}
+    /**
+     * Sets the chip.
+     *
+     * @param chip
+     *            the chip to set
+     */
+    public void setChip(final int[] chip) {
+        this.chip = chip;
+    }
 
-	/**
-	 * Get the logical.
-	 *
-	 * @return the logical
-	 */
-	public int[] getLogical() {
-		return logical;
-	}
+    /**
+     * Get the logical.
+     *
+     * @return the logical
+     */
+    public int[] getLogical() {
+        return logical;
+    }
 
-	/**
-	 * Sets the logical.
-	 *
-	 * @param logical
-	 *            the logical to set
-	 */
-	public void setLogical(final int[] logical) {
-		this.logical = logical;
-	}
+    /**
+     * Sets the logical.
+     *
+     * @param logical
+     *            the logical to set
+     */
+    public void setLogical(final int[] logical) {
+        this.logical = logical;
+    }
 
-	/**
-	 * Get the machine.
-	 *
-	 * @return the machine
-	 */
-	public String getMachine() {
-		return machine;
-	}
+    /**
+     * Get the machine.
+     *
+     * @return the machine
+     */
+    public String getMachine() {
+        return machine;
+    }
 
-	/**
-	 * Sets the machine.
-	 *
-	 * @param machine
-	 *            the machine to set
-	 */
-	public void setMachine(final String machine) {
-		this.machine = machine;
-	}
+    /**
+     * Sets the machine.
+     *
+     * @param machine
+     *            the machine to set
+     */
+    public void setMachine(final String machine) {
+        this.machine = machine;
+    }
 
-	/**
-	 * Get the board chip.
-	 *
-	 * @return the board chip
-	 */
-	public int[] getBoardChip() {
-		return boardChip;
-	}
+    /**
+     * Get the board chip.
+     *
+     * @return the board chip
+     */
+    public int[] getBoardChip() {
+        return boardChip;
+    }
 
-	/**
-	 * Sets the board chip.
-	 *
-	 * @param boardChip
-	 *            the board chip to set
-	 */
-	public void setBoardChip(final int[] boardChip) {
-		this.boardChip = boardChip;
-	}
+    /**
+     * Sets the board chip.
+     *
+     * @param boardChip
+     *            the board chip to set
+     */
+    public void setBoardChip(final int[] boardChip) {
+        this.boardChip = boardChip;
+    }
 
-	/**
-	 * Get the physical.
-	 *
-	 * @return the physical
-	 */
-	public int[] getPhysical() {
-		return physical;
-	}
+    /**
+     * Get the physical.
+     *
+     * @return the physical
+     */
+    public int[] getPhysical() {
+        return physical;
+    }
 
-	/**
-	 * Sets the physical.
-	 *
-	 * @param physical
-	 *            the physical to set
-	 */
-	public void setPhysical(final int[] physical) {
-		this.physical = physical;
-	}
+    /**
+     * Sets the physical.
+     *
+     * @param physical
+     *            the physical to set
+     */
+    public void setPhysical(final int[] physical) {
+        this.physical = physical;
+    }
 }

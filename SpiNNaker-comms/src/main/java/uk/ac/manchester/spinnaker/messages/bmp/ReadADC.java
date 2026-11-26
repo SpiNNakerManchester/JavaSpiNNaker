@@ -40,35 +40,35 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * {@code bmp_main.c}.
  */
 public class ReadADC extends BMPRequest<ReadADC.Response> {
-	/**
-	 * Constructs a request for the board status data.
-	 *
-	 * @param board
-	 *            which board to request the ADC register from
-	 */
-	public ReadADC(BMPBoard board) {
-		super(board, CMD_BMP_INFO, BOARD_STATUS.value);
-	}
+    /**
+     * Constructs a request for the board status data.
+     *
+     * @param board
+     *            which board to request the ADC register from
+     */
+    public ReadADC(BMPBoard board) {
+        super(board, CMD_BMP_INFO, BOARD_STATUS.value);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for ADC information. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<ADCInfo> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read Board Status", CMD_BMP_INFO, buffer);
-		}
+    /** An SCP response to a request for ADC information. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<ADCInfo> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read Board Status", CMD_BMP_INFO, buffer);
+        }
 
-		/**
-		 * {@return The ADC information}
-		 */
-		@Override
-		protected ADCInfo parse(ByteBuffer buffer) {
-			return new ADCInfo(buffer);
-		}
-	}
+        /**
+         * {@return The ADC information}
+         */
+        @Override
+        protected ADCInfo parse(ByteBuffer buffer) {
+            return new ADCInfo(buffer);
+        }
+    }
 }

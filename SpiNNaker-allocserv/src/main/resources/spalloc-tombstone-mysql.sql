@@ -14,38 +14,38 @@
 
 -- STMT
 CREATE TABLE IF NOT EXISTS jobs(
-	job_id INTEGER NOT NULL,
-	machine_id INTEGER,
-	machine_name TEXT,
-	owner INTEGER,
-	owner_name TEXT,
-	group_id INTEGER,
-	group_name TEXT,
-	create_timestamp INTEGER, -- timestamp
-	width INTEGER,
-	height INTEGER,
-	depth INTEGER,
-	root_id INTEGER,
-	keepalive_interval INTEGER, -- duration in seconds
-	keepalive_host TEXT, -- IP address
-	death_reason TEXT,
-	death_timestamp INTEGER, -- timestamp
-	original_request BLOB,
-	allocation_timestamp INTEGER,
-	allocation_size INTEGER,
-	lifetime_duration INTEGER GENERATED ALWAYS AS ( -- generated column
-		death_timestamp - allocation_timestamp) VIRTUAL,
-	resources_used INTEGER GENERATED ALWAYS AS ( -- generated column
-		lifetime_duration * allocation_size) VIRTUAL,
-	nmpi_job_id INTEGER,
-	nmpi_session_id INTEGER,
-	UNIQUE INDEX (job_id ASC)
+    job_id INTEGER NOT NULL,
+    machine_id INTEGER,
+    machine_name TEXT,
+    owner INTEGER,
+    owner_name TEXT,
+    group_id INTEGER,
+    group_name TEXT,
+    create_timestamp INTEGER, -- timestamp
+    width INTEGER,
+    height INTEGER,
+    depth INTEGER,
+    root_id INTEGER,
+    keepalive_interval INTEGER, -- duration in seconds
+    keepalive_host TEXT, -- IP address
+    death_reason TEXT,
+    death_timestamp INTEGER, -- timestamp
+    original_request BLOB,
+    allocation_timestamp INTEGER,
+    allocation_size INTEGER,
+    lifetime_duration INTEGER GENERATED ALWAYS AS ( -- generated column
+        death_timestamp - allocation_timestamp) VIRTUAL,
+    resources_used INTEGER GENERATED ALWAYS AS ( -- generated column
+        lifetime_duration * allocation_size) VIRTUAL,
+    nmpi_job_id INTEGER,
+    nmpi_session_id INTEGER,
+    UNIQUE INDEX (job_id ASC)
 );
 
 -- STMT
 CREATE TABLE IF NOT EXISTS board_allocations(
-	alloc_id INTEGER NOT NULL,
-	job_id INTEGER NOT NULL,
-	board_id INTEGER NOT NULL,
-	allocation_timestamp INTEGER
+    alloc_id INTEGER NOT NULL,
+    job_id INTEGER NOT NULL,
+    board_id INTEGER NOT NULL,
+    allocation_timestamp INTEGER
 );

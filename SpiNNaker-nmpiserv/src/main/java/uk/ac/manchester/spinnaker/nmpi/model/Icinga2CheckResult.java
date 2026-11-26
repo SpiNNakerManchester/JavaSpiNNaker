@@ -24,58 +24,58 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonInclude(Include.NON_NULL)
 public class Icinga2CheckResult {
-	/**
-	 * The exit status of the service or host.
-	 * For services, 0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN.
-	 * For hosts, 0=OK, 1=CRITICAL
-	 */
-	@JsonProperty("exit_status")
-	private int exitStatus;
+    /**
+     * The exit status of the service or host.
+     * For services, 0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN.
+     * For hosts, 0=OK, 1=CRITICAL
+     */
+    @JsonProperty("exit_status")
+    private int exitStatus;
 
-	/** An output string to report. */
-	@JsonProperty("plugin_output")
-	private String pluginOutput;
+    /** An output string to report. */
+    @JsonProperty("plugin_output")
+    private String pluginOutput;
 
-	/** Optional performance data to report. */
-	@JsonProperty("performance_data")
-	private String performanceData;
+    /** Optional performance data to report. */
+    @JsonProperty("performance_data")
+    private String performanceData;
 
-	/** Optional durations in seconds of the test result. */
-	@JsonProperty("ttl")
-	private Integer ttl;
+    /** Optional durations in seconds of the test result. */
+    @JsonProperty("ttl")
+    private Integer ttl;
 
-	/** The target host being reported on. */
-	@JsonProperty("host")
-	private String host;
+    /** The target host being reported on. */
+    @JsonProperty("host")
+    private String host;
 
-	/** Optional target service being reported on. */
-	@JsonProperty("service")
-	private String service;
+    /** Optional target service being reported on. */
+    @JsonProperty("service")
+    private String service;
 
-	/**
-	 * Create a new result to report.
-	 *
-	 * @param exitStatus
-	 *            The status to report.
-	 * @param pluginOutput
-	 *            An output string to add to the report.
-	 * @param performanceData
-	 *            Any performance data to report as a string.
-	 * @param ttl
-	 *            The time at which the next report is expected in seconds.
-	 * @param host
-	 *            The host to report on.
-	 * @param service
-	 *            The service to report on.
-	 */
-	public Icinga2CheckResult(final int exitStatus, final String pluginOutput,
-			final String performanceData, final Integer ttl, final String host,
-			final String service) {
-		this.exitStatus = exitStatus;
-		this.pluginOutput = pluginOutput;
-		this.performanceData = performanceData;
-		this.ttl = ttl;
-		this.host = host;
-		this.service = service;
-	}
+    /**
+     * Create a new result to report.
+     *
+     * @param exitStatus
+     *            The status to report.
+     * @param pluginOutput
+     *            An output string to add to the report.
+     * @param performanceData
+     *            Any performance data to report as a string.
+     * @param ttl
+     *            The time at which the next report is expected in seconds.
+     * @param host
+     *            The host to report on.
+     * @param service
+     *            The service to report on.
+     */
+    public Icinga2CheckResult(final int exitStatus, final String pluginOutput,
+            final String performanceData, final Integer ttl, final String host,
+            final String service) {
+        this.exitStatus = exitStatus;
+        this.pluginOutput = pluginOutput;
+        this.performanceData = performanceData;
+        this.ttl = ttl;
+        this.host = host;
+        this.service = service;
+    }
 }

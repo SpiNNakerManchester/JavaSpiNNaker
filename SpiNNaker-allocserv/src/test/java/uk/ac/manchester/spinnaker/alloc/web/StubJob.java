@@ -39,145 +39,145 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * operation. Subclass to add the behaviours you want.
  */
 public abstract class StubJob implements Job {
-	@Override
-	public boolean waitForChange(Duration timeout) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public boolean waitForChange(Duration timeout) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public int getId() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int getId() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void access(String keepaliveAddress) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void access(String keepaliveAddress) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void destroy(String reason) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void destroy(String reason) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void setPower(boolean power) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void setPower(boolean power) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public JobState getState() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public JobState getState() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Instant getStartTime() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Instant getStartTime() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<String> getKeepaliveHost() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<String> getKeepaliveHost() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Instant getKeepaliveTimestamp() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Instant getKeepaliveTimestamp() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<String> getOwner() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<String> getOwner() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<byte[]> getOriginalRequest() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<byte[]> getOriginalRequest() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<Instant> getFinishTime() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<Instant> getFinishTime() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<String> getReason() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<String> getReason() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<SubMachine> getMachine() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<SubMachine> getMachine() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<BoardLocation> whereIs(int x, int y) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<BoardLocation> whereIs(int x, int y) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<ChipLocation> getRootChip() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<ChipLocation> getRootChip() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<Integer> getWidth() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<Integer> getWidth() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<Integer> getHeight() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<Integer> getHeight() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Optional<Integer> getDepth() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Optional<Integer> getDepth() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public String reportIssue(IssueReportRequest reqBody, Permit permit) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public String reportIssue(IssueReportRequest reqBody, Permit permit) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void rememberProxy(ProxyCore proxy) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void rememberProxy(ProxyCore proxy) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void forgetProxy(ProxyCore proxy) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void forgetProxy(ProxyCore proxy) {
+        throw new UnsupportedOperationException();
+    }
 
 
-	@Override
-	public TransceiverInterface getTransceiver() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public TransceiverInterface getTransceiver() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
-			throws ProcessException, IOException, InterruptedException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public FastDataIn getFastDataIn(CoreLocation gathererCore, IPTag iptag)
+            throws ProcessException, IOException, InterruptedException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Downloader getDownloader(IPTag iptag)
-			throws ProcessException, IOException, InterruptedException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Downloader getDownloader(IPTag iptag)
+            throws ProcessException, IOException, InterruptedException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public final boolean equals(Object other) {
-		if (other instanceof Job) {
-			var j = (Job) other;
-			return getId() == j.getId();
-		}
-		return false;
-	}
+    @Override
+    public final boolean equals(Object other) {
+        if (other instanceof Job) {
+            var j = (Job) other;
+            return getId() == j.getId();
+        }
+        return false;
+    }
 
-	@Override
-	public final int hashCode() {
-		return getId();
-	}
+    @Override
+    public final int hashCode() {
+        return getId();
+    }
 }

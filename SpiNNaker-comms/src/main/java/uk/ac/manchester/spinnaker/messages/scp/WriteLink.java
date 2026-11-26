@@ -32,30 +32,30 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  */
 public class WriteLink extends SCPRequest<EmptyResponse> {
 
-	/**
-	 * Creates a Write Link request.
-	 *
-	 * @param core
-	 *            the core to write via
-	 * @param link
-	 *            The ID of the link down which to send the write
-	 * @param baseAddress
-	 *            The positive base address to start the write at
-	 * @param data
-	 *            The data to write (up to 256 bytes); the <i>position</i> of
-	 *            the buffer must be the point where the data starts. The
-	 *            position and limit of the buffer will not be updated by this
-	 *            constructor.
-	 */
-	public WriteLink(HasCoreLocation core, Direction link,
-			MemoryLocation baseAddress, ByteBuffer data) {
-		super(core, CMD_LINK_WRITE, baseAddress.address, data.remaining(),
-				link.id, data);
-	}
+    /**
+     * Creates a Write Link request.
+     *
+     * @param core
+     *            the core to write via
+     * @param link
+     *            The ID of the link down which to send the write
+     * @param baseAddress
+     *            The positive base address to start the write at
+     * @param data
+     *            The data to write (up to 256 bytes); the <i>position</i> of
+     *            the buffer must be the point where the data starts. The
+     *            position and limit of the buffer will not be updated by this
+     *            constructor.
+     */
+    public WriteLink(HasCoreLocation core, Direction link,
+            MemoryLocation baseAddress, ByteBuffer data) {
+        super(core, CMD_LINK_WRITE, baseAddress.address, data.remaining(),
+                link.id, data);
+    }
 
-	@Override
-	public EmptyResponse getSCPResponse(ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		return new EmptyResponse("Write Memory", CMD_LINK_WRITE, buffer);
-	}
+    @Override
+    public EmptyResponse getSCPResponse(ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        return new EmptyResponse("Write Memory", CMD_LINK_WRITE, buffer);
+    }
 }

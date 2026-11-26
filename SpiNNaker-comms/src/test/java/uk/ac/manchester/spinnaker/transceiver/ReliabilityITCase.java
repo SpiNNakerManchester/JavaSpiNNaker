@@ -38,38 +38,38 @@ import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 @Tag("integration")
 @NotThreadSafe
 class ReliabilityITCase {
-	private static Machine jsonMachine;
+    private static Machine jsonMachine;
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-		var url = ReliabilityITCase.class.getResource("/spinn4.json");
-		var mapper = MapperFactory.createMapper();
-		var fromJson = mapper.readValue(url, MachineBean.class);
-		jsonMachine = new Machine(fromJson);
-	}
+    @BeforeAll
+    static void setUpBeforeClass() throws Exception {
+        var url = ReliabilityITCase.class.getResource("/spinn4.json");
+        var mapper = MapperFactory.createMapper();
+        var fromJson = mapper.readValue(url, MachineBean.class);
+        jsonMachine = new Machine(fromJson);
+    }
 
-	private static final int REPETITIONS = 8;
+    private static final int REPETITIONS = 8;
 
-	@Test
-	@Timeout(120) // Two minutes is enough
-	void testReliableMachine() throws Exception {
-		var host = getByName("spinn-4.cs.man.ac.uk");
-		assumeTrue(ping(host) == 0);
+    @Test
+    @Timeout(120) // Two minutes is enough
+    void testReliableMachine() throws Exception {
+        var host = getByName("spinn-4.cs.man.ac.uk");
+        assumeTrue(ping(host) == 0);
 
-		for (int i = 0; i < REPETITIONS; i++) {
-			try (var txrx = new Transceiver(host, FIVE)) {
-				assertNotNull(txrx.ensureBoardIsReady());
-				assertNotNull(txrx.getMachineDimensions());
-				assertNotNull(txrx.getScampVersion());
-				var machine = txrx.getMachineDetails();
-				assertNull(jsonMachine.difference(machine));
-			} catch (ProcessException e) {
-				if (e.getCause() instanceof SocketTimeoutException) {
-					abort("Timeout from " + e.getCause());
-				} else {
-					throw e;
-				}
-			}
-		}
-	}
+        for (int i = 0; i < REPETITIONS; i++) {
+            try (var txrx = new Transceiver(host, FIVE)) {
+                assertNotNull(txrx.ensureBoardIsReady());
+                assertNotNull(txrx.getMachineDimensions());
+                assertNotNull(txrx.getScampVersion());
+                var machine = txrx.getMachineDetails();
+                assertNull(jsonMachine.difference(machine));
+            } catch (ProcessException e) {
+                if (e.getCause() instanceof SocketTimeoutException) {
+                    abort("Timeout from " + e.getCause());
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
 }

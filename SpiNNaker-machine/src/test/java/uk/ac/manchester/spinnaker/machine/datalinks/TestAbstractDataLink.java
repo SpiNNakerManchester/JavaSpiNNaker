@@ -29,37 +29,37 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 public class TestAbstractDataLink {
-	private static InetAddress localhost() throws UnknownHostException {
-		byte[] bytes = {127, 0, 0, 1};
-		return InetAddress.getByAddress(bytes);
-	}
+    private static InetAddress localhost() throws UnknownHostException {
+        byte[] bytes = {127, 0, 0, 1};
+        return InetAddress.getByAddress(bytes);
+    }
 
-	@Test
-	public void testEquals() throws UnknownHostException {
-		var link1 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
-		var link2 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
-		assertEquals(link1, link2);
-		assertEquals(link1, link1);
-		assertNotEquals(link1, null);
-		assertNotEquals(link1, "link1");
-	}
+    @Test
+    public void testEquals() throws UnknownHostException {
+        var link1 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
+        var link2 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
+        assertEquals(link1, link2);
+        assertEquals(link1, link1);
+        assertNotEquals(link1, null);
+        assertNotEquals(link1, "link1");
+    }
 
-	/** Can't use abstract class instances directly. */
-	static class ADL extends AbstractDataLink {
-		ADL(HasChipLocation location, Direction linkId,
-				InetAddress boardAddress) {
-			super(location, linkId, boardAddress);
-		}
+    /** Can't use abstract class instances directly. */
+    static class ADL extends AbstractDataLink {
+        ADL(HasChipLocation location, Direction linkId,
+                InetAddress boardAddress) {
+            super(location, linkId, boardAddress);
+        }
 
-		@Override
-		public int hashCode() {
-			return Objects.hash(location, direction);
-		}
+        @Override
+        public int hashCode() {
+            return Objects.hash(location, direction);
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			return (obj instanceof AbstractDataLink)
-					&& sameAs((AbstractDataLink) obj);
-		}
-	}
+        @Override
+        public boolean equals(Object obj) {
+            return (obj instanceof AbstractDataLink)
+                    && sameAs((AbstractDataLink) obj);
+        }
+    }
 }

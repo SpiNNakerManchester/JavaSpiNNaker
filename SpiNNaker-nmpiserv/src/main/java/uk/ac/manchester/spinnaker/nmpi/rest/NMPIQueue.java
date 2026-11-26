@@ -44,113 +44,113 @@ import uk.ac.manchester.spinnaker.nmpi.rest.utils.PropertyBasedDeserialiser;
  * The REST API for the HBP Neuromorphic Platform Interface queue.
  */
 public interface NMPIQueue {
-	/**
-	 * Gets all jobs in the queue.
-	 *
-	 * @param apiKey
-	 *            The API key to use.
-	 * @param hardware
-	 *            The hardware to request the jobs for.
-	 * @param status
-	 *            List of accepted statuses.
-	 * @return The list of jobs that meet the criteria.
-	 */
-	@GET
-	@Path("jobs/")
-	@Produces("application/json")
-	List<QueueJobCompat> getJobs(@HeaderParam("x-api-key") String apiKey,
-			@QueryParam("hardware") String hardware,
-			@QueryParam("status") List<String> status);
+    /**
+     * Gets all jobs in the queue.
+     *
+     * @param apiKey
+     *            The API key to use.
+     * @param hardware
+     *            The hardware to request the jobs for.
+     * @param status
+     *            List of accepted statuses.
+     * @return The list of jobs that meet the criteria.
+     */
+    @GET
+    @Path("jobs/")
+    @Produces("application/json")
+    List<QueueJobCompat> getJobs(@HeaderParam("x-api-key") String apiKey,
+            @QueryParam("hardware") String hardware,
+            @QueryParam("status") List<String> status);
 
-	/**
-	 * Get the next queue item for a specific hardware system.
-	 *
-	 * @param apiKey
-	 *            The API key to use.
-	 * @param hardware
-	 *            The hardware ID.
-	 * @return The queue item.
-	 */
-	@GET
-	@Path("jobs/next/{hardware}")
-	@Produces("application/json")
-	QueueNextResponse getNextJob(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("hardware") String hardware);
+    /**
+     * Get the next queue item for a specific hardware system.
+     *
+     * @param apiKey
+     *            The API key to use.
+     * @param hardware
+     *            The hardware ID.
+     * @return The queue item.
+     */
+    @GET
+    @Path("jobs/next/{hardware}")
+    @Produces("application/json")
+    QueueNextResponse getNextJob(@HeaderParam("x-api-key") String apiKey,
+            @PathParam("hardware") String hardware);
 
-	/**
-	 * Update the log of a job.
-	 *
-	 * @param apiKey
-	 *            The API key to use.
-	 * @param id
-	 *            The queue ID
-	 * @param log
-	 *            the Job Log.
-	 */
-	@PUT
-	@Path("jobs/{id}")
-	@Consumes("application/json")
-	void updateJobLog(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, JobLogOnly log);
+    /**
+     * Update the log of a job.
+     *
+     * @param apiKey
+     *            The API key to use.
+     * @param id
+     *            The queue ID
+     * @param log
+     *            the Job Log.
+     */
+    @PUT
+    @Path("jobs/{id}")
+    @Consumes("application/json")
+    void updateJobLog(@HeaderParam("x-api-key") String apiKey,
+            @PathParam("id") int id, JobLogOnly log);
 
-	/**
-	 * Update the status of a job.
-	 *
-	 * @param apiKey
-	 *            The API key to use.
-	 * @param id
-	 *            The queue ID
-	 * @param status
-	 *            the Job Status.
-	 */
-	@PUT
-	@Path("jobs/{id}")
-	@Consumes("application/json")
-	void updateJobStatus(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, JobStatusOnly status);
+    /**
+     * Update the status of a job.
+     *
+     * @param apiKey
+     *            The API key to use.
+     * @param id
+     *            The queue ID
+     * @param status
+     *            the Job Status.
+     */
+    @PUT
+    @Path("jobs/{id}")
+    @Consumes("application/json")
+    void updateJobStatus(@HeaderParam("x-api-key") String apiKey,
+            @PathParam("id") int id, JobStatusOnly status);
 
-	/**
-	 * Set a job when done.
-	 *
-	 * @param apiKey
-	 *            The API key to use.
-	 * @param id
-	 *            The queue ID
-	 * @param job
-	 *            The details to update
-	 */
-	@PUT
-	@Path("jobs/{id}")
-	@Consumes("application/json")
-	void finishJob(@HeaderParam("x-api-key") String apiKey,
-			@PathParam("id") int id, JobDone job);
+    /**
+     * Set a job when done.
+     *
+     * @param apiKey
+     *            The API key to use.
+     * @param id
+     *            The queue ID
+     * @param job
+     *            The details to update
+     */
+    @PUT
+    @Path("jobs/{id}")
+    @Consumes("application/json")
+    void finishJob(@HeaderParam("x-api-key") String apiKey,
+            @PathParam("id") int id, JobDone job);
 
-	/**
-	 * Get a client for the API.
-	 *
-	 * @param url
-	 *            The URL to connect to.
-	 * @return A proxy of the API.
-	 */
-	static NMPIQueue createClient(String url) {
-		var mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(SNAKE_CASE);
-		return JAXRSClientFactory.create(url, NMPIQueue.class,
-				List.of(createProvider()));
-	}
+    /**
+     * Get a client for the API.
+     *
+     * @param url
+     *            The URL to connect to.
+     * @return A proxy of the API.
+     */
+    static NMPIQueue createClient(String url) {
+        var mapper = new ObjectMapper();
+        mapper.setPropertyNamingStrategy(SNAKE_CASE);
+        return JAXRSClientFactory.create(url, NMPIQueue.class,
+                List.of(createProvider()));
+    }
 
-	/**
-	 * Create a JSON provider capable of handling the messages on the NMPI
-	 * queue.
-	 *
-	 * @return The provider.
-	 */
-	static JacksonJsonProvider createProvider() {
-		var provider = new CustomJacksonJsonProvider();
-		provider.addDeserialiser(QueueNextResponse.class,
-				new NMPIQueueResponseDeserialiser());
-		return provider;
-	}
+    /**
+     * Create a JSON provider capable of handling the messages on the NMPI
+     * queue.
+     *
+     * @return The provider.
+     */
+    static JacksonJsonProvider createProvider() {
+        var provider = new CustomJacksonJsonProvider();
+        provider.addDeserialiser(QueueNextResponse.class,
+                new NMPIQueueResponseDeserialiser());
+        return provider;
+    }
 }
 
 /**
@@ -158,13 +158,13 @@ public interface NMPIQueue {
  */
 @SuppressWarnings("serial")
 class NMPIQueueResponseDeserialiser
-		extends PropertyBasedDeserialiser<QueueNextResponse> {
-	/**
-	 * Make a deserialiser.
-	 */
-	NMPIQueueResponseDeserialiser() {
-		super(QueueNextResponse.class);
-		register("id", QueueJob.class);
-		register("warning", QueueEmpty.class);
-	}
+        extends PropertyBasedDeserialiser<QueueNextResponse> {
+    /**
+     * Make a deserialiser.
+     */
+    NMPIQueueResponseDeserialiser() {
+        super(QueueNextResponse.class);
+        register("id", QueueJob.class);
+        register("warning", QueueEmpty.class);
+    }
 }

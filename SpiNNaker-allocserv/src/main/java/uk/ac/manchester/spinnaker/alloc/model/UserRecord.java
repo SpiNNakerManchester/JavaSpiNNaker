@@ -48,372 +48,372 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class UserRecord {
-	private Integer userId;
+    private Integer userId;
 
-	private String userName;
+    private String userName;
 
-	private String password;
+    private String password;
 
-	private Boolean hasPassword;
+    private Boolean hasPassword;
 
-	private Boolean enabled;
+    private Boolean enabled;
 
-	private Boolean locked;
+    private Boolean locked;
 
-	private TrustLevel trustLevel;
+    private TrustLevel trustLevel;
 
-	private Instant lastSuccessfulLogin;
+    private Instant lastSuccessfulLogin;
 
-	private Instant lastFailedLogin;
+    private Instant lastFailedLogin;
 
-	private String openIdSubject;
+    private String openIdSubject;
 
-	private boolean isInternal;
+    private boolean isInternal;
 
-	private Map<String, URI> groups;
+    private Map<String, URI> groups;
 
-	/** Create an empty instance. */
-	public UserRecord() {
-	}
+    /** Create an empty instance. */
+    public UserRecord() {
+    }
 
-	/**
-	 * Inflate the result of a {@link SQLQueries#GET_USER_DETAILS} query (or
-	 * anything else that includes the same columns) into an object. Doesn't
-	 * include inflating the groups that the user is a member of.
-	 *
-	 * @param row
-	 *            The row with the result.
-	 */
-	@UsedInJavadocOnly(SQLQueries.class)
-	public UserRecord(Row row) {
-		try {
-			setUserId(row.getInt("user_id"));
-			setUserName(row.getString("user_name"));
-			setHasPassword(row.getBoolean("has_password"));
-			setTrustLevel(row.getEnum("trust_level", TrustLevel.class));
-			setEnabled(!row.getBoolean("disabled"));
-			setLocked(row.getBoolean("locked"));
-			setLastSuccessfulLogin(
-					row.getInstant("last_successful_login_timestamp"));
-			setLastFailedLogin(row.getInstant("last_fail_timestamp"));
-			setOpenIdSubject(row.getString("openid_subject"));
-			isInternal = row.getBoolean("is_internal");
-		} finally {
-			// I mean it!
-			setPassword(null);
-		}
-	}
+    /**
+     * Inflate the result of a {@link SQLQueries#GET_USER_DETAILS} query (or
+     * anything else that includes the same columns) into an object. Doesn't
+     * include inflating the groups that the user is a member of.
+     *
+     * @param row
+     *            The row with the result.
+     */
+    @UsedInJavadocOnly(SQLQueries.class)
+    public UserRecord(Row row) {
+        try {
+            setUserId(row.getInt("user_id"));
+            setUserName(row.getString("user_name"));
+            setHasPassword(row.getBoolean("has_password"));
+            setTrustLevel(row.getEnum("trust_level", TrustLevel.class));
+            setEnabled(!row.getBoolean("disabled"));
+            setLocked(row.getBoolean("locked"));
+            setLastSuccessfulLogin(
+                    row.getInstant("last_successful_login_timestamp"));
+            setLastFailedLogin(row.getInstant("last_fail_timestamp"));
+            setOpenIdSubject(row.getString("openid_subject"));
+            isInternal = row.getBoolean("is_internal");
+        } finally {
+            // I mean it!
+            setPassword(null);
+        }
+    }
 
-	/**
-	 * The user identifier.
-	 *
-	 * Read-only; cannot be set by the service.
-	 *
-	 * @return The user identifier.
-	 */
-	@JsonInclude(NON_NULL)
-	@Null
-	public Integer getUserId() {
-		return userId;
-	}
+    /**
+     * The user identifier.
+     *
+     * Read-only; cannot be set by the service.
+     *
+     * @return The user identifier.
+     */
+    @JsonInclude(NON_NULL)
+    @Null
+    public Integer getUserId() {
+        return userId;
+    }
 
-	/**
-	 * Sets the user identifier.
-	 *
-	 * Should be treated as Read-only within the administration interface;
-	 *     and not be set by the service.
-	 *
-	 * @param userId
-	 *            The user identifier.
-	 */
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
+    /**
+     * Sets the user identifier.
+     *
+     * Should be treated as Read-only within the administration interface;
+     *     and not be set by the service.
+     *
+     * @param userId
+     *            The user identifier.
+     */
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
-	/**
-	 * {@return The user's username}
-	 */
-	@NotBlank
-	public String getUserName() {
-		return userName;
-	}
+    /**
+     * {@return The user's username}
+     */
+    @NotBlank
+    public String getUserName() {
+        return userName;
+    }
 
-	/**
-	 * Sets the user's username.
-	 *
-	 * @param userName
-	 *            The user's username.
-	 */
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    /**
+     * Sets the user's username.
+     *
+     * @param userName
+     *            The user's username.
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	/**
-	 * The user's unencrypted password.
-	 *
-	 * Should <em>Never</em> be returned by the service.
-	 *
-	 * @return The user's unencrypted password
-	 */
-	@JsonInclude(NON_NULL)
-	public String getPassword() {
-		return password;
-	}
+    /**
+     * The user's unencrypted password.
+     *
+     * Should <em>Never</em> be returned by the service.
+     *
+     * @return The user's unencrypted password
+     */
+    @JsonInclude(NON_NULL)
+    public String getPassword() {
+        return password;
+    }
 
-	/**
-	 * Sets the user's unencrypted password.
-	 *
-	 * Should <em>Never</em> be returned by the service.
-	 *
-	 * @param password
-	 *            The user's unencrypted password.
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    /**
+     * Sets the user's unencrypted password.
+     *
+     * Should <em>Never</em> be returned by the service.
+     *
+     * @param password
+     *            The user's unencrypted password.
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	/**
-	 * Whether the user has a password set.
-	 *
-	 * If they don't, they'll have to log in by other mechanisms
-	 * (e.g., HBP/EBRAINS OpenID Connect).
-	 *
-	 * @return Whether the user has a password set
-	 */
-	public Boolean getHasPassword() {
-		return hasPassword;
-	}
+    /**
+     * Whether the user has a password set.
+     *
+     * If they don't, they'll have to log in by other mechanisms
+     * (e.g., HBP/EBRAINS OpenID Connect).
+     *
+     * @return Whether the user has a password set
+     */
+    public Boolean getHasPassword() {
+        return hasPassword;
+    }
 
-	/**
-	 * Sets whether the user has a password set.
-	 *
-	 * If they don't, they'll have to log in by other mechanisms
-	 *     (e.g., HBP/EBRAINS OpenID Connect).
-	 *
-	 * @param hasPassword
-	 *            Whether the user has a password set.
-	 */
-	public void setHasPassword(Boolean hasPassword) {
-		this.hasPassword = hasPassword;
-	}
+    /**
+     * Sets whether the user has a password set.
+     *
+     * If they don't, they'll have to log in by other mechanisms
+     *     (e.g., HBP/EBRAINS OpenID Connect).
+     *
+     * @param hasPassword
+     *            Whether the user has a password set.
+     */
+    public void setHasPassword(Boolean hasPassword) {
+        this.hasPassword = hasPassword;
+    }
 
-	/**
-	 * Whether this account is enabled.
-	 *
-	 * Disabled accounts <em>cannot</em> log into the service
-	 * until explicitly enabled.
-	 *
-	 * @return Whether this account is enabled.
-	 */
-	public Boolean getEnabled() {
-		return enabled;
-	}
+    /**
+     * Whether this account is enabled.
+     *
+     * Disabled accounts <em>cannot</em> log into the service
+     * until explicitly enabled.
+     *
+     * @return Whether this account is enabled.
+     */
+    public Boolean getEnabled() {
+        return enabled;
+    }
 
-	/**
-	 * Set whether this account is enabled.
-	 *
-	 * Disabled accounts <em>cannot</em> log into the service
-	 *     until explicitly enabled.
-	 *
-	 * @param enabled
-	 *            Whether this account is enabled.
-	 */
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
+    /**
+     * Set whether this account is enabled.
+     *
+     * Disabled accounts <em>cannot</em> log into the service
+     *     until explicitly enabled.
+     *
+     * @param enabled
+     *            Whether this account is enabled.
+     */
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	/**
-	 * Whether this account is temporarily locked.
-	 *
-	 * Locked accounts should unlock automatically after 24 hours.
-	 * Can be explicitly set to {@code false} to force an unlock.
-	 *
-	 * @return Whether this account is temporarily locked
-	 */
-	public Boolean getLocked() {
-		return locked;
-	}
+    /**
+     * Whether this account is temporarily locked.
+     *
+     * Locked accounts should unlock automatically after 24 hours.
+     * Can be explicitly set to {@code false} to force an unlock.
+     *
+     * @return Whether this account is temporarily locked
+     */
+    public Boolean getLocked() {
+        return locked;
+    }
 
-	/**
-	 *  Sets whether this account is temporarily locked.
-	 *
-	 *  Locked accounts should unlock automatically after 24 hours.
-	 *  Can be explicitly set to {@code false} to force an unlock.
-	 *
-	 * @param locked
-	 *            Whether this account is temporarily locked.
-	 */
-	public void setLocked(Boolean locked) {
-		this.locked = locked;
-	}
+    /**
+     *  Sets whether this account is temporarily locked.
+     *
+     *  Locked accounts should unlock automatically after 24 hours.
+     *  Can be explicitly set to {@code false} to force an unlock.
+     *
+     * @param locked
+     *            Whether this account is temporarily locked.
+     */
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
 
-	/**
-	 * {@return The permissions of the account}
-	 */
-	@NotNull(message = "a trust level must be given")
-	public TrustLevel getTrustLevel() {
-		return trustLevel;
-	}
+    /**
+     * {@return The permissions of the account}
+     */
+    @NotNull(message = "a trust level must be given")
+    public TrustLevel getTrustLevel() {
+        return trustLevel;
+    }
 
-	/**
-	 * Sets the permissions of the account.
-	 *
-	 * @param trustLevel
-	 *            The permissions of the account.
-	 */
-	public void setTrustLevel(TrustLevel trustLevel) {
-		this.trustLevel = trustLevel;
-	}
+    /**
+     * Sets the permissions of the account.
+     *
+     * @param trustLevel
+     *            The permissions of the account.
+     */
+    public void setTrustLevel(TrustLevel trustLevel) {
+        this.trustLevel = trustLevel;
+    }
 
-	/**
-	 * The time that the last successful login was.
-	 *
-	 * Read-only; cannot be set via the admin API.
-	 *
-	 * @return The time that the last successful login was.
-	 */
-	@JsonInclude(NON_NULL)
-	@Null
-	public Instant getLastSuccessfulLogin() {
-		return lastSuccessfulLogin;
-	}
+    /**
+     * The time that the last successful login was.
+     *
+     * Read-only; cannot be set via the admin API.
+     *
+     * @return The time that the last successful login was.
+     */
+    @JsonInclude(NON_NULL)
+    @Null
+    public Instant getLastSuccessfulLogin() {
+        return lastSuccessfulLogin;
+    }
 
-	void setLastSuccessfulLogin(Instant timestamp) {
-		this.lastSuccessfulLogin = timestamp;
-	}
+    void setLastSuccessfulLogin(Instant timestamp) {
+        this.lastSuccessfulLogin = timestamp;
+    }
 
-	/**
-	 * The time that the last failed login was.
-	 *
-	 * Read-only; cannot be set via the admin API}
-	 *
-	 * @return The time that the last failed login was.
-	 */
-	@JsonInclude(NON_NULL)
-	@Null
-	public Instant getLastFailedLogin() {
-		return lastFailedLogin;
-	}
+    /**
+     * The time that the last failed login was.
+     *
+     * Read-only; cannot be set via the admin API}
+     *
+     * @return The time that the last failed login was.
+     */
+    @JsonInclude(NON_NULL)
+    @Null
+    public Instant getLastFailedLogin() {
+        return lastFailedLogin;
+    }
 
-	void setLastFailedLogin(Instant timestamp) {
-		this.lastFailedLogin = timestamp;
-	}
+    void setLastFailedLogin(Instant timestamp) {
+        this.lastFailedLogin = timestamp;
+    }
 
-	/**
-	 * Note that no API that sets a user's information using a
-	 * {@link UserRecord} allows setting the groups that user is a member of at
-	 * the same time.
-	 *
-	 * @return The groups that the user is a member of. May be {@code null} if
-	 *         this information is not being reported.
-	 */
-	public Map<String, URI> getGroups() {
-		return groups;
-	}
+    /**
+     * Note that no API that sets a user's information using a
+     * {@link UserRecord} allows setting the groups that user is a member of at
+     * the same time.
+     *
+     * @return The groups that the user is a member of. May be {@code null} if
+     *         this information is not being reported.
+     */
+    public Map<String, URI> getGroups() {
+        return groups;
+    }
 
-	/**
-	 * Sets the groups that the user is a member of.
-	 *
-	 * @param groups
-	 *            The groups that the user is a member of.
-	 */
-	public void setGroups(Map<String, URI> groups) {
-		this.groups = groups;
-	}
+    /**
+     * Sets the groups that the user is a member of.
+     *
+     * @param groups
+     *            The groups that the user is a member of.
+     */
+    public void setGroups(Map<String, URI> groups) {
+        this.groups = groups;
+    }
 
-	/**
-	 * {@return The OpenID subject that this user relates to, if known}
-	 */
-	public String getOpenIdSubject() {
-		return openIdSubject;
-	}
+    /**
+     * {@return The OpenID subject that this user relates to, if known}
+     */
+    public String getOpenIdSubject() {
+        return openIdSubject;
+    }
 
-	/**
-	 * Sets the OpenID subject that this user relates to.
-	 *
-	 * @param subject
-	 *            The OpenID subject that this user relates to.
-	 */
-	public void setOpenIdSubject(String subject) {
-		this.openIdSubject = subject;
-	}
+    /**
+     * Sets the OpenID subject that this user relates to.
+     *
+     * @param subject
+     *            The OpenID subject that this user relates to.
+     */
+    public void setOpenIdSubject(String subject) {
+        this.openIdSubject = subject;
+    }
 
-	/**
-	 * {@return Whether this is an internal user}
-	 */
-	public boolean isInternal() {
-		return isInternal;
-	}
+    /**
+     * {@return Whether this is an internal user}
+     */
+    public boolean isInternal() {
+        return isInternal;
+    }
 
-	/**
-	 * Sets whether this is an internal user.
-	 *
-	 * @param internal
-	 *            Whether this is an internal user.
-	 */
-	public void setInternal(boolean internal) {
-		this.isInternal = internal;
-	}
+    /**
+     * Sets whether this is an internal user.
+     *
+     * @param internal
+     *            Whether this is an internal user.
+     */
+    public void setInternal(boolean internal) {
+        this.isInternal = internal;
+    }
 
-	@JsonIgnore
-	private boolean isPasswordSetForAccount() {
-		return nonNull(hasPassword) && hasPassword;
-	}
+    @JsonIgnore
+    private boolean isPasswordSetForAccount() {
+        return nonNull(hasPassword) && hasPassword;
+    }
 
-	/**
-	 * {@return Whether this represents a request to use external authentication
-	 *         (instead of just not setting the password)}
-	 */
-	@JsonIgnore
-	public boolean isExternallyAuthenticated() {
-		return !isInternal;
-	}
+    /**
+     * {@return Whether this represents a request to use external authentication
+     *         (instead of just not setting the password)}
+     */
+    @JsonIgnore
+    public boolean isExternallyAuthenticated() {
+        return !isInternal;
+    }
 
-	@JsonIgnore
-	boolean isPasswordSet() {
-		return nonNull(password) && !password.isBlank();
-	}
+    @JsonIgnore
+    boolean isPasswordSet() {
+        return nonNull(password) && !password.isBlank();
+    }
 
-	@AssertTrue(message = "only set a password for non-OpenID accounts")
-	@JsonIgnore
-	boolean isAuthenticationSane() {
-		if (isInternal) {
-			return isPasswordSet() || isPasswordSetForAccount();
-		} else {
-			return !isPasswordSet();
-		}
-	}
+    @AssertTrue(message = "only set a password for non-OpenID accounts")
+    @JsonIgnore
+    boolean isAuthenticationSane() {
+        if (isInternal) {
+            return isPasswordSet() || isPasswordSetForAccount();
+        } else {
+            return !isPasswordSet();
+        }
+    }
 
-	/**
-	 * Forces correct shrouding of information.
-	 *
-	 * @return the object (for convenience)
-	 */
-	@CanIgnoreReturnValue
-	public UserRecord sanitise() {
-		// Make SURE that the password doesn't go back
-		if (nonNull(password)) {
-			hasPassword = true;
-			password = null;
-		}
-		// Never need to send the userId back
-		userId = null;
-		return this;
-	}
+    /**
+     * Forces correct shrouding of information.
+     *
+     * @return the object (for convenience)
+     */
+    @CanIgnoreReturnValue
+    public UserRecord sanitise() {
+        // Make SURE that the password doesn't go back
+        if (nonNull(password)) {
+            hasPassword = true;
+            password = null;
+        }
+        // Never need to send the userId back
+        userId = null;
+        return this;
+    }
 
-	/**
-	 * Set up some defaults used when a user is being created.
-	 */
-	public void initCreationDefaults() {
-		setUserId(null);
-		if (isNull(getTrustLevel())) {
-			setTrustLevel(USER);
-		}
-		if (isNull(getEnabled())) {
-			setEnabled(true);
-		}
-		if (isNull(getLocked())) {
-			setLocked(false);
-		}
-	}
+    /**
+     * Set up some defaults used when a user is being created.
+     */
+    public void initCreationDefaults() {
+        setUserId(null);
+        if (isNull(getTrustLevel())) {
+            setTrustLevel(USER);
+        }
+        if (isNull(getEnabled())) {
+            setEnabled(true);
+        }
+        if (isNull(getLocked())) {
+            setLocked(false);
+        }
+    }
 }

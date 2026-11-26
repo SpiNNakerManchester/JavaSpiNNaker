@@ -32,79 +32,79 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 
 class TestSQLiteStorage {
-	private File db;
+    private File db;
 
-	@BeforeEach
-	void makeDB() {
-		db = new File("target/test.db");
-	}
+    @BeforeEach
+    void makeDB() {
+        db = new File("target/test.db");
+    }
 
-	@AfterEach
-	void killDB() {
-		db.delete();
-	}
+    @AfterEach
+    void killDB() {
+        db.delete();
+    }
 
-	private static ByteBuffer bytes(String str) {
-		return wrap(str.getBytes(UTF_8));
-	}
+    private static ByteBuffer bytes(String str) {
+        return wrap(str.getBytes(UTF_8));
+    }
 
-	private static String str(byte[] bytes) {
-		return new String(bytes, UTF_8);
-	}
+    private static String str(byte[] bytes) {
+        return new String(bytes, UTF_8);
+    }
 
-	@Test
-	void testRecording() throws StorageException {
-		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
-		var core = new CoreLocation(0, 0, 0);
+    @Test
+    void testRecording() throws StorageException {
+        var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
+        var core = new CoreLocation(0, 0, 0);
 
-		assertEquals(List.of(), storage.getCoresWithStorage());
+        assertEquals(List.of(), storage.getCoresWithStorage());
 
-		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100, true);
-		storage.insertMockExtraction();
-		storage.addRecordingContents(rr, bytes("def"));
-		assertArrayEquals("def".getBytes(UTF_8),
-				storage.getContents(rr));
+        var rr = new BufferManagerStorage.Region(core, 0, NULL, 100, true);
+        storage.insertMockExtraction();
+        storage.addRecordingContents(rr, bytes("def"));
+        assertArrayEquals("def".getBytes(UTF_8),
+                storage.getContents(rr));
 
-		assertEquals(List.of(core), storage.getCoresWithStorage());
-		assertEquals(List.of(0), storage.getRegionsWithStorage(core));
-	}
+        assertEquals(List.of(core), storage.getCoresWithStorage());
+        assertEquals(List.of(0), storage.getRegionsWithStorage(core));
+    }
 
-	@Test
-	void testDownload() throws StorageException {
-		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
-		var core = new CoreLocation(0, 0, 0);
+    @Test
+    void testDownload() throws StorageException {
+        var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
+        var core = new CoreLocation(0, 0, 0);
 
-		assertEquals(List.of(), storage.getCoresWithStorage());
+        assertEquals(List.of(), storage.getCoresWithStorage());
 
-		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100, false);
-		storage.insertMockExtraction();
-		storage.addRecordingContents(rr, bytes("def"));
-		assertArrayEquals("def".getBytes(UTF_8),
-			storage.getContents(rr));
+        var rr = new BufferManagerStorage.Region(core, 0, NULL, 100, false);
+        storage.insertMockExtraction();
+        storage.addRecordingContents(rr, bytes("def"));
+        assertArrayEquals("def".getBytes(UTF_8),
+            storage.getContents(rr));
 
-		assertEquals(List.of(core), storage.getCoresWithStorage());
-		assertEquals(List.of(0), storage.getRegionsWithStorage(core));
-	}
+        assertEquals(List.of(core), storage.getCoresWithStorage());
+        assertEquals(List.of(0), storage.getRegionsWithStorage(core));
+    }
 
-	@Test
-	void testWithExisting() throws StorageException {
-		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
-		var core = new CoreLocation(0, 0, 0);
+    @Test
+    void testWithExisting() throws StorageException {
+        var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
+        var core = new CoreLocation(0, 0, 0);
 
-		// append creates
-		var rr = new BufferManagerStorage.Region(core, 1, NULL, 100, true);
-		var rd = new BufferManagerStorage.Region(core, 1, NULL, 100, false);
-		storage.insertMockExtraction();
-		storage.addRecordingContents(rr, bytes("ab"));
-		storage.addRecordingContents(rd, bytes("AB"));
-		storage.insertMockExtraction();
-		storage.addRecordingContents(rr, bytes("cd"));
-		storage.addRecordingContents(rd, bytes("CD"));
-		storage.insertMockExtraction();
-		storage.addRecordingContents(rr, bytes("ef"));
-		storage.addRecordingContents(rd, bytes("EF"));
-		assertEquals("abcdef", str(storage.getContents(rr)));
-		assertEquals("EF", str(storage.getContents(rd)));
-	}
+        // append creates
+        var rr = new BufferManagerStorage.Region(core, 1, NULL, 100, true);
+        var rd = new BufferManagerStorage.Region(core, 1, NULL, 100, false);
+        storage.insertMockExtraction();
+        storage.addRecordingContents(rr, bytes("ab"));
+        storage.addRecordingContents(rd, bytes("AB"));
+        storage.insertMockExtraction();
+        storage.addRecordingContents(rr, bytes("cd"));
+        storage.addRecordingContents(rd, bytes("CD"));
+        storage.insertMockExtraction();
+        storage.addRecordingContents(rr, bytes("ef"));
+        storage.addRecordingContents(rd, bytes("EF"));
+        assertEquals("abcdef", str(storage.getContents(rr)));
+        assertEquals("EF", str(storage.getContents(rd)));
+    }
 
 }

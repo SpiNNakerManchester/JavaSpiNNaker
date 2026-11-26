@@ -30,88 +30,88 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class BoardIssueReport {
-	private int id;
+    private int id;
 
-	private int boardId;
+    private int boardId;
 
-	private String issue;
+    private String issue;
 
-	private String reporter;
+    private String reporter;
 
-	private Instant timestamp;
+    private Instant timestamp;
 
-	/** Create a record. */
-	public BoardIssueReport() {
-	}
+    /** Create a record. */
+    public BoardIssueReport() {
+    }
 
-	/**
-	 * Create a record from a row.
-	 *
-	 * @param row
-	 *            The database row.
-	 * @see SQLQueries#GET_BOARD_REPORTS
-	 */
-	@UsedInJavadocOnly(SQLQueries.class)
-	public BoardIssueReport(Row row) {
-		id = row.getInt("report_id");
-		boardId = row.getInt("board_id");
-		issue = row.getString("reported_issue");
-		reporter = row.getString("reporter_name");
-		timestamp = row.getInstant("report_timestamp");
-	}
+    /**
+     * Create a record from a row.
+     *
+     * @param row
+     *            The database row.
+     * @see SQLQueries#GET_BOARD_REPORTS
+     */
+    @UsedInJavadocOnly(SQLQueries.class)
+    public BoardIssueReport(Row row) {
+        id = row.getInt("report_id");
+        boardId = row.getInt("board_id");
+        issue = row.getString("reported_issue");
+        reporter = row.getString("reporter_name");
+        timestamp = row.getInstant("report_timestamp");
+    }
 
-	/**
-	 * {@return The report ID}
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * {@return The report ID}
+     */
+    public int getId() {
+        return id;
+    }
 
-	void setId(int id) {
-		this.id = id;
-	}
+    void setId(int id) {
+        this.id = id;
+    }
 
-	/**
-	 * {@return The board ID}
-	 */
-	public int getBoardId() {
-		return boardId;
-	}
+    /**
+     * {@return The board ID}
+     */
+    public int getBoardId() {
+        return boardId;
+    }
 
-	void setBoardId(int id) {
-		this.boardId = id;
-	}
+    void setBoardId(int id) {
+        this.boardId = id;
+    }
 
-	/**
-	 * {@return What did they report}
-	 */
-	public String getIssue() {
-		return issue;
-	}
+    /**
+     * {@return What did they report}
+     */
+    public String getIssue() {
+        return issue;
+    }
 
-	void setIssue(String issue) {
-		this.issue = issue;
-	}
+    void setIssue(String issue) {
+        this.issue = issue;
+    }
 
-	/**
-	 * {@return Who reported it}
-	 */
-	public String getReporter() {
-		return reporter;
-	}
+    /**
+     * {@return Who reported it}
+     */
+    public String getReporter() {
+        return reporter;
+    }
 
-	void setReporter(String reporter) {
-		this.reporter = reporter;
-	}
+    void setReporter(String reporter) {
+        this.reporter = reporter;
+    }
 
-	/**
-	 * {@return When was it reported}
-	 */
-	public Instant getTimestamp() {
-		return timestamp;
-	}
+    /**
+     * {@return When was it reported}
+     */
+    public Instant getTimestamp() {
+        return timestamp;
+    }
 
-	void setTimestamp(Instant timestamp) {
-		this.timestamp = timestamp;
-	}
+    void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+    }
 }

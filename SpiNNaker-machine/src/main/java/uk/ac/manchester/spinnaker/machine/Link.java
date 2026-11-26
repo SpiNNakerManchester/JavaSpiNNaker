@@ -35,99 +35,99 @@ import com.google.errorprone.annotations.Immutable;
  */
 @Immutable
 public final class Link {
-	private static final Logger log = getLogger(Link.class);
+    private static final Logger log = getLogger(Link.class);
 
-	/** The coordinates of the source chip of the link. */
-	@Valid
-	public final ChipLocation source;
+    /** The coordinates of the source chip of the link. */
+    @Valid
+    public final ChipLocation source;
 
-	/** The ID/Direction of the link in the source chip. */
-	public final Direction sourceLinkDirection;
+    /** The ID/Direction of the link in the source chip. */
+    public final Direction sourceLinkDirection;
 
-	/** The coordinate of the destination chip of the link. */
-	@Valid
-	public final ChipLocation destination;
+    /** The coordinate of the destination chip of the link. */
+    @Valid
+    public final ChipLocation destination;
 
-	// Note: multicast_default_from and multicast_default_to not implemented
+    // Note: multicast_default_from and multicast_default_to not implemented
 
-	/**
-	 * Main Constructor which sets all parameters.
-	 * <p>
-	 * Specifically there is <em>no</em> check that the destination is the
-	 * typical one for this source and direction pair.
-	 *
-	 * @param source
-	 *            The coordinates of the source chip of the link.
-	 * @param sourceLinkDirection
-	 *            The Direction of the link in the source chip.
-	 * @param destination
-	 *            The coordinate of the destination chip of the link.
-	 */
-	public Link(ChipLocation source, Direction sourceLinkDirection,
-			ChipLocation destination) {
-		this.source = source;
-		this.sourceLinkDirection = sourceLinkDirection;
-		this.destination = destination;
-	}
+    /**
+     * Main Constructor which sets all parameters.
+     * <p>
+     * Specifically there is <em>no</em> check that the destination is the
+     * typical one for this source and direction pair.
+     *
+     * @param source
+     *            The coordinates of the source chip of the link.
+     * @param sourceLinkDirection
+     *            The Direction of the link in the source chip.
+     * @param destination
+     *            The coordinate of the destination chip of the link.
+     */
+    public Link(ChipLocation source, Direction sourceLinkDirection,
+            ChipLocation destination) {
+        this.source = source;
+        this.sourceLinkDirection = sourceLinkDirection;
+        this.destination = destination;
+    }
 
-	/**
-	 * Main Constructor which sets all parameters.
-	 * <p>
-	 * Specifically there is <em>no</em> check that the destination is the
-	 * typical one for this source and direction pair.
-	 *
-	 * @param source
-	 *            The coordinates of the source chip of the link.
-	 * @param sourceLinkDirection
-	 *            The Direction of the link in the source chip.
-	 * @param destination
-	 *            The coordinate of the destination chip of the link.
-	 */
-	public Link(HasChipLocation source, Direction sourceLinkDirection,
-			HasChipLocation destination) {
-		this(source.asChipLocation(), sourceLinkDirection,
-				destination.asChipLocation());
-	}
+    /**
+     * Main Constructor which sets all parameters.
+     * <p>
+     * Specifically there is <em>no</em> check that the destination is the
+     * typical one for this source and direction pair.
+     *
+     * @param source
+     *            The coordinates of the source chip of the link.
+     * @param sourceLinkDirection
+     *            The Direction of the link in the source chip.
+     * @param destination
+     *            The coordinate of the destination chip of the link.
+     */
+    public Link(HasChipLocation source, Direction sourceLinkDirection,
+            HasChipLocation destination) {
+        this(source.asChipLocation(), sourceLinkDirection,
+                destination.asChipLocation());
+    }
 
-	@Override
-	public int hashCode() {
-		return hash(source, sourceLinkDirection, destination);
-	}
+    @Override
+    public int hashCode() {
+        return hash(source, sourceLinkDirection, destination);
+    }
 
-	/**
-	 * Main Constructor which sets all parameters.
-	 *
-	 * @param source
-	 *            The coordinates of the source chip of the link.
-	 * @param sourceLinkId
-	 *            The ID of the link in the source chip.
-	 * @param destination
-	 *            The coordinate of the destination chip of the link.
-	 */
-	public Link(HasChipLocation source, int sourceLinkId,
-			HasChipLocation destination) {
-		this(source, Direction.byId(sourceLinkId), destination);
-	}
+    /**
+     * Main Constructor which sets all parameters.
+     *
+     * @param source
+     *            The coordinates of the source chip of the link.
+     * @param sourceLinkId
+     *            The ID of the link in the source chip.
+     * @param destination
+     *            The coordinate of the destination chip of the link.
+     */
+    public Link(HasChipLocation source, int sourceLinkId,
+            HasChipLocation destination) {
+        this(source, Direction.byId(sourceLinkId), destination);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		} else if (!(obj instanceof Link)) {
-			return false;
-		}
-		var other = (Link) obj;
-		log.trace("Equals called {} {}", this, other);
-		if (sourceLinkDirection != other.sourceLinkDirection) {
-			return false;
-		}
-		return Objects.equals(source, other.source)
-				&& Objects.equals(destination, other.destination);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (!(obj instanceof Link)) {
+            return false;
+        }
+        var other = (Link) obj;
+        log.trace("Equals called {} {}", this, other);
+        if (sourceLinkDirection != other.sourceLinkDirection) {
+            return false;
+        }
+        return Objects.equals(source, other.source)
+                && Objects.equals(destination, other.destination);
+    }
 
-	@Override
-	public String toString() {
-		return "Link{" + "source=" + source + ", source_link_id="
-				+ sourceLinkDirection + ", destination=" + destination + '}';
-	}
+    @Override
+    public String toString() {
+        return "Link{" + "source=" + source + ", source_link_id="
+                + sourceLinkDirection + ", destination=" + destination + '}';
+    }
 }

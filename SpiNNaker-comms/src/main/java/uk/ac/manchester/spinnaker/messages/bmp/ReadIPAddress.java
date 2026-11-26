@@ -35,55 +35,55 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * Handled by {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
 public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
-	/**
-	 * Construct a request for the IP address data.
-	 *
-	 * @param board
-	 *            which board to request the IP address data from
-	 */
-	public ReadIPAddress(BMPBoard board) {
-		super(board, CMD_BMP_INFO, IP_ADDR.value);
-	}
+    /**
+     * Construct a request for the IP address data.
+     *
+     * @param board
+     *            which board to request the IP address data from
+     */
+    public ReadIPAddress(BMPBoard board) {
+        super(board, CMD_BMP_INFO, IP_ADDR.value);
+    }
 
-	@Override
-	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new Response(buffer);
-	}
+    @Override
+    public Response getSCPResponse(ByteBuffer buffer) throws Exception {
+        return new Response(buffer);
+    }
 
-	/** An SCP response to a request for IP address information. */
-	protected final class Response
-			extends BMPRequest.PayloadedResponse<Addresses> {
-		private Response(ByteBuffer buffer)
-				throws UnexpectedResponseCodeException {
-			super("Read IP Address Data", CMD_BMP_INFO, buffer);
-		}
+    /** An SCP response to a request for IP address information. */
+    protected final class Response
+            extends BMPRequest.PayloadedResponse<Addresses> {
+        private Response(ByteBuffer buffer)
+                throws UnexpectedResponseCodeException {
+            super("Read IP Address Data", CMD_BMP_INFO, buffer);
+        }
 
-		private static final int CHUNK_LEN = 32;
+        private static final int CHUNK_LEN = 32;
 
-		private static final int IP_OFFSET = 8;
+        private static final int IP_OFFSET = 8;
 
-		private static final int IP_LEN = 4;
+        private static final int IP_LEN = 4;
 
-		private InetAddress getIP(ByteBuffer buffer)
-				throws UnknownHostException {
-			byte[] chunk = new byte[CHUNK_LEN];
-			buffer.get(chunk);
-			byte[] bytes = new byte[IP_LEN];
-			System.arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
-			return getByAddress(bytes);
-		}
+        private InetAddress getIP(ByteBuffer buffer)
+                throws UnknownHostException {
+            byte[] chunk = new byte[CHUNK_LEN];
+            buffer.get(chunk);
+            byte[] bytes = new byte[IP_LEN];
+            System.arraycopy(chunk, IP_OFFSET, bytes, 0, IP_LEN);
+            return getByAddress(bytes);
+        }
 
-		/**
-		 * {@return The addresses of the SpiNNaker board}
-		 */
-		@Override
-		protected Addresses parse(ByteBuffer buffer) {
-			try {
-				return new Addresses(getIP(buffer), getIP(buffer));
-			} catch (UnknownHostException e) {
-				// Should be unreachable
-				return null;
-			}
-		}
-	}
+        /**
+         * {@return The addresses of the SpiNNaker board}
+         */
+        @Override
+        protected Addresses parse(ByteBuffer buffer) {
+            try {
+                return new Addresses(getIP(buffer), getIP(buffer));
+            } catch (UnknownHostException e) {
+                // Should be unreachable
+                return null;
+            }
+        }
+    }
 }

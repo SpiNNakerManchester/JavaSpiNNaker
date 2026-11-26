@@ -19,47 +19,47 @@ package uk.ac.manchester.spinnaker.nmpi.model;
  * POJO describing an HBP Collaboratory.
  */
 public class Collab {
-	/** The content field. */
-	private String content;
+    /** The content field. */
+    private String content;
 
-	/** The collab ID. */
-	private int id;
+    /** The collab ID. */
+    private int id;
 
-	/**
-	 * Get the content field.
-	 *
-	 * @return The content
-	 */
-	public String getContent() {
-		return content;
-	}
+    /**
+     * Get the content field.
+     *
+     * @return The content
+     */
+    public String getContent() {
+        return content;
+    }
 
-	/**
-	 * Set the content field.
-	 *
-	 * @param content
-	 *            The value to set.
-	 */
-	public void setContent(final String content) {
-		this.content = content;
-	}
+    /**
+     * Set the content field.
+     *
+     * @param content
+     *            The value to set.
+     */
+    public void setContent(final String content) {
+        this.content = content;
+    }
 
-	/**
-	 * Get the ID of the collab.
-	 *
-	 * @return The collab ID
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * Get the ID of the collab.
+     *
+     * @return The collab ID
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Set the ID of the collab.
-	 *
-	 * @param id
-	 *            The collab ID
-	 */
-	public void setId(final int id) {
-		this.id = id;
-	}
+    /**
+     * Set the ID of the collab.
+     *
+     * @param id
+     *            The collab ID
+     */
+    public void setId(final int id) {
+        this.id = id;
+    }
 }

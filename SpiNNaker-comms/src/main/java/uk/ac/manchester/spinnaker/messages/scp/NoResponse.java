@@ -24,22 +24,22 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
  * guaranteed to be a one-way request.
  */
 public class NoResponse extends SCPResponse {
-	/**
-	 * Create an instance.
-	 *
-	 * @param operation
-	 *            The overall operation that we are doing.
-	 * @param command
-	 *            The particular command that had the problem.
-	 * @param buffer
-	 *            The buffer holding the response data.
-	 * @throws UnexpectedResponseCodeException
-	 *             Always.
-	 */
-	public NoResponse(String operation, Enum<?> command, ByteBuffer buffer)
-			throws UnexpectedResponseCodeException {
-		super(buffer);
-		throw new UnexpectedResponseCodeException(operation, command,
-				result, null);
-	}
+    /**
+     * Create an instance.
+     *
+     * @param operation
+     *            The overall operation that we are doing.
+     * @param command
+     *            The particular command that had the problem.
+     * @param buffer
+     *            The buffer holding the response data.
+     * @throws UnexpectedResponseCodeException
+     *             Always.
+     */
+    public NoResponse(String operation, Enum<?> command, ByteBuffer buffer)
+            throws UnexpectedResponseCodeException {
+        super(buffer);
+        throw new UnexpectedResponseCodeException(operation, command,
+                result, null);
+    }
 }

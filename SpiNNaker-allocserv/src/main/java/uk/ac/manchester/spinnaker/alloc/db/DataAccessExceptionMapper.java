@@ -39,19 +39,19 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 @Provider
 @Role(ROLE_SUPPORT)
 class DataAccessExceptionMapper
-		implements ExceptionMapper<DataAccessException> {
-	static final Logger log = getLogger(DataAccessExceptionMapper.class);
+        implements ExceptionMapper<DataAccessException> {
+    static final Logger log = getLogger(DataAccessExceptionMapper.class);
 
-	@Autowired
-	private SpallocProperties properties;
+    @Autowired
+    private SpallocProperties properties;
 
-	@Override
-	public Response toResponse(DataAccessException exception) {
-		log.warn("uncaught SQL exception", exception);
-		if (properties.getSqlite().isDebugFailures()) {
-			return status(INTERNAL_SERVER_ERROR)
-					.entity("failed: " + exception.getMessage()).build();
-		}
-		return status(INTERNAL_SERVER_ERROR).entity("failed").build();
-	}
+    @Override
+    public Response toResponse(DataAccessException exception) {
+        log.warn("uncaught SQL exception", exception);
+        if (properties.getSqlite().isDebugFailures()) {
+            return status(INTERNAL_SERVER_ERROR)
+                    .entity("failed: " + exception.getMessage()).build();
+        }
+        return status(INTERNAL_SERVER_ERROR).entity("failed").build();
+    }
 }

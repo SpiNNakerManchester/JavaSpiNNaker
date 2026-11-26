@@ -51,175 +51,175 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  * protocol to upload the results to a SpiNNaker machine.
  */
 public class FastExecuteDataSpecification extends ExecuteDataSpecification {
-	private static final Logger log =
-			getLogger(FastExecuteDataSpecification.class);
+    private static final Logger log =
+            getLogger(FastExecuteDataSpecification.class);
 
-	private static final String SPINNAKER_COMPARE_UPLOAD =
-			getProperty("spinnaker.compare.upload");
+    private static final String SPINNAKER_COMPARE_UPLOAD =
+            getProperty("spinnaker.compare.upload");
 
-	private final TransceiverInterface txrx;
+    private final TransceiverInterface txrx;
 
-	private final MachineDimensions machineDimensions;
+    private final MachineDimensions machineDimensions;
 
-	/**
-	 * Create an instance of this class.
-	 *
-	 * @param machine
-	 *            The SpiNNaker machine description.
-	 * @param gatherers
-	 *            The description of where the gatherers and monitors are.
-	 * @param reportDir
-	 *            Where to write reports, or {@code null} if no reports are to
-	 *            be written.
-	 * @param db
-	 *            The DSE Database.
-	 * @throws IOException
-	 *             If IO goes wrong.
-	 * @throws IllegalStateException
-	 *             If something really strange occurs with talking to the BMP;
-	 *             this constructor should not be doing that!
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws SpinnmanException
-	 *            If there is an error creating the transceiver.
-	 * @throws StorageException
-	 *             If there is an error reading the database.
-	 * @throws URISyntaxException
-	 *             If the proxy URI is provided but not valid.
-	 */
-	@MustBeClosed
-	@SuppressWarnings("MustBeClosed")
-	public FastExecuteDataSpecification(
-			Machine machine, List<Gather> gatherers, File reportDir,
-			DSEDatabaseEngine db) throws IOException, InterruptedException,
-			StorageException, URISyntaxException, SpinnmanException {
-		super(machine, db);
-		if (SPINNAKER_COMPARE_UPLOAD != null) {
-			log.warn(
-					"detailed comparison of uploaded data enabled; "
-					+ "this may destabilize the protocol");
-		}
-		txrx = getTransceiver();
-		machineDimensions = db.getStorageInterface().getMachineDimensions();
-	}
+    /**
+     * Create an instance of this class.
+     *
+     * @param machine
+     *            The SpiNNaker machine description.
+     * @param gatherers
+     *            The description of where the gatherers and monitors are.
+     * @param reportDir
+     *            Where to write reports, or {@code null} if no reports are to
+     *            be written.
+     * @param db
+     *            The DSE Database.
+     * @throws IOException
+     *             If IO goes wrong.
+     * @throws IllegalStateException
+     *             If something really strange occurs with talking to the BMP;
+     *             this constructor should not be doing that!
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws SpinnmanException
+     *            If there is an error creating the transceiver.
+     * @throws StorageException
+     *             If there is an error reading the database.
+     * @throws URISyntaxException
+     *             If the proxy URI is provided but not valid.
+     */
+    @MustBeClosed
+    @SuppressWarnings("MustBeClosed")
+    public FastExecuteDataSpecification(
+            Machine machine, List<Gather> gatherers, File reportDir,
+            DSEDatabaseEngine db) throws IOException, InterruptedException,
+            StorageException, URISyntaxException, SpinnmanException {
+        super(machine, db);
+        if (SPINNAKER_COMPARE_UPLOAD != null) {
+            log.warn(
+                    "detailed comparison of uploaded data enabled; "
+                    + "this may destabilize the protocol");
+        }
+        txrx = getTransceiver();
+        machineDimensions = db.getStorageInterface().getMachineDimensions();
+    }
 
-	@Override
-	public void close() throws IOException {
-		txrx.close();
-	}
+    @Override
+    public void close() throws IOException {
+        txrx.close();
+    }
 
-	/**
-	 * Execute all application data specifications that a particular connection
-	 * knows about, storing back in the database the information collected about
-	 * those executions. Data is transferred using the Fast Data In protocol.
-	 * <p>
-	 * Cannot load data for system cores; those are used by the implementation
-	 * of this protocol.
-	 *
-	 * @param gatherers
-	 *             The receivers of data from the machine.
-	 * @throws IOException
-	 *             If the transceiver can't talk to its sockets.
-	 * @throws IllegalStateException
-	 *             If an unexpected exception occurs in any of the parallel
-	 *             tasks.
-	 * @throws InterruptedException
-	 *             If communications are interrupted.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws StorageException
-	 *             If the database can't be talked to.
-	 */
-	public void loadCores(List<Gather> gatherers)
-			throws StorageException, IOException, ProcessException,
-			InterruptedException {
-		var storage = db.getStorageInterface();
-		var gathersByBoard = new HashMap<String, Gather>();
-		for (var gather : gatherers) {
-			gathersByBoard.put(
-					gather.getIptag().getBoardAddress().getHostAddress(),
-					gather);
-		}
-		var regionsToWrite = new HashMap<Ethernet, List<RegionInfo>>();
-		processTasksInParallel(storage.listEthernetsToLoad(), board -> {
-			return () -> {
-				var items = loadBoardTables(board, storage);
-				synchronized (regionsToWrite) {
-					regionsToWrite.put(board, items);
-				}
-			};
-		});
+    /**
+     * Execute all application data specifications that a particular connection
+     * knows about, storing back in the database the information collected about
+     * those executions. Data is transferred using the Fast Data In protocol.
+     * <p>
+     * Cannot load data for system cores; those are used by the implementation
+     * of this protocol.
+     *
+     * @param gatherers
+     *             The receivers of data from the machine.
+     * @throws IOException
+     *             If the transceiver can't talk to its sockets.
+     * @throws IllegalStateException
+     *             If an unexpected exception occurs in any of the parallel
+     *             tasks.
+     * @throws InterruptedException
+     *             If communications are interrupted.
+     * @throws ProcessException
+     *             If SpiNNaker rejects a message.
+     * @throws StorageException
+     *             If the database can't be talked to.
+     */
+    public void loadCores(List<Gather> gatherers)
+            throws StorageException, IOException, ProcessException,
+            InterruptedException {
+        var storage = db.getStorageInterface();
+        var gathersByBoard = new HashMap<String, Gather>();
+        for (var gather : gatherers) {
+            gathersByBoard.put(
+                    gather.getIptag().getBoardAddress().getHostAddress(),
+                    gather);
+        }
+        var regionsToWrite = new HashMap<Ethernet, List<RegionInfo>>();
+        processTasksInParallel(storage.listEthernetsToLoad(), board -> {
+            return () -> {
+                var items = loadBoardTables(board, storage);
+                synchronized (regionsToWrite) {
+                    regionsToWrite.put(board, items);
+                }
+            };
+        });
 
-		try (var s = new SystemRouterTableContext(txrx,
-				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
-				var p = new NoDropPacketContext(txrx,
-						gatherers.stream()
-								.flatMap(g -> g.getMonitors().stream()),
-						gatherers.stream())) {
-			log.info("launching {} parallel high-speed upload tasks",
-					regionsToWrite.size());
-			processTasksInParallel(regionsToWrite.keySet(), board -> {
-				return () -> {
-					var gather = gathersByBoard.get(board.ethernetAddress);
-					loadBoardData(gather, regionsToWrite.get(board));
-				};
-			});
-		}
-	}
+        try (var s = new SystemRouterTableContext(txrx,
+                gatherers.stream().flatMap(g -> g.getMonitors().stream()));
+                var p = new NoDropPacketContext(txrx,
+                        gatherers.stream()
+                                .flatMap(g -> g.getMonitors().stream()),
+                        gatherers.stream())) {
+            log.info("launching {} parallel high-speed upload tasks",
+                    regionsToWrite.size());
+            processTasksInParallel(regionsToWrite.keySet(), board -> {
+                return () -> {
+                    var gather = gathersByBoard.get(board.ethernetAddress);
+                    loadBoardData(gather, regionsToWrite.get(board));
+                };
+            });
+        }
+    }
 
-	private List<RegionInfo> loadBoardTables(Ethernet board, DSEStorage storage)
-			throws IOException, ProcessException, StorageException,
-			InterruptedException {
-		var cores = storage.listCoresToLoad(board, false);
-		if (cores.isEmpty()) {
-			log.info("no cores need loading on board; skipping");
-			return List.of();
-		}
-		log.info("loading data onto {} cores on board", cores.size());
-		var worker = new BoardWorker(txrx, board, storage);
-		var regionsToWrite = new ArrayList<RegionInfo>();
-		for (var xyp : cores) {
-			worker.mallocCore(xyp);
-			worker.loadCoreTable(xyp, regionsToWrite);
-		}
-		return regionsToWrite;
-	}
+    private List<RegionInfo> loadBoardTables(Ethernet board, DSEStorage storage)
+            throws IOException, ProcessException, StorageException,
+            InterruptedException {
+        var cores = storage.listCoresToLoad(board, false);
+        if (cores.isEmpty()) {
+            log.info("no cores need loading on board; skipping");
+            return List.of();
+        }
+        log.info("loading data onto {} cores on board", cores.size());
+        var worker = new BoardWorker(txrx, board, storage);
+        var regionsToWrite = new ArrayList<RegionInfo>();
+        for (var xyp : cores) {
+            worker.mallocCore(xyp);
+            worker.loadCoreTable(xyp, regionsToWrite);
+        }
+        return regionsToWrite;
+    }
 
-	@SuppressWarnings("MustBeClosed")
-	private void loadBoardData(Gather gather, List<RegionInfo> regionsToWrite)
-			throws IOException, StorageException, ProcessException,
-			InterruptedException {
-		FastDataIn fastDataIn = null;
-		var job = getJob();
-		if (job == null) {
-			fastDataIn = new FastDataIn(gather.asCoreLocation(),
-					gather.getIptag());
-		}
+    @SuppressWarnings("MustBeClosed")
+    private void loadBoardData(Gather gather, List<RegionInfo> regionsToWrite)
+            throws IOException, StorageException, ProcessException,
+            InterruptedException {
+        FastDataIn fastDataIn = null;
+        var job = getJob();
+        if (job == null) {
+            fastDataIn = new FastDataIn(gather.asCoreLocation(),
+                    gather.getIptag());
+        }
 
-		for (var info : regionsToWrite) {
-			var core = getBoardLocalDestination(info.core, gather);
-			if (job == null) {
-				fastDataIn.fastWrite(core, info.pointer, info.content);
-			} else {
-				job.fastWriteData(gather.asCoreLocation(), gather.getIptag(),
-						core, info.pointer, info.content);
-			}
-		}
-		if (fastDataIn != null) {
-			fastDataIn.close();
-		}
-	}
+        for (var info : regionsToWrite) {
+            var core = getBoardLocalDestination(info.core, gather);
+            if (job == null) {
+                fastDataIn.fastWrite(core, info.pointer, info.content);
+            } else {
+                job.fastWriteData(gather.asCoreLocation(), gather.getIptag(),
+                        core, info.pointer, info.content);
+            }
+        }
+        if (fastDataIn != null) {
+            fastDataIn.close();
+        }
+    }
 
-	private HasChipLocation getBoardLocalDestination(
-			HasChipLocation monitorChip, Gather gather) {
-		int boardLocalX = monitorChip.getX() - gather.getX();
-		if (boardLocalX < 0) {
-			boardLocalX += machineDimensions.width;
-		}
-		int boardLocalY = monitorChip.getY() - gather.getY();
-		if (boardLocalY < 0) {
-			boardLocalY += machineDimensions.height;
-		}
-		return new ChipLocation(boardLocalX, boardLocalY);
-	}
+    private HasChipLocation getBoardLocalDestination(
+            HasChipLocation monitorChip, Gather gather) {
+        int boardLocalX = monitorChip.getX() - gather.getX();
+        if (boardLocalX < 0) {
+            boardLocalX += machineDimensions.width;
+        }
+        int boardLocalY = monitorChip.getY() - gather.getY();
+        if (boardLocalY < 0) {
+            boardLocalY += machineDimensions.height;
+        }
+        return new ChipLocation(boardLocalX, boardLocalY);
+    }
 }

@@ -20,8 +20,8 @@ package uk.ac.manchester.spinnaker.alloc.model;
  * switched to.
  */
 public enum PowerState {
-	/** Switched off. */
-	OFF,
-	/** Switched on. */
-	ON
+    /** Switched off. */
+    OFF,
+    /** Switched on. */
+    ON
 }

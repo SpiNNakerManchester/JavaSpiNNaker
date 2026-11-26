@@ -24,23 +24,23 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(SCPCommand.class)
 enum BMPInfo {
-	/** Serial flash information. */
-	SERIAL(0),
-	/** Data read from EEPROM. {@code ee_data_t} contents. */
-	EE_BUF(1),
-	/** CAN status information. */
-	CAN_STATUS(2),
-	/** Board status information. */
-	BOARD_STATUS(3),
-	/** IP Address. */
-	IP_ADDR(4),
-	/** Uninitialised vector. 8 words, from {@code uni_vec}. */
-	UNINIT_VEC(5);
+    /** Serial flash information. */
+    SERIAL(0),
+    /** Data read from EEPROM. {@code ee_data_t} contents. */
+    EE_BUF(1),
+    /** CAN status information. */
+    CAN_STATUS(2),
+    /** Board status information. */
+    BOARD_STATUS(3),
+    /** IP Address. */
+    IP_ADDR(4),
+    /** Uninitialised vector. 8 words, from {@code uni_vec}. */
+    UNINIT_VEC(5);
 
-	/** The raw BMP value. */
-	public final byte value;
+    /** The raw BMP value. */
+    public final byte value;
 
-	BMPInfo(int value) {
-		this.value = (byte) value;
-	}
+    BMPInfo(int value) {
+        this.value = (byte) value;
+    }
 }

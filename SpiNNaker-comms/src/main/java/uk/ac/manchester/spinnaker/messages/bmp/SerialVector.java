@@ -32,97 +32,97 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(SCPCommand.class)
 public class SerialVector {
-	/** The number of words in the {@link #getSerialNumber() serial_number}. */
-	public static final int SERIAL_LENGTH = 4;
+    /** The number of words in the {@link #getSerialNumber() serial_number}. */
+    public static final int SERIAL_LENGTH = 4;
 
-	/** Hardware version. */
-	private final int hardwareVersion;
+    /** Hardware version. */
+    private final int hardwareVersion;
 
-	/** LPC1768 serial number. Length 4. */
-	private final IntBuffer serialNumber;
+    /** LPC1768 serial number. Length 4. */
+    private final IntBuffer serialNumber;
 
-	/** Flash buffer address. */
-	private final MemoryLocation flashBuffer;
+    /** Flash buffer address. */
+    private final MemoryLocation flashBuffer;
 
-	/** {@code board_stat} address for the board. */
-	private final MemoryLocation boardStat;
+    /** {@code board_stat} address for the board. */
+    private final MemoryLocation boardStat;
 
-	/** Cortex boot vector address. */
-	private final MemoryLocation cortexBoot;
+    /** Cortex boot vector address. */
+    private final MemoryLocation cortexBoot;
 
-	/**
-	 * Construct a holder of the data in the serial vector.
-	 *
-	 * @param buffer
-	 *            Where to deserialize the vector from.
-	 */
-	SerialVector(ByteBuffer buffer) {
-		var b = buffer.asIntBuffer();
-		hardwareVersion = b.get();
-		var sn = new int[SERIAL_LENGTH];
-		b.get(sn);
-		serialNumber = IntBuffer.wrap(sn);
-		flashBuffer = new MemoryLocation(b.get());
-		boardStat = new MemoryLocation(b.get());
-		cortexBoot = new MemoryLocation(b.get());
-	}
+    /**
+     * Construct a holder of the data in the serial vector.
+     *
+     * @param buffer
+     *            Where to deserialize the vector from.
+     */
+    SerialVector(ByteBuffer buffer) {
+        var b = buffer.asIntBuffer();
+        hardwareVersion = b.get();
+        var sn = new int[SERIAL_LENGTH];
+        b.get(sn);
+        serialNumber = IntBuffer.wrap(sn);
+        flashBuffer = new MemoryLocation(b.get());
+        boardStat = new MemoryLocation(b.get());
+        cortexBoot = new MemoryLocation(b.get());
+    }
 
-	/**
-	 * {@return The hardware version}
-	 */
-	public int getHardwareVersion() {
-		return hardwareVersion;
-	}
+    /**
+     * {@return The hardware version}
+     */
+    public int getHardwareVersion() {
+        return hardwareVersion;
+    }
 
-	/**
-	 * {@return The device serial number, as a read-only buffer}
-	 */
-	// @formatter:off
-	/* Obtained from LPC17xx In Application Programming function 58. The API
-	 * descriptions for these things are fairly well buried in the LPC17xx User
-	 * Manual. This is the relevant part:
-	 *
-	 * Command      Read device serial number
-	 * Input        Command code: 58<sub>10</sub>
-	 *              Parameters:   None
-	 * Return Code  CMD_SUCCESS |
-	 * Result       Result0: First 32-bit word of Device Identification Number
-	 *                       (at the lowest address)
-	 *              Result1: Second 32-bit word of Device Identification Number
-	 *              Result2: Third 32-bit word of Device Identification Number
-	 *              Result3: Fourth 32-bit word of Device Identification Number
-	 * Description  This command is used to read the device identification
-	 *              number. The serial number may be used to uniquely identify
-	 *              a single unit among all LPC17xx devices.
-	 *
-	 * The four words of the result form the four words provided below, in the
-	 * order described above (not that that typically matters). */
-	// @formatter:on
-	public IntBuffer getSerialNumber() {
-		// Make a new instance so positions aren't shared
-		return serialNumber.asReadOnlyBuffer();
-	}
+    /**
+     * {@return The device serial number, as a read-only buffer}
+     */
+    // @formatter:off
+    /* Obtained from LPC17xx In Application Programming function 58. The API
+     * descriptions for these things are fairly well buried in the LPC17xx User
+     * Manual. This is the relevant part:
+     *
+     * Command      Read device serial number
+     * Input        Command code: 58<sub>10</sub>
+     *              Parameters:   None
+     * Return Code  CMD_SUCCESS |
+     * Result       Result0: First 32-bit word of Device Identification Number
+     *                       (at the lowest address)
+     *              Result1: Second 32-bit word of Device Identification Number
+     *              Result2: Third 32-bit word of Device Identification Number
+     *              Result3: Fourth 32-bit word of Device Identification Number
+     * Description  This command is used to read the device identification
+     *              number. The serial number may be used to uniquely identify
+     *              a single unit among all LPC17xx devices.
+     *
+     * The four words of the result form the four words provided below, in the
+     * order described above (not that that typically matters). */
+    // @formatter:on
+    public IntBuffer getSerialNumber() {
+        // Make a new instance so positions aren't shared
+        return serialNumber.asReadOnlyBuffer();
+    }
 
-	/**
-	 * {@return The location of the flash buffer}
-	 */
-	public MemoryLocation getFlashBuffer() {
-		return flashBuffer;
-	}
+    /**
+     * {@return The location of the flash buffer}
+     */
+    public MemoryLocation getFlashBuffer() {
+        return flashBuffer;
+    }
 
-	/**
-	 * {@return The board status block location}
-	 *
-	 * @see ReadADC
-	 */
-	public MemoryLocation getBoardStatusLocation() {
-		return boardStat;
-	}
+    /**
+     * {@return The board status block location}
+     *
+     * @see ReadADC
+     */
+    public MemoryLocation getBoardStatusLocation() {
+        return boardStat;
+    }
 
-	/**
-	 * {@return The location of the Cortex boot vector}
-	 */
-	public MemoryLocation getCortexVector() {
-		return cortexBoot;
-	}
+    /**
+     * {@return The location of the Cortex boot vector}
+     */
+    public MemoryLocation getCortexVector() {
+        return cortexBoot;
+    }
 }

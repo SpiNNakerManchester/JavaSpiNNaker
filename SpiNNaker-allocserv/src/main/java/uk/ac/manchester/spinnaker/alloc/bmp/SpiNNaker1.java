@@ -54,318 +54,318 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @Component
 @Prototype
 class SpiNNaker1 implements SpiNNakerControl {
-	// ----------------------------------------------------------------
-	// CORE BMP ACCESS FUNCTIONS
+    // ----------------------------------------------------------------
+    // CORE BMP ACCESS FUNCTIONS
 
-	private static final Logger log = getLogger(SpiNNaker1.class);
+    private static final Logger log = getLogger(SpiNNaker1.class);
 
-	private static final int FPGA_FLAG_ID_MASK = 0x3;
+    private static final int FPGA_FLAG_ID_MASK = 0x3;
 
-	private static final int BMP_VERSION_MIN = 2;
+    private static final int BMP_VERSION_MIN = 2;
 
-	/**
-	 * We <em>always</em> pretend to talk to the root BMP of a machine (actually
-	 * the root of a frame), and never directly to any others. The BMPs within a
-	 * frame use a CAN bus and I<sup>2</sup>C to communicate with each other on
-	 * our behalf.
-	 */
-	private static final BMPCoords ROOT_BMP = new BMPCoords(0, 0);
+    /**
+     * We <em>always</em> pretend to talk to the root BMP of a machine (actually
+     * the root of a frame), and never directly to any others. The BMPs within a
+     * frame use a CAN bus and I<sup>2</sup>C to communicate with each other on
+     * our behalf.
+     */
+    private static final BMPCoords ROOT_BMP = new BMPCoords(0, 0);
 
-	@Autowired
-	private TxrxProperties props;
+    @Autowired
+    private TxrxProperties props;
 
-	@Autowired
-	private TransceiverFactoryAPI<?> txrxFactory;
+    @Autowired
+    private TransceiverFactoryAPI<?> txrxFactory;
 
-	/**
-	 * Factory for {@link FirmwareLoader}. Do not call directly; use
-	 * {@link #loadFirmware(List)} instead.
-	 */
-	@Autowired
-	private ObjectProvider<FirmwareLoader> firmwareLoaderFactory;
+    /**
+     * Factory for {@link FirmwareLoader}. Do not call directly; use
+     * {@link #loadFirmware(List)} instead.
+     */
+    @Autowired
+    private ObjectProvider<FirmwareLoader> firmwareLoaderFactory;
 
-	/** The BMP coordinates to bind into the transceiver. */
-	private final BMPCoords bmp;
+    /** The BMP coordinates to bind into the transceiver. */
+    private final BMPCoords bmp;
 
-	private final Machine machine;
+    private final Machine machine;
 
-	private final Map<BMPBoard, String> boardAddresses;
+    private final Map<BMPBoard, String> boardAddresses;
 
-	/**
-	 * The transceiver for talking to the machine.
-	 */
-	private BMPTransceiverInterface txrx;
+    /**
+     * The transceiver for talking to the machine.
+     */
+    private BMPTransceiverInterface txrx;
 
-	/**
-	 * Load the FPGA firmware onto a board.
-	 *
-	 * @param boards
-	 *            Which boards are we planning to load the firmware on?
-	 * @throws FirmwareLoaderException
-	 *             If something goes wrong.
-	 * @throws IOException
-	 *             If the network fails or the packaged bitfiles are unreadable
-	 * @throws InterruptedException
-	 *             If interrupted while sleeping
-	 * @throws ProcessException
-	 *             If a BMP rejects a message
-	 */
-	@UsedInJavadocOnly(FirmwareLoaderException.class)
-	private void loadFirmware(List<BMPBoard> boards)
-			throws ProcessException, InterruptedException, IOException {
-		int count = 0;
-		for (var board : boards) {
-			firmwareLoaderFactory.getObject(txrx, board)
-					.bitLoad(++count == boards.size());
-		}
-	}
+    /**
+     * Load the FPGA firmware onto a board.
+     *
+     * @param boards
+     *            Which boards are we planning to load the firmware on?
+     * @throws FirmwareLoaderException
+     *             If something goes wrong.
+     * @throws IOException
+     *             If the network fails or the packaged bitfiles are unreadable
+     * @throws InterruptedException
+     *             If interrupted while sleeping
+     * @throws ProcessException
+     *             If a BMP rejects a message
+     */
+    @UsedInJavadocOnly(FirmwareLoaderException.class)
+    private void loadFirmware(List<BMPBoard> boards)
+            throws ProcessException, InterruptedException, IOException {
+        int count = 0;
+        for (var board : boards) {
+            firmwareLoaderFactory.getObject(txrx, board)
+                    .bitLoad(++count == boards.size());
+        }
+    }
 
-	/**
-	 * The factory. Forces the constructor to conform to the API.
-	 * <p>
-	 * Do not use this directly (unless you're Spring Boot itself).
-	 */
-	static final Factory FACTORY = SpiNNaker1::new;
+    /**
+     * The factory. Forces the constructor to conform to the API.
+     * <p>
+     * Do not use this directly (unless you're Spring Boot itself).
+     */
+    static final Factory FACTORY = SpiNNaker1::new;
 
-	/**
-	 * Constructs an Implementation of controller for one BMP
-	 *    of one SpiNNaker 1 based system.
-	 *
-	 * @param machine
-	 *            The machine hosting the boards and FPGAs.
-	 * @param bmp
-	 *            Which BMP on the machine are we really talking to.
-	 */
-	SpiNNaker1(Machine machine, BMPCoords bmp,
-			Map<BMPBoard, String> boardAddresses) {
-		this.machine = machine;
-		this.bmp = bmp;
-		this.boardAddresses = boardAddresses;
-	}
+    /**
+     * Constructs an Implementation of controller for one BMP
+     *    of one SpiNNaker 1 based system.
+     *
+     * @param machine
+     *            The machine hosting the boards and FPGAs.
+     * @param bmp
+     *            Which BMP on the machine are we really talking to.
+     */
+    SpiNNaker1(Machine machine, BMPCoords bmp,
+            Map<BMPBoard, String> boardAddresses) {
+        this.machine = machine;
+        this.bmp = bmp;
+        this.boardAddresses = boardAddresses;
+    }
 
-	@PostConstruct
-	void initTransceiver()
-			throws IOException, SpinnmanException, InterruptedException {
-		txrx = txrxFactory.getTransciever(machine, bmp);
-		txrx.bind(ROOT_BMP);
-	}
+    @PostConstruct
+    void initTransceiver()
+            throws IOException, SpinnmanException, InterruptedException {
+        txrx = txrxFactory.getTransciever(machine, bmp);
+        txrx.bind(ROOT_BMP);
+    }
 
-	/** Notes that a board probably needs its FPGA definitions reloading. */
-	private static class FPGAReloadRequired extends Exception {
-		private static final long serialVersionUID = 1L;
+    /** Notes that a board probably needs its FPGA definitions reloading. */
+    private static class FPGAReloadRequired extends Exception {
+        private static final long serialVersionUID = 1L;
 
-		private final BMPBoard board;
+        private final BMPBoard board;
 
-		FPGAReloadRequired(BMPBoard board) {
-			this.board = board;
-		}
-	}
+        FPGAReloadRequired(BMPBoard board) {
+            this.board = board;
+        }
+    }
 
-	/**
-	 * Check whether an FPGA has come up in a good state.
-	 *
-	 * @param board
-	 *            Which board is the FPGA on?
-	 * @param fpga
-	 *            Which FPGA (0, 1, or 2) is being tested?
-	 * @return True if the FPGA is in a correct state, false otherwise.
-	 * @throws FPGAReloadRequired
-	 *             If the FPGA is in such a bad state that the FPGA definitions
-	 *             for the board need to be reloaded.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 */
-	private boolean isGoodFPGA(BMPBoard board, FPGA fpga)
-			throws FPGAReloadRequired, InterruptedException {
-		int flag;
-		try {
-			flag = txrx.readFPGARegister(fpga, FLAG, board);
-		} catch (ProcessException | IOException ignored) {
-			// An exception means the FPGA is a problem
-			return false;
-		}
-		// FPGA ID is bottom two bits of FLAG register
-		int fpgaId = flag & FPGA_FLAG_ID_MASK;
-		boolean ok = fpgaId == fpga.value;
-		if (!ok) {
-			log.warn("{} on board {} of {} has incorrect FPGA ID flag {}", fpga,
-					board, machine.getName(), fpgaId);
-			if (fpgaId == FPGA.FPGA_ALL.value) {
-				throw new FPGAReloadRequired(board);
-			}
-		}
-		return ok;
-	}
+    /**
+     * Check whether an FPGA has come up in a good state.
+     *
+     * @param board
+     *            Which board is the FPGA on?
+     * @param fpga
+     *            Which FPGA (0, 1, or 2) is being tested?
+     * @return True if the FPGA is in a correct state, false otherwise.
+     * @throws FPGAReloadRequired
+     *             If the FPGA is in such a bad state that the FPGA definitions
+     *             for the board need to be reloaded.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     */
+    private boolean isGoodFPGA(BMPBoard board, FPGA fpga)
+            throws FPGAReloadRequired, InterruptedException {
+        int flag;
+        try {
+            flag = txrx.readFPGARegister(fpga, FLAG, board);
+        } catch (ProcessException | IOException ignored) {
+            // An exception means the FPGA is a problem
+            return false;
+        }
+        // FPGA ID is bottom two bits of FLAG register
+        int fpgaId = flag & FPGA_FLAG_ID_MASK;
+        boolean ok = fpgaId == fpga.value;
+        if (!ok) {
+            log.warn("{} on board {} of {} has incorrect FPGA ID flag {}", fpga,
+                    board, machine.getName(), fpgaId);
+            if (fpgaId == FPGA.FPGA_ALL.value) {
+                throw new FPGAReloadRequired(board);
+            }
+        }
+        return ok;
+    }
 
-	/**
-	 * Is a board new enough to be able to manage FPGAs.
-	 *
-	 * @param board
-	 *            The board number.
-	 * @return True if the board can manage FPGAs.
-	 * @throws IOException
-	 *             If network I/O fails.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
-	 */
-	private boolean canBoardManageFPGAs(BMPBoard board)
-			throws ProcessException, IOException, InterruptedException {
-		var vi = txrx.readBMPVersion(board);
-		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
-	}
+    /**
+     * Is a board new enough to be able to manage FPGAs.
+     *
+     * @param board
+     *            The board number.
+     * @return True if the board can manage FPGAs.
+     * @throws IOException
+     *             If network I/O fails.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @throws ProcessException
+     *             If a BMP rejects a message.
+     */
+    private boolean canBoardManageFPGAs(BMPBoard board)
+            throws ProcessException, IOException, InterruptedException {
+        var vi = txrx.readBMPVersion(board);
+        return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * Technically, switching a link off just switches off <em>sending</em> on
-	 * that link. We assume that the other end of the link also behaves.
-	 */
-	@Override
-	public void setLinkOff(Link link)
-			throws ProcessException, IOException, InterruptedException {
-		var board = link.getBoard();
-		var d = link.getLink();
-		// skip FPGA link configuration if old BMP version
-		if (!canBoardManageFPGAs(board)) {
-			return;
-		}
-		txrx.writeFPGARegister(d.fpga, d.bank, STOP, 1, board);
-	}
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Technically, switching a link off just switches off <em>sending</em> on
+     * that link. We assume that the other end of the link also behaves.
+     */
+    @Override
+    public void setLinkOff(Link link)
+            throws ProcessException, IOException, InterruptedException {
+        var board = link.getBoard();
+        var d = link.getLink();
+        // skip FPGA link configuration if old BMP version
+        if (!canBoardManageFPGAs(board)) {
+            return;
+        }
+        txrx.writeFPGARegister(d.fpga, d.bank, STOP, 1, board);
+    }
 
-	/**
-	 * A board is good if all its FPGAs are good.
-	 *
-	 * @param board
-	 *            The board ID
-	 * @return Whether the board's FPGAs all came up correctly.
-	 * @throws FPGAReloadRequired
-	 *             If an FPGA is in such a bad state that the FPGA definitions
-	 *             for the board need to be reloaded.
-	 * @throws InterruptedException
-	 *             If the communications were interrupted.
-	 * @see #isGoodFPGA(Integer, FPGA)
-	 */
-	private boolean hasGoodFPGAs(BMPBoard board)
-			throws FPGAReloadRequired, InterruptedException {
-		for (var fpga : FPGA.values()) {
-			if (fpga.isSingleFPGA() && !isGoodFPGA(board, fpga)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    /**
+     * A board is good if all its FPGAs are good.
+     *
+     * @param board
+     *            The board ID
+     * @return Whether the board's FPGAs all came up correctly.
+     * @throws FPGAReloadRequired
+     *             If an FPGA is in such a bad state that the FPGA definitions
+     *             for the board need to be reloaded.
+     * @throws InterruptedException
+     *             If the communications were interrupted.
+     * @see #isGoodFPGA(Integer, FPGA)
+     */
+    private boolean hasGoodFPGAs(BMPBoard board)
+            throws FPGAReloadRequired, InterruptedException {
+        for (var fpga : FPGA.values()) {
+            if (fpga.isSingleFPGA() && !isGoodFPGA(board, fpga)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public void powerOnAndCheck(List<BMPBoard> boards)
-			throws ProcessException, InterruptedException, IOException {
-		var boardsToPower = boards;
-		log.debug("Power on and check boards {} for BMP {}", boards, bmp);
-		boolean reloadDone = false; // so we only do firmware loading once
-		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
-			if (attempt > 1) {
-				log.warn("rebooting {} boards in allocation to "
-						+ "get stability", boards.size());
-			}
-			txrx.powerOn(boardsToPower);
+    @Override
+    public void powerOnAndCheck(List<BMPBoard> boards)
+            throws ProcessException, InterruptedException, IOException {
+        var boardsToPower = boards;
+        log.debug("Power on and check boards {} for BMP {}", boards, bmp);
+        boolean reloadDone = false; // so we only do firmware loading once
+        for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
+            if (attempt > 1) {
+                log.warn("rebooting {} boards in allocation to "
+                        + "get stability", boards.size());
+            }
+            txrx.powerOn(boardsToPower);
 
-			/*
-			 * Check whether all the FPGAs on each board have come up correctly.
-			 * If not, we'll need to try booting that board again. The boards
-			 * that have booted correctly need no further action.
-			 */
+            /*
+             * Check whether all the FPGAs on each board have come up correctly.
+             * If not, we'll need to try booting that board again. The boards
+             * that have booted correctly need no further action.
+             */
 
-			var retryBoards = new ArrayList<BMPBoard>();
-			var reloadBoards = new ArrayList<BMPBoard>();
-			for (var board : boardsToPower) {
-				// Skip board if old BMP version
-				if (!canBoardManageFPGAs(board)) {
-					continue;
-				}
-				try {
-					if (!hasGoodFPGAs(board)) {
-						retryBoards.add(board);
-					}
-				} catch (FPGAReloadRequired e) {
-					reloadBoards.add(e.board);
-				}
-			}
-			if (retryBoards.isEmpty() && reloadBoards.isEmpty()) {
-				// Success!
-				log.debug("Finished power on and check boards {} for {}",
-						boards, bmp);
-				return;
-			}
-			// We don't try reloading the first time
-			if (props.isFpgaReload() && attempt > 1
-					&& attempt < props.getFpgaAttempts()
-					&& !reloadBoards.isEmpty() && !reloadDone) {
-				log.warn("reloading FPGA firmware on {} boards",
-						retryBoards.size());
-				loadFirmware(reloadBoards);
-				reloadDone = true;
-				// Need a full retry after that!
-				boardsToPower = boards;
-				continue;
-			}
-			retryBoards.addAll(reloadBoards); // Might not be empty
-			boardsToPower = retryBoards;
-		}
-		throw new IOException("Could not get correct FPGA ID for "
-				+ boardsToPower.size() + " boards after "
-				+ props.getFpgaAttempts() + " tries");
-	}
+            var retryBoards = new ArrayList<BMPBoard>();
+            var reloadBoards = new ArrayList<BMPBoard>();
+            for (var board : boardsToPower) {
+                // Skip board if old BMP version
+                if (!canBoardManageFPGAs(board)) {
+                    continue;
+                }
+                try {
+                    if (!hasGoodFPGAs(board)) {
+                        retryBoards.add(board);
+                    }
+                } catch (FPGAReloadRequired e) {
+                    reloadBoards.add(e.board);
+                }
+            }
+            if (retryBoards.isEmpty() && reloadBoards.isEmpty()) {
+                // Success!
+                log.debug("Finished power on and check boards {} for {}",
+                        boards, bmp);
+                return;
+            }
+            // We don't try reloading the first time
+            if (props.isFpgaReload() && attempt > 1
+                    && attempt < props.getFpgaAttempts()
+                    && !reloadBoards.isEmpty() && !reloadDone) {
+                log.warn("reloading FPGA firmware on {} boards",
+                        retryBoards.size());
+                loadFirmware(reloadBoards);
+                reloadDone = true;
+                // Need a full retry after that!
+                boardsToPower = boards;
+                continue;
+            }
+            retryBoards.addAll(reloadBoards); // Might not be empty
+            boardsToPower = retryBoards;
+        }
+        throw new IOException("Could not get correct FPGA ID for "
+                + boardsToPower.size() + " boards after "
+                + props.getFpgaAttempts() + " tries");
+    }
 
-	@Override
-	public void powerOff(Collection<BMPBoard> boards)
-			throws ProcessException, InterruptedException, IOException {
-		txrx.powerOff(boards);
-	}
+    @Override
+    public void powerOff(Collection<BMPBoard> boards)
+            throws ProcessException, InterruptedException, IOException {
+        txrx.powerOff(boards);
+    }
 
-	@Override
-	public String readSerial(BMPBoard board)
-			throws ProcessException, IOException, InterruptedException {
-		return txrx.readBoardSerialNumber(board);
-	}
+    @Override
+    public String readSerial(BMPBoard board)
+            throws ProcessException, IOException, InterruptedException {
+        return txrx.readBoardSerialNumber(board);
+    }
 
-	@Override
-	public Blacklist readBlacklist(BMPBoard board)
-			throws ProcessException, IOException, InterruptedException {
-		return txrx.readBlacklist(board);
-	}
+    @Override
+    public Blacklist readBlacklist(BMPBoard board)
+            throws ProcessException, IOException, InterruptedException {
+        return txrx.readBlacklist(board);
+    }
 
-	@Override
-	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
-			throws ProcessException, InterruptedException, IOException {
-		txrx.writeBlacklist(board, blacklist);
-	}
+    @Override
+    public void writeBlacklist(BMPBoard board, Blacklist blacklist)
+            throws ProcessException, InterruptedException, IOException {
+        txrx.writeBlacklist(board, blacklist);
+    }
 
-	@Override
-	public ADCInfo readTemp(BMPBoard board)
-			throws ProcessException, IOException, InterruptedException {
-		return txrx.readADCData(board);
-	}
+    @Override
+    public ADCInfo readTemp(BMPBoard board)
+            throws ProcessException, IOException, InterruptedException {
+        return txrx.readADCData(board);
+    }
 
-	@Override
-	public void ping(List<BMPBoard> boards) {
-		boards.parallelStream().forEach(id -> {
-			var address = boardAddresses.get(id);
-			if (txrx.pingBoard(address) != 0) {
-				log.warn(
-						"ARP fault? Board with address {} might not have "
-								+ "come up correctly", address);
-			}
-		});
-	}
+    @Override
+    public void ping(List<BMPBoard> boards) {
+        boards.parallelStream().forEach(id -> {
+            var address = boardAddresses.get(id);
+            if (txrx.pingBoard(address) != 0) {
+                log.warn(
+                        "ARP fault? Board with address {} might not have "
+                                + "come up correctly", address);
+            }
+        });
+    }
 
-	@Override
-	public void close() {
-		try {
-			txrx.close();
-		} catch (IOException e) {
-			log.warn("Exception closing BMP transceiver for {}: {}",
-					machine.getName(), e.getMessage(), e);
-		}
-	}
+    @Override
+    public void close() {
+        try {
+            txrx.close();
+        } catch (IOException e) {
+            log.warn("Exception closing BMP transceiver for {}: {}",
+                    machine.getName(), e.getMessage(), e);
+        }
+    }
 }

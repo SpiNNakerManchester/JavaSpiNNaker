@@ -23,37 +23,37 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings("unused")
 public class TestTripleMapIterable {
 
-	@Test
-	public void testMultiple() {
-		var bigMap = Map.of(//
-				0.5f, Map.of(//
-						23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
-						43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12)),
-				2.5f, Map.of(//
-						423.2, Map.of("Un", -1, "Duex", -2, "Trois", -3), //
-						4.6, Map.of("Dix", -10, "Onze", -11, "Douze", -12)));
+    @Test
+    public void testMultiple() {
+        var bigMap = Map.of(//
+                0.5f, Map.of(//
+                        23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+                        43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12)),
+                2.5f, Map.of(//
+                        423.2, Map.of("Un", -1, "Duex", -2, "Trois", -3), //
+                        4.6, Map.of("Dix", -10, "Onze", -11, "Douze", -12)));
 
-		var instance = new TripleMapIterable<>(bigMap);
-		int count = 0;
-		for (var value : instance) {
-			count += 1;
-		}
-		assertEquals(12, count);
-		for (var value : instance) {
-			count += 1;
-		}
-		assertEquals(24, count);
-	}
+        var instance = new TripleMapIterable<>(bigMap);
+        int count = 0;
+        for (var value : instance) {
+            count += 1;
+        }
+        assertEquals(12, count);
+        for (var value : instance) {
+            count += 1;
+        }
+        assertEquals(24, count);
+    }
 
-	@Test
-	public void testEmpty() {
-		var bigMap = new HashMap<Float, Map<Double, Map<String, Integer>>>();
+    @Test
+    public void testEmpty() {
+        var bigMap = new HashMap<Float, Map<Double, Map<String, Integer>>>();
 
-		var instance = new TripleMapIterable<>(bigMap);
-		int count = 0;
-		for (var value : instance) {
-			count += 1;
-		}
-		assertEquals(0, count);
-	}
+        var instance = new TripleMapIterable<>(bigMap);
+        int count = 0;
+        for (var value : instance) {
+            count += 1;
+        }
+        assertEquals(0, count);
+    }
 }

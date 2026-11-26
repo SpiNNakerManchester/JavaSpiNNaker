@@ -32,93 +32,93 @@ import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPLocation;
 
 class TestVersion {
-	private static final short PADDING = 0;
+    private static final short PADDING = 0;
 
-	@Test
-	void testNewVersionRequest() {
-		var verRequest = new GetVersion(new CoreLocation(0, 1, 2));
-		assertEquals(CMD_VER, verRequest.scpRequestHeader.command);
-		assertEquals(new SDPLocation(0, 1, 2),
-				verRequest.sdpHeader.getDestination());
-	}
+    @Test
+    void testNewVersionRequest() {
+        var verRequest = new GetVersion(new CoreLocation(0, 1, 2));
+        assertEquals(CMD_VER, verRequest.scpRequestHeader.command);
+        assertEquals(new SDPLocation(0, 1, 2),
+                verRequest.sdpHeader.getDestination());
+    }
 
-	@Test
-	void testParseVersionResponseFormat1()
-			throws UnexpectedResponseCodeException {
-		// SCP Stuff
-		short rc = RC_OK.value;
-		short seq = 105;
-		short p2pAddr = 1024;
-		byte physCPU = 31;
-		byte virtCPU = 14;
-		short version = 234;
-		short buffer = 250;
-		int buildDate = 103117;
-		var verString = "sark/spinnaker".getBytes(US_ASCII);
+    @Test
+    void testParseVersionResponseFormat1()
+            throws UnexpectedResponseCodeException {
+        // SCP Stuff
+        short rc = RC_OK.value;
+        short seq = 105;
+        short p2pAddr = 1024;
+        byte physCPU = 31;
+        byte virtCPU = 14;
+        short version = 234;
+        short buffer = 250;
+        int buildDate = 103117;
+        var verString = "sark/spinnaker".getBytes(US_ASCII);
 
-		// SDP stuff
-		byte flags = REPLY_NOT_EXPECTED.value;
-		byte tag = 5;
-		byte destPortCPU = 0x4f;
-		byte srcPortCPU = 0x6a;
-		byte destX = 0x11;
-		byte destY = (byte) 0xab;
-		byte srcX = 0x7;
-		byte srcY = 0x0;
+        // SDP stuff
+        byte flags = REPLY_NOT_EXPECTED.value;
+        byte tag = 5;
+        byte destPortCPU = 0x4f;
+        byte srcPortCPU = 0x6a;
+        byte destX = 0x11;
+        byte destY = (byte) 0xab;
+        byte srcX = 0x7;
+        byte srcY = 0x0;
 
-		var data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
-		data.put(flags).put(tag).put(destPortCPU).put(srcPortCPU);
-		data.put(destY).put(destX).put(srcY).put(srcX);
-		data.putShort(rc).putShort(seq).putShort(p2pAddr);
-		data.put(physCPU).put(virtCPU).putShort(buffer).putShort(version);
-		data.putInt(buildDate).put(verString);
-		data.flip();
+        var data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
+        data.put(flags).put(tag).put(destPortCPU).put(srcPortCPU);
+        data.put(destY).put(destX).put(srcY).put(srcX);
+        data.putShort(rc).putShort(seq).putShort(p2pAddr);
+        data.put(physCPU).put(virtCPU).putShort(buffer).putShort(version);
+        data.putInt(buildDate).put(verString);
+        data.flip();
 
-		var response = new GetVersion.Response(data);
-		var ver = response.get();
-		assertEquals("sark", ver.name);
-		assertEquals("spinnaker", ver.hardware);
-		assertEquals(new Version(2, 34, 0), ver.versionNumber);
-		assertEquals(new SDPLocation(14, 31, 0), ver.location);
-	}
+        var response = new GetVersion.Response(data);
+        var ver = response.get();
+        assertEquals("sark", ver.name);
+        assertEquals("spinnaker", ver.hardware);
+        assertEquals(new Version(2, 34, 0), ver.versionNumber);
+        assertEquals(new SDPLocation(14, 31, 0), ver.location);
+    }
 
-	@Test
-	void testParseVersionResponseFormat2()
-			throws UnexpectedResponseCodeException {
-		// SCP Stuff
-		short rc = RC_OK.value;
-		short seq = 105;
-		short p2pAddr = 1024;
-		byte physCPU = 31;
-		byte virtCPU = 14;
-		short version = -1;
-		short buffer = 250;
-		int buildDate = 103117;
-		var verString = join("\u0000", "SC&MP/SpiNNaker", "3.2.0", "")
-				.getBytes(US_ASCII);
+    @Test
+    void testParseVersionResponseFormat2()
+            throws UnexpectedResponseCodeException {
+        // SCP Stuff
+        short rc = RC_OK.value;
+        short seq = 105;
+        short p2pAddr = 1024;
+        byte physCPU = 31;
+        byte virtCPU = 14;
+        short version = -1;
+        short buffer = 250;
+        int buildDate = 103117;
+        var verString = join("\u0000", "SC&MP/SpiNNaker", "3.2.0", "")
+                .getBytes(US_ASCII);
 
-		// SDP stuff
-		byte flags = REPLY_NOT_EXPECTED.value;
-		byte tag = 5;
-		byte destPortCpu = 0x4f;
-		byte srcPortCpu = 0x6a;
-		byte destX = 0x11;
-		byte destY = (byte) 0xab;
-		byte srcX = 0x7;
-		byte srcY = 0x0;
+        // SDP stuff
+        byte flags = REPLY_NOT_EXPECTED.value;
+        byte tag = 5;
+        byte destPortCpu = 0x4f;
+        byte srcPortCpu = 0x6a;
+        byte destX = 0x11;
+        byte destY = (byte) 0xab;
+        byte srcX = 0x7;
+        byte srcY = 0x0;
 
-		var data = allocate(60).order(LITTLE_ENDIAN).putShort(PADDING);
-		data.put(flags).put(tag).put(destPortCpu).put(srcPortCpu);
-		data.put(destY).put(destX).put(srcY).put(srcX);
-		data.putShort(rc).putShort(seq).putShort(p2pAddr);
-		data.put(physCPU).put(virtCPU).putShort(buffer).putShort(version);
-		data.putInt(buildDate).put(verString);
-		data.flip();
+        var data = allocate(60).order(LITTLE_ENDIAN).putShort(PADDING);
+        data.put(flags).put(tag).put(destPortCpu).put(srcPortCpu);
+        data.put(destY).put(destX).put(srcY).put(srcX);
+        data.putShort(rc).putShort(seq).putShort(p2pAddr);
+        data.put(physCPU).put(virtCPU).putShort(buffer).putShort(version);
+        data.putInt(buildDate).put(verString);
+        data.flip();
 
-		var response = new GetVersion.Response(data);
-		assertEquals("SC&MP", response.get().name);
-		assertEquals("SpiNNaker", response.get().hardware);
-		assertEquals(new Version(3, 2, 0), response.get().versionNumber);
-		assertEquals(new SDPLocation(14, 31, 0), response.get().location);
-	}
+        var response = new GetVersion.Response(data);
+        assertEquals("SC&MP", response.get().name);
+        assertEquals("SpiNNaker", response.get().hardware);
+        assertEquals(new Version(3, 2, 0), response.get().versionNumber);
+        assertEquals(new SDPLocation(14, 31, 0), response.get().location);
+    }
 }

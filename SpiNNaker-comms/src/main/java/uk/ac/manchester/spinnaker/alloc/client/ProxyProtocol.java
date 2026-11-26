@@ -21,38 +21,38 @@ import java.nio.ByteBuffer;
 
 /** Message IDs in the proxy protocol. */
 enum ProxyProtocol {
-	/** Open a connected channel, or its response. Two-way. */
-	OPEN(20),
-	/** Close a channel, or its response. Two-way. */
-	CLOSE(12),
-	/** Send a message on a connected channel, or receive a message. One-way. */
-	MSG(1600),
-	/** Open an unconnected channel, or its response. Two-way. */
-	OPEN_U(8),
-	/** Send a message on an unconnected channel. Never received. One-way. */
-	MSG_TO(1600),
-	/**
-	 * Indicates an error from a message that expects a correlated response.
-	 * Never sent by the client.
-	 */
-	ERR(0);
+    /** Open a connected channel, or its response. Two-way. */
+    OPEN(20),
+    /** Close a channel, or its response. Two-way. */
+    CLOSE(12),
+    /** Send a message on a connected channel, or receive a message. One-way. */
+    MSG(1600),
+    /** Open an unconnected channel, or its response. Two-way. */
+    OPEN_U(8),
+    /** Send a message on an unconnected channel. Never received. One-way. */
+    MSG_TO(1600),
+    /**
+     * Indicates an error from a message that expects a correlated response.
+     * Never sent by the client.
+     */
+    ERR(0);
 
-	private final int size;
+    private final int size;
 
-	ProxyProtocol(int size) {
-		this.size = size;
-	}
+    ProxyProtocol(int size) {
+        this.size = size;
+    }
 
-	/**
-	 * Create a buffer big enough to hold a message and fill the first word with
-	 * the protocol ID.
-	 *
-	 * @return A little endian buffer of sufficient size. Position will be after
-	 *         first word.
-	 */
-	ByteBuffer allocate() {
-		var b = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
-		b.putInt(ordinal());
-		return b;
-	}
+    /**
+     * Create a buffer big enough to hold a message and fill the first word with
+     * the protocol ID.
+     *
+     * @return A little endian buffer of sufficient size. Position will be after
+     *         first word.
+     */
+    ByteBuffer allocate() {
+        var b = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+        b.putInt(ordinal());
+        return b;
+    }
 }

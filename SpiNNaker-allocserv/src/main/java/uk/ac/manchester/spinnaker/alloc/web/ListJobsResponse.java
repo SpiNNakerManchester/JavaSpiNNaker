@@ -32,39 +32,39 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
  * The list of jobs.
  */
 public final class ListJobsResponse {
-	/** The list of jobs, by URI. Clients should not construct these by hand. */
-	public final List<URI> jobs;
+    /** The list of jobs, by URI. Clients should not construct these by hand. */
+    public final List<URI> jobs;
 
-	private URI prev;
+    private URI prev;
 
-	private URI next;
+    private URI next;
 
-	ListJobsResponse(Jobs jc, UriInfo ui) {
-		var b = ui.getAbsolutePathBuilder().path("{id}");
-		jobs = copy(jc.ids().stream().map(b::build).collect(toList()));
-	}
+    ListJobsResponse(Jobs jc, UriInfo ui) {
+        var b = ui.getAbsolutePathBuilder().path("{id}");
+        jobs = copy(jc.ids().stream().map(b::build).collect(toList()));
+    }
 
-	/**
-	 * {@return URL of previous page when paging is used in this response}
-	 */
-	@JsonInclude(value = NON_NULL)
-	public URI getPrev() {
-		return prev;
-	}
+    /**
+     * {@return URL of previous page when paging is used in this response}
+     */
+    @JsonInclude(value = NON_NULL)
+    public URI getPrev() {
+        return prev;
+    }
 
-	void setPrev(URI prev) {
-		this.prev = prev;
-	}
+    void setPrev(URI prev) {
+        this.prev = prev;
+    }
 
-	/**
-	 * {@return URL of next page when paging is used in this response}
-	 */
-	@JsonInclude(value = NON_NULL)
-	public URI getNext() {
-		return next;
-	}
+    /**
+     * {@return URL of next page when paging is used in this response}
+     */
+    @JsonInclude(value = NON_NULL)
+    public URI getNext() {
+        return next;
+    }
 
-	void setNext(URI next) {
-		this.next = next;
-	}
+    void setNext(URI next) {
+        this.next = next;
+    }
 }
