@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
-		"-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-		"https://checkstyle.org/dtds/configuration_1_3.dtd">
+	"-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+	"https://checkstyle.org/dtds/configuration_1_3.dtd">
 <!--
 Copyright (c) 2018 The University of Manchester
 
@@ -70,6 +70,12 @@ limitations under the License.
 	<module name="SuppressWithPlainTextCommentFilter"/>
 
 	<module name="TreeWalker">
+		<property name="tabWidth" value="4" />
+
+		<!-- Annotation Checks -->
+		<module name="AnnotationLocation"/>
+		<!-- module name="AnnotationOnSameLine"/ Considered not good practice. -->
+		<module name="AnnotationUseStyle"/>
 		<module name="MissingDeprecated"/>
 		<module name="MissingOverride"/>
 		<module name="MissingOverrideOnRecordAccessor"/>
