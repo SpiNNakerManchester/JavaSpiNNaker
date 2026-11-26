@@ -32,7 +32,7 @@ public class RegionInfo {
 
     /**
      * The address where the region will be start.
-      */
+     */
     public final MemoryLocation pointer;
 
     /**
