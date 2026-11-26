@@ -153,7 +153,6 @@ final class GatherDownloadConnection implements AutoCloseable {
 	/**
 	 * Sends a message telling the extra monitor to stop sending fixed route
 	 * packets.
-	 * super(location, iptag.getBoardAddress(), SCP_SCAMP_PORT);
 	 *
 	 * @param extraMonitorCore
 	 *            The location of the monitor.
