@@ -19,44 +19,187 @@ limitations under the License.
 -->
 <module name="Checker">
 	<property name="fileExtensions" value="java, properties, xml" />
-	<module name="JavadocPackage" />
-	<module name="NewlineAtEndOfFile" />
-	<module name="Translation" />
-	<module name="FileLength">
-		<property name="max" value="6000"/>
-	</module>
-	<module name="RegexpSingleline">
-		<property name="format" value="\s+$" />
-		<property name="minimum" value="0" />
-		<property name="maximum" value="0" />
-		<property name="message" value="Line has trailing spaces." />
-	</module>
+
+	<!-- Headers Checks (ALL) -->
 	<module name="Header">
 		<property name="fileExtensions" value="java" />
 		<property name="severity" value="error" />
 		<property name="ignoreLines" value="2" />
 		<property name="headerFile" value="${checkstyle.config.path}/java-header.txt" />
 	</module>
+	<!-- module name="MultiFileRegexpHeader"/ default check does nothing -->
+	<!-- module name="RegexpHeader"/ default check does nothing -->
+
+	<!-- Javadoc Comments Checks -->
+	<module name="JavadocPackage" />
+
+	<!-- Miscellaneous Checks -->
+	<module name="LineEnding"/>
+	<!-- module name="OrderedProperties"/ TODO -->
+	<module name="NewlineAtEndOfFile"/>
+	<module name="Translation"/>
+	<module name="UniqueProperties"/>
+
+	<!-- Regexp Checks -->
+	<!-- module name="RegexpMultiline" default check does nothing -->
+	<module name="RegexpSingleline">
+		<property name="format" value="\s+$" />
+		<property name="minimum" value="0" />
+		<property name="maximum" value="0" />
+		<property name="message" value="Line has trailing spaces." />
+	</module>
+	<module name="RegexpOnFilename"/>
+
+	<!-- Size Violations Checks -->
+	<module name="FileLength">
+		<property name="max" value="6000"/>
+	</module>
+	<module name="LineLength">
+		<property name="tabWidth" value="4" />
+		<property name="ignorePattern"
+				  value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
+	</module>
+
+	<!-- Whitespace Checks -->
+	<!-- module name="FileTabCharacter"/ TODO -->
+
 	<module name="SuppressionFilter">
 		<property name="file" value="${checkstyle.config.path}/suppressions.xml" />
 	</module>
 	<module name="SuppressWarningsFilter" />
 	<module name="SuppressWithPlainTextCommentFilter"/>
-	<module name="LineLength">
-		<property name="tabWidth" value="4" />
-		<property name="ignorePattern"
-			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
-	</module>
+
 	<module name="TreeWalker">
+		<property name="tabWidth" value="4" />
+
+		<!-- Annotation Checks -->
+		<module name="AnnotationLocation"/>
+		<!-- module name="AnnotationOnSameLine"/ Considered not good practice. -->
 		<module name="AnnotationUseStyle"/>
 		<module name="MissingDeprecated"/>
+		<module name="MissingOverride"/>
+		<module name="MissingOverrideOnRecordAccessor"/>
+		<module name="OpenjdkAnnotationLocation"/>
+		<module name="PackageAnnotation"/>
+		<module name="SuppressWarnings"/>
 		<module name="SuppressWarningsHolder" />
-		<property name="tabWidth" value="4" />
-		<module name="RegexpSinglelineJava">
-			<property name="format" value="^\t* "/>
-			<property name="message" value="Indent must use tab characters"/>
-			<property name="ignoreComments" value="true"/>
+
+		<!-- Blocks Checks -->
+		<module name="AvoidNestedBlocks"/>
+		<module name="EmptyBlock"/>
+		<module name="EmptyCatchBlock"/>
+		<module name="GoogleRightCurly"/>
+		<module name="LeftCurly"/>
+		<module name="NeedBraces"/>
+		<module name="RightCurly"/>
+
+		<!-- Design Checks -->
+		<!-- module name="DesignForExtension"/ TODO -->
+		<module name="FinalClass" />
+		<module name="HideUtilityClassConstructor" />
+		<!-- module name="InnerTypeLast"/ TODO -->
+		<!-- module name="InterfaceIsType"/ TODO -->
+		<!-- module name="MutableException"/ TODO -->
+		<!-- module name="OneTopLevelClass"/ -->
+		<module name="SealedShouldHavePermitsList"/>
+		<!-- module name="ThrowsCount"/ TODO -->
+		<module name="VisibilityModifier">
+			<property name="packageAllowed" value="true" />
+			<property name="allowPublicFinalFields" value="true" />
 		</module>
+
+		<!-- Coding Checks -->
+		<!-- module name="ArrayTrailingComma"/ TODO -->
+		<module name="AvoidDoubleBraceInitialization"/>
+		<!-- module name="AvoidInlineConditionals"/ -->
+		<module name="AvoidNoArgumentSuperConstructorCall"/>
+		<!-- module name="ConstructorsDeclarationGrouping"/ TODO -->
+		<module name="CovariantEquals"/>
+		<!-- module name="DeclarationOrder"/ -->
+		<module name="DefaultComesLast"/>
+		<module name="EmptyStatement" />
+		<module name="EqualsAvoidNull"/>
+		<module name="EqualsHashCode" />
+		<!-- module name="ExceptionThrowShouldUseContext"/ -->
+		<!-- module name="ExplicitInitialization"/ -->
+		<module name="ExpressionOverBlockLambda"/>
+		<module name="FallThrough"/>
+		<!-- module name="FinalLocalVariable"/ TODO -->
+		<module name="FinalPatternVariable"/>
+		<!-- module name="HiddenField"/ TODO -->
+		<!-- module name="IllegalCatch"/ TODO -->
+		<module name="IllegalInstantiation" />
+		<module name="IllegalSymbol"/>
+		<!-- module name="IllegalToken"/ TODO -->
+		<module name="IllegalTokenText"/>
+		<!-- module name="IllegalType"/ TODO -->
+		<module name="InnerAssignment" />
+		<module name="MagicNumber">
+			<property name="ignoreHashCodeMethod" value="true" />
+		</module>
+
+		<!-- module name="MatchXpath" default check does nothing -->
+		<!-- module name="MissingCtor"/ TODO -->
+		<!-- module name="MissingNullCaseInSwitch"/ TODO -->
+		<module name="MissingSwitchDefault"/>
+		<module name="MissingSwitchDefault" />
+		<!-- module name="ModifiedControlVariable"/ TODO -->
+		<!-- module name="MultipleStringLiterals"/ TODO -->
+		<!-- module name="MultipleVariableDeclarations"/ TODO -->
+		<!-- module name="NestedForDepth"/ TODO -->
+		<!-- module name="NestedIfDepth"/ TODO -->
+		<!-- module name="NestedTryDepth"/ TODO -->
+		<module name="NoArrayTrailingComma"/>
+		<module name="NoCauseGetMessageInExceptionConstructor"/>
+		<module name="NoClone"/>
+		<module name="NoEnumTrailingComma"/>
+		<module name="NoFinalizer"/>
+		<module name="OneStatementPerLine"/>
+		<!-- module name="OverloadMethodsDeclarationOrder"/ TODO -->
+		<module name="PackageDeclaration"/>
+		<!-- module name="ParameterAssignment"/ -->
+		<module name="PatternVariableAssignment"/>
+		<!-- module name="RedundantThis"/ TODO -->
+		<module name="RequireThis"/>
+		<!-- module name="ReturnCount"/ TODO -->
+		<module name="SimplifyBooleanExpression" />
+		<module name="SimplifyBooleanReturn" />
+		<!-- module name="StringLiteralEquality"/ TODO -->
+		<module name="SuperClone"/>
+		<module name="SuperFinalize"/>
+		<module name="TextBlockGoogleStyleFormatting"/>
+		<!-- module name="UnnecessaryNullCheckWithInstanceOf"/ TODO -->
+		<!-- module name="UnnecessaryParentheses"/ TODO -->
+		<module name="UnnecessaryPermitsClause"/>
+		<module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+		<module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+		<!-- module name="UnnecessarySemicolonInEnumeration"/ -->
+		<module name="UnnecessarySemicolonInTryWithResources"/>
+		<module name="UnnecessaryTypeArgumentsWithRecordPattern"/>
+		<!-- module name="UnusedCatchParameterShouldBeUnnamed"/ TODO -->
+		<!-- module name="UnusedLambdaParameterShouldBeUnnamed"/ TODO -->
+		<!-- module name="UnusedLocalVariable"/ TODO -->
+		<!-- module name="UnusedPrivateField"/ TODO -->
+		<!-- module name="UnusedTryResourceShouldBeUnnamed"/ TODO -->
+		<!-- module name="UseEnhancedSwitch"/ -->
+		<!-- module name="VariableDeclarationUsageDistance"/ TODO -->
+		<module name="WhenShouldBeUsed"/>
+
+		<!-- Headers Checks Directly under checker -->
+
+		<!-- Imports Checks -->
+		<module name="AvoidModuleImport"/>
+		<module name="AvoidStarImport"/>
+		<!-- module name="AvoidStaticImport"/ TODO -->
+		<!-- module name="CustomImportOrder"/ TODO -->
+		<module name="IllegalImport" />
+		<!-- module name="ImportControl"/ BROKEN -->
+		<!-- module name="ImportOrder"/ TODO -->
+		<module name="ModuleImportOrder"/>
+		<module name="RedundantImport" />
+		<!-- module name="UnnecessaryFullyQualifiedType"/  TODO -->
+		<module name="UnusedImports"/>
+
 		<!-- Javadoc Comments Checks -->
 		<module name="AtclauseOrder"/>
 		<module name="BlockCommentEndPosition"/>
@@ -73,8 +216,8 @@ limitations under the License.
 		<module name="JavadocContentLocation"/>
 		<module name="JavadocEndCommentDelimiter"/>
 		<module name="JavadocLeadingAsteriskAlign" />
-		<!-- module name="JavadocLinkFirstOccurrence"/  We do use multiple links -->
-		<!-- module name="JavadocLinkWellKnownApi"/ We current do have these links -->
+		<!-- module name="JavadocLinkFirstOccurrence"/  Multiple link are fine -->
+		<!-- module name="JavadocLinkWellKnownApi"/ These links are fine -->
 		<module name="JavadocMethod">
 			<property name="tokens" value="CTOR_DEF"/>
 			<property name="accessModifiers" value="public, protected" />
@@ -90,17 +233,17 @@ limitations under the License.
 		<module name="JavadocMissingWhitespaceAfterAsterisk"/>
 		<module name="JavadocNoErrorInThrowsTag"/>
 		<!-- module name="JavadocPackage"/  In checker section -->
-		<!-- module name="JavadocParagraph"/ We currently do not have a new before a <p> tag -->
+		<!-- module name="JavadocParagraph"/ Not a style we use -->
 		<module name="JavadocParamOrder"/>
 		<!-- module name="JavadocRegexp"/ Currently no regex we want to avoid -->
 		<module name="JavadocSeeTagOrder"/>
-		<module name="JavadocTagContinuationIndentation"/>
+		<!-- module name="JavadocTagContinuationIndentation"/ -->
 		<module name="JavadocThrowsOrder"/>
 		<module name="JavadocType">
 			<property name="scope" value="package" />
 			<property name="allowUnknownTags" value="true" />
 		</module>
-		<!-- module name="JavadocUtilizingTrailingSpace"/ We use too much indentation -->
+		<!-- module name="JavadocUtilizingTrailingSpace"/ Giving false positives. -->
 		<module name="JavadocVariable">
 			<property name="accessModifiers" value="package" />
 			<property name="ignoreNamePattern" value="log|logger" />
@@ -117,22 +260,99 @@ limitations under the License.
 		<module name="SummaryJavadoc"/>
 		<!--  module name="WriteTag"/ No user defined tags required-->
 
+		<!-- Metrics Checks -->
+		<!-- module name="BooleanExpressionComplexity"/ TODO -->
+		<!-- module name="ClassDataAbstractionCoupling"/ TODO -->
+		<!-- module name="ClassFanOutComplexity"/ TODO -->
+		<!-- module name="CyclomaticComplexity"/ TODO -->
+		<!-- module name="JavaNCSS"/ TODO -->
+		<!-- module name="NPathComplexity"/ TODO -->
+
+		<!-- Miscellaneous Checks -->
+		<module name="ArrayTypeStyle" />
+		<!-- module name="AvoidEscapedUnicodeCharacters"/ TODO -->
+		<!-- module name="ClassHeaderWrapOpenjdk"/ -->
+		<module name="CommentsIndentation"/>
+		<!-- module name="DescendantToken" default check does nothing -->
+		<!-- module name="FinalParameters"/ TODO -->
+		<!-- module name="HexLiteralCase"/ TODO -->
+		<module name="Indentation">
+			<property name="forceStrictCondition" value="false" />
+			<property name="caseIndent" value="0" />
+		</module>
+
+		<!--  module name="LineEnding"/ Directly under checker -->
+		<module name="MultilineCommentLeadingAsteriskPresence"/>
+		<!-- module name="NewlineAtEndOfFile"/ Directly under checker -->
+		<module name="NoCodeInFile"/>
+		<!-- module name="NumericalPrefixesInfixesSuffixesCharacterCase"/ TODO -->
+		<!-- module name="OpenjdkMethodThrowsAlignment"/ TODO -->
+		<!-- module name="OrderedProperties"/ Directly under checker -->
+		<module name="OuterTypeFilename"/>
+		<!-- module name="TodoComment"/ TODO -->
+		<!-- module name="TrailingComment"/ -->
+		<!-- module name="Translation"/ Directly under checker -->
+		<!-- module name="UncommentedMain"/ TODO -->
+		<!-- module name="UniqueProperties"/ Directly under checker -->
+		<module name="UpperEll" />
+
+		<!-- Modifiers Checks -->
+		<module name="AnnotatedDeclarationVisibility"/>
+		<!-- module name="ClassMemberImpliedModifier" /-->
+		<!-- module name="InterfaceMemberImpliedModifier"/ -->
+		<module name="ModifierOrder" />
+		<module name="RedundantModifier" />
+		<module name="RedundantModifierCompactSource"/>
+
+		<!-- Modules Checks -->
+		<module name="ModuleDirectiveOrder"/>
+
+		<!-- Naming Conventions Checks -->
+		<!-- module name="AbbreviationAsWordInName"/ TODO -->
+		<!-- module name="AbstractClassName"/ TODO -->
+		<!-- module name="CatchParameterName"/ TODO -->
+		<!-- module name="ClassTypeParameterName"/ TODO -->
 		<module name="ConstantName">
 			<property name="format"
-				value="^(log(ger)?|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" />
+					  value="^(log(ger)?|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" />
 		</module>
+		<!-- module name="GoogleMethodName"/ TODO -->
+		<!-- module name="GoogleNonConstantFieldName"/ TODO -->
+		<!-- module name="IllegalIdentifierName"/ TODO -->
+		<!-- module name="InterfaceTypeParameterName"/ TODO -->
+		<!-- module name="LambdaParameterName"/ -->
 		<module name="LocalFinalVariableName" />
 		<module name="LocalVariableName" />
 		<module name="MemberName" />
 		<module name="MethodName" />
 		<module name="PackageName" />
 		<module name="ParameterName" />
+		<module name="PatternVariableName"/>
+		<module name="RecordComponentName"/>
+		<module name="RecordTypeParameterName"/>
 		<module name="StaticVariableName" />
-		<module name="TypeName" />
-		<module name="IllegalImport" />
-		<module name="RedundantImport" />
-		<module name="UnusedImports" />
+		<module name="TypeName"/>
+
+		<!-- Regexp Checks -->
+		<!-- module name="Regexp"/ default check does nothing -->
+		<!-- module name="RegexpMultiline" Directly under checker -->
+		<!-- module name="RegexpOnFilename"/ Directly under checker -->
+		<!-- module name="RegexpSingleline" / Directly under checker -->
+		<module name="RegexpSinglelineJava">
+			<property name="format" value="^\t* "/>
+			<property name="message" value="Indent must use tab characters"/>
+			<property name="ignoreComments" value="true"/>
+		</module>
+
+		<!-- Size Violations Checks -->
+		<!-- module name="AnonInnerLength"/ -->
+		<!-- module name="ExecutableStatementCount"/ TODO -->
+		<!-- module name="FileLength"/ Directly under checker -->
+		<!-- module name="LambdaBodyLength"/ TODO -->
+		<!-- module name="LineLength"/ Directly under checker -->
+		<!-- module name="MethodCount"/ TODO -->
 		<module name="MethodLength" />
+		<!-- module name="OuterTypeNumber"/ TODO -->
 		<module name="ParameterNumber">
 			<property name="tokens" value="METHOD_DEF" />
 			<property name="ignoreOverriddenMethods" value="true" />
@@ -142,43 +362,34 @@ limitations under the License.
 			<property name="max" value="15" />
 			<property name="ignoreOverriddenMethods" value="true" />
 		</module>
+		<module name="RecordComponentNumber"/>
+
+		<!-- Whitespace Checks -->
+		<module name="ArrayBracketNoWhitespace"/>
+		<module name="EmptyForInitializerPad"/>
 		<module name="EmptyForIteratorPad" />
-		<module name="GenericWhitespace" />
-		<module name="MethodParamPad" />
-		<module name="NoWhitespaceAfter" />
-		<module name="NoWhitespaceBefore" />
-		<module name="OperatorWrap" />
-		<module name="ParenPad" />
-		<module name="TypecastParenPad" />
-		<module name="WhitespaceAfter" />
-		<module name="WhitespaceAround" />
-		<module name="ModifierOrder" />
-		<module name="RedundantModifier" />
-		<module name="AvoidNestedBlocks" />
-		<module name="EmptyBlock" />
-		<module name="LeftCurly" />
-		<module name="NeedBraces" />
-		<module name="RightCurly" />
-		<module name="EmptyStatement" />
-		<module name="EqualsHashCode" />
-		<module name="IllegalInstantiation" />
-		<module name="InnerAssignment" />
-		<module name="MissingSwitchDefault" />
-		<module name="SimplifyBooleanExpression" />
-		<module name="SimplifyBooleanReturn" />
-		<module name="FinalClass" />
-		<module name="HideUtilityClassConstructor" />
-		<module name="VisibilityModifier">
-			<property name="packageAllowed" value="true" />
-			<property name="allowPublicFinalFields" value="true" />
-		</module>
-		<module name="ArrayTypeStyle" />
-		<module name="UpperEll" />
 		<module name="EmptyLineSeparator">
 			<property name="allowMultipleEmptyLines" value="false"/>
 			<property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
 			<property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
 		</module>
+		<!-- module name="EmptyLineWrappingInBlock"/ TODO -->
+		<!--  module name="FileTabCharacter"/ Directly under checker -->
+		<module name="GenericWhitespace" />
+		<module name="MethodParamPad" />
+		<module name="NoLineWrap"/>
+		<module name="NoWhitespaceAfter" />
+		<module name="NoWhitespaceBefore" />
+		<!-- module name="OpenjdkMethodParameterAlignment"/ TODO -->
+		<module name="OperatorWrap" />
+		<module name="ParenPad" />
+		<!-- module name="SeparatorWrap"/-->
+		<!-- module name="SingleSpaceSeparator"/ TODO -->
+		<!-- module name="TypeBodyPadding"/ TODO -->
+		<module name="TypecastParenPad" />
+		<module name="WhitespaceAfter" />
+		<module name="WhitespaceAround"/>
+
 	</module>
 	<module name="TreeWalker">
 		<!-- These are not applied to test code -->
