@@ -19,42 +19,42 @@ package uk.ac.manchester.spinnaker.nmpi.model.job;
  * Indicates whether a machine was allocated for a job.
  */
 public class JobMachineAllocated {
-	/** True if the machine has been allocated. */
-	private boolean allocated = false;
+    /** True if the machine has been allocated. */
+    private boolean allocated = false;
 
-	/**
-	 * Empty for serialisation.
-	 */
-	public JobMachineAllocated() {
-		// Does Nothing
-	}
+    /**
+     * Empty for serialisation.
+     */
+    public JobMachineAllocated() {
+        // Does Nothing
+    }
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param allocated
-	 *            Whether the job was allocated.
-	 */
-	public JobMachineAllocated(final boolean allocated) {
-		this.allocated = allocated;
-	}
+    /**
+     * Create an instance.
+     *
+     * @param allocated
+     *            Whether the job was allocated.
+     */
+    public JobMachineAllocated(final boolean allocated) {
+        this.allocated = allocated;
+    }
 
-	/**
-	 * Determine if the job is allocated.
-	 *
-	 * @return True if allocated
-	 */
-	public boolean isAllocated() {
-		return this.allocated;
-	}
+    /**
+     * Determine if the job is allocated.
+     *
+     * @return True if allocated
+     */
+    public boolean isAllocated() {
+        return this.allocated;
+    }
 
-	/**
-	 * Set the job allocation status.
-	 *
-	 * @param allocated
-	 *            The allocation status
-	 */
-	public void setAllocated(final boolean allocated) {
-		this.allocated = allocated;
-	}
+    /**
+     * Set the job allocation status.
+     *
+     * @param allocated
+     *            The allocation status
+     */
+    public void setAllocated(final boolean allocated) {
+        this.allocated = allocated;
+    }
 }
