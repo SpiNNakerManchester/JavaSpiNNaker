@@ -506,11 +506,11 @@ public class JobManager implements NMPIQueueListener, JobManagerInterface {
 		try {
 			if (!file.getCanonicalPath().startsWith(
 					folder.getCanonicalPath() + File.separator)) {
-				logger.error("File {} is not in folder {}", file, folder);
+				logger.error("File {} is not in required folder", file, folder);
 				throw new WebApplicationException(INTERNAL_SERVER_ERROR);
 			}
 		} catch (final IOException e) {
-			logger.error("Error checking if file {} is in folder {}",
+			logger.error("Error checking if file {} is in required folder",
 					file, folder, e);
 			throw new WebApplicationException(INTERNAL_SERVER_ERROR);
 		}
