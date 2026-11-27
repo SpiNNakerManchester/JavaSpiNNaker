@@ -263,9 +263,9 @@ public class OutputManagerImpl implements OutputManager {
 				}
 
 				final var newOutput = new File(idDirectory, outputPath);
-				JobManager.checkFileIsInFolder(newOutput, idDirectory);
-				JobManager.checkFileIsInFolder(newOutput.getParentFile(),
-						idDirectory);
+				JobManager.checkFileIsInFolder(idDirectory, newOutput);
+				JobManager.checkFileIsInFolder(idDirectory,
+						newOutput.getParentFile());
 				newOutput.getParentFile().mkdirs();
 				if (newOutput.exists()) {
 					if (!newOutput.delete()) {
