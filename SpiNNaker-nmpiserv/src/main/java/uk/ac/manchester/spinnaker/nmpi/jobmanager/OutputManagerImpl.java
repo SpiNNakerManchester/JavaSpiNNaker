@@ -49,6 +49,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -217,7 +218,9 @@ public class OutputManagerImpl implements OutputManager {
 		if (name.equals(".") || name.equals("..") || name.isEmpty()) {
 			throw new IllegalArgumentException("bad projectId");
 		}
-		return new File(resultsDirectory, name);
+		var file = new File(resultsDirectory, name).getAbsoluteFile();
+		JobManager.checkFileIsInFolder(resultsDirectory, file);
+		return file;
 	}
 
 	/**
@@ -251,11 +254,7 @@ public class OutputManagerImpl implements OutputManager {
 		try (var op = new JobLock(idDirectory)) {
 			final var outputData = new ArrayList<DataItem>();
 			for (final var output : outputs) {
-				if (!output.getAbsolutePath()
-						.startsWith(baseDirectory.getAbsolutePath())) {
-					throw new IOException("Output file " + output
-							+ " is outside base directory " + baseDirectory);
-				}
+				JobManager.checkFileIsInFolder(baseDirectory, output);
 
 				var outputPath = output.getAbsolutePath()
 						.substring(pathStart).replace('\\', '/');
@@ -264,6 +263,9 @@ public class OutputManagerImpl implements OutputManager {
 				}
 
 				final var newOutput = new File(idDirectory, outputPath);
+				JobManager.checkFileIsInFolder(idDirectory, newOutput);
+				JobManager.checkFileIsInFolder(idDirectory,
+						newOutput.getParentFile());
 				newOutput.getParentFile().mkdirs();
 				if (newOutput.exists()) {
 					if (!newOutput.delete()) {
@@ -276,9 +278,13 @@ public class OutputManagerImpl implements OutputManager {
 				if (!newOutput.exists()) {
 					move(output.toPath(), newOutput.toPath());
 				}
-				final var outputUrl = new URL(baseServerUrl,
-						"output/" + pId + "/" + id + "/" + outputPath);
-				outputData.add(new DataItem(outputUrl.toExternalForm()));
+				final var outputUrl =
+						UriBuilder.fromUri(baseServerUrl.toString())
+						.path("output").path(pId).path(String.valueOf(id))
+						.path(outputPath)
+						.build();
+				outputData.add(new DataItem(
+						outputUrl.toURL().toExternalForm()));
 				logger.debug("New output {} mapped to {}",
 						newOutput, outputUrl);
 			}
@@ -345,7 +351,10 @@ public class OutputManagerImpl implements OutputManager {
 	 * @return The purge marker file
 	 */
 	private File getPurgeFile(final File directory) {
-		return new File(resultsDirectory, PURGED_FILE + directory.getName());
+		var file = new File(resultsDirectory,
+				PURGED_FILE + directory.getName());
+		JobManager.checkFileIsInFolder(resultsDirectory, file);
+		return file;
 	}
 
 	@Override
@@ -419,8 +428,9 @@ public class OutputManagerImpl implements OutputManager {
 	public Response uploadResultsToHPCServer(final String projectId,
 			final int id, final String serverUrl, final String storageId,
 			final String filePath, final String userId, final String token) {
-		final var idDirectory =
-				new File(getProjectDirectory(projectId), String.valueOf(id));
+		final var projectDir = getProjectDirectory(projectId);
+		final var idDirectory =	new File(projectDir, String.valueOf(id));
+		JobManager.checkFileIsInFolder(projectDir, idDirectory);
 		if (!idDirectory.canRead()) {
 			logger.debug("{} was not found", idDirectory);
 			return status(NOT_FOUND).build();
