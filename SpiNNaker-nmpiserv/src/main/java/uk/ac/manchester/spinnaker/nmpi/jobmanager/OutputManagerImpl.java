@@ -278,9 +278,11 @@ public class OutputManagerImpl implements OutputManager {
 				if (!newOutput.exists()) {
 					move(output.toPath(), newOutput.toPath());
 				}
-				final var outputUrl = UriBuilder.fromUri(
-						baseServerUrl.toString()).path(
-						"output/" + pId + "/" + id + "/" + outputPath).build();
+				final var outputUrl =
+						UriBuilder.fromUri(baseServerUrl.toString())
+						.path("output").path(pId).path(String.valueOf(id))
+						.path(outputPath)
+						.build();
 				outputData.add(new DataItem(
 						outputUrl.toURL().toExternalForm()));
 				logger.debug("New output {} mapped to {}",
